@@ -1,15 +1,24 @@
 import BlurText from "@/components/landing/BlurText";
 import ShinyText from "@/components/landing/ShinyText";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
+import { Header } from "@/components/layout/Header";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 export default function HomePage() {
   return (
+    <>
+      <Header />
+      <section className="h-screen w-full flex items-center justify-center bg-cover bg-center bg-no-repeat relative overflow-hidden" style={{ backgroundImage: 'url(/img/bghero1.png)' }}>
+    {/* Effet de lumière du bas vers le haut */}
+    <div 
+      className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-[120%] h-[60%] pointer-events-none opacity-50"
+      style={{
+        background: 'radial-gradient(ellipse at center bottom, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%)'
+      }}
+    ></div>
     
-
-<section className="h-screen w-full flex items-center justify-center bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/img/bghero1.png)' }}>
-    <div className="text-pure-white relative overflow-hidden flex items-center justify-center flex-col">
+    <div className="text-pure-white relative overflow-hidden flex items-center justify-center flex-col z-10">
 
       <div className="flex items-center justify-center flex-col z-10">
           <h1 className="text-[13vw] font-bold bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent opacity-90 select-none pointer-events-none whitespace-nowrap font-argesta leading-none">
@@ -57,7 +66,7 @@ export default function HomePage() {
         </div>
     </div>
 
-
 </section>
+    </>
   );
 }  
