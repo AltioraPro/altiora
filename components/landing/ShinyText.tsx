@@ -14,14 +14,10 @@ interface ShinyTextProps {
 const ShinyText: React.FC<ShinyTextProps> = ({ text, disabled = false, speed = 5, className = '' }) => {
     return (
         <div
-            className={`inline-block ${className}`}
+            className={`inline-block bg-gradient-to-r from-gray-400 via-white to-gray-400 bg-clip-text text-transparent ${!disabled ? 'animate-shine' : ''} ${className}`}
             style={{
-                backgroundImage: 'linear-gradient(120deg, rgba(128, 128, 128, 1) 40%, rgba(255, 255, 255, 1) 50%, rgba(128, 128, 128, 1) 60%)',
                 backgroundSize: '200% 100%',
-                WebkitBackgroundClip: 'text',
-                backgroundClip: 'text',
-                color: 'transparent',
-                animation: disabled ? 'none' : `shine ${speed}s linear infinite`,
+                animationDuration: `${speed}s`,
             }}
         >
             {text}

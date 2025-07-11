@@ -9,11 +9,11 @@ export default function HomePage() {
   return (
     <>
       <Header />
-      <section className="h-screen w-full flex items-center justify-center bg-cover bg-center bg-no-repeat relative overflow-hidden" style={{ backgroundImage: 'url(/img/bghero1.png)' }}>
+      <section className="h-screen w-full flex items-center justify-center bg-cover bg-center bg-no-repeat relative overflow-hidden grayscale" style={{ backgroundImage: 'url(/img/aaa.png)' }}>
     {/* Effet de lumière du bas vers le haut */}
     <div 
       className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-[120%] h-[60%] pointer-events-none opacity-50"
-      style={{
+    style={{
         background: 'radial-gradient(ellipse at center bottom, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%)'
       }}
     ></div>
@@ -42,24 +42,24 @@ export default function HomePage() {
       <div className="flex items-center justify-center">
 
         <div className="flex flex-col sm:flex-row gap-4 mt-12">
-            <Link href="/auth">
+            <Link href="/pricing">
               <HoverBorderGradient
                 containerClassName="bg-pure-black"
                 className="bg-pure-black text-white opacity-70"
               >
                 <span className="flex items-center gap-2">
-                  Let&apos;s start
+                  Get Started
                   <ArrowRight className="w-4 h-4" />
                 </span>
               </HoverBorderGradient>
             </Link>
             
-            <Link href="/about">
+            <Link href="/pricing">
               <HoverBorderGradient
                 containerClassName="bg-pure-white"
                 className="bg-pure-black text-white opacity-70"
               >
-                Learn more
+                View Pricing
               </HoverBorderGradient>
             </Link>
           </div>

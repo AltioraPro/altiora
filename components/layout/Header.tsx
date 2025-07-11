@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Home, Target, TrendingUp, Users, Settings, Phone, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import LiquidGlass from 'liquid-glass-react'
+ 
 
 interface HeaderProps {
   className?: string;
@@ -27,7 +29,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
 
   return (
     <>
-      <header className={`fixed top-0 left-0 right-0 z-20 bg-transparent backdrop-blur-sm ${className}`}>
+      <header className={`fixed top-0 left-0 right-0 z-20 bg-transparent backdrop-blur-md border border-white/10 ${className}`}>
         <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Menu Burger - Gauche */}
