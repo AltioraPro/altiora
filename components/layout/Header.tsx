@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Home, Target, TrendingUp, Users, Settings, Phone, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import LiquidGlass from 'liquid-glass-react'
  
 
 interface HeaderProps {
