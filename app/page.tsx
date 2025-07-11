@@ -59,7 +59,7 @@ export default function HomePage() {
                 containerClassName="bg-pure-white"
                 className="bg-pure-black text-white opacity-70"
               >
-                View Pricing
+                About Us
               </HoverBorderGradient>
             </Link>
           </div>
