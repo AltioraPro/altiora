@@ -110,9 +110,9 @@
           ))}
         </div>
 
-        {/* Luminous cursor effect */}
-        <div
-          className="absolute pointer-events-none z-10 transition-all duration-300 ease-out"
+              {/* Luminous cursor effect */}
+      <div
+        className="absolute pointer-events-none z-5 transition-all duration-300 ease-out"
           style={{
             left: `${mousePosition.x}%`,
             top: `${mousePosition.y}%`,
@@ -123,7 +123,7 @@
           }}
         />
 
-        <div className="relative z-20 pt-20 px-4 h-screen overflow-hidden">
+        <div className="relative z-10 pt-20 px-4 h-screen overflow-hidden">
           <div className="max-w-7xl mx-auto h-full flex items-center justify-center">
             
             <div className="grid lg:grid-cols-2 gap-16 items-center w-full">
