@@ -101,7 +101,7 @@ export default function HomePage() {
 
             <BlurText 
               text="Your discipline, our platform."
-              className="text-[1vw] font-bold text-pure-white opacity-90 select-none pointer-events-none whitespace-nowrap font-argesta -mt-2"
+              className="text-[1vw] text-pure-white opacity-90 select-none pointer-events-none whitespace-nowrap font-argesta -mt-2"
             />
           </div>
 
