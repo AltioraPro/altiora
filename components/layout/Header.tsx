@@ -101,7 +101,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
                 alt="Altiora Logo"
                 width={70}
                 height={20}
-                className="h-10 w-auto"
+                className="h-10 w-auto"  
                 priority
               />
             </Link>

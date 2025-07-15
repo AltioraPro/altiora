@@ -128,11 +128,7 @@ body {
 
 @font-face {
     font-family: 'Argesta Display';
-    src: url('/font/Argesta-Display-Regular-web/argestadisplay-regular-webfont.eot');
-    src: url('/font/Argesta-Display-Regular-web/argestadisplay-regular-webfont.eot?#iefix') format('embedded-opentype'),
-         url('/font/Argesta-Display-Regular-web/argestadisplay-regular-webfont.woff2') format('woff2'),
-         url('/font/Argesta-Display-Regular-web/argestadisplay-regular-webfont.woff') format('woff'),
-         url('/font/Argesta-Display-Regular-web/argestadisplay-regular-webfont.ttf') format('truetype');
+    src: url('/font/MADE2.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
 }
