@@ -326,6 +326,31 @@ export const pomodoroSessions = createTable(
   })
 );
 
+/**
+ * Table de vérification (Better Auth)
+ */
+export const verifications = createTable(
+  "verification",
+  {
+    id: varchar("id", { length: 255 }).primaryKey(),
+    identifier: varchar("identifier", { length: 255 }).notNull(),
+    value: varchar("value", { length: 255 }).notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    
+    // Timestamps
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (table) => ({
+    identifierIdx: index("verification_identifier_idx").on(table.identifier),
+    expiresAtIdx: index("verification_expires_at_idx").on(table.expiresAt),
+  })
+);
+
 // Export des types pour TypeScript
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -333,6 +358,8 @@ export type Session = typeof sessions.$inferSelect;
 export type NewSession = typeof sessions.$inferInsert;
 export type Account = typeof accounts.$inferSelect;
 export type NewAccount = typeof accounts.$inferInsert;
+export type Verification = typeof verifications.$inferSelect;
+export type NewVerification = typeof verifications.$inferInsert;
 export type Habit = typeof habits.$inferSelect;
 export type NewHabit = typeof habits.$inferInsert;
 export type HabitCompletion = typeof habitCompletions.$inferSelect;

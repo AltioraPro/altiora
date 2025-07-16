@@ -1,22 +1,16 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
-import * as authSchema from "@/auth-schema";
-
-// Configuration de base de données spécifique pour Better Auth
-const connectionString = process.env.DATABASE_URL || "postgresql://postgres:password@localhost:5432/altiora_db";
-const authClient = postgres(connectionString, { prepare: false });
-const authDb = drizzle(authClient, { schema: authSchema });
+import { db } from "@/server/db";
+import { users, sessions, accounts, verifications } from "@/server/db/schema";
 
 export const auth = betterAuth({
-  database: drizzleAdapter(authDb, {
+  database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
-      user: authSchema.user,
-      session: authSchema.session,
-      account: authSchema.account,
-      verification: authSchema.verification,
+      user: users,
+      session: sessions,
+      account: accounts,
+      verification: verifications,
     },
   }),
   emailAndPassword: {
