@@ -1,8 +1,8 @@
-import { type Database } from "@/server/db";
+import { type db } from "@/server/db";
 
 export interface AuthMutationContext<T> {
   input: T;
-  db: Database;
+  db: typeof db;
   session: {
     userId: string;
   } | null;

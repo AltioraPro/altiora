@@ -1,7 +1,7 @@
-import { type Database } from "@/server/db";
+import { type db } from "@/server/db";
 
 export interface AuthQueryContext {
-  db: Database;
+  db: typeof db;
   session: {
     userId: string;
   } | null;
