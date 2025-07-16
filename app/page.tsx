@@ -34,7 +34,7 @@ export default function HomePage() {
         <div className="absolute left-8 top-1/2 transform -translate-y-1/2 space-y-8 opacity-60 z-20">
           <div className="flex flex-col space-y-6">
             <div className="flex items-center space-x-3">
-              <TrendingUp className="w-6 h-6 text-white" />
+                <TrendingUp className="w-6 h-6 text-white" />
               <span className="text-white font-argesta text-sm">TRADING</span>
             </div>
             <div className="flex items-center space-x-3">
@@ -56,7 +56,7 @@ export default function HomePage() {
         </div>
 
         {/* Éléments décoratifs côté droit */}
-        <div className="absolute right-8 top-1/2 transform -translate-y-1/2 space-y-8 opacity-60 z-20">
+        <div className="absolute right-8 top-1/2 transform -translate-y-1/2 space-y-8 opacity-60 z-20 flex flex-col items-end">
           <div className="flex flex-col items-end space-y-6">
             <div className="flex items-center space-x-3">
               <span className="text-white font-argesta text-sm">ANALYTICS</span>
