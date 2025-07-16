@@ -30,6 +30,16 @@ export const createTRPCContext = async (opts: FetchCreateContextFnOptions) => {
   });
 };
 
+// Version spéciale pour les Server Components
+export const createTRPCContextRSC = async (opts?: { headers?: Headers }) => {
+  // Pour les Server Components, pas d'authentification côté serveur
+  const session = null;
+
+  return createInnerTRPCContext({
+    session,
+  });
+};
+
 /**
  * 2. INITIALIZATION
  * Initialiser tRPC avec les transformeurs et formatage d'erreurs

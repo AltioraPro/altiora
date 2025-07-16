@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import { cache } from "react";
 
 import { createCaller, type AppRouter } from "@/server/api/root";
-import { createTRPCContext } from "@/server/api/trpc";
+import { createTRPCContextRSC } from "@/server/api/trpc";
 import { createQueryClient } from "./query-client";
 
 /**
@@ -16,7 +16,7 @@ const createContext = cache(async () => {
   const heads = new Headers(await headers());
   heads.set("x-trpc-source", "rsc");
 
-  return createTRPCContext({
+  return createTRPCContextRSC({
     headers: heads,
   });
 });
