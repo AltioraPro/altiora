@@ -4,7 +4,7 @@ export const syncUserSchema = z.object({
   id: z.string(),
   email: z.string().email(),
   name: z.string().optional(),
-  image: z.string().url().optional(),
+  image: z.string().optional(),
 });
 
 export const userCreateSchema = z.object({

@@ -5,12 +5,10 @@ import { users, type NewUser } from "@/server/db/schema";
 import { type AuthMutationContext } from "./types";
 
 interface SyncUserInput {
-  clerkId: string;
+  id: string;
   email: string;
-  firstName?: string;
-  lastName?: string;
-  imageUrl?: string;
-  username?: string;
+  name?: string;
+  image?: string;
 }
 
 export async function syncUser({
@@ -20,7 +18,7 @@ export async function syncUser({
   try {
     // Vérifier si l'utilisateur existe déjà
     const existingUser = await db.query.users.findFirst({
-      where: eq(users.clerkId, input.clerkId),
+      where: eq(users.id, input.id),
     });
 
     if (existingUser) {
@@ -29,28 +27,24 @@ export async function syncUser({
         .update(users)
         .set({
           email: input.email,
-          firstName: input.firstName,
-          lastName: input.lastName,
-          imageUrl: input.imageUrl,
-          username: input.username,
+          name: input.name || existingUser.name,
+          imageUrl: input.image,
           updatedAt: new Date(),
         })
-        .where(eq(users.clerkId, input.clerkId))
+        .where(eq(users.id, input.id))
         .returning();
 
       return {
         ...updatedUser,
-        fullName: `${updatedUser?.firstName || ""} ${updatedUser?.lastName || ""}`.trim() || null,
       };
     } else {
       // Créer un nouvel utilisateur
       const newUser: NewUser = {
-        clerkId: input.clerkId,
+        id: input.id,
         email: input.email,
-        firstName: input.firstName,
-        lastName: input.lastName,
-        imageUrl: input.imageUrl,
-        username: input.username,
+        name: input.name || input.email.split('@')[0],
+        imageUrl: input.image,
+        emailVerified: true,
         isProUser: false,
         preferences: {},
       };
@@ -62,7 +56,6 @@ export async function syncUser({
 
       return {
         ...createdUser,
-        fullName: `${createdUser.firstName || ""} ${createdUser.lastName || ""}`.trim() || null,
       };
     }
   } catch (error) {

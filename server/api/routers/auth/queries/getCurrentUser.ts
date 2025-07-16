@@ -14,13 +14,11 @@ export async function getCurrentUser({ db, session }: AuthQueryContext) {
 
   try {
     const user = await db.query.users.findFirst({
-      where: eq(users.clerkId, session.userId),
+      where: eq(users.id, session.userId),
       columns: {
         id: true,
-        clerkId: true,
         email: true,
-        firstName: true,
-        lastName: true,
+        name: true,
         imageUrl: true,
         username: true,
         isProUser: true,
@@ -41,7 +39,6 @@ export async function getCurrentUser({ db, session }: AuthQueryContext) {
 
     return {
       ...user,
-      fullName: `${user.firstName || ""} ${user.lastName || ""}`.trim() || null,
     };
   } catch (error) {
     if (error instanceof TRPCError) {
