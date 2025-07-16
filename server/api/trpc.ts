@@ -1,6 +1,5 @@
 import { initTRPC, TRPCError } from "@trpc/server";
-import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { getAuth } from "@clerk/nextjs/server";
+import { type FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
@@ -11,7 +10,7 @@ import { db } from "@/server/db";
  * Créer le contexte utilisé par les procédures tRPC
  */
 interface CreateContextOptions {
-  session: ReturnType<typeof getAuth> | null;
+  session: any | null;
 }
 
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
@@ -21,19 +20,10 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
   };
 };
 
-export const createTRPCContext = async (opts: CreateNextContextOptions | { headers: Headers }) => {
-  let auth: ReturnType<typeof getAuth> | null = null;
-  
-  if ('req' in opts) {
-    // Pages Router
-    auth = getAuth(opts.req);
-  } else {
-    // App Router - headers seulement
-    // Pour App Router, l'auth sera géré côté client via Clerk
-    auth = null;
-  }
-  
-  const session = auth?.sessionId ? auth : null;
+export const createTRPCContext = async (opts: FetchCreateContextFnOptions) => {
+  // Pour App Router avec fetchRequestHandler, on n'a accès qu'aux headers
+  // L'authentification sera gérée côté client via Clerk
+  const session = null;
 
   return createInnerTRPCContext({
     session,
