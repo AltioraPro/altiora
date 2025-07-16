@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Home, Target, TrendingUp, Users, Settings, Phone } from "lucide-react";
+import { Home, Target, TrendingUp, Users, Settings, Phone, LogOut, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSession, signOut } from "@/lib/auth-client";
 
 interface HeaderProps {
   className?: string;
@@ -12,6 +13,7 @@ interface HeaderProps {
 export const Header = ({ className = "" }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const { data: session, isPending } = useSession();
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -106,13 +108,58 @@ export const Header = ({ className = "" }: HeaderProps) => {
               />
             </Link>
 
-            {/* Contact Us - Droite */}
-            <Link
-              href="/contact"
-              className="text-pure-white px-4 py-2 rounded-xl border border-white/20 hover:bg-white/10 hover:border-white/40 transition-all duration-300 text-sm font-medium backdrop-blur-sm"
-            >
-              Contact Us
-            </Link>
+            {/* Auth Section - Droite */}
+            <div className="flex items-center space-x-3">
+              {isPending ? (
+                <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+              ) : session?.user ? (
+                /* User Profile - Connecté */
+                <div className="flex items-center space-x-3">
+                  <Link
+                    href="/dashboard"
+                    className="flex items-center space-x-2 text-white/80 hover:text-white px-3 py-2 rounded-xl border border-white/20 hover:bg-white/5 hover:border-white/40 transition-all duration-300 group"
+                  >
+                    <div className="w-6 h-6 bg-white/10 rounded-full flex items-center justify-center">
+                      <User className="w-3 h-3" />
+                    </div>
+                    <span className="text-sm font-medium">
+                      {session.user.name?.split(' ')[0] || session.user.email.split('@')[0]}
+                    </span>
+                  </Link>
+                  
+                  <button
+                    onClick={async () => {
+                      await signOut();
+                      window.location.href = "/";
+                    }}
+                    className="p-2 text-white/60 hover:text-white rounded-xl border border-white/20 hover:bg-white/5 hover:border-white/40 transition-all duration-300"
+                    title="Sign Out"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                /* Auth Buttons - Non connecté */
+                <>
+                  <Link
+                    href="/auth/login"
+                    className="text-white/80 hover:text-white px-4 py-2 rounded-xl border border-white/20 hover:bg-white/5 hover:border-white/40 transition-all duration-300 text-sm font-semibold backdrop-blur-sm tracking-wider group"
+                  >
+                    <span className="relative">
+                      Login
+                      <div className="absolute -bottom-1 left-0 w-0 h-px bg-white/60 group-hover:w-full transition-all duration-300" />
+                    </span>
+                  </Link>
+                  
+                  <Link
+                    href="/auth/register"
+                    className="text-white px-5 py-2.5 rounded-xl bg-white/10 border border-white/30 hover:bg-white/20 hover:border-white/50 transition-all duration-300 text-sm font-semibold backdrop-blur-md tracking-wider shadow-lg hover:shadow-white/20 hover:scale-[1.02] transform"
+                  >
+                    Register
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </header>
@@ -235,7 +282,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
             </div>
 
             {/* Bottom Action */}
-            <div className={`text-center transition-all duration-1000 delay-500 ${
+            <div className={`text-center space-y-4 transition-all duration-1000 delay-500 ${
               isMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
             }`}>
               <Link
@@ -246,6 +293,27 @@ export const Header = ({ className = "" }: HeaderProps) => {
                 GET STARTED
                 <div className="ml-2 w-1 h-1 rounded-full bg-white/60 group-hover:w-6 group-hover:h-0.5 transition-all duration-300" />
               </Link>
+              
+              {/* Auth Links */}
+              <div className="flex items-center justify-center space-x-6">
+                <Link
+                  href="/auth/login"
+                  onClick={toggleMenu}
+                  className="text-white/60 hover:text-white transition-all duration-300 font-medium font-argesta tracking-wide text-sm group"
+                >
+                  LOGIN
+                  <div className="w-0 h-px bg-white/60 group-hover:w-full transition-all duration-300 mt-1" />
+                </Link>
+                <div className="w-px h-4 bg-white/20" />
+                <Link
+                  href="/auth/register"
+                  onClick={toggleMenu}
+                  className="text-white/60 hover:text-white transition-all duration-300 font-medium font-argesta tracking-wide text-sm group"
+                >
+                  REGISTER
+                  <div className="w-0 h-px bg-white/60 group-hover:w-full transition-all duration-300 mt-1" />
+                </Link>
+              </div>
             </div>
           </div>
 

@@ -122,7 +122,7 @@ import ShinyText from "@/components/landing/ShinyText";
                 </ul>
 
                 <Link 
-                    href="/auth"
+                    href="/auth/register"
                     className="block w-full bg-neutral-700 text-white text-center py-4 rounded-xl font-semibold hover:bg-neutral-600 transition-all duration-300 transform hover:scale-105"
                 >
                     Start Free Trial
@@ -177,7 +177,7 @@ import ShinyText from "@/components/landing/ShinyText";
                     </ul>
 
                     <Link 
-                        href="/auth"
+                        href="/auth/register"
                         className="block w-full bg-gradient-to-r from-white to-neutral-200 text-black text-center py-4 rounded-xl font-bold hover:from-neutral-100 hover:to-neutral-300 transition-all duration-300 transform hover:scale-105 shadow-lg"
                     >
                         Get ALTIORA Pro

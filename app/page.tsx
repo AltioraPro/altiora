@@ -107,7 +107,7 @@ export default function HomePage() {
 
           <div className="flex items-center justify-center">
             <div className="flex flex-col sm:flex-row gap-4 mt-12">
-              <Link href="/pricing">
+              <Link href="/auth/register">
                 <HoverBorderGradient
                   containerClassName="bg-pure-black"
                   className="bg-pure-black text-white opacity-70"
@@ -118,6 +118,7 @@ export default function HomePage() {
                   </span>
                 </HoverBorderGradient>
               </Link>
+              
               
               <Link href="/pricing">
                 <HoverBorderGradient
