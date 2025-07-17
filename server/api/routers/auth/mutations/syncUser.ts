@@ -28,7 +28,7 @@ export async function syncUser({
         .set({
           email: input.email,
           name: input.name || existingUser.name,
-          imageUrl: input.image,
+          image: input.image,
           updatedAt: new Date(),
         })
         .where(eq(users.id, input.id))
@@ -43,10 +43,8 @@ export async function syncUser({
         id: input.id,
         email: input.email,
         name: input.name || input.email.split('@')[0],
-        imageUrl: input.image,
+        image: input.image,
         emailVerified: true,
-        isProUser: false,
-        preferences: {},
       };
 
       const [createdUser] = await db
