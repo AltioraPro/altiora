@@ -97,7 +97,7 @@ export default function LoginPage() {
     setAuthError(null);
     
     try {
-      const { data: result, error } = await signIn.social({
+      const { error } = await signIn.social({
         provider: "google",
         callbackURL: "/dashboard",
       });
