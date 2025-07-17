@@ -1,11 +1,12 @@
-"use client";
+  "use client";
 
-import { useSearchParams } from "next/navigation";
-import { Mail, CheckCircle, RefreshCw, ArrowLeft, ExternalLink, AlertCircle } from "lucide-react";
-import { useState, useEffect } from "react";
-import { api } from "@/trpc/client";
+  import { Suspense } from "react";
+  import { useSearchParams } from "next/navigation";
+  import { Mail, CheckCircle, RefreshCw, ArrowLeft, ExternalLink, AlertCircle } from "lucide-react";
+  import { useState, useEffect } from "react";
+  import { api } from "@/trpc/client";
 
-export default function CheckEmailPage() {
+  function CheckEmailContent() {
   const searchParams = useSearchParams();
   const email = searchParams.get("email");
   const [timeLeft, setTimeLeft] = useState(60);
@@ -69,9 +70,9 @@ export default function CheckEmailPage() {
       await sendVerificationMutation.mutateAsync({ email });
       setTimeLeft(60);
       setCanResend(false);
-         } catch {
-       // L'erreur est gérée par onError
-     } finally {
+          } catch {
+        // L'erreur est gérée par onError
+      } finally {
       setIsResending(false);
     }
   };
@@ -101,12 +102,12 @@ export default function CheckEmailPage() {
         <div className="absolute bottom-60 right-20 w-8 h-8 border border-white/25 rotate-45" />
         <div className="absolute top-40 left-20 w-4 h-4 border border-white/20 rotate-45" />
         
-        {/* Grille de points subtile */}
-        <div className="absolute inset-0 opacity-[0.02]" 
-             style={{
-               backgroundImage: `radial-gradient(circle, white 1px, transparent 1px)`,
-               backgroundSize: '50px 50px',
-             }} 
+      {/* Grille de points subtile */}
+      <div className="absolute inset-0 opacity-[0.02]" 
+            style={{
+              backgroundImage: `radial-gradient(circle, white 1px, transparent 1px)`,
+              backgroundSize: '50px 50px',
+            }} 
         />
       </div>
 
@@ -123,7 +124,7 @@ export default function CheckEmailPage() {
                 Almost there.
               </p>
               <p className="text-base opacity-80">
-                                 We&apos;ve sent you a verification email to complete 
+                We&apos;ve sent you a verification email to complete 
                 your account setup and start your journey.
               </p>
             </div>
@@ -361,4 +362,23 @@ export default function CheckEmailPage() {
       </div>
     </div>
   );
-} 
+  }
+
+  function CheckEmailFallback() {
+  return (
+    <div className="min-h-screen bg-pure-black text-pure-white flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin mx-auto mb-4" />
+        <p className="text-white/70">Loading...</p>
+      </div>
+    </div>
+  );
+  }
+
+  export default function CheckEmailPage() {
+  return (
+    <Suspense fallback={<CheckEmailFallback />}>
+      <CheckEmailContent />
+    </Suspense>
+  );
+  } 
