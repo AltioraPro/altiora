@@ -3,8 +3,17 @@ import { z } from "zod";
 export const syncUserSchema = z.object({
   id: z.string(),
   email: z.string().email(),
-  name: z.string().optional(),
+  name: z.string(),
   image: z.string().optional(),
+  emailVerified: z.boolean().optional(),
+});
+
+export const sendVerificationEmailSchema = z.object({
+  email: z.string().email("Invalid email address"),
+});
+
+export const getUserEmailStatusSchema = z.object({
+  email: z.string().email("Invalid email address"),
 });
 
 export const userCreateSchema = z.object({

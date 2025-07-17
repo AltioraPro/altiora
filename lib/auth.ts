@@ -4,6 +4,8 @@ import { db } from "@/server/db";
 import { users, sessions, accounts, verifications } from "@/server/db/schema";
 
 export const auth = betterAuth({
+  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+  secret: process.env.BETTER_AUTH_SECRET || "secret-key-development",
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
@@ -15,7 +17,9 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: true,
   },
+
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days
     updateAge: 60 * 60 * 24, // 1 day

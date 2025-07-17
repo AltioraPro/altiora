@@ -66,7 +66,8 @@ export default function RegisterPage() {
           setAuthError(error.message || "Registration error");
         }
       } else if (result?.user) {
-        router.push("/dashboard");
+        // Rediriger vers la page de vérification d'email
+        router.push(`/auth/check-email?email=${encodeURIComponent(data.email)}`);
       }
     } catch (error: unknown) {
       let errorMessage = "Registration error";
