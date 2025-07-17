@@ -40,12 +40,12 @@ export async function sendVerificationEmail({ email }: SendVerificationEmailPara
   });
 
   // Construire l'URL de vérification
-  const baseUrl = process.env.BETTER_AUTH_URL || "http://localhost:3000";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const verificationUrl = `${baseUrl}/auth/verify-email?token=${token}`;
 
   // Envoyer l'email
   await resend.emails.send({
-    from: "Altiora <onboarding@altiora.pro>",
+    from: "Altiora <noreply@resend.dev>",
     to: email,
     subject: "Verify your email address",
     html: `
