@@ -1,5 +1,6 @@
 import BlurText from "@/components/landing/BlurText";
 import ShinyText from "@/components/landing/ShinyText";
+import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { Header } from "@/components/layout/Header";
 import { ArrowRight, TrendingUp, Target, Zap, BarChart3, Clock, Star } from "lucide-react";
@@ -132,6 +133,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <FeaturesSection />
     </>
   );
 }  
