@@ -23,7 +23,7 @@ export const auth = betterAuth({
     requireEmailVerification: true,
     sendResetPassword: async ({ user, url }: { user: { email: string }, url: string }) => {
       await resend.emails.send({
-        from: "Altiora <noreply@resend.dev>",
+        from: "Altiora <noreply@altiora.pro>",
         to: user.email,
         subject: "Reset your password",
         html: `<p>Click <a href="${url}">here</a> to reset your password.</p>`,
@@ -31,7 +31,7 @@ export const auth = betterAuth({
     },
     sendVerificationEmail: async ({ user, url }: { user: { email: string }, url: string }) => {
       await resend.emails.send({
-                 from: "Altiora <noreply@resend.dev>",
+                 from: "Altiora <noreply@altiora.pro>",
         to: user.email,
         subject: "Verify your email address",
         html: `

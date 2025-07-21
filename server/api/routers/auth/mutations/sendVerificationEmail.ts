@@ -45,7 +45,7 @@ export async function sendVerificationEmail({ email }: SendVerificationEmailPara
 
   // Envoyer l'email
   await resend.emails.send({
-    from: "Altiora <noreply@resend.dev>",
+    from: "Altiora <noreply@altiora.pro>",
     to: email,
     subject: "Verify your email address",
     html: `
