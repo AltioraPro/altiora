@@ -199,6 +199,196 @@ body {
 
 
 
+/* SPECTACULAR FOOTER TRANSITION ANIMATIONS */
+@keyframes magneticPull {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(-20px) scale(1.5);
+    opacity: 0.8;
+  }
+  75% {
+    transform: translateY(10px) scale(0.8);
+    opacity: 0.6;
+  }
+}
+
+@keyframes wave {
+  0%, 100% {
+    d: path("M0,60 C150,100 350,0 600,60 C850,120 1050,20 1200,60 L1200,120 L0,120 Z");
+  }
+  50% {
+    d: path("M0,80 C150,20 350,120 600,80 C850,40 1050,100 1200,80 L1200,120 L0,120 Z");
+  }
+}
+
+@keyframes waveReverse {
+  0%, 100% {
+    d: path("M0,80 C200,120 400,40 600,80 C800,120 1000,40 1200,80 L1200,120 L0,120 Z");
+  }
+  50% {
+    d: path("M0,100 C200,40 400,120 600,100 C800,60 1000,120 1200,100 L1200,120 L0,120 Z");
+  }
+}
+
+@keyframes waveAccent {
+  0%, 100% {
+    d: path("M0,50 C150,90 350,-10 600,50 C850,110 1050,10 1200,50");
+    opacity: 0.1;
+  }
+  50% {
+    d: path("M0,70 C150,10 350,110 600,70 C850,30 1050,90 1200,70");
+    opacity: 0.3;
+  }
+}
+
+@keyframes waveTrail {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.2;
+  }
+  25% {
+    transform: translateY(-30px) scale(1.8);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-10px) scale(0.6);
+    opacity: 0.4;
+  }
+  75% {
+    transform: translateY(-20px) scale(1.2);
+    opacity: 0.6;
+  }
+}
+
+@keyframes convergeLine {
+  0%, 100% {
+    transform: scaleX(1) translateY(0);
+    opacity: 0.1;
+  }
+  50% {
+    transform: scaleX(0.3) translateY(-10px);
+    opacity: 0.4;
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.05;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.15;
+  }
+}
+
+@keyframes pulse-reverse {
+  0%, 100% {
+    transform: scale(1.2);
+    opacity: 0.1;
+  }
+  50% {
+    transform: scale(0.8);
+    opacity: 0.2;
+  }
+}
+
+@keyframes pulse-fast {
+  0%, 100% {
+    transform: scale(0.8);
+    opacity: 0.15;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.4;
+  }
+}
+
+/* Apply animations via classes */
+.animate-wave {
+  animation: wave 8s ease-in-out infinite;
+}
+
+.animate-wave-reverse {
+  animation: waveReverse 10s ease-in-out infinite;
+}
+
+.animate-wave-accent {
+  animation: waveAccent 6s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 4s ease-in-out infinite;
+}
+
+.animate-pulse-reverse {
+  animation: pulse-reverse 3s ease-in-out infinite;
+}
+
+.animate-pulse-fast {
+  animation: pulse-fast 2s ease-in-out infinite;
+}
+
+/* SOPHISTICATED BORDER ANIMATIONS */
+@keyframes borderFlow {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(calc(100vw + 100%));
+    opacity: 0;
+  }
+}
+
+@keyframes borderGlow {
+  0%, 100% {
+    transform: translateY(-50%) scale(0.8);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(-50%) scale(1.5);
+    opacity: 0.8;
+  }
+}
+
+/* ELEGANT "WOAW" BORDER ANIMATIONS */
+@keyframes elegantFlow {
+  0%, 100% {
+    transform: translateX(-50%);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateX(calc(100vw - 50%));
+  }
+}
+
+@keyframes breathe {
+  0%, 100% {
+    transform: translateX(-50%) scaleX(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateX(-50%) scaleX(1.5);
+    opacity: 0.6;
+  }
+}
+
 @layer base {
   * {
     @apply border-border;

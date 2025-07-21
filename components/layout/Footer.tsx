@@ -91,7 +91,22 @@ import { useState, useEffect, useRef } from "react";
 
       return (
     <>
-      <footer ref={footerRef} className="relative bg-pure-black text-pure-white overflow-hidden">
+
+      
+              <footer ref={footerRef} className="relative bg-pure-black text-pure-white overflow-hidden">
+          {/* Sophisticated "woaw" border with subtle animation */}
+          <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/12 to-transparent"></div>
+          
+          {/* Elegant flowing accent */}
+          <div className="absolute top-0 left-0 w-full h-px overflow-hidden">
+            <div 
+              className="absolute top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent w-64"
+              style={{
+                animation: 'elegantFlow 12s ease-in-out infinite',
+              }}
+            />
+          </div>
+
             {/* Dynamic background with mouse follow effect */}
             <div 
             className="absolute inset-0 pointer-events-none opacity-30"
