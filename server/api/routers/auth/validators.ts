@@ -12,6 +12,10 @@ export const sendVerificationEmailSchema = z.object({
   email: z.string().email("Invalid email address"),
 });
 
+export const verifyEmailSchema = z.object({
+  token: z.string().min(1, "Token is required"),
+});
+
 export const getUserEmailStatusSchema = z.object({
   email: z.string().email("Invalid email address"),
 });

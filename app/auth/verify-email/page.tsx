@@ -4,12 +4,31 @@ import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CheckCircle, XCircle, Mail, ArrowRight, RefreshCw, AlertTriangle } from "lucide-react";
+import { api } from "@/trpc/client";
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<"loading" | "success" | "error" | "expired">("loading");
   const [message, setMessage] = useState("");
   const [isRetrying, setIsRetrying] = useState(false);
+
+  const verifyEmailMutation = api.auth.verifyEmail.useMutation({
+    onSuccess: (data) => {
+      setStatus("success");
+      setMessage(data.message);
+    },
+    onError: (error) => {
+      const errorMessage = error.message || "";
+      
+      if (errorMessage.includes("expired") || errorMessage.includes("invalid")) {
+        setStatus("expired");
+        setMessage("The verification link has expired or is invalid.");
+      } else {
+        setStatus("error");
+        setMessage("Verification failed. Please try again.");
+      }
+    },
+  });
 
   useEffect(() => {
     const verifyEmail = async () => {
@@ -22,25 +41,10 @@ function VerifyEmailContent() {
       }
 
       try {
-        // TODO: Implement email verification with Better Auth
-        // await authClient.emailVerification.verify({ token });
-        
-        // Simulation for demo
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        setStatus("success");
-        setMessage("Your email has been successfully verified!");
+        await verifyEmailMutation.mutateAsync({ token });
       } catch (error) {
-        // Handle different error types
-        const errorMessage = error instanceof Error ? error.message : "";
-        
-        if (errorMessage.includes("expired") || errorMessage.includes("invalid")) {
-          setStatus("expired");
-          setMessage("The verification link has expired or is invalid.");
-        } else {
-          setStatus("error");
-          setMessage("Verification failed. Please try again.");
-        }
+        // Error handling is done in onError callback
+        console.error("Verification error:", error);
       }
     };
 
