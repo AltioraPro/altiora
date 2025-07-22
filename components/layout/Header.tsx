@@ -294,26 +294,69 @@ export const Header = ({ className = "" }: HeaderProps) => {
                 <div className="ml-2 w-1 h-1 rounded-full bg-white/60 group-hover:w-6 group-hover:h-0.5 transition-all duration-300" />
               </Link>
               
-              {/* Auth Links */}
-              <div className="flex items-center justify-center space-x-6">
-                <Link
-                  href="/auth/login"
-                  onClick={toggleMenu}
-                  className="text-white/60 hover:text-white transition-all duration-300 font-medium font-argesta tracking-wide text-sm group"
-                >
-                  LOGIN
-                  <div className="w-0 h-px bg-white/60 group-hover:w-full transition-all duration-300 mt-1" />
-                </Link>
-                <div className="w-px h-4 bg-white/20" />
-                <Link
-                  href="/auth/register"
-                  onClick={toggleMenu}
-                  className="text-white/60 hover:text-white transition-all duration-300 font-medium font-argesta tracking-wide text-sm group"
-                >
-                  REGISTER
-                  <div className="w-0 h-px bg-white/60 group-hover:w-full transition-all duration-300 mt-1" />
-                </Link>
-              </div>
+              {/* Auth Section - Conditional */}
+              {session?.user ? (
+                /* User Profile Section - Connecté */
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="flex items-center space-x-3 text-white/80">
+                    <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center border border-white/20">
+                      <User className="w-5 h-5" />
+                    </div>
+                    <div className="text-center">
+                      <p className="text-sm font-medium font-argesta tracking-wide">
+                        {session.user.name?.split(' ')[0] || session.user.email.split('@')[0]}
+                      </p>
+                      <p className="text-xs text-white/50 font-argesta">
+                        {session.user.email}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-center space-x-6">
+                    <Link
+                      href="/dashboard"
+                      onClick={toggleMenu}
+                      className="text-white/60 hover:text-white transition-all duration-300 font-medium font-argesta tracking-wide text-sm group"
+                    >
+                      DASHBOARD
+                      <div className="w-0 h-px bg-white/60 group-hover:w-full transition-all duration-300 mt-1" />
+                    </Link>
+                    <div className="w-px h-4 bg-white/20" />
+                    <button
+                      onClick={async () => {
+                        await signOut();
+                        toggleMenu();
+                        window.location.href = "/";
+                      }}
+                      className="text-white/60 hover:text-red-400 transition-all duration-300 font-medium font-argesta tracking-wide text-sm group"
+                    >
+                      LOGOUT
+                      <div className="w-0 h-px bg-red-400/60 group-hover:w-full transition-all duration-300 mt-1" />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                /* Auth Links - Non connecté */
+                <div className="flex items-center justify-center space-x-6">
+                  <Link
+                    href="/auth/login"
+                    onClick={toggleMenu}
+                    className="text-white/60 hover:text-white transition-all duration-300 font-medium font-argesta tracking-wide text-sm group"
+                  >
+                    LOGIN
+                    <div className="w-0 h-px bg-white/60 group-hover:w-full transition-all duration-300 mt-1" />
+                  </Link>
+                  <div className="w-px h-4 bg-white/20" />
+                  <Link
+                    href="/auth/register"
+                    onClick={toggleMenu}
+                    className="text-white/60 hover:text-white transition-all duration-300 font-medium font-argesta tracking-wide text-sm group"
+                  >
+                    REGISTER
+                    <div className="w-0 h-px bg-white/60 group-hover:w-full transition-all duration-300 mt-1" />
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
 
