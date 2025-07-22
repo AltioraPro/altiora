@@ -49,7 +49,7 @@ function VerifyEmailContent() {
     };
 
     verifyEmail();
-  }, [searchParams]);
+  }, [searchParams, verifyEmailMutation]);
 
   const handleRetry = async () => {
     setIsRetrying(true);

@@ -15,6 +15,10 @@ export const Header = ({ className = "" }: HeaderProps) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const { data: session, isPending } = useSession();
 
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
@@ -38,11 +42,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
       window.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isMenuOpen]);
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  }, [isMenuOpen, toggleMenu]);
 
   const menuItems = [
     { href: "/", label: "HOME", icon: Home, angle: -60 },
