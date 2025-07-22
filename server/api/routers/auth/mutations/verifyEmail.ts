@@ -6,8 +6,7 @@ interface VerifyEmailParams {
   token: string;
 }
 
-export async function verifyEmail({ token }: VerifyEmailParams) {
-  // Trouver la vérification avec ce token
+export async function verifyEmail({ token }: VerifyEmailParams) {   
   const verification = await db.select()
     .from(verifications)
     .where(
@@ -24,7 +23,6 @@ export async function verifyEmail({ token }: VerifyEmailParams) {
 
   const verificationData = verification[0];
 
-  // Trouver l'utilisateur correspondant
   const user = await db.select()
     .from(users)
     .where(eq(users.email, verificationData.identifier))
@@ -36,14 +34,11 @@ export async function verifyEmail({ token }: VerifyEmailParams) {
 
   const userData = user[0];
 
-  // Si déjà vérifié, retourner succès
   if (userData.emailVerified) {
-    // Supprimer le token utilisé
     await db.delete(verifications).where(eq(verifications.id, verificationData.id));
     return { success: true, message: "Email already verified", alreadyVerified: true };
   }
 
-  // Mettre à jour le statut de vérification de l'utilisateur
   await db.update(users)
     .set({ 
       emailVerified: true,
@@ -51,7 +46,6 @@ export async function verifyEmail({ token }: VerifyEmailParams) {
     })
     .where(eq(users.id, userData.id));
 
-  // Supprimer le token utilisé
   await db.delete(verifications).where(eq(verifications.id, verificationData.id));
 
   return { 

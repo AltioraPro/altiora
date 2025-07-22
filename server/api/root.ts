@@ -1,23 +1,19 @@
-import { createTRPCRouter, createCallerFactory } from "@/server/api/trpc";
-import { authRouter } from "./routers/auth/router";
+import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
+import { authRouter } from "@/server/api/routers/auth/router";
+import { habitsRouter } from "@/server/api/routers/habits/router";
 
 /**
- * Router principal qui combine tous les sous-routers
- * Ici nous définissons tous les routers de l'application
+ * Router principal de l'API tRPC
  */
 export const appRouter = createTRPCRouter({
   auth: authRouter,
-  // Ici nous ajouterons d'autres routers plus tard :
-  // habits: habitsRouter,
-  // trades: tradesRouter,
-  // goals: goalsRouter,
-  // pomodoro: pomodoroRouter,
+  habits: habitsRouter,
 });
 
-// Export du type pour l'utilisation côté client
+// Export des types
 export type AppRouter = typeof appRouter;
 
 /**
- * Créer un caller server-side pour les Server Components
+ * Créer un caller côté serveur pour l'API tRPC
  */
 export const createCaller = createCallerFactory(appRouter); 

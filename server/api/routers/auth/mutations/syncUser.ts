@@ -16,13 +16,11 @@ export async function syncUser({
   db,
 }: AuthMutationContext<SyncUserInput>) {
   try {
-    // Vérifier si l'utilisateur existe déjà
     const existingUser = await db.query.users.findFirst({
       where: eq(users.id, input.id),
     });
 
     if (existingUser) {
-      // Mettre à jour l'utilisateur existant
       const [updatedUser] = await db
         .update(users)
         .set({
@@ -38,7 +36,6 @@ export async function syncUser({
         ...updatedUser,
       };
     } else {
-      // Créer un nouvel utilisateur
       const newUser: NewUser = {
         id: input.id,
         email: input.email,

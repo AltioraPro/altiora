@@ -1,6 +1,6 @@
     "use client";
 
-import { useState, useEffect, useRef } from "react";
+    import { useState, useEffect, useRef } from "react";
     import Link from "next/link";
     import Image from "next/image";
     import { 
@@ -28,34 +28,34 @@ import { useState, useEffect, useRef } from "react";
     );
 
     export const Footer = () => {
-  const [email, setEmail] = useState("");
-  const [isVisible, setIsVisible] = useState(false);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const footerRef = useRef<HTMLElement>(null);
+    const [email, setEmail] = useState("");
+    const [isVisible, setIsVisible] = useState(false);
+    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+    const footerRef = useRef<HTMLElement>(null);
 
-  useEffect(() => {
+    useEffect(() => {
     const handleScroll = () => {
-      setIsVisible(window.scrollY > 300);
+        setIsVisible(window.scrollY > 300);
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (footerRef.current) {
+        if (footerRef.current) {
         const rect = footerRef.current.getBoundingClientRect();
         setMousePosition({ 
-          x: e.clientX - rect.left, 
-          y: e.clientY - rect.top 
+            x: e.clientX - rect.left, 
+            y: e.clientY - rect.top 
         });
-      }
+        }
     };
 
     window.addEventListener('scroll', handleScroll);
     window.addEventListener('mousemove', handleMouseMove);
-    
+
     return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('scroll', handleScroll);
+        window.removeEventListener('mousemove', handleMouseMove);
     };
-  }, []);
+    }, []);
 
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -89,23 +89,23 @@ import { useState, useEffect, useRef } from "react";
         { href: "https://discord.gg/altiora", label: "Discord", icon: DiscordIcon },
     ];
 
-      return (
+        return (
     <>
 
-      
-              <footer ref={footerRef} className="relative bg-pure-black text-pure-white overflow-hidden">
-          {/* Sophisticated "woaw" border with subtle animation */}
-          <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/12 to-transparent"></div>
-          
-          {/* Elegant flowing accent */}
-          <div className="absolute top-0 left-0 w-full h-px overflow-hidden">
+        
+    <footer ref={footerRef} className="relative bg-pure-black text-pure-white overflow-hidden">
+            {/* Sophisticated "woaw" border with subtle animation */}
+            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/12 to-transparent"></div>
+            
+            {/* Elegant flowing accent */}
+            <div className="absolute top-0 left-0 w-full h-px overflow-hidden">
             <div 
-              className="absolute top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent w-64"
-              style={{
+                className="absolute top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent w-64"
+                style={{
                 animation: 'elegantFlow 12s ease-in-out infinite',
-              }}
+                }}
             />
-          </div>
+            </div>
 
             {/* Dynamic background with mouse follow effect */}
             <div 
@@ -134,7 +134,7 @@ import { useState, useEffect, useRef } from "react";
 
             </div>
 
-            <div className="relative z-10 max-w-7xl mx-auto px-6 py-20">
+            <div className="relative z-10 w-full px-6 lg:px-8 py-20">
             
             {/* Main Footer Content */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">

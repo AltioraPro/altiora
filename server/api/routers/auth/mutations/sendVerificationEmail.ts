@@ -11,7 +11,6 @@ interface SendVerificationEmailParams {
 }
 
 export async function sendVerificationEmail({ email }: SendVerificationEmailParams) {
-  // Vérifier si l'utilisateur existe
   const user = await db.select().from(users).where(eq(users.email, email)).limit(1);
   
   if (!user.length) {
@@ -20,15 +19,12 @@ export async function sendVerificationEmail({ email }: SendVerificationEmailPara
 
   const userData = user[0];
 
-  // Si déjà vérifié, pas besoin de renvoyer
   if (userData.emailVerified) {
     throw new Error("Email already verified");
   }
 
-  // Supprimer les anciennes vérifications pour cet email
   await db.delete(verifications).where(eq(verifications.identifier, email));
 
-  // Créer un nouveau token de vérification
   const token = nanoid();
   const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 heures
 
@@ -39,7 +35,6 @@ export async function sendVerificationEmail({ email }: SendVerificationEmailPara
     expiresAt,
   });
 
-  // Construire l'URL de vérification
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const verificationUrl = `${baseUrl}/auth/verify-email?token=${token}`;
 

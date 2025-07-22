@@ -2,15 +2,17 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import { type FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { headers } from "next/headers";
 
 import { db } from "@/server/db";
+import { auth, type Session } from "@/lib/auth";
 
 /**
  * 1. CONTEXT
  * Créer le contexte utilisé par les procédures tRPC
  */
 interface CreateContextOptions {
-  session: any | null;
+  session: Session | null;
 }
 
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
@@ -21,19 +23,20 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
 };
 
 export const createTRPCContext = async (opts: FetchCreateContextFnOptions) => {
-  // Pour App Router avec fetchRequestHandler, on n'a accès qu'aux headers
-  // L'authentification sera gérée côté client via Clerk
-  const session = null;
+  const session = await auth.api.getSession({
+    headers: opts.req.headers,
+  });
 
   return createInnerTRPCContext({
     session,
   });
 };
 
-// Version spéciale pour les Server Components
-export const createTRPCContextRSC = async (opts?: { headers?: Headers }) => {
-  // Pour les Server Components, pas d'authentification côté serveur
-  const session = null;
+export const createTRPCContextRSC = async () => {
+  const headersList = await headers();
+  const session = await auth.api.getSession({
+    headers: headersList,
+  });
 
   return createInnerTRPCContext({
     session,
@@ -63,14 +66,14 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
  * Middleware pour vérifier l'authentification
  */
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.userId) {
+  if (!ctx.session || !ctx.session.user?.id) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
   return next({
     ctx: {
       // Narrower le contexte - session est maintenant non-nullable
-      session: { ...ctx.session, userId: ctx.session.userId },
+      session: { ...ctx.session, userId: ctx.session.user.id },
       db: ctx.db,
     },
   });

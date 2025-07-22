@@ -70,14 +70,13 @@ export default function LoginPage() {
       });
 
       if (error) {
-        // Si l'erreur est liée à un email non vérifié, rediriger vers check-email
+        // is l'erreur est liée à un email non vérifié, rediriger vers check-email
         if (error.message?.includes("email_not_verified") || error.message?.includes("verify")) {
           router.push(`/auth/check-email?email=${encodeURIComponent(data.email)}`);
           return;
         }
         setAuthError(error.message || "Connection error. Please try again.");
       } else if (result?.user) {
-        // Vérifier si l'email est vérifié
         if (!result.user.emailVerified) {
           router.push(`/auth/check-email?email=${encodeURIComponent(data.email)}`);
           return;

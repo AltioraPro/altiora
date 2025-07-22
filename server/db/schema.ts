@@ -128,7 +128,7 @@ export const verifications = pgTable(
 );
 
 /**
- * Table des habitudes
+ * Habits table
  */
 export const habits = createTable(
   "habit",
@@ -139,8 +139,12 @@ export const habits = createTable(
       .notNull(),
     
     title: varchar("title", { length: 255 }).notNull(),
+    emoji: varchar("emoji", { length: 10 }).notNull(), // Emoji associated with the habit
     description: text("description"),
+    color: varchar("color", { length: 7 }).default("#ffffff"), // Hexadecimal color for personalization
+    targetFrequency: varchar("target_frequency", { length: 20 }).default("daily"), // daily, weekly, monthly
     isActive: boolean("is_active").default(true).notNull(),
+    sortOrder: integer("sort_order").default(0), // For display order
     
     // Timestamps
     createdAt: timestamp("created_at", { withTimezone: true })
@@ -152,6 +156,41 @@ export const habits = createTable(
   },
   (table) => ({
     userIdIdx: index("habit_user_id_idx").on(table.userId),
+    activeIdx: index("habit_active_idx").on(table.isActive),
+  })
+);
+
+/**
+ * Daily habit completions table
+ */
+export const habitCompletions = createTable(
+  "habit_completion",
+  {
+    id: varchar("id", { length: 255 }).primaryKey(),
+    userId: varchar("user_id", { length: 255 })
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    habitId: varchar("habit_id", { length: 255 })
+      .references(() => habits.id, { onDelete: "cascade" })
+      .notNull(),
+    
+    completionDate: varchar("completion_date", { length: 10 }).notNull(), // Format YYYY-MM-DD
+    isCompleted: boolean("is_completed").default(false).notNull(),
+    notes: text("notes"), // Optional notes about the completion
+    
+    // Timestamps
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (table) => ({
+    userIdIdx: index("habit_completion_user_id_idx").on(table.userId),
+    habitIdIdx: index("habit_completion_habit_id_idx").on(table.habitId),
+    dateIdx: index("habit_completion_date_idx").on(table.completionDate),
+    uniqueUserHabitDate: index("habit_completion_unique_idx").on(table.userId, table.habitId, table.completionDate),
   })
 );
 
@@ -200,5 +239,7 @@ export type Verification = typeof verifications.$inferSelect;
 export type NewVerification = typeof verifications.$inferInsert;
 export type Habit = typeof habits.$inferSelect;
 export type NewHabit = typeof habits.$inferInsert;
+export type HabitCompletion = typeof habitCompletions.$inferSelect;
+export type NewHabitCompletion = typeof habitCompletions.$inferInsert;
 export type Trade = typeof trades.$inferSelect;
 export type NewTrade = typeof trades.$inferInsert; 

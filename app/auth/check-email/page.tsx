@@ -31,7 +31,6 @@
     },
   });
 
-  // Vérifier le statut et envoyer l'email uniquement si non vérifié
   useEffect(() => {
     if (emailStatusQuery.data && email) {
       if (!emailStatusQuery.data.exists) {
@@ -44,7 +43,6 @@
         return;
       }
 
-      // Envoyer l'email seulement si pas encore vérifié et pas encore envoyé
       if (!emailSent && !sendVerificationMutation.isPending) {
         sendVerificationMutation.mutate({ email });
       }
@@ -71,7 +69,7 @@
       setTimeLeft(60);
       setCanResend(false);
           } catch {
-        // L'erreur est gérée par onError
+      
       } finally {
       setIsResending(false);
     }
