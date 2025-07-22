@@ -13,12 +13,7 @@ import { createQueryClient } from "./query-client";
  * Utilise cache() pour éviter les appels multiples dans le même rendu
  */
 const createContext = cache(async () => {
-  const heads = new Headers(await headers());
-  heads.set("x-trpc-source", "rsc");
-
-  return createTRPCContextRSC({
-    headers: heads,
-  });
+  return createTRPCContextRSC();
 });
 
 /**

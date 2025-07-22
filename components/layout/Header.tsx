@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Home, Target, TrendingUp, Users, Settings, Phone, LogOut, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,9 +15,9 @@ export const Header = ({ className = "" }: HeaderProps) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const { data: session, isPending } = useSession();
 
-  const toggleMenu = () => {
+  const toggleMenu = useCallback(() => {
     setIsMenuOpen(!isMenuOpen);
-  };
+  }, [isMenuOpen]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
