@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { useHabits } from "./HabitsProvider";
 
 interface ProgressData {
   date: string;
@@ -10,20 +11,116 @@ interface ProgressData {
 
 interface HabitsProgressChartProps {
   data?: ProgressData[];
+  viewMode?: 'today' | 'week' | 'month';
+  habits?: Array<{ id: string; isCompleted: boolean }>;
 }
 
-export function HabitsProgressChart({ data }: HabitsProgressChartProps) {
+export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsProgressChartProps) {
+  const { getOptimisticRecentActivity } = useHabits();
+  
+  // Utiliser les données optimistes
+  const optimisticData = getOptimisticRecentActivity(data, habits);
+
   const chartData = useMemo(() => {
-    if (!data || data.length === 0) return [];
+    if (!optimisticData || optimisticData.length === 0) return [];
     
-    return data.map((item, index) => ({
-      ...item,
-      dayName: new Date(item.date).toLocaleDateString('en-US', { weekday: 'short' }),
-      dayNumber: new Date(item.date).getDate(),
-      isToday: item.date === new Date().toISOString().split('T')[0],
-      trend: index > 0 ? item.completionPercentage - data[index - 1]!.completionPercentage : 0,
-    }));
-  }, [data]);
+    // Trier et filtrer les données selon le viewMode
+    let filteredData = [...optimisticData];
+    
+    if (viewMode === 'week') {
+      // Pour la semaine, commencer par lundi
+      const today = new Date();
+      const monday = new Date(today);
+      const dayOfWeek = today.getDay();
+      const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // 0 = dimanche
+      monday.setDate(today.getDate() - daysToMonday);
+      
+      const mondayStr = monday.toISOString().split('T')[0]!;
+      const sundayStr = new Date(monday.getTime() + 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]!;
+      
+      filteredData = optimisticData.filter(item => 
+        item.date >= mondayStr && item.date <= sundayStr
+      );
+      
+      // Créer des entrées pour tous les jours de la semaine si manquants
+      const weekData = [];
+      for (let i = 0; i < 7; i++) {
+        const date = new Date(monday.getTime() + i * 24 * 60 * 60 * 1000);
+        const dateStr = date.toISOString().split('T')[0]!;
+        const existingData = filteredData.find(item => item.date === dateStr);
+        
+        weekData.push({
+          date: dateStr,
+          completionPercentage: existingData?.completionPercentage || 0,
+          dayName: date.toLocaleDateString('en-US', { weekday: 'short' }),
+          dayNumber: date.getDate(),
+          isToday: dateStr === new Date().toISOString().split('T')[0],
+          trend: 0
+        });
+      }
+      
+      return weekData;
+    }
+    
+    if (viewMode === 'month') {
+      // Pour le mois, commencer par le premier du mois
+      const today = new Date();
+      const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+      const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      
+      const firstDayStr = firstDayOfMonth.toISOString().split('T')[0]!;
+      const lastDayStr = lastDayOfMonth.toISOString().split('T')[0]!;
+      
+      filteredData = optimisticData.filter(item => 
+        item.date >= firstDayStr && item.date <= lastDayStr
+      );
+      
+      // Créer des entrées pour tous les jours du mois si manquants
+      const monthData = [];
+      for (let i = 0; i < lastDayOfMonth.getDate(); i++) {
+        const date = new Date(firstDayOfMonth.getTime() + i * 24 * 60 * 60 * 1000);
+        const dateStr = date.toISOString().split('T')[0]!;
+        const existingData = filteredData.find(item => item.date === dateStr);
+        
+        monthData.push({
+          date: dateStr,
+          completionPercentage: existingData?.completionPercentage || 0,
+          dayName: date.toLocaleDateString('en-US', { weekday: 'short' }),
+          dayNumber: date.getDate(),
+          isToday: dateStr === new Date().toISOString().split('T')[0],
+          trend: 0
+        });
+      }
+      
+      return monthData;
+    }
+    
+    // Pour today, retourner seulement aujourd'hui
+    if (viewMode === 'today') {
+      const today = new Date().toISOString().split('T')[0]!;
+      const todayData = optimisticData.find(item => item.date === today);
+      
+      return [{
+        date: today,
+        completionPercentage: todayData?.completionPercentage || 0,
+        dayName: new Date().toLocaleDateString('en-US', { weekday: 'short' }),
+        dayNumber: new Date().getDate(),
+        isToday: true,
+        trend: 0
+      }];
+    }
+    
+    // Par défaut, retourner les données triées par date
+    return filteredData
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .map((item, index) => ({
+        ...item,
+        dayName: new Date(item.date).toLocaleDateString('en-US', { weekday: 'short' }),
+        dayNumber: new Date(item.date).getDate(),
+        isToday: item.date === new Date().toISOString().split('T')[0],
+        trend: index > 0 ? item.completionPercentage - filteredData[index - 1]!.completionPercentage : 0,
+      }));
+  }, [optimisticData, viewMode]);
 
   const stats = useMemo(() => {
     if (!chartData.length) return { average: 0, trend: 0, bestDay: 0, worstDay: 0 };
@@ -39,11 +136,11 @@ export function HabitsProgressChart({ data }: HabitsProgressChartProps) {
     return { average, trend, bestDay, worstDay };
   }, [chartData]);
 
-  if (!data || data.length === 0) {
+  if (!optimisticData || optimisticData.length === 0) {
     return <HabitsProgressChartSkeleton />;
   }
 
-  const maxHeight = 200;
+  const maxHeight = viewMode === 'month' ? 180 : 140;
   const chartHeight = maxHeight - 40;
 
   return (
@@ -56,7 +153,7 @@ export function HabitsProgressChart({ data }: HabitsProgressChartProps) {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h3 className="text-xl font-bold font-argesta tracking-tight">
-              PROGRESS (LAST 7 DAYS)
+              PROGRESS ({viewMode === 'today' ? 'TODAY' : viewMode === 'week' ? 'LAST 7 DAYS' : 'LAST 30 DAYS'})
             </h3>
             <p className="text-white/60 text-sm mt-1">
               Evolution of your daily discipline
@@ -97,135 +194,72 @@ export function HabitsProgressChart({ data }: HabitsProgressChartProps) {
           {/* Grid Lines */}
           <div className="absolute inset-0 flex flex-col justify-between opacity-20">
             {[100, 75, 50, 25, 0].map((value) => (
-              <div key={value} className="flex items-center">
-                <span className="text-xs text-white/40 font-argesta w-8">
-                  {value}
-                </span>
-                <div className="flex-1 h-px bg-white/10 ml-2" />
-              </div>
+              <div key={value} className="border-t border-white/20" />
             ))}
           </div>
 
-          {/* Chart Container */}
-          <div className="relative ml-10">
-            <svg 
-              width="100%" 
-              height={maxHeight}
-              className="overflow-visible"
-            >
-              {/* Chart Area */}
-              <g>
-                {/* Bars */}
-                {chartData.map((item, index) => {
-                  const barHeight = (item.completionPercentage / 100) * chartHeight;
-                  const barWidth = 32;
-                  const x = index * 60 + 20;
-                  const y = chartHeight - barHeight + 20;
+          {/* Chart Bars */}
+          <div className="relative flex items-end justify-between h-[230px] space-x-2">
+            {chartData.map((item) => {
+              const height = (item.completionPercentage / 100) * chartHeight;
+              const isToday = item.isToday;
+              
+              return (
+                <div key={item.date} className="flex-1 flex flex-col items-center">
+                  {/* Bar */}
+                  <div className="relative w-full flex justify-center">
+                    <div
+                      className={`w-full max-w-8 rounded-t-lg transition-all duration-300 ease-out ${
+                        isToday 
+                          ? "bg-gradient-to-t from-green-500 to-green-400 shadow-lg shadow-green-500/25" 
+                          : "bg-white/20 hover:bg-white/30"
+                      }`}
+                      style={{ height: `${height}px` }}
+                    />
+                  </div>
                   
-                  return (
-                    <g key={item.date}>
-                      {/* Bar */}
-                      <rect
-                        x={x}
-                        y={y}
-                        width={barWidth}
-                        height={barHeight}
-                        rx={4}
-                        className={`transition-all duration-500 ${
-                          item.isToday
-                            ? "fill-white"
-                            : item.completionPercentage === 100
-                            ? "fill-green-500"
-                            : item.completionPercentage >= 75
-                            ? "fill-white/80"
-                            : item.completionPercentage >= 50
-                            ? "fill-white/60"
-                            : "fill-white/40"
-                        }`}
-                        style={{
-                          animationDelay: `${index * 100}ms`,
-                        }}
-                      />
-                      
-                      {/* Percentage Label */}
-                      <text
-                        x={x + barWidth / 2}
-                        y={y - 8}
-                        textAnchor="middle"
-                        className="fill-white/80 text-xs font-argesta"
-                      >
-                        {item.completionPercentage}%
-                      </text>
-                      
-                      {/* Day Label */}
-                      <text
-                        x={x + barWidth / 2}
-                        y={chartHeight + 40}
-                        textAnchor="middle"
-                        className={`text-xs font-argesta ${
-                          item.isToday ? "fill-white font-bold" : "fill-white/60"
-                        }`}
-                      >
-                        {item.dayName.toUpperCase()}
-                      </text>
-                      
-                      {/* Date */}
-                      <text
-                        x={x + barWidth / 2}
-                        y={chartHeight + 55}
-                        textAnchor="middle"
-                        className="fill-white/40 text-xs font-argesta"
-                      >
-                        {item.dayNumber}
-                      </text>
-                      
-                      {/* Today Indicator */}
-                      {item.isToday && (
-                        <circle
-                          cx={x + barWidth / 2}
-                          cy={y - 20}
-                          r={3}
-                          className="fill-white animate-pulse"
-                        />
-                      )}
-                    </g>
-                  );
-                })}
-                
-                {/* Trend Line */}
-                <path
-                  d={`M ${chartData.map((item, index) => {
-                    const x = index * 60 + 20 + 16; // Center of bar
-                    const y = chartHeight - (item.completionPercentage / 100) * chartHeight + 20;
-                    return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
-                  }).join(' ')}`}
-                  stroke="white"
-                  strokeWidth="2"
-                  strokeOpacity="0.6"
-                  fill="none"
-                  strokeDasharray="4 4"
-                  className="animate-pulse"
-                />
-              </g>
-            </svg>
+                  {/* Day Label */}
+                  <div className="mt-2 text-center">
+                    <div className={`text-xs font-argesta ${
+                      isToday ? "text-green-400 font-bold" : "text-white/60"
+                    }`}>
+                      {item.dayName}
+                    </div>
+                    <div className={`text-xs ${
+                      isToday ? "text-green-400" : "text-white/40"
+                    }`}>
+                      {item.dayNumber}
+                    </div>
+                  </div>
+                  
+                  {/* Percentage */}
+                  <div className="mt-1 text-center">
+                    <div className={`text-xs font-argesta ${
+                      isToday ? "text-green-400" : "text-white/50"
+                    }`}>
+                      {Math.round(item.completionPercentage)}%
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        {/* Legend */}
-        <div className="mt-6 pt-6 border-t border-white/10 flex items-center justify-between text-sm">
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-green-500 rounded" />
-              <span className="text-white/60 font-argesta">100% COMPLETED</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-white rounded" />
-              <span className="text-white/60 font-argesta">TODAY</span>
+        {/* Additional Stats */}
+        <div className="mt-6 pt-6 border-t border-white/10 grid grid-cols-2 gap-4 text-sm">
+          <div className="text-center">
+            <div className="text-white/60 font-argesta">BEST DAY</div>
+            <div className="text-lg font-bold font-argesta text-green-400">
+              {Math.round(stats.bestDay)}%
             </div>
           </div>
           
-          <div className="text-white/40 font-argesta">
-            Best: {stats.bestDay}% • Worst: {stats.worstDay}%
+          <div className="text-center">
+            <div className="text-white/60 font-argesta">WORST DAY</div>
+            <div className="text-lg font-bold font-argesta text-red-400">
+              {Math.round(stats.worstDay)}%
+            </div>
           </div>
         </div>
       </div>

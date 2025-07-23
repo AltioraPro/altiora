@@ -6,7 +6,9 @@ import {
   updateHabitValidator, 
   deleteHabitValidator,
   toggleHabitCompletionValidator,
-  getHabitStatsValidator 
+  getHabitStatsValidator,
+  getHabitsPaginatedValidator,
+  getDashboardValidator
 } from "./validators";
 import { 
   createHabit, 
@@ -18,7 +20,8 @@ import {
   getUserHabits, 
   getDailyStats, 
   getHabitStats, 
-  getHabitsDashboard 
+  getHabitsDashboard,
+  getHabitsPaginated
 } from "./queries";
 
 export const habitsRouter = createTRPCRouter({
@@ -28,9 +31,16 @@ export const habitsRouter = createTRPCRouter({
       return await getUserHabits(ctx.session.userId);
     }),
 
+  getPaginated: protectedProcedure
+    .input(getHabitsPaginatedValidator)
+    .query(async ({ ctx, input }) => {
+      return await getHabitsPaginated(ctx.session.userId, input);
+    }),
+
   getDashboard: protectedProcedure
-    .query(async ({ ctx }) => {
-      return await getHabitsDashboard(ctx.session.userId);
+    .input(getDashboardValidator)
+    .query(async ({ ctx, input }) => {
+      return await getHabitsDashboard(ctx.session.userId, input);
     }),
 
   getDailyStats: protectedProcedure

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { api } from "@/trpc/client";
 import { Check, Circle } from "lucide-react";
 import type { DailyHabitStats } from "@/server/api/routers/habits/types";
+import { useHabits } from "./HabitsProvider";
 
 interface TodayHabitsCardProps {
   data?: DailyHabitStats;
@@ -11,7 +11,15 @@ interface TodayHabitsCardProps {
 
 export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
   const utils = api.useUtils();
-  const [optimisticUpdates, setOptimisticUpdates] = useState<Record<string, boolean>>({});
+  const { 
+    optimisticUpdates, 
+    setOptimisticUpdate, 
+    clearOptimisticUpdate,
+    getOptimisticTodayStats 
+  } = useHabits();
+
+  // Utiliser les données optimistes calculées par le contexte
+  const optimisticData = getOptimisticTodayStats(data);
 
   const toggleCompletion = api.habits.toggleCompletion.useMutation({
     onMutate: async ({ habitId, isCompleted }) => {
@@ -19,79 +27,80 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
       
       const previousData = utils.habits.getDashboard.getData();
       
-      setOptimisticUpdates(prev => ({ ...prev, [habitId]: isCompleted }));
+      // Mise à jour optimiste immédiate via le contexte
+      setOptimisticUpdate(habitId, isCompleted);
       
-        if (previousData) {
-          const updatedTodayStats = {
-            ...previousData.todayStats,
-            habits: previousData.todayStats.habits.map(habit => 
-              habit.id === habitId 
-                ? { ...habit, isCompleted }
-                : habit
-            )
-          };
-          
-          const completedHabits = updatedTodayStats.habits.filter(h => h.isCompleted).length;
-          const totalHabits = updatedTodayStats.habits.length;
-          const completionPercentage = totalHabits > 0 ? Math.round((completedHabits / totalHabits) * 100) : 0;
-          
-          updatedTodayStats.completedHabits = completedHabits;
-          updatedTodayStats.completionPercentage = completionPercentage;
-          
-          const updatedHabits = previousData.habits.map(habit => {
-            if (habit.id === habitId) {
-              const currentCompletions = habit.completions || [];
-              const today = new Date().toISOString().split('T')[0]!;
-              
-              const todayCompletionIndex = currentCompletions.findIndex(c => c.completionDate === today);
-              
-              let updatedCompletions;
-              if (todayCompletionIndex >= 0) {
-                updatedCompletions = currentCompletions.map(c => 
-                  c.completionDate === today 
-                    ? { ...c, isCompleted }
-                    : c
-                );
-              } else {
-                updatedCompletions = [
-                  ...currentCompletions,
-                  {
-                    id: `temp-completion-${Date.now()}`,
-                    userId: habit.userId,
-                    habitId: habit.id,
-                    completionDate: today,
-                    isCompleted,
-                    notes: null,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                  }
-                ];
-              }
-              
-              const completedCount = updatedCompletions.filter(c => c.isCompleted).length;
-              const newCompletionRate = updatedCompletions.length > 0 ? (completedCount / updatedCompletions.length) * 100 : 0;
-              
-              return {
-                ...habit,
-                completions: updatedCompletions,
-                completionRate: newCompletionRate,
-              };
+      if (previousData) {
+        const updatedTodayStats = {
+          ...previousData.todayStats,
+          habits: previousData.todayStats.habits.map(habit => 
+            habit.id === habitId 
+              ? { ...habit, isCompleted }
+              : habit
+          )
+        };
+        
+        const completedHabits = updatedTodayStats.habits.filter(h => h.isCompleted).length;
+        const totalHabits = updatedTodayStats.habits.length;
+        const completionPercentage = totalHabits > 0 ? Math.round((completedHabits / totalHabits) * 100) : 0;
+        
+        updatedTodayStats.completedHabits = completedHabits;
+        updatedTodayStats.completionPercentage = completionPercentage;
+        
+        const updatedHabits = previousData.habits.map(habit => {
+          if (habit.id === habitId) {
+            const currentCompletions = habit.completions || [];
+            const today = new Date().toISOString().split('T')[0]!;
+            
+            const todayCompletionIndex = currentCompletions.findIndex(c => c.completionDate === today);
+            
+            let updatedCompletions;
+            if (todayCompletionIndex >= 0) {
+              updatedCompletions = currentCompletions.map(c => 
+                c.completionDate === today 
+                  ? { ...c, isCompleted }
+                  : c
+              );
+            } else {
+              updatedCompletions = [
+                ...currentCompletions,
+                {
+                  id: `temp-completion-${Date.now()}`,
+                  userId: habit.userId,
+                  habitId: habit.id,
+                  completionDate: today,
+                  isCompleted,
+                  notes: null,
+                  createdAt: new Date(),
+                  updatedAt: new Date(),
+                }
+              ];
             }
-            return habit;
-          });
-          
-          const today = new Date().toISOString().split('T')[0]!;
-          const updatedRecentActivity = previousData.recentActivity.map(activity => 
-            activity.date === today 
-              ? { ...activity, completionPercentage }
-              : activity
-          );
-          
-          const updatedWeeklyStats = previousData.stats.weeklyStats.map(stat => 
-            stat.date === today 
-              ? { ...stat, completedHabits, totalHabits, completionPercentage }
-              : stat
-          );
+            
+            const completedCount = updatedCompletions.filter(c => c.isCompleted).length;
+            const newCompletionRate = updatedCompletions.length > 0 ? (completedCount / updatedCompletions.length) * 100 : 0;
+            
+            return {
+              ...habit,
+              completions: updatedCompletions,
+              completionRate: newCompletionRate,
+            };
+          }
+          return habit;
+        });
+        
+        const today = new Date().toISOString().split('T')[0]!;
+        const updatedRecentActivity = previousData.recentActivity.map(activity => 
+          activity.date === today 
+            ? { ...activity, completionPercentage }
+            : activity
+        );
+        
+        const updatedWeeklyStats = previousData.stats.weeklyStats.map(stat => 
+          stat.date === today 
+            ? { ...stat, completedHabits, totalHabits, completionPercentage }
+            : stat
+        );
 
         const newData = {
           ...previousData,
@@ -105,22 +114,22 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
         };
         
         utils.habits.getDashboard.setData(undefined, newData);
-        }
+      }
       
       return { previousData };
     },
     onError: (error, variables, context) => {
-      setOptimisticUpdates(prev => {
-        const newState = { ...prev };
-        delete newState[variables.habitId];
-        return newState;
-      });
+      // Nettoyer les optimistic updates en cas d'erreur
+      clearOptimisticUpdate(variables.habitId);
       
       if (context?.previousData) {
         utils.habits.getDashboard.setData(undefined, context.previousData);
       }
       
       console.error("Error toggle completion:", error);
+    },
+    onSuccess: () => {
+      // Les optimistic updates sont nettoyées automatiquement par le contexte
     },
     onSettled: () => {
       utils.habits.getDashboard.invalidate();
@@ -141,11 +150,11 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
     });
   };
 
-  if (!data) {
+  if (!optimisticData) {
     return <TodayHabitsCardSkeleton />;
   }
 
-  const { habits, completionPercentage, completedHabits, totalHabits } = data;
+  const { habits, completionPercentage, completedHabits, totalHabits } = optimisticData;
 
   return (
     <div className="bg-white/5 rounded-2xl border border-white/10 backdrop-blur-sm relative overflow-hidden">
@@ -208,7 +217,7 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
                   strokeLinecap="round"
                   strokeDasharray={`${2 * Math.PI * 28}`}
                   strokeDashoffset={`${2 * Math.PI * 28 * (1 - completionPercentage / 100)}`}
-                  className="transition-all duration-500 ease-out"
+                  className="transition-all duration-300 ease-out"
                 />
               </svg>
               
@@ -236,20 +245,21 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
             </div>
           ) : (
             habits.map((habit) => {
-              const isCompleted = optimisticUpdates[habit.id] ?? habit.isCompleted;
+              const isCompleted = habit.isCompleted;
+              const isOptimistic = optimisticUpdates[habit.id] !== undefined;
               
               return (
                 <div
                   key={habit.id}
-                  className={`flex items-center space-x-4 p-4 rounded-xl border transition-all duration-300 ${
+                  className={`flex items-center space-x-4 p-4 rounded-xl border transition-all duration-200 ${
                     isCompleted
                       ? "bg-green-500/10 border-green-500/30"
                       : "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20"
-                  }`}
+                  } ${isOptimistic ? "opacity-80" : ""}`}
                 >
                   {/* Emoji */}
                   <div className="relative">
-                    <div className={`text-2xl select-none transition-all duration-300 ${
+                    <div className={`text-2xl select-none transition-all duration-200 ${
                       isCompleted ? "scale-110" : ""
                     }`}>
                       {habit.emoji}
@@ -263,7 +273,7 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
 
                   {/* Habit Info */}
                   <div className="flex-1">
-                    <h4 className={`font-argesta font-medium transition-all duration-300 ${
+                    <h4 className={`font-argesta font-medium transition-all duration-200 ${
                       isCompleted ? "text-green-300 line-through" : "text-white"
                     }`}>
                       {habit.title}
@@ -277,7 +287,7 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
                   <button
                     onClick={() => handleToggleHabit(habit.id, isCompleted)}
                     disabled={toggleCompletion.isPending || habit.id.startsWith('temp-')}
-                    className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-300 hover:scale-110 disabled:opacity-50 ${
+                    className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-200 hover:scale-110 disabled:opacity-50 ${
                       habit.id.startsWith('temp-')
                         ? "border-white/20 bg-white/5 cursor-not-allowed"
                         : isCompleted

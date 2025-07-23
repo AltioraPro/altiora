@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { eq, and, gte, desc, asc } from "drizzle-orm";
+import { eq, and, gte, desc, asc, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import { db } from "@/server/db";
@@ -9,46 +9,66 @@ import type {
   HabitWithCompletions, 
   DailyHabitStats, 
   HabitStatsOverview,
-  HabitsDashboardData 
+  HabitsDashboardData,
+  PaginatedResponse 
 } from "../types";
-
+import { inArray } from "drizzle-orm";
 
 export const getUserHabits = async (userId: string): Promise<HabitWithCompletions[]> => {
   try {
-    const userHabits = await db
-      .select()
-      .from(habits)
-      .where(and(eq(habits.userId, userId), eq(habits.isActive, true)))
-      .orderBy(asc(habits.sortOrder), asc(habits.createdAt));
-
     const today = new Date();
     const thirtyDaysAgo = new Date(today);
     thirtyDaysAgo.setDate(today.getDate() - 30);
+    const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split('T')[0]!;
 
-    const habitsWithCompletions: HabitWithCompletions[] = await Promise.all(
-      userHabits.map(async (habit) => {
-        const completions = await db
-          .select()
-          .from(habitCompletions)
-          .where(
-            and(
-              eq(habitCompletions.userId, userId),
-              eq(habitCompletions.habitId, habit.id),
-              gte(habitCompletions.completionDate, thirtyDaysAgo.toISOString().split('T')[0]!)
-            )
-          )
-          .orderBy(desc(habitCompletions.completionDate));
-
-        const completedCount = completions.filter(c => c.isCompleted).length;
-        const completionRate = completions.length > 0 ? (completedCount / completions.length) * 100 : 0;
-
-        return {
-          ...habit,
-          completions,
-          completionRate,
-        };
+    // Requête unique avec LEFT JOIN pour récupérer habits + completions (plus optimisée imo)
+    const habitsWithCompletionsData = await db
+      .select({
+        habit: habits,
+        completion: habitCompletions
       })
-    );
+      .from(habits)
+      .leftJoin(
+        habitCompletions,
+        and(
+          eq(habits.id, habitCompletions.habitId),
+          eq(habitCompletions.userId, userId),
+          gte(habitCompletions.completionDate, thirtyDaysAgoStr)
+        )
+      )
+      .where(and(eq(habits.userId, userId), eq(habits.isActive, true)))
+      .orderBy(asc(habits.sortOrder), asc(habits.createdAt), desc(habitCompletions.completionDate));
+
+    // Grouper les résultats par habitude
+    const habitsMap = new Map<string, HabitWithCompletions>();
+    
+    for (const row of habitsWithCompletionsData) {
+      const habitId = row.habit.id;
+      
+      if (!habitsMap.has(habitId)) {
+        habitsMap.set(habitId, {
+          ...row.habit,
+          completions: [],
+          completionRate: 0,
+        });
+      }
+      
+      if (row.completion) {
+        const habit = habitsMap.get(habitId)!;
+        habit.completions.push(row.completion);
+      }
+    }
+
+    // Calculer les taux de completion
+    const habitsWithCompletions: HabitWithCompletions[] = Array.from(habitsMap.values()).map(habit => {
+      const completedCount = habit.completions.filter(c => c.isCompleted).length;
+      const completionRate = habit.completions.length > 0 ? (completedCount / habit.completions.length) * 100 : 0;
+      
+      return {
+        ...habit,
+        completionRate,
+      };
+    });
 
     return habitsWithCompletions;
   } catch (error) {
@@ -60,37 +80,72 @@ export const getUserHabits = async (userId: string): Promise<HabitWithCompletion
   }
 };
 
+
 export const getDailyStats = async (userId: string, date: string): Promise<DailyHabitStats> => {
   try {
-    const userHabits = await db
-      .select()
-      .from(habits)
-      .where(and(eq(habits.userId, userId), eq(habits.isActive, true)));
-
-    const completions = await db
-      .select()
-      .from(habitCompletions)
-      .where(
-        and(
-          eq(habitCompletions.userId, userId),
-          eq(habitCompletions.completionDate, date)
+    // Requête unique avec agrégation SQL - ne compte que les habitudes qui existaient à cette date
+    const [statsResult, habitsData] = await Promise.all([
+      // Agrégation des statistiques en SQL
+      db
+        .select({
+          totalHabits: sql<number>`count(distinct ${habits.id})`,
+          completedHabits: sql<number>`count(case when ${habitCompletions.isCompleted} = true then 1 end)`,
+        })
+        .from(habits)
+        .leftJoin(
+          habitCompletions,
+          and(
+            eq(habits.id, habitCompletions.habitId),
+            eq(habitCompletions.userId, userId),
+            eq(habitCompletions.completionDate, date)
+          )
         )
-      );
+        .where(
+          and(
+            eq(habits.userId, userId), 
+            eq(habits.isActive, true),
+            sql`${habits.createdAt}::date <= ${date}::date` // Seulement les habitudes créées avant ou à cette date
+          )
+        ),
+      
+      // Récupération des habitudes avec leur statut pour cette date
+      db
+        .select({
+          habit: habits,
+          completion: habitCompletions
+        })
+        .from(habits)
+        .leftJoin(
+          habitCompletions,
+          and(
+            eq(habits.id, habitCompletions.habitId),
+            eq(habitCompletions.userId, userId),
+            eq(habitCompletions.completionDate, date)
+          )
+        )
+        .where(
+          and(
+            eq(habits.userId, userId), 
+            eq(habits.isActive, true),
+            sql`${habits.createdAt}::date <= ${date}::date` // Seulement les habitudes créées avant ou à cette date
+          )
+        )
+        .orderBy(asc(habits.sortOrder))
+    ]);
 
-    const habitStats = userHabits.map(habit => {
-      const completion = completions.find(c => c.habitId === habit.id);
-      return {
-        id: habit.id,
-        title: habit.title,
-        emoji: habit.emoji,
-        isCompleted: completion?.isCompleted ?? false,
-        notes: completion?.notes ?? undefined,
-      };
-    });
-
-    const completedHabits = habitStats.filter(h => h.isCompleted).length;
-    const totalHabits = habitStats.length;
+    const stats = statsResult[0]!;
+    const totalHabits = Number(stats.totalHabits);
+    const completedHabits = Number(stats.completedHabits);
     const completionPercentage = totalHabits > 0 ? Math.round((completedHabits / totalHabits) * 100) : 0;
+
+    // Construire les stats des habitudes
+    const habitStats = habitsData.map(row => ({
+      id: row.habit.id,
+      title: row.habit.title,
+      emoji: row.habit.emoji,
+      isCompleted: row.completion?.isCompleted ?? false,
+      notes: row.completion?.notes ?? undefined,
+    }));
 
     return {
       date,
@@ -146,54 +201,95 @@ export const getHabitStats = async (
         daysToFetch = 30;
     }
 
-    const activeHabits = await db
-      .select()
+    const startDateStr = startDate.toISOString().split('T')[0]!;
+
+    // Requête unique avec agrégation SQL pour les statistiques globales
+    const statsResult = await db
+      .select({
+        totalActiveHabits: sql<number>`count(distinct ${habits.id})`,
+        totalCompletions: sql<number>`count(case when ${habitCompletions.isCompleted} = true then 1 end)`,
+        totalPossibleCompletions: sql<number>`count(distinct ${habits.id}) * ${daysToFetch}`,
+      })
       .from(habits)
-      .where(and(eq(habits.userId, userId), eq(habits.isActive, true)));
-
-    const totalActiveHabits = activeHabits.length;
-
-    const completions = await db
-      .select()
-      .from(habitCompletions)
-      .where(
+      .leftJoin(
+        habitCompletions,
         and(
+          eq(habits.id, habitCompletions.habitId),
           eq(habitCompletions.userId, userId),
-          gte(habitCompletions.completionDate, startDate.toISOString().split('T')[0]!)
+          gte(habitCompletions.completionDate, startDateStr)
         )
       )
-      .orderBy(desc(habitCompletions.completionDate));
+      .where(
+        and(
+          eq(habits.userId, userId), 
+          eq(habits.isActive, true),
+          sql`${habits.createdAt}::date <= ${startDateStr}::date` // Seulement les habitudes qui existaient au début de la période
+        )
+      );
 
-    const weeklyStats: DailyHabitStats[] = [];
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date(today);
-      date.setDate(today.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0]!;
-      
-      const dailyStats = await getDailyStats(userId, dateStr);
-      weeklyStats.push(dailyStats);
-    }
-
-    const totalPossibleCompletions = daysToFetch * totalActiveHabits;
-    const totalCompletions = completions.filter(c => c.isCompleted).length;
+    const stats = statsResult[0]!;
+    const totalActiveHabits = Number(stats.totalActiveHabits);
+    const totalCompletions = Number(stats.totalCompletions);
+    const totalPossibleCompletions = Number(stats.totalPossibleCompletions);
     const averageCompletionRate = totalPossibleCompletions > 0 
       ? Math.round((totalCompletions / totalPossibleCompletions) * 100) 
       : 0;
 
+    // single request
+    const weeklyStats: DailyHabitStats[] = [];
+    const weeklyStatsPromises = [];
+    
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0]!;
+      weeklyStatsPromises.push(getDailyStats(userId, dateStr));
+    }
+    
+    const weeklyStatsResults = await Promise.all(weeklyStatsPromises);
+    weeklyStats.push(...weeklyStatsResults);
+
     const { currentStreak, longestStreak } = calculateStreaks(weeklyStats);
 
-    const monthlyProgress: Array<{ date: string; completionPercentage: number }> = [];
+    const monthlyProgressPromises = [];
     for (let i = 29; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(today.getDate() - i);
       const dateStr = date.toISOString().split('T')[0]!;
       
-      const dailyStats = await getDailyStats(userId, dateStr);
-      monthlyProgress.push({
-        date: dateStr,
-        completionPercentage: dailyStats.completionPercentage,
-      });
+      monthlyProgressPromises.push(
+        db
+          .select({
+            date: sql<string>`${dateStr}`,
+            completionPercentage: sql<number>`case 
+              when count(distinct ${habits.id}) = 0 then 0
+              else round((count(case when ${habitCompletions.isCompleted} = true then 1 end) * 100.0) / count(distinct ${habits.id}))
+            end`
+          })
+          .from(habits)
+          .leftJoin(
+            habitCompletions,
+            and(
+              eq(habits.id, habitCompletions.habitId),
+              eq(habitCompletions.userId, userId),
+              eq(habitCompletions.completionDate, dateStr)
+            )
+          )
+          .where(
+            and(
+              eq(habits.userId, userId), 
+              eq(habits.isActive, true),
+              sql`${habits.createdAt}::date <= ${dateStr}::date` // Seulement les habitudes créées avant ou à cette date
+            )
+          )
+      );
     }
+    
+    const monthlyProgressResults = await Promise.all(monthlyProgressPromises);
+    const monthlyProgress = monthlyProgressResults.map(result => ({
+      date: result[0]!.date,
+      completionPercentage: Number(result[0]!.completionPercentage),
+    }));
 
     return {
       totalActiveHabits,
@@ -212,40 +308,180 @@ export const getHabitStats = async (
   }
 };
 
-export const getHabitsDashboard = async (userId: string): Promise<HabitsDashboardData> => {
+export const getHabitsDashboard = async (
+  userId: string, 
+  params?: { viewMode: 'today' | 'week' | 'month' }
+): Promise<HabitsDashboardData> => {
   try {
+    const { viewMode = 'today' } = params || {};
     const today = new Date().toISOString().split('T')[0]!;
     
+    // Requêtes principales en parallèle
     const [todayStats, habits, stats] = await Promise.all([
       getDailyStats(userId, today),
       getUserHabits(userId),
       getHabitStats(userId, { period: "month" }),
     ]);
 
-    const recentActivity: Array<{ date: string; completionPercentage: number }> = [];
-    for (let i = 6; i >= 0; i--) {
+    // Calcul des activités récentes selon le mode de vue
+    const recentActivityPromises = [];
+    const daysToFetch = viewMode === 'today' ? 1 : viewMode === 'week' ? 7 : 30;
+    
+    for (let i = daysToFetch - 1; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
       const dateStr = date.toISOString().split('T')[0]!;
       
-      const dailyStats = await getDailyStats(userId, dateStr);
-      recentActivity.push({
-        date: dateStr,
-        completionPercentage: dailyStats.completionPercentage,
-      });
+      recentActivityPromises.push(getDailyStats(userId, dateStr));
     }
+    
+    const recentActivityResults = await Promise.all(recentActivityPromises);
+    const recentActivity = recentActivityResults.map(result => ({
+      date: result.date,
+      completionPercentage: result.completionPercentage,
+    }));
 
+    // Adapter les données selon le mode de vue
+    const adaptedTodayStats = todayStats;
+    let adaptedRecentActivity = recentActivity;
+    
+    if (viewMode === 'today') {
+      // Pour le mode "today", on ne montre que les données d'aujourd'hui
+      adaptedRecentActivity = recentActivity.slice(-1);
+    } else if (viewMode === 'week') {
+      // Pour le mode "week", on montre les 7 derniers jours
+      adaptedRecentActivity = recentActivity.slice(-7);
+    }
+    // Pour le mode "month", on garde tous les 30 jours
+    
     return {
-      todayStats,
+      todayStats: adaptedTodayStats,
       habits,
       stats,
-      recentActivity,
+      recentActivity: adaptedRecentActivity,
     };
   } catch (error) {
     console.error("Error getHabitsDashboard:", error);
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
       message: "Failed to fetch dashboard",
+    });
+  }
+};
+
+// 11. OPTIMISATION: Pagination des habitudes
+export const getHabitsPaginated = async (
+  userId: string,
+  params: {
+    page: number;
+    limit: number;
+    sortBy: 'title' | 'createdAt' | 'sortOrder';
+    sortOrder: 'asc' | 'desc';
+    search?: string;
+    showInactive?: boolean;
+  }
+): Promise<PaginatedResponse<HabitWithCompletions>> => {
+  try {
+    const { page, limit, sortBy, sortOrder, search, showInactive = false } = params;
+    const offset = page * limit;
+
+    // Construire les conditions de recherche
+    const whereConditions = [eq(habits.userId, userId)];
+    
+    // Filtrer par statut actif/inactif
+    if (!showInactive) {
+      whereConditions.push(eq(habits.isActive, true));
+    }
+    
+    if (search) {
+      whereConditions.push(
+        sql`(${habits.title} ILIKE ${`%${search}%`} OR ${habits.description} ILIKE ${`%${search}%`})`
+      );
+    }
+
+    // Requête pour le total
+    const totalResult = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(habits)
+      .where(and(...whereConditions));
+
+    const total = Number(totalResult[0]?.count || 0);
+
+    // Requête pour les données paginées
+    const sortColumn = sortBy === 'title' ? habits.title : 
+                      sortBy === 'createdAt' ? habits.createdAt : 
+                      habits.sortOrder;
+
+    const sortDirection = sortOrder === 'desc' ? desc : asc;
+
+    const habitsData = await db
+      .select()
+      .from(habits)
+      .where(and(...whereConditions))
+      .orderBy(sortDirection(sortColumn), asc(habits.createdAt))
+      .limit(limit)
+      .offset(offset);
+
+    // Récupérer les complétions pour ces habitudes (optimisé avec une seule requête)
+    const habitIds = habitsData.map(h => h.id);
+    
+    const today = new Date();
+    const thirtyDaysAgo = new Date(today);
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+    const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split('T')[0]!;
+
+    const completionsData = await db
+      .select()
+      .from(habitCompletions)
+      .where(
+        and(
+          eq(habitCompletions.userId, userId),
+          inArray(habitCompletions.habitId, habitIds),
+          gte(habitCompletions.completionDate, thirtyDaysAgoStr)
+        )
+      )
+      .orderBy(desc(habitCompletions.completionDate));
+
+    // Grouper les complétions par habitude
+    const completionsMap = new Map<string, typeof habitCompletions.$inferSelect[]>();
+    for (const completion of completionsData) {
+      if (!completionsMap.has(completion.habitId)) {
+        completionsMap.set(completion.habitId, []);
+      }
+      completionsMap.get(completion.habitId)!.push(completion);
+    }
+
+    // Construire la réponse finale
+    const habitsWithCompletions: HabitWithCompletions[] = habitsData.map(habit => {
+      const completions = completionsMap.get(habit.id) || [];
+      const completedCount = completions.filter(c => c.isCompleted).length;
+      const completionRate = completions.length > 0 ? (completedCount / completions.length) * 100 : 0;
+
+      return {
+        ...habit,
+        completions,
+        completionRate,
+      };
+    });
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data: habitsWithCompletions,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext: page < totalPages - 1,
+        hasPrev: page > 0,
+      },
+    };
+  } catch (error) {
+    console.error("Error getHabitsPaginated:", error);
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to fetch paginated habits",
     });
   }
 };

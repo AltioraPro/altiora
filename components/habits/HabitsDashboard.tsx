@@ -11,7 +11,6 @@ import { EditHabitModal } from "./EditHabitModal";
 import { Plus } from "lucide-react";
 
 import { Header } from "../layout/Header";
-import { Footer } from "../layout/Footer";
 
 export function HabitsDashboard() {
   const { 
@@ -20,7 +19,9 @@ export function HabitsDashboard() {
     setViewMode,
   } = useHabits();
 
-  const { data: dashboardData, isLoading, error } = api.habits.getDashboard.useQuery();
+  const { data: dashboardData, isLoading, error } = api.habits.getDashboard.useQuery({
+    viewMode
+  });
 
   if (isLoading) {
     return <HabitsDashboardSkeleton />;
@@ -45,7 +46,7 @@ export function HabitsDashboard() {
   return (
     <>
     <Header />
-    <div className="space-y-8 mb-16">
+    <div className="space-y-6 mb-16">
       {/* Top Actions */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
@@ -79,24 +80,25 @@ export function HabitsDashboard() {
         </button>
       </div>
 
-      {/* Dashboard Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left Column - Today's Habits */}
+      {/* Bento Grid Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Colonne gauche: Today's Habits + Progress */}
         <div className="lg:col-span-8 space-y-6">
-          {/* Today's Habits Card */}
           <TodayHabitsCard data={dashboardData?.todayStats} />
-          
-          {/* Progress Chart */}
-          <HabitsProgressChart data={dashboardData?.recentActivity} />
+          <HabitsProgressChart 
+            data={dashboardData?.recentActivity} 
+            viewMode={viewMode} 
+            habits={dashboardData?.todayStats.habits}
+          />
         </div>
 
-        {/* Right Column - Stats & Management */}
+        {/* Colonne droite: Statistics + Habits Manager */}
         <div className="lg:col-span-4 space-y-6">
-          {/* Stats Overview */}
-          <HabitsStats data={dashboardData?.stats} />
-          
-          {/* Habits Manager */}
-          <HabitsManager habits={dashboardData?.habits} />
+          <HabitsStats 
+            data={dashboardData?.stats} 
+            todayHabits={dashboardData?.todayStats.habits}
+          />
+          <HabitsManager />
         </div>
       </div>
 
@@ -104,7 +106,6 @@ export function HabitsDashboard() {
       <CreateHabitModal />
       <EditHabitModal />
     </div>
-    <Footer />
     </>
   );
 }
@@ -112,22 +113,25 @@ export function HabitsDashboard() {
 
 function HabitsDashboardSkeleton() {
   return (
-    <div className="space-y-8 animate-pulse">
+    <div className="space-y-6 animate-pulse">
       {/* Top Actions Skeleton */}
       <div className="flex items-center justify-between">
         <div className="h-10 w-48 bg-white/5 rounded-xl" />
         <div className="h-10 w-40 bg-white/5 rounded-xl" />
       </div>
 
-      {/* Dashboard Grid Skeleton */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      {/* Bento Grid Skeleton */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Colonne gauche: Today's Habits + Progress */}
         <div className="lg:col-span-8 space-y-6">
           <div className="h-64 bg-white/5 rounded-2xl" />
           <div className="h-80 bg-white/5 rounded-2xl" />
         </div>
+
+        {/* Colonne droite: Statistics + Habits Manager */}
         <div className="lg:col-span-4 space-y-6">
-          <div className="h-48 bg-white/5 rounded-2xl" />
           <div className="h-64 bg-white/5 rounded-2xl" />
+          <div className="h-80 bg-white/5 rounded-2xl" />
         </div>
       </div>
     </div>

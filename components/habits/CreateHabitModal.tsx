@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { api } from "@/trpc/client";
 import { useHabits } from "./HabitsProvider";
 import { X } from "lucide-react";
-import type { HabitWithCompletions } from "@/server/api/routers/habits/types";
+
 
 const HABIT_EMOJIS = [
   "🎯", "💪", "📚", "🏃", "🧘", "💧", "🌱", "⚡", "🔥", "⭐",
@@ -33,6 +33,7 @@ export function CreateHabitModal() {
   const createHabit = api.habits.create.useMutation({
     onMutate: async (newHabit) => {
       await utils.habits.getDashboard.cancel();
+      await utils.habits.getPaginated.cancel();
       
       const previousData = utils.habits.getDashboard.getData();
       
@@ -110,7 +111,7 @@ export function CreateHabitModal() {
         
         utils.habits.getDashboard.setData(undefined, {
           ...currentData,
-          habits: updatedHabits as unknown as HabitWithCompletions[],
+          habits: updatedHabits as typeof currentData.habits,
           todayStats: updatedTodayStats,
         });
       }
@@ -121,15 +122,11 @@ export function CreateHabitModal() {
       }
       
       openCreateModal();
-      setTitle(variables.title);
-      setEmoji(variables.emoji);
-      setDescription(variables.description || "");
-      setColor(variables.color || "#ffffff");
-      
       console.error("Error creating habit:", error);
     },
     onSettled: () => {
       utils.habits.getDashboard.invalidate();
+      utils.habits.getPaginated.invalidate();
     },
   });
 
@@ -159,50 +156,69 @@ export function CreateHabitModal() {
     resetForm();
   };
 
+  // Gestion de la touche Escape
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isCreateModalOpen) {
+        handleClose();
+      }
+    };
+
+    if (isCreateModalOpen) {
+      document.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isCreateModalOpen]);
+
   if (!isCreateModalOpen) return null;
 
   return (
     <>
       {/* Backdrop */}
       <div 
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999]"
         onClick={handleClose}
       />
       
       {/* Modal */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
-        <div className="bg-pure-black border border-white/20 rounded-2xl w-full max-w-md relative overflow-hidden">
+      <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 pointer-events-none">
+        <div className="bg-pure-black border border-white/20 rounded-2xl w-full max-w-md max-h-[90vh] relative overflow-hidden pointer-events-auto">
           {/* Gradient accent */}
           <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
           
-          <div className="p-6">
+          <div className="p-4 overflow-y-auto max-h-[calc(90vh-2rem)]">
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold font-argesta tracking-tight">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold font-argesta tracking-tight">
                 NEW HABIT
               </h2>
               <button
                 onClick={handleClose}
-                className="w-8 h-8 rounded-lg border border-white/20 hover:border-white/40 bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all duration-300"
+                className="w-7 h-7 rounded-lg border border-white/20 hover:border-white/40 bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all duration-300"
               >
-                <X className="w-4 h-4 text-white/60" />
+                <X className="w-3 h-3 text-white/60" />
               </button>
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
               {/* Emoji Selection */}
               <div>
-                <label className="block text-sm font-argesta text-white/80 mb-3">
+                <label className="block text-xs font-argesta text-white/80 mb-2">
                   EMOJI
                 </label>
-                <div className="grid grid-cols-10 gap-2 p-4 bg-white/5 rounded-xl border border-white/10">
+                <div className="grid grid-cols-10 gap-1 p-3 bg-white/5 rounded-lg border border-white/10">
                   {HABIT_EMOJIS.map((emojiOption) => (
                     <button
                       key={emojiOption}
                       type="button"
                       onClick={() => setEmoji(emojiOption)}
-                      className={`w-8 h-8 rounded-lg flex items-center justify-center text-xl transition-all duration-200 ${
+                      className={`w-6 h-6 rounded flex items-center justify-center text-lg transition-all duration-200 ${
                         emoji === emojiOption
                           ? "bg-white/20 border-2 border-white/40"
                           : "hover:bg-white/10 border-2 border-transparent"
@@ -216,11 +232,11 @@ export function CreateHabitModal() {
 
               {/* Title */}
               <div>
-                <label className="block text-sm font-argesta text-white/80 mb-2">
+                <label className="block text-xs font-argesta text-white/80 mb-2">
                   TITLE
                 </label>
                 <div className="relative">
-                  <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-2xl">
+                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-xl">
                     {emoji}
                   </div>
                   <input
@@ -228,7 +244,7 @@ export function CreateHabitModal() {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Ex: Wake up 5:30am, Meditation..."
-                    className="w-full pl-14 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all duration-300"
+                    className="w-full pl-10 pr-3 py-2 bg-white/5 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all duration-300"
                     required
                     maxLength={255}
                   />
@@ -237,30 +253,30 @@ export function CreateHabitModal() {
 
               {/* Description */}
               <div>
-                <label className="block text-sm font-argesta text-white/80 mb-2">
+                <label className="block text-xs font-argesta text-white/80 mb-2">
                   DESCRIPTION (OPTIONAL)
                 </label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Why is this habit important to you..."
-                  rows={3}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all duration-300 resize-none"
+                  rows={2}
+                  className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all duration-300 resize-none"
                 />
               </div>
 
               {/* Color Selection */}
               <div>
-                <label className="block text-sm font-argesta text-white/80 mb-3">
+                <label className="block text-xs font-argesta text-white/80 mb-2">
                   ACCENT COLOR
                 </label>
-                <div className="grid grid-cols-10 gap-2 p-4 bg-white/5 rounded-xl border border-white/10">
+                <div className="grid grid-cols-10 gap-1 p-3 bg-white/5 rounded-lg border border-white/10">
                   {HABIT_COLORS.map((colorOption) => (
                     <button
                       key={colorOption}
                       type="button"
                       onClick={() => setColor(colorOption)}
-                      className={`w-6 h-6 rounded-lg border-2 transition-all duration-200 ${
+                      className={`w-5 h-5 rounded border-2 transition-all duration-200 ${
                         color === colorOption
                           ? "border-white/60 scale-110"
                           : "border-white/20 hover:border-white/40"
@@ -272,37 +288,37 @@ export function CreateHabitModal() {
               </div>
 
               {/* Preview */}
-              <div className="p-4 bg-white/5 rounded-xl border border-white/10">
-                <div className="flex items-center space-x-3">
-                  <div className="text-2xl">{emoji}</div>
-                  <div>
-                    <h4 className="font-argesta font-medium text-white">
+              <div className="p-3 bg-white/5 rounded-lg border border-white/10">
+                <div className="flex items-center space-x-2">
+                  <div className="text-lg">{emoji}</div>
+                  <div className="flex-1">
+                    <h4 className="font-argesta font-medium text-white text-sm">
                       {title || "Habit title"}
                     </h4>
                     {description && (
-                      <p className="text-sm text-white/60 mt-1">{description}</p>
+                      <p className="text-xs text-white/60 mt-1">{description}</p>
                     )}
                   </div>
                   <div
-                    className="w-3 h-3 rounded-full ml-auto"
+                    className="w-2 h-2 rounded-full"
                     style={{ backgroundColor: color }}
                   />
                 </div>
               </div>
 
               {/* Buttons */}
-              <div className="flex items-center space-x-3 pt-4">
+              <div className="flex items-center space-x-3 pt-3">
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="flex-1 px-4 py-3 border border-white/20 rounded-xl text-white/80 hover:text-white hover:bg-white/5 transition-all duration-300 font-argesta"
+                  className="flex-1 px-3 py-2 border border-white/20 rounded-lg text-white/80 hover:text-white hover:bg-white/5 transition-all duration-300 font-argesta text-sm"
                 >
                   CANCEL
                 </button>
                 <button
                   type="submit"
                   disabled={!title.trim() || createHabit.isPending}
-                  className="flex-1 px-4 py-3 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 rounded-xl text-white font-argesta transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 rounded-lg text-white font-argesta transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                 >
                   {createHabit.isPending ? "CREATING..." : "CREATE"}
                 </button>

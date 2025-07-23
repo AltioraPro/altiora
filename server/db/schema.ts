@@ -191,6 +191,8 @@ export const habitCompletions = createTable(
     habitIdIdx: index("habit_completion_habit_id_idx").on(table.habitId),
     dateIdx: index("habit_completion_date_idx").on(table.completionDate),
     uniqueUserHabitDate: index("habit_completion_unique_idx").on(table.userId, table.habitId, table.completionDate),
+    userDateCompletedIdx: index("habit_completion_user_date_completed_idx").on(table.userId, table.completionDate, table.isCompleted),
+    userHabitDateCompletedIdx: index("habit_completion_user_habit_date_completed_idx").on(table.userId, table.habitId, table.completionDate, table.isCompleted),
   })
 );
 

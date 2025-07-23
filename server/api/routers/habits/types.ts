@@ -6,6 +6,27 @@ export interface HabitWithCompletions extends Habit {
   completionRate?: number;
 }
 
+// Type for pagination
+export interface PaginationParams {
+  page: number;
+  limit: number;
+  sortBy?: 'title' | 'createdAt' | 'sortOrder';
+  sortOrder?: 'asc' | 'desc';
+  search?: string;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
+
 // Type for daily statistics
 export interface DailyHabitStats {
   date: string; // Format YYYY-MM-DD
