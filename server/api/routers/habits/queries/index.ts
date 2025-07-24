@@ -324,7 +324,7 @@ export const getHabitsDashboard = async (
       getHabitStats(userId, { period: "month" }),
     ]);
 
-    // Calcul des activités récentes selon le mode de vue
+    // OPTIMISATION: Calcul des activités récentes selon le mode de vue
     const recentActivityPromises = [];
     const daysToFetch = viewMode === 'today' ? 1 : viewMode === 'week' ? 7 : 30;
     

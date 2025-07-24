@@ -4,10 +4,87 @@ import { api } from "@/trpc/client";
 import { Check, Circle } from "lucide-react";
 import type { DailyHabitStats } from "@/server/api/routers/habits/types";
 import { useHabits } from "./HabitsProvider";
+import { memo, useCallback, useMemo } from "react";
 
 interface TodayHabitsCardProps {
   data?: DailyHabitStats;
 }
+
+// OPTIMISATION: Composant memoized pour chaque habitude
+const HabitItem = memo(({ 
+  habit, 
+  isOptimistic, 
+  onToggle, 
+  isPending 
+}: { 
+  habit: { id: string; title: string; emoji: string; isCompleted: boolean; notes?: string }; 
+  isOptimistic: boolean; 
+  onToggle: () => void; 
+  isPending: boolean; 
+}) => {
+  const handleClick = useCallback(() => {
+    if (!habit.id.startsWith('temp-') && !isPending) {
+      onToggle();
+    }
+  }, [habit.id, isPending, onToggle]);
+
+  return (
+    <div
+      className={`flex items-center space-x-4 p-4 rounded-xl border transition-all duration-200 ${
+        habit.isCompleted
+          ? "bg-green-500/10 border-green-500/30"
+          : "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20"
+      } ${isOptimistic ? "opacity-80" : ""}`}
+    >
+      {/* Emoji */}
+      <div className="relative">
+        <div className={`text-2xl select-none transition-all duration-200 ${
+          habit.isCompleted ? "scale-110" : ""
+        }`}>
+          {habit.emoji}
+        </div>
+        {habit.isCompleted && (
+          <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+            <Check className="w-3 h-3 text-white" />
+          </div>
+        )}
+      </div>
+
+      {/* Habit Info */}
+      <div className="flex-1">
+        <h4 className={`font-argesta font-medium transition-all duration-200 ${
+          habit.isCompleted ? "text-green-300 line-through" : "text-white"
+        }`}>
+          {habit.title}
+        </h4>
+        {habit.notes && (
+          <p className="text-sm text-white/60 mt-1">{habit.notes}</p>
+        )}
+      </div>
+
+      {/* Toggle Button */}
+      <button
+        onClick={handleClick}
+        disabled={isPending || habit.id.startsWith('temp-')}
+        className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-200 hover:scale-110 disabled:opacity-50 ${
+          habit.id.startsWith('temp-')
+            ? "border-white/20 bg-white/5 cursor-not-allowed"
+            : habit.isCompleted
+            ? "bg-green-500 border-green-500 text-white"
+            : "border-white/30 hover:border-white/60"
+        }`}
+      >
+        {habit.id.startsWith('temp-') ? (
+          <div className="w-3 h-3 border border-white/40 border-t-transparent rounded-full animate-spin" />
+        ) : (
+          habit.isCompleted && <Check className="w-4 h-4" />
+        )}
+      </button>
+    </div>
+  );
+});
+
+HabitItem.displayName = "HabitItem";
 
 export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
   const utils = api.useUtils();
@@ -18,8 +95,11 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
     getOptimisticTodayStats 
   } = useHabits();
 
-  // Utiliser les données optimistes calculées par le contexte
-  const optimisticData = getOptimisticTodayStats(data);
+  // OPTIMISATION: Memoization des données optimistes
+  const optimisticData = useMemo(() => 
+    getOptimisticTodayStats(data), 
+    [getOptimisticTodayStats, data]
+  );
 
   const toggleCompletion = api.habits.toggleCompletion.useMutation({
     onMutate: async ({ habitId, isCompleted }) => {
@@ -136,7 +216,8 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
     },
   });
 
-  const handleToggleHabit = async (habitId: string, currentStatus: boolean) => {
+  // OPTIMISATION: Memoization du handler de toggle
+  const handleToggleHabit = useCallback(async (habitId: string, currentStatus: boolean) => {
     if (habitId.startsWith('temp-')) {
       return;
     }
@@ -148,7 +229,7 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
       completionDate: today,
       isCompleted: !currentStatus,
     });
-  };
+  }, [toggleCompletion]);
 
   if (!optimisticData) {
     return <TodayHabitsCardSkeleton />;
@@ -245,63 +326,16 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
             </div>
           ) : (
             habits.map((habit) => {
-              const isCompleted = habit.isCompleted;
               const isOptimistic = optimisticUpdates[habit.id] !== undefined;
               
               return (
-                <div
+                <HabitItem
                   key={habit.id}
-                  className={`flex items-center space-x-4 p-4 rounded-xl border transition-all duration-200 ${
-                    isCompleted
-                      ? "bg-green-500/10 border-green-500/30"
-                      : "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20"
-                  } ${isOptimistic ? "opacity-80" : ""}`}
-                >
-                  {/* Emoji */}
-                  <div className="relative">
-                    <div className={`text-2xl select-none transition-all duration-200 ${
-                      isCompleted ? "scale-110" : ""
-                    }`}>
-                      {habit.emoji}
-                    </div>
-                    {isCompleted && (
-                      <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                        <Check className="w-3 h-3 text-white" />
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Habit Info */}
-                  <div className="flex-1">
-                    <h4 className={`font-argesta font-medium transition-all duration-200 ${
-                      isCompleted ? "text-green-300 line-through" : "text-white"
-                    }`}>
-                      {habit.title}
-                    </h4>
-                    {habit.notes && (
-                      <p className="text-sm text-white/60 mt-1">{habit.notes}</p>
-                    )}
-                  </div>
-
-                  {/* Toggle Button */}
-                  <button
-                    onClick={() => handleToggleHabit(habit.id, isCompleted)}
-                    disabled={toggleCompletion.isPending || habit.id.startsWith('temp-')}
-                    className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-200 hover:scale-110 disabled:opacity-50 ${
-                      habit.id.startsWith('temp-')
-                        ? "border-white/20 bg-white/5 cursor-not-allowed"
-                        : isCompleted
-                        ? "bg-green-500 border-green-500 text-white"
-                        : "border-white/30 hover:border-white/60"
-                    }`}
-                  >
-                    {habit.id.startsWith('temp-') ? (
-                      <div className="w-3 h-3 border border-white/40 border-t-transparent rounded-full animate-spin" />
-                    ) : (
-                      isCompleted && <Check className="w-4 h-4" />
-                    )}
-                  </button>
-                </div>
+                  habit={habit}
+                  isOptimistic={isOptimistic}
+                  onToggle={() => handleToggleHabit(habit.id, habit.isCompleted)}
+                  isPending={toggleCompletion.isPending}
+                />
               );
             })
           )}
