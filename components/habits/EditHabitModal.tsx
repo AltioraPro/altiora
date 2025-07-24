@@ -166,25 +166,6 @@ export function EditHabitModal() {
     }
   }, [isEditModalOpen, editingHabit, habits]);
 
-  // Gestion de la touche Escape
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isEditModalOpen) {
-        handleClose();
-      }
-    };
-
-    if (isEditModalOpen) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
-    };
-  }, [isEditModalOpen]);
-
   const resetForm = () => {
     setTitle("");
     setEmoji("🎯");
@@ -215,6 +196,25 @@ export function EditHabitModal() {
     closeEditModal();
     resetForm();
   };
+
+  // Gestion de la touche Escape
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isEditModalOpen) {
+        handleClose();
+      }
+    };
+
+    if (isEditModalOpen) {
+      document.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isEditModalOpen, handleClose]);
 
   if (!isEditModalOpen || !isLoaded) return null;
 

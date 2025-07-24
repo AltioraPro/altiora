@@ -173,7 +173,7 @@ export function CreateHabitModal() {
       document.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = 'unset';
     };
-  }, [isCreateModalOpen]);
+  }, [isCreateModalOpen, handleClose]);
 
   if (!isCreateModalOpen) return null;
 

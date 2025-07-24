@@ -15,7 +15,7 @@ export function useHabitsDashboard(viewMode: 'today' | 'week' | 'month') {
     retry: (failureCount, error) => {
       // Retry intelligent basé sur le type d'erreur
       if (error && typeof error === 'object' && 'code' in error) {
-        const code = (error as any).code;
+        const code = (error as { code?: string }).code;
         // Ne pas retry sur les erreurs d'authentification
         if (code === 'UNAUTHORIZED' || code === 'FORBIDDEN') {
           return false;
