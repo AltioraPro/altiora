@@ -2,7 +2,7 @@
 
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { CheckCircle, XCircle, Mail, ArrowRight, RefreshCw, AlertTriangle } from "lucide-react";
 import { api } from "@/trpc/client";
 
@@ -11,6 +11,7 @@ function VerifyEmailContent() {
   const [status, setStatus] = useState<"loading" | "success" | "error" | "expired">("loading");
   const [message, setMessage] = useState("");
   const [isRetrying, setIsRetrying] = useState(false);
+  const hasVerified = useRef(false);
 
   const verifyEmailMutation = api.auth.verifyEmail.useMutation({
     onSuccess: (data) => {
@@ -32,6 +33,9 @@ function VerifyEmailContent() {
 
   useEffect(() => {
     const verifyEmail = async () => {
+      // Éviter les vérifications multiples
+      if (hasVerified.current) return;
+      
       const token = searchParams.get("token");
       
       if (!token) {
@@ -39,6 +43,8 @@ function VerifyEmailContent() {
         setMessage("Missing verification token. Please use the complete link sent to your email.");
         return;
       }
+
+      hasVerified.current = true;
 
       try {
         await verifyEmailMutation.mutateAsync({ token });
@@ -49,17 +55,28 @@ function VerifyEmailContent() {
     };
 
     verifyEmail();
-  }, [searchParams, verifyEmailMutation]);
+  }, [searchParams]); // Suppression de verifyEmailMutation des dépendances
 
   const handleRetry = async () => {
     setIsRetrying(true);
+    
+    // Réinitialiser la ref pour permettre une nouvelle vérification
+    hasVerified.current = false;
     
     // Simulation retry
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     setIsRetrying(false);
-    // Reload verification
-    window.location.reload();
+    
+    // Relancer la vérification
+    const token = searchParams.get("token");
+    if (token) {
+      try {
+        await verifyEmailMutation.mutateAsync({ token });
+      } catch (error) {
+        console.error("Retry verification error:", error);
+      }
+    }
   };
 
   const handleNavigateToLogin = () => {
