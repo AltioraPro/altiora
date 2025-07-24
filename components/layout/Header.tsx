@@ -13,11 +13,33 @@ interface HeaderProps {
 export const Header = ({ className = "" }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const { data: session, isPending } = useSession();
 
   const toggleMenu = useCallback(() => {
     setIsMenuOpen(!isMenuOpen);
   }, [isMenuOpen]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setIsVisible(false);
+      } else if (currentScrollY < lastScrollY) {
+        setIsVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [lastScrollY]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -55,7 +77,9 @@ export const Header = ({ className = "" }: HeaderProps) => {
 
   return (
     <>
-      <header className={`fixed top-0 left-0 right-0 z-30 bg-transparent backdrop-blur-md border border-white/10 ${className}`}>
+      <header className={`fixed top-0 left-0 right-0 z-30 bg-transparent backdrop-blur-md border border-white/10 transition-transform duration-300 ease-in-out ${className} ${
+        isVisible ? 'translate-y-0' : '-translate-y-full'
+      }`}>
         <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             

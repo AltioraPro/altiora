@@ -6,11 +6,13 @@ import { HabitsDashboard } from "@/components/habits/HabitsDashboard";
 import { HabitsLoadingSkeleton } from "@/components/habits/HabitsLoadingSkeleton";
 import { QuickStats } from "@/components/habits/QuickStats";
 import { Footer } from "@/components/layout/Footer";
+import { Header } from "@/components/layout/Header";
 
 export default function HabitsPage() {
   return (
     <>
-      <div className="min-h-screen bg-pure-black text-pure-white">
+      <Header />
+      <div className="min-h-screen mt-8 bg-pure-black text-pure-white">
       {/* Main Content */}
       <div className="relative max-w-7xl mx-auto px-6 py-8">
         <HabitsProvider>
