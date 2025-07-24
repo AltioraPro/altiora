@@ -8,16 +8,34 @@ import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 import SuperJSON from "superjson";
 
 import { type AppRouter } from "@/server/api/root";
-import { createQueryClient } from "./query-client";
+
 
 let clientQueryClientSingleton: QueryClient | undefined = undefined;
 const getQueryClient = () => {
   if (typeof window === "undefined") {
     // Server: toujours créer un nouveau query client
-    return createQueryClient();
+    return new QueryClient({
+      defaultOptions: {
+        queries: {
+          staleTime: 2 * 60 * 1000,
+          gcTime: 5 * 60 * 1000,
+          refetchOnWindowFocus: false,
+          refetchOnMount: false,
+        },
+      },
+    });
   }
   // Browser: utiliser un singleton pour éviter les re-créations
-  return (clientQueryClientSingleton ??= createQueryClient());
+  return (clientQueryClientSingleton ??= new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 2 * 60 * 1000,
+        gcTime: 5 * 60 * 1000,
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+      },
+    },
+  }));
 };
 
 export const api = createTRPCReact<AppRouter>();
