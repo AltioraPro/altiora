@@ -37,6 +37,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
     totalActiveHabits,
     currentStreak,
     longestStreak,
+    worstDay,
     averageCompletionRate,
   } = optimisticData;
 
@@ -144,6 +145,13 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
       suffix: "%",
       color: averageCompletionRate >= 80 ? "text-green-400" : averageCompletionRate >= 60 ? "text-white" : "text-white/70",
     },
+    {
+      icon: X,
+      label: "WORST DAY",
+      value: worstDay.percentage,
+      suffix: "%",
+      color: worstDay.percentage <= 20 ? "text-red-400" : worstDay.percentage <= 50 ? "text-orange-400" : "text-white/70",
+    },
   ];
 
   return (
@@ -173,7 +181,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
           </div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
             {stats.map((stat) => {
               const Icon = stat.icon;
               
@@ -424,8 +432,8 @@ function HabitsStatsSkeleton() {
         <div className="h-6 w-16 bg-white/10 rounded-lg" />
       </div>
       
-      <div className="grid grid-cols-2 gap-4">
-        {Array.from({ length: 4 }).map((_, i) => (
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+        {Array.from({ length: 5 }).map((_, i) => (
           <div key={i} className="bg-white/5 rounded-xl border border-white/10 p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="w-5 h-5 bg-white/10 rounded" />

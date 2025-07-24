@@ -249,7 +249,7 @@ export const getHabitStats = async (
     const weeklyStatsResults = await Promise.all(weeklyStatsPromises);
     weeklyStats.push(...weeklyStatsResults);
 
-    const { currentStreak, longestStreak } = calculateStreaks(weeklyStats);
+    const { currentStreak, longestStreak, worstDay } = calculateStreaks(weeklyStats);
 
     const monthlyProgressPromises = [];
     for (let i = 29; i >= 0; i--) {
@@ -295,6 +295,7 @@ export const getHabitStats = async (
       totalActiveHabits,
       currentStreak,
       longestStreak,
+      worstDay,
       averageCompletionRate,
       weeklyStats,
       monthlyProgress,
@@ -486,11 +487,13 @@ export const getHabitsPaginated = async (
   }
 };
 
-function calculateStreaks(dailyStats: DailyHabitStats[]): { currentStreak: number; longestStreak: number } {
+function calculateStreaks(dailyStats: DailyHabitStats[]): { currentStreak: number; longestStreak: number; worstDay: { date: string; percentage: number } } {
   let currentStreak = 0;
   let longestStreak = 0;
   let tempStreak = 0;
+  let worstDay = { date: '', percentage: 100 };
 
+  // Calculer le streak actuel (jours consécutifs avec 100% depuis aujourd'hui)
   for (let i = dailyStats.length - 1; i >= 0; i--) {
     if (dailyStats[i]!.completionPercentage === 100) {
       currentStreak++;
@@ -499,14 +502,24 @@ function calculateStreaks(dailyStats: DailyHabitStats[]): { currentStreak: numbe
     }
   }
 
+  // Calculer le streak le plus long et le pire jour
   for (const day of dailyStats) {
+    // Streak le plus long (jours consécutifs avec 100%)
     if (day.completionPercentage === 100) {
       tempStreak++;
       longestStreak = Math.max(longestStreak, tempStreak);
     } else {
       tempStreak = 0;
     }
+
+    // Pire jour (pourcentage le plus bas)
+    if (day.completionPercentage < worstDay.percentage) {
+      worstDay = {
+        date: day.date,
+        percentage: day.completionPercentage
+      };
+    }
   }
 
-  return { currentStreak, longestStreak };
+  return { currentStreak, longestStreak, worstDay };
 } 

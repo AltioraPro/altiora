@@ -145,11 +145,19 @@ export function HabitsProvider({ children }: HabitsProviderProps) {
           ? Math.round(totalCompletionRates / updatedWeeklyStats.length) 
           : todayCompletionRate;
         
+        // Recalculer le worst day
+        const worstDay = updatedWeeklyStats.reduce((worst, stat) => 
+          stat.completionPercentage < worst.percentage 
+            ? { date: stat.date, percentage: stat.completionPercentage }
+            : worst
+        , { date: '', percentage: 100 });
+        
         return {
           ...data,
           totalActiveHabits: realTotalActiveHabits,
           averageCompletionRate: newAverageCompletionRate,
-          weeklyStats: updatedWeeklyStats
+          weeklyStats: updatedWeeklyStats,
+          worstDay
         };
       }
       

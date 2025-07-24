@@ -47,6 +47,10 @@ export interface HabitStatsOverview {
   totalActiveHabits: number;
   currentStreak: number;
   longestStreak: number;
+  worstDay: {
+    date: string;
+    percentage: number;
+  };
   averageCompletionRate: number;
   weeklyStats: DailyHabitStats[];
   monthlyProgress: Array<{
