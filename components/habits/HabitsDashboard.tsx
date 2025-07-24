@@ -10,8 +10,6 @@ import { CreateHabitModal } from "./CreateHabitModal";
 import { EditHabitModal } from "./EditHabitModal";
 import { Plus } from "lucide-react";
 
-import { Header } from "../layout/Header";
-
 export function HabitsDashboard() {
   const { 
     openCreateModal, 
@@ -45,7 +43,6 @@ export function HabitsDashboard() {
 
   return (
     <>
-    <Header />
     <div className="space-y-6 mb-16">
       {/* Top Actions */}
       <div className="flex items-center justify-between">

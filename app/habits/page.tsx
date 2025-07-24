@@ -4,53 +4,36 @@ import { Suspense } from "react";
 import { HabitsProvider } from "@/components/habits/HabitsProvider";
 import { HabitsDashboard } from "@/components/habits/HabitsDashboard";
 import { HabitsLoadingSkeleton } from "@/components/habits/HabitsLoadingSkeleton";
+import { QuickStats } from "@/components/habits/QuickStats";
 import { Footer } from "@/components/layout/Footer";
 
 export default function HabitsPage() {
   return (
     <>
       <div className="min-h-screen bg-pure-black text-pure-white">
-      {/* Header */}
-      <div className="relative border-b border-white/10 mt-16">
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
-        <div className="relative max-w-7xl mx-auto px-6 py-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold font-argesta tracking-tight">
-                Habits Tracker
-              </h1>
-              <p className="text-white/60 font-argesta text-sm mt-2">
-                Forge your discipline. Build your legacy.
-              </p>
-            </div>
-            
-            {/* Quick Stats Preview */}
-            <div className="hidden md:flex items-center space-x-6">
-              <div className="text-center">
-                <div className="text-2xl font-bold font-argesta">
-                  <span className="bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
-                    --
-                  </span>
-                </div>
-                <div className="text-xs text-white/50 font-argesta">Today</div>
-              </div>
-              <div className="w-px h-8 bg-white/20" />
-              <div className="text-center">
-                <div className="text-2xl font-bold font-argesta">
-                  <span className="bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
-                    --
-                  </span>
-                </div>
-                <div className="text-xs text-white/50 font-argesta">SÉRIE</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Main Content */}
       <div className="relative max-w-7xl mx-auto px-6 py-8">
         <HabitsProvider>
+          {/* Header */}
+          <div className="relative border-b border-white/10 mb-8">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+            <div className="relative max-w-7xl mx-auto px-6 py-8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-3xl font-bold font-argesta tracking-tight">
+                    Habits Tracker
+                  </h1>
+                  <p className="text-white/60 font-argesta text-sm mt-2">
+                    Forge your discipline. Build your legacy.
+                  </p>
+                </div>
+                
+                {/* Quick Stats Preview */}
+                <QuickStats />
+              </div>
+            </div>
+          </div>
+
           <Suspense fallback={<HabitsLoadingSkeleton />}>
             <HabitsDashboard />
           </Suspense>
