@@ -166,7 +166,7 @@ export function EditHabitModal() {
     }
   }, [isEditModalOpen, editingHabit, habits]);
 
-  const resetForm = () => {
+  const resetForm = useCallback(() => {
     setTitle("");
     setEmoji("🎯");
     setDescription("");
@@ -174,7 +174,7 @@ export function EditHabitModal() {
     setTargetFrequency("daily");
     setIsActive(true);
     setIsLoaded(false);
-  };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

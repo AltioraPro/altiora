@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { api } from "@/trpc/client";
 import { useHabits } from "./HabitsProvider";
 import { X } from "lucide-react";
@@ -151,10 +151,10 @@ export function CreateHabitModal() {
     });
   };
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     closeCreateModal();
     resetForm();
-  };
+  }, [closeCreateModal, resetForm]);
 
   // Gestion de la touche Escape
   useEffect(() => {

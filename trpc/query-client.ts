@@ -1,6 +1,6 @@
 import { QueryClient } from '@tanstack/react-query';
 
-export const queryClient = new QueryClient({
+export const createQueryClient = () => new QueryClient({
   defaultOptions: {
     queries: {
       // OPTIMISATION: Configuration globale pour améliorer les performances
@@ -25,4 +25,6 @@ export const queryClient = new QueryClient({
       retryDelay: 1000,
     },
   },
-}); 
+});
+
+export const queryClient = createQueryClient(); 
