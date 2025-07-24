@@ -54,7 +54,7 @@ export function useHabitsDashboard(viewMode: 'today' | 'week' | 'month') {
     refetch,
     // OPTIMISATION: Méthodes utilitaires
     isTodayComplete: memoizedData?.todayStats.completionPercentage === 100,
-    hasHabits: memoizedData?.todayStats.habits.length > 0,
+    hasHabits: memoizedData?.todayStats.habits.length && memoizedData.todayStats.habits.length > 0,
   };
 }
 
