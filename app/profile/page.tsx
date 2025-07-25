@@ -4,6 +4,7 @@ import { ProfileForm } from "@/components/profile/ProfileForm";
 import { ActivityStats } from "@/components/profile/ActivityStats";
 import { Header } from "@/components/layout/Header";
 import { SubscriptionStatus } from "@/components/profile/SubscriptionStatus";
+import { DiscordConnection } from "@/components/profile/DiscordConnection";
 
 export default async function ProfilePage() {
   try {
@@ -69,6 +70,9 @@ export default async function ProfilePage() {
 
                 {/* Right Column - Subscription & Quick Actions */}
                 <div className="space-y-8">
+                  {/* Discord Connection */}
+                  <DiscordConnection />
+
                   {/* Subscription Status */}
                   <div className="bg-white/5 rounded-2xl p-8 border border-white/10">
                     <div className="flex items-center justify-between mb-8">

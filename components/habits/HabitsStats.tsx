@@ -22,8 +22,17 @@ interface RankInfo {
   benefits: string[];
 }
 
+interface StatItem {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  value: number;
+  suffix: string;
+  color: string;
+  showPulse?: boolean;
+}
+
 export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
-  const { getOptimisticStats } = useHabits();
+  const { getOptimisticStats, optimisticUpdates } = useHabits();
   const [isRankModalOpen, setIsRankModalOpen] = useState(false);
   
   // Gestion de la touche Échap pour fermer la modal
@@ -47,21 +56,28 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
     };
   }, [isRankModalOpen]);
   
-  // Utiliser les données optimistes
-  const optimisticData = getOptimisticStats(data, todayHabits);
+  // Créer les habitudes optimistes directement depuis les optimistic updates
+  const optimisticTodayHabits = todayHabits?.map(habit => ({
+    ...habit,
+    isCompleted: optimisticUpdates[habit.id] ?? habit.isCompleted
+  })) ?? [];
+  
+  // Calculer immédiatement les stats de base même sans données serveur
+  const todayCompletedHabits = optimisticTodayHabits.filter(h => h.isCompleted).length;
+  const todayTotalHabits = optimisticTodayHabits.length;
+  const todayCompletionRate = todayTotalHabits > 0 ? Math.round((todayCompletedHabits / todayTotalHabits) * 100) : 0;
+  const willContinueStreak = todayCompletedHabits > 0;
+  
+  // Utiliser les données optimistes si disponibles, sinon des valeurs par défaut intelligentes
+  const optimisticData = getOptimisticStats(data, optimisticTodayHabits);
+  
+  // Stats finales : optimistes si disponibles, sinon calculées à partir d'aujourd'hui
+  const totalActiveHabits = optimisticData?.totalActiveHabits ?? todayTotalHabits;
+  const averageCompletionRate = optimisticData?.averageCompletionRate ?? todayCompletionRate;
+  const optimisticCurrentStreak = optimisticData?.currentStreak ?? (willContinueStreak ? 1 : 0);
+  const longestStreak = optimisticData?.longestStreak ?? optimisticCurrentStreak;
 
-
-
-  if (!optimisticData) {
-    return <div>Loading...</div>;
-  }
-
-  const {
-    totalActiveHabits,
-    currentStreak,
-    longestStreak,
-    averageCompletionRate,
-  } = optimisticData;
+  // Variables déjà calculées plus haut (todayCompletedHabits et willContinueStreak)
 
   // Système de rank complet
   const rankSystem: RankInfo[] = [
@@ -72,9 +88,9 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
       bgColor: "bg-white/5",
       borderColor: "border-white/10",
       minStreak: 0,
-      description: "Beginning of your journey to excellence",
+      description: "Ready to start your personal transformation",
       discordRole: "New",
-      benefits: ["Access to Discord server", "Community support"]
+      benefits: ["Discord server access", "Community support"]
     },
     {
       name: "BEGINNER",
@@ -83,7 +99,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
       bgColor: "bg-white/5",
       borderColor: "border-white/20",
       minStreak: 1,
-      description: "First steps towards discipline",
+      description: "1+ day with at least one habit validated",
       discordRole: "Beginner",
       benefits: ["Access to basic channels", "Expert advice"]
     },
@@ -94,7 +110,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
       bgColor: "bg-blue-500/10",
       borderColor: "border-blue-500/30",
       minStreak: 3,
-      description: "Momentum builds, motivation grows",
+      description: "3+ consecutive days - Building momentum",
       discordRole: "Rising",
       benefits: ["Access to weekly challenges", "Special Discord badge"]
     },
@@ -105,7 +121,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
       bgColor: "bg-green-500/10",
       borderColor: "border-green-500/30",
       minStreak: 7,
-      description: "Champion of daily discipline",
+      description: "7+ consecutive days - Champion of daily discipline",
       discordRole: "Champion",
       benefits: ["Exclusive Discord role", "Access to private events", "Mentor other members"]
     },
@@ -116,7 +132,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
       bgColor: "bg-purple-500/10",
       borderColor: "border-purple-500/30",
       minStreak: 14,
-      description: "Recognized productivity expert",
+      description: "14+ consecutive days - Recognized productivity expert",
       discordRole: "Expert",
       benefits: ["VIP Discord role", "Access to masterclasses", "Ability to create challenges"]
     },
@@ -127,7 +143,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
       bgColor: "bg-yellow-500/10",
       borderColor: "border-yellow-500/30",
       minStreak: 30,
-      description: "Living legend of discipline",
+      description: "30+ consecutive days - Living legend of discipline",
       discordRole: "Legend",
       benefits: ["Legendary Discord role", "Exclusive access to all content", "Moderator status", "VIP event invitations"]
     },
@@ -138,7 +154,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
       bgColor: "bg-orange-500/10",
       borderColor: "border-orange-500/30",
       minStreak: 90,
-      description: "Master of consistency and discipline",
+      description: "90+ consecutive days - Master of consistency and discipline",
       discordRole: "Master",
       benefits: ["Master Discord role", "Exclusive masterclasses", "Personal coaching sessions", "Priority support", "Custom Discord badge"]
     },
@@ -149,9 +165,9 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
       bgColor: "bg-red-500/10",
       borderColor: "border-red-500/30",
       minStreak: 180,
-      description: "Grandmaster of productivity and life mastery",
+      description: "180+ consecutive days - Grand master of productivity",
       discordRole: "Grandmaster",
-      benefits: ["Grandmaster Discord role", "All-access pass", "Personal mentor status", "Exclusive events", "Custom profile features", "Direct access to founders"]
+      benefits: ["Grandmaster Discord role", "Total access pass", "Personal mentor status", "Exclusive events", "Custom profile features", "Direct access to founders"]
     },
     {
       name: "IMMORTAL",
@@ -160,18 +176,18 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
       bgColor: "bg-pink-500/10",
       borderColor: "border-pink-500/30",
       minStreak: 365,
-      description: "Immortal legend of discipline and excellence",
+      description: "365+ consecutive days - Immortal legend of excellence",
       discordRole: "Immortal",
-      benefits: ["Immortal Discord role", "Legendary status", "All platform features", "Personal consultation", "Exclusive merchandise", "Founder's circle access", "Custom integrations"]
+      benefits: ["Immortal Discord role", "Legendary status", "All features", "Personal consultation", "Exclusive merchandise", "Founders circle access", "Custom integrations"]
     }
   ];
 
   // Trouver le rank actuel et le prochain
-  const currentRank = rankSystem.find(rank => currentStreak >= rank.minStreak) || rankSystem[0]!;
-  const nextRank = rankSystem.find(rank => rank.minStreak > currentStreak);
-  const daysToNextRank = nextRank ? nextRank.minStreak - currentStreak : 0;
+  const currentRank = rankSystem.find(rank => optimisticCurrentStreak >= rank.minStreak) || rankSystem[0]!;
+  const nextRank = rankSystem.find(rank => rank.minStreak > optimisticCurrentStreak);
+  const daysToNextRank = nextRank ? nextRank.minStreak - optimisticCurrentStreak : 0;
 
-  const stats = [
+  const stats: StatItem[] = [
     {
       icon: Target,
       label: "HABITS",
@@ -182,15 +198,17 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
     {
       icon: TrendingUp,
       label: "CURRENT SERIES",
-      value: currentStreak,
-      suffix: "j",
-      color: currentStreak >= 7 ? "text-green-400" : currentStreak >= 3 ? "text-white" : "text-white/70",
+      value: optimisticCurrentStreak,
+      suffix: "d",
+      color: optimisticCurrentStreak >= 7 ? "text-green-400" : optimisticCurrentStreak >= 3 ? "text-white" : "text-white/70",
+      // Ajouter une indication visuelle si le streak va continuer
+      showPulse: willContinueStreak && optimisticCurrentStreak > 0,
     },
     {
       icon: Trophy,
       label: "BEST SERIES",
       value: longestStreak,
-      suffix: "j",
+      suffix: "d",
       color: longestStreak >= 14 ? "text-yellow-400" : longestStreak >= 7 ? "text-green-400" : "text-white",
     },
     {
@@ -242,7 +260,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                     <Icon className="w-5 h-5 text-white/60 group-hover:text-white transition-colors" />
                     
                     {/* Special indicators */}
-                    {stat.label === "CURRENT SERIES" && currentStreak >= 7 && (
+                    {stat.label === "CURRENT SERIES" && (optimisticCurrentStreak >= 7 || stat.showPulse) && (
                       <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                     )}
                     {stat.label === "AVERAGE RATE" && averageCompletionRate === 100 && (
@@ -272,21 +290,21 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
           {/* Quick Insights */}
           <div className="mt-6 pt-6 border-t border-white/10">
             <div className="space-y-3">
-              {currentStreak >= 7 && (
+              {optimisticCurrentStreak >= 7 && (
                 <div className="flex items-center space-x-3 text-sm">
                   <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                   <span className="text-green-400 font-argesta">
-                    {currentStreak >= 365 
-                      ? "Immortal consistency! You&apos;re beyond legendary." 
-                      : currentStreak >= 180 
-                      ? "Grandmaster level! You&apos;re a master of life." 
-                      : currentStreak >= 90 
-                      ? "Master consistency! You&apos;re achieving legendary status." 
-                      : currentStreak >= 30 
-                      ? "Incredible consistency! You&apos;re building legendary habits." 
-                      : currentStreak >= 14 
-                      ? "Outstanding! You&apos;re becoming a habit expert." 
-                      : "Great work! You&apos;re on a solid streak."
+                    {optimisticCurrentStreak >= 365 
+                      ? `${optimisticCurrentStreak} days consecutive! Immortal consistency!` 
+                      : optimisticCurrentStreak >= 180 
+                      ? `${optimisticCurrentStreak} days consecutive! Grandmaster level!` 
+                      : optimisticCurrentStreak >= 90 
+                      ? `${optimisticCurrentStreak} days consecutive! Master level!` 
+                      : optimisticCurrentStreak >= 30 
+                      ? `${optimisticCurrentStreak} days consecutive! Legendary consistency!` 
+                      : optimisticCurrentStreak >= 14 
+                      ? `${optimisticCurrentStreak} days consecutive! You're becoming an expert!` 
+                      : `${optimisticCurrentStreak} days consecutive! Excellent work!`
                     }
                   </span>
                 </div>
@@ -296,16 +314,35 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                 <div className="flex items-center space-x-3 text-sm">
                   <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                   <span className="text-green-400 font-argesta">
-                    Excellent average completion rate! You&apos;re highly consistent.
+                    Excellent completion rate! You&apos;re very consistent.
                   </span>
                 </div>
               )}
               
-              {currentStreak < 3 && totalActiveHabits > 0 && (
+              {optimisticCurrentStreak < 3 && totalActiveHabits > 0 && (
                 <div className="flex items-center space-x-3 text-sm">
                   <div className="w-2 h-2 bg-white/60 rounded-full" />
                   <span className="text-white/60 font-argesta">
-                    Keep going! Consistency builds momentum.
+                    Keep going! Validate at least one habit every day to build your streak.
+                  </span>
+                </div>
+              )}
+
+              {optimisticCurrentStreak === 0 && totalActiveHabits > 0 && (
+                <div className="flex items-center space-x-3 text-sm">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full" />
+                  <span className="text-blue-400 font-argesta">
+                    Validate at least one habit today to start your streak!
+                  </span>
+                </div>
+              )}
+
+              {/* Message optimiste pour le streak continu */}
+              {willContinueStreak && optimisticCurrentStreak > 0 && (
+                <div className="flex items-center space-x-3 text-sm">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                  <span className="text-green-400 font-argesta">
+                    ✅ {todayCompletedHabits} validated - Your streak continues!
                   </span>
                 </div>
               )}
@@ -429,24 +466,27 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
               {nextRank && (
                 <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-6">
                   <h3 className="text-lg font-bold font-argesta mb-3">
-                    NEXT RANK: {nextRank.name}
+                    PROCHAIN RANK: {nextRank.name}
                   </h3>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-white/60">Progress:</span>
+                      <span className="text-white/60">Progression:</span>
                       <span className="text-white">
-                        {currentStreak} / {nextRank.minStreak} days
+                        {optimisticCurrentStreak} / {nextRank.minStreak} jours
                       </span>
                     </div>
                     <div className="w-full bg-white/10 rounded-full h-2">
                       <div 
                         className={`h-2 rounded-full transition-all duration-500 ${nextRank.color.replace('text-', 'bg-')}`}
-                        style={{ width: `${Math.min((currentStreak / nextRank.minStreak) * 100, 100)}%` }}
+                        style={{ width: `${Math.min((optimisticCurrentStreak / nextRank.minStreak) * 100, 100)}%` }}
                       />
                     </div>
                     <div className="text-center">
                       <span className="text-sm text-white/60">
-                        {daysToNextRank} day{daysToNextRank > 1 ? 's' : ''} remaining to become {nextRank.name}
+                        {daysToNextRank === 1 
+                          ? "Plus qu'1 jour consécutif pour devenir " + nextRank.name
+                          : `Plus que ${daysToNextRank} jours consécutifs pour devenir ${nextRank.name}`
+                        }
                       </span>
                     </div>
                   </div>
@@ -462,7 +502,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                    {rankSystem.map((rank) => {
                     const RankIcon = rank.icon;
                     const isCurrentRank = rank.name === currentRank.name;
-                    const isUnlocked = currentStreak >= rank.minStreak;
+                    const isUnlocked = optimisticCurrentStreak >= rank.minStreak;
                     
                     return (
                       <div

@@ -1,86 +1,16 @@
-import { TRPCError } from "@trpc/server";
-import { eq, and } from "drizzle-orm";
 import { z } from "zod";
-import { createId } from "@paralleldrive/cuid2";
-
+import { TRPCError } from "@trpc/server";
 import { db } from "@/server/db";
-import { habits, habitCompletions, users } from "@/server/db/schema";
+import { habits, habitCompletions } from "@/server/db/schema";
+import { eq, and } from "drizzle-orm";
+import { createId } from "@paralleldrive/cuid2";
 import {
   createHabitValidator,
   updateHabitValidator,
   deleteHabitValidator,
   toggleHabitCompletionValidator,
 } from "../validators";
-
-// Fonction pour calculer le rank basé sur les statistiques
-async function calculateAndUpdateRank(userId: string) {
-  try {
-    // Récupérer les statistiques actuelles de l'utilisateur
-    const user = await db.query.users.findFirst({
-      where: eq(users.id, userId),
-      columns: {
-        rank: true,
-      },
-    });
-
-    if (!user) return;
-
-    // Récupérer les completions récentes
-    const recentCompletions = await db
-      .select()
-      .from(habitCompletions)
-      .where(
-        and(
-          eq(habitCompletions.userId, userId),
-          eq(habitCompletions.isCompleted, true)
-        )
-      )
-      .orderBy(habitCompletions.completionDate);
-
-    // Calculer le streak actuel (logique simplifiée)
-    let currentStreak = 0;
-    const currentDate = new Date();
-    
-    for (let i = 0; i < 30; i++) {
-      const checkDate = new Date(currentDate.getTime() - i * 24 * 60 * 60 * 1000);
-      const dateStr = checkDate.toISOString().split('T')[0]!;
-      
-      const hasCompletion = recentCompletions.some(
-        completion => completion.completionDate === dateStr
-      );
-      
-      if (hasCompletion) {
-        currentStreak++;
-      } else {
-        break;
-      }
-    }
-
-    // Déterminer le nouveau rank basé sur le streak
-    let newRank = "NEW";
-    if (currentStreak >= 365) newRank = "IMMORTAL";
-    else if (currentStreak >= 180) newRank = "GRANDMASTER";
-    else if (currentStreak >= 90) newRank = "MASTER";
-    else if (currentStreak >= 30) newRank = "LEGEND";
-    else if (currentStreak >= 14) newRank = "EXPERT";
-    else if (currentStreak >= 7) newRank = "CHAMPION";
-    else if (currentStreak >= 3) newRank = "RISING";
-    else if (currentStreak >= 1) newRank = "BEGINNER";
-
-    // Mettre à jour le rank seulement s'il a changé
-    if (newRank !== user.rank) {
-      await db
-        .update(users)
-        .set({
-          rank: newRank,
-          updatedAt: new Date(),
-        })
-        .where(eq(users.id, userId));
-    }
-  } catch (error) {
-    console.error("Erreur lors du calcul du rank:", error);
-  }
-}
+import { updateUserRank } from "./updateUserRank";
 
 export const createHabit = async (
   input: z.infer<typeof createHabitValidator>,
@@ -256,7 +186,7 @@ export const toggleHabitCompletion = async (
     }
 
     // Calculer et mettre à jour le rank après chaque completion
-    await calculateAndUpdateRank(userId);
+    await updateUserRank(userId);
 
     return completion;
   } catch (error) {
@@ -268,4 +198,5 @@ export const toggleHabitCompletion = async (
   }
 };
 
-export { updateUserRank } from "./updateUserRank"; 
+// Export updateUserRank for use in router
+export { updateUserRank }; 

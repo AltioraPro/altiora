@@ -493,9 +493,9 @@ function calculateStreaks(dailyStats: DailyHabitStats[]): { currentStreak: numbe
   let tempStreak = 0;
   let worstDay = { date: '', percentage: 100 };
 
-  // Calculer le streak actuel (jours consécutifs avec 100% depuis aujourd'hui)
+  // Calculer le streak actuel (jours consécutifs avec au moins 1 habitude validée depuis aujourd'hui)
   for (let i = dailyStats.length - 1; i >= 0; i--) {
-    if (dailyStats[i]!.completionPercentage === 100) {
+    if (dailyStats[i]!.completionPercentage > 0) {
       currentStreak++;
     } else {
       break;
@@ -504,8 +504,8 @@ function calculateStreaks(dailyStats: DailyHabitStats[]): { currentStreak: numbe
 
   // Calculer le streak le plus long et le pire jour
   for (const day of dailyStats) {
-    // Streak le plus long (jours consécutifs avec 100%)
-    if (day.completionPercentage === 100) {
+    // Streak le plus long (jours consécutifs avec au moins 1 habitude validée)
+    if (day.completionPercentage > 0) {
       tempStreak++;
       longestStreak = Math.max(longestStreak, tempStreak);
     } else {

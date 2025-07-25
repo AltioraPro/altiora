@@ -31,6 +31,15 @@ export const users = pgTable(
     rank: varchar("rank", { length: 50 }).default("NEW").notNull(),
     subscriptionPlan: varchar("subscription_plan", { length: 20 }).default("FREE").notNull(),
     
+    // Discord integration fields
+    discordId: varchar("discord_id", { length: 255 }),
+    discordUsername: varchar("discord_username", { length: 255 }),
+    discordDiscriminator: varchar("discord_discriminator", { length: 10 }),
+    discordAvatar: varchar("discord_avatar", { length: 1024 }),
+    discordConnected: boolean("discord_connected").default(false).notNull(),
+    discordRoleSynced: boolean("discord_role_synced").default(false).notNull(),
+    lastDiscordSync: timestamp("last_discord_sync", { withTimezone: true }),
+    
     // Stripe fields
     stripeCustomerId: varchar("stripe_customer_id", { length: 255 }),
     stripeSubscriptionId: varchar("stripe_subscription_id", { length: 255 }),

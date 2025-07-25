@@ -115,7 +115,7 @@ export function HabitsProvider({ children }: HabitsProviderProps) {
     return (data?: HabitStatsOverview, todayHabits?: Array<{ id: string; isCompleted: boolean }>) => {
       if (!data) return data;
 
-      // Recalculer les statistiques basées sur les optimistic updates
+      // Recalculer seulement les statistiques qui peuvent être optimisées localement
       if (todayHabits) {
         const updatedHabits = todayHabits.map(habit => ({
           ...habit,
@@ -152,12 +152,33 @@ export function HabitsProvider({ children }: HabitsProviderProps) {
             : worst
         , { date: '', percentage: 100 });
         
+        // Calculer le streak optimiste : logique simple et immédiate
+        const todayCompletedHabits = updatedHabits.filter(h => h.isCompleted).length;
+        const hasValidatedToday = todayCompletedHabits > 0;
+        
+        // Vérifier si aujourd'hui était déjà compté dans les stats du serveur
+        const todayStatsFromServer = updatedWeeklyStats.find(stat => stat.date === today);
+        const todayWasAlreadyCounted = todayStatsFromServer && todayStatsFromServer.completionPercentage > 0;
+        
+        // Logique optimiste intelligente :
+        // - Si validé aujourd'hui ET aujourd'hui pas encore compté par le serveur -> +1
+        // - Si validé aujourd'hui ET aujourd'hui déjà compté par le serveur -> garder
+        // - Si pas validé aujourd'hui -> garder
+        const optimisticCurrentStreak = hasValidatedToday
+          ? (todayWasAlreadyCounted ? data.currentStreak : Math.max(data.currentStreak + 1, 1))
+          : data.currentStreak;
+        
+        const optimisticLongestStreak = Math.max(data.longestStreak, optimisticCurrentStreak);
+        
         return {
           ...data,
           totalActiveHabits: realTotalActiveHabits,
           averageCompletionRate: newAverageCompletionRate,
           weeklyStats: updatedWeeklyStats,
-          worstDay
+          worstDay,
+          // Streaks optimistes
+          currentStreak: optimisticCurrentStreak,
+          longestStreak: optimisticLongestStreak
         };
       }
       

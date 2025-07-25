@@ -4,7 +4,7 @@ import { api } from "@/trpc/client";
 import { Check, Circle } from "lucide-react";
 import type { DailyHabitStats } from "@/server/api/routers/habits/types";
 import { useHabits } from "./HabitsProvider";
-import { memo, useCallback, useMemo } from "react";
+import { memo, useCallback, useMemo, useRef } from "react";
 
 interface TodayHabitsCardProps {
   data?: DailyHabitStats;
@@ -14,19 +14,17 @@ interface TodayHabitsCardProps {
 const HabitItem = memo(({ 
   habit, 
   isOptimistic, 
-  onToggle, 
-  isPending 
+  onToggle 
 }: { 
   habit: { id: string; title: string; emoji: string; isCompleted: boolean; notes?: string }; 
   isOptimistic: boolean; 
   onToggle: () => void; 
-  isPending: boolean; 
 }) => {
   const handleClick = useCallback(() => {
-    if (!habit.id.startsWith('temp-') && !isPending) {
+    if (!habit.id.startsWith('temp-')) {
       onToggle();
     }
-  }, [habit.id, isPending, onToggle]);
+  }, [habit.id, onToggle]);
 
   return (
     <div
@@ -65,7 +63,7 @@ const HabitItem = memo(({
       {/* Toggle Button */}
       <button
         onClick={handleClick}
-        disabled={isPending || habit.id.startsWith('temp-')}
+        disabled={habit.id.startsWith('temp-')}
         className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-200 hover:scale-110 disabled:opacity-50 ${
           habit.id.startsWith('temp-')
             ? "border-white/20 bg-white/5 cursor-not-allowed"
@@ -88,6 +86,7 @@ HabitItem.displayName = "HabitItem";
 
 export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
   const utils = api.useUtils();
+  const lastClickTimes = useRef<Map<string, number>>(new Map());
   const { 
     optimisticUpdates, 
     setOptimisticUpdate, 
@@ -216,11 +215,21 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
     },
   });
 
-  // OPTIMISATION: Memoization du handler de toggle
+  // OPTIMISATION: Memoization du handler de toggle avec debouncing pour éviter les clics trop rapides
   const handleToggleHabit = useCallback(async (habitId: string, currentStatus: boolean) => {
     if (habitId.startsWith('temp-')) {
       return;
     }
+    
+    // Éviter les clics multiples sur la même habitude en peu de temps
+    const now = Date.now();
+    const lastClick = lastClickTimes.current.get(habitId) || 0;
+    
+    if (now - lastClick < 300) { // 300ms de protection
+      return;
+    }
+    
+    lastClickTimes.current.set(habitId, now);
     
     const today = new Date().toISOString().split('T')[0]!;
     
@@ -229,7 +238,7 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
       completionDate: today,
       isCompleted: !currentStatus,
     });
-  }, [toggleCompletion]);
+  }, [toggleCompletion, lastClickTimes]);
 
   if (!optimisticData) {
     return <TodayHabitsCardSkeleton />;
@@ -334,7 +343,6 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
                   habit={habit}
                   isOptimistic={isOptimistic}
                   onToggle={() => handleToggleHabit(habit.id, habit.isCompleted)}
-                  isPending={toggleCompletion.isPending}
                 />
               );
             })
@@ -347,7 +355,9 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
             <span className="font-argesta">
               {completionPercentage === 100 
                 ? "🎉 Perfect! All habits completed" 
-                : `${totalHabits - completedHabits} habit(s) remaining`
+                : completedHabits > 0
+                ? `✅ ${completedHabits} validated - Your streak continues!`
+                : `${totalHabits} habits - Validate at least one to maintain your streak`
               }
             </span>
             

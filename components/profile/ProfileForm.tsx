@@ -12,6 +12,11 @@ interface ProfileFormProps {
     name: string;
     image: string | null;
     emailVerified: boolean;
+    discordConnected: boolean;
+    discordId: string | null;
+    discordUsername: string | null;
+    discordDiscriminator: string | null;
+    discordAvatar: string | null;
     createdAt: Date;
   };
 }
@@ -48,7 +53,15 @@ export function ProfileForm({ user }: ProfileFormProps) {
       <div className="flex items-center space-x-6">
         <div className="relative">
           <div className="w-20 h-20 bg-gradient-to-br from-white/10 to-white/5 rounded-full flex items-center justify-center border border-white/20">
-            {user.image ? (
+            {user.discordConnected && user.discordAvatar ? (
+              <Image
+                src={`https://cdn.discordapp.com/avatars/${user.discordId}/${user.discordAvatar}.png`}
+                alt={user.name}
+                width={80}
+                height={80}
+                className="w-20 h-20 rounded-full object-cover"
+              />
+            ) : user.image ? (
               <Image
                 src={user.image}
                 alt={user.name}
@@ -60,9 +73,11 @@ export function ProfileForm({ user }: ProfileFormProps) {
               <User className="w-8 h-8 text-white/60" />
             )}
           </div>
-          <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-white/10 rounded-full border border-white/20 flex items-center justify-center">
-            <div className="w-3 h-3 bg-white/60 rounded-full" />
-          </div>
+          {user.discordConnected && (
+            <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-[#5865F2] rounded-full border border-white/20 flex items-center justify-center">
+              <div className="w-3 h-3 bg-white rounded-full" />
+            </div>
+          )}
         </div>
         
         <div className="flex-1">
@@ -72,11 +87,21 @@ export function ProfileForm({ user }: ProfileFormProps) {
           <p className="text-white/60 font-argesta tracking-wide">
             {user.email}
           </p>
-          <div className="flex items-center space-x-2 mt-2">
-            <div className={`w-2 h-2 rounded-full ${user.emailVerified ? "bg-green-400" : "bg-red-400"}`} />
-            <span className="text-sm text-white/60 font-argesta">
-              {user.emailVerified ? "Email Verified" : "Email Not Verified"}
-            </span>
+          <div className="flex items-center space-x-4 mt-2">
+            <div className="flex items-center space-x-2">
+              <div className={`w-2 h-2 rounded-full ${user.emailVerified ? "bg-green-400" : "bg-red-400"}`} />
+              <span className="text-sm text-white/60 font-argesta">
+                {user.emailVerified ? "Email Verified" : "Email Not Verified"}
+              </span>
+            </div>
+            {user.discordConnected && (
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 rounded-full bg-[#5865F2]" />
+                <span className="text-sm text-[#5865F2] font-argesta">
+                  Discord Connected
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
