@@ -40,13 +40,13 @@ export const authRouter = createTRPCRouter({
     .input(updateProfileSchema)
     .mutation(async ({ ctx, input }) => {
       const { db, session } = ctx;
-      return await updateProfile({ db, session }, input);
+      return await updateProfile({ db, session, input }, input);
     }),
 
   updateRank: protectedProcedure
     .input(updateRankSchema)
     .mutation(async ({ ctx, input }) => {
       const { db, session } = ctx;
-      return await updateRank({ db, session }, input);
+      return await updateRank({ db, session, input }, input);
     }),
 }); 
