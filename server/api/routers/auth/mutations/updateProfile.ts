@@ -10,10 +10,10 @@ const updateProfileSchema = z.object({
 });
 
 export async function updateProfile(
-  { db, session }: AuthMutationContext,
+  { db, session }: AuthMutationContext<z.infer<typeof updateProfileSchema>>,
   input: z.infer<typeof updateProfileSchema>
 ) {
-  if (!session?.userId) {
+  if (!session?.user?.id) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
       message: "Vous devez être connecté pour modifier votre profil",
@@ -29,7 +29,7 @@ export async function updateProfile(
         name,
         updatedAt: new Date(),
       })
-      .where(eq(users.id, session.userId))
+      .where(eq(users.id, session.user.id))
       .returning({
         id: users.id,
         email: users.email,
