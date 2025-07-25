@@ -17,7 +17,8 @@
     FileText,
     Cookie,
     Send,
-    Star
+    Star,
+    Instagram
     } from "lucide-react";
 
     // Discord Icon SVG Component
@@ -84,9 +85,10 @@
     ];
 
     const socialLinks = [
-        { href: "https://twitter.com/altiora", label: "Twitter", icon: Twitter },
-        { href: "https://linkedin.com/company/altiora", label: "LinkedIn", icon: Linkedin },
+        { href: "https://x.com/AltioraPro", label: "Twitter", icon: Twitter },
+        { href: "https://www.linkedin.com/company/altiorapro/about/?viewAsMember=true", label: "LinkedIn", icon: Linkedin },
         { href: "https://discord.gg/altiora", label: "Discord", icon: DiscordIcon },
+        { href: "https://www.instagram.com/altiorapro/", label: "Instagram", icon: Instagram },
     ];
 
         return (
