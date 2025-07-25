@@ -176,18 +176,6 @@ export function DiscordConnection() {
               </Button>
             </div>
 
-            {/* Statut du bot Discord */}
-            {botStatus && (
-              <div className="pt-2 border-t border-white/10">
-                <div className="flex items-center space-x-2 text-sm">
-                  <div className={`w-2 h-2 rounded-full ${botStatus.online ? 'bg-green-400' : 'bg-red-400'}`} />
-                  <span className="text-white/60">
-                    Bot Discord: {botStatus.online ? 'Online' : 'Offline'}
-                  </span>
-                </div>
-              </div>
-            )}
-
             <div className="pt-2 border-t border-white/10">
               <a
                 href="https://discord.gg/altiora"
