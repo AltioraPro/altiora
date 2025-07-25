@@ -81,9 +81,10 @@ export const Header = ({ className = "" }: HeaderProps) => {
         isVisible ? 'translate-y-0' : '-translate-y-full'
       }`}>
         <div className="mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="relative flex items-center h-16">
             
-            <div className="relative">
+            {/* Menu Button - Gauche */}
+            <div className="relative z-10">
               <button
                 onClick={toggleMenu}
                 className="relative w-12 h-12 flex items-center justify-center group"
@@ -120,20 +121,22 @@ export const Header = ({ className = "" }: HeaderProps) => {
               </button>
             </div>
 
-            {/* Logo - Centre */}
-            <Link href="/" className="flex items-center">
-              <Image
-                src="/img/logo.png"
-                alt="Altiora Logo"
-                width={70}
-                height={20}
-                className="h-10 w-auto"  
-                priority
-              />
-            </Link>
+            {/* Logo - Centre absolu */}
+            <div className="absolute left-1/2 transform -translate-x-1/2 z-5">
+              <Link href="/" className="flex items-center">
+                <Image
+                  src="/img/logo.png"
+                  alt="Altiora Logo"
+                  width={70}
+                  height={20}
+                  className="h-10 w-auto"  
+                  priority
+                />
+              </Link>
+            </div>
 
             {/* Auth Section - Droite */}
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 ml-auto z-10">
               {isPending ? (
                 <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
               ) : session?.user ? (

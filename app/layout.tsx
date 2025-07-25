@@ -5,6 +5,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Altiora",
   description: "Productivity and trading self-coaching SaaS",
+  icons: {
+    icon: { url: "/img/logo.png", sizes: "48x48", type: "image/png" },
+  },
 };
 
 export default function RootLayout({
