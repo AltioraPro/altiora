@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Target, TrendingUp, Trophy, Calendar, Star, Crown, Info, X } from "lucide-react";
-import { api } from "@/trpc/client";
 import { useHabits } from "./HabitsProvider";
 import type { HabitStatsOverview } from "@/server/api/routers/habits/types";
 
@@ -30,21 +29,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
   // Utiliser les données optimistes
   const optimisticData = getOptimisticStats(data, todayHabits);
 
-  // Mutation pour forcer la mise à jour du rank
-  const updateRankMutation = api.habits.updateRank.useMutation({
-    onSuccess: (data) => {
-      console.log("Rank mis à jour:", data);
-      // Invalider les données pour rafraîchir l'affichage
-      window.location.reload();
-    },
-    onError: (error) => {
-      console.error("Erreur lors de la mise à jour du rank:", error);
-    },
-  });
 
-  const handleForceRankUpdate = () => {
-    updateRankMutation.mutate();
-  };
 
   if (!optimisticData) {
     return <div>Loading...</div>;
@@ -432,37 +417,4 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
   );
 }
 
-// Loading skeleton
-function HabitsStatsSkeleton() {
-  return (
-    <div className="bg-white/5 rounded-2xl border border-white/10 p-6 animate-pulse">
-      <div className="flex items-center justify-between mb-6">
-        <div className="h-5 w-24 bg-white/10 rounded" />
-        <div className="h-6 w-16 bg-white/10 rounded-lg" />
-      </div>
-      
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="bg-white/5 rounded-xl border border-white/10 p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="w-5 h-5 bg-white/10 rounded" />
-              <div className="w-2 h-2 bg-white/10 rounded-full" />
-            </div>
-            <div className="space-y-1">
-              <div className="h-8 w-12 bg-white/10 rounded" />
-              <div className="h-3 w-16 bg-white/10 rounded" />
-            </div>
-            <div className="mt-3 h-1 bg-white/10 rounded-full" />
-          </div>
-        ))}
-      </div>
-      
-      <div className="mt-6 pt-6 border-t border-white/10">
-        <div className="text-center space-y-2">
-          <div className="h-4 w-48 bg-white/10 rounded mx-auto" />
-          <div className="h-3 w-32 bg-white/10 rounded mx-auto" />
-        </div>
-      </div>
-    </div>
-  );
-} 
+ 

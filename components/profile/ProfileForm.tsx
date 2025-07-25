@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { api } from "@/trpc/client";
 import { User, Mail, Calendar, Shield, Edit3, Save, X } from "lucide-react";
 
@@ -48,9 +49,11 @@ export function ProfileForm({ user }: ProfileFormProps) {
         <div className="relative">
           <div className="w-20 h-20 bg-gradient-to-br from-white/10 to-white/5 rounded-full flex items-center justify-center border border-white/20">
             {user.image ? (
-              <img
+              <Image
                 src={user.image}
                 alt={user.name}
+                width={80}
+                height={80}
                 className="w-20 h-20 rounded-full object-cover"
               />
             ) : (
@@ -170,11 +173,11 @@ export function ProfileForm({ user }: ProfileFormProps) {
             <div className="flex space-x-4">
               <button
                 type="submit"
-                disabled={updateProfile.isLoading}
+                disabled={updateProfile.isPending}
                 className="flex-1 px-6 py-3 bg-white text-black font-argesta font-bold rounded-xl hover:bg-white/90 disabled:opacity-50 transition-all duration-300 flex items-center justify-center space-x-2"
               >
                 <Save className="w-4 h-4" />
-                <span>{updateProfile.isLoading ? "SAVING..." : "SAVE CHANGES"}</span>
+                <span>{updateProfile.isPending ? "SAVING..." : "SAVE CHANGES"}</span>
               </button>
               
               <button

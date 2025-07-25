@@ -130,12 +130,12 @@ export function CreateHabitModal() {
     },
   });
 
-  const resetForm = () => {
+  const resetForm = useCallback(() => {
     setTitle("");
     setEmoji("🎯");
     setDescription("");
     setColor("#ffffff");
-  };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

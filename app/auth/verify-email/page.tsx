@@ -55,7 +55,7 @@ function VerifyEmailContent() {
     };
 
     verifyEmail();
-  }, [searchParams]); // Suppression de verifyEmailMutation des dépendances
+  }, [searchParams, verifyEmailMutation]);
 
   const handleRetry = async () => {
     setIsRetrying(true);
