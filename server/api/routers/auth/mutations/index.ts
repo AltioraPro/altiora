@@ -1,3 +1,4 @@
+export { sendVerificationEmail } from "./sendVerificationEmail";
 export { syncUser } from "./syncUser";
-export { sendVerificationEmail } from "./sendVerificationEmail"; 
-export { verifyEmail } from "./verifyEmail"; 
+export { verifyEmail } from "./verifyEmail";
+export { updateProfile } from "./updateProfile"; 

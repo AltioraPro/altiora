@@ -140,7 +140,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
                 /* User Profile - Connecté */
                 <div className="flex items-center space-x-3">
                   <Link
-                    href="/dashboard"
+                    href="/profile"
                     className="flex items-center space-x-2 text-white/80 hover:text-white px-3 py-2 rounded-xl border border-white/20 hover:bg-white/5 hover:border-white/40 transition-all duration-300 group"
                   >
                     <div className="w-6 h-6 bg-white/10 rounded-full flex items-center justify-center">
@@ -338,11 +338,11 @@ export const Header = ({ className = "" }: HeaderProps) => {
                   
                   <div className="flex items-center justify-center space-x-6">
                     <Link
-                      href="/dashboard"
+                      href="/profile"
                       onClick={toggleMenu}
                       className="text-white/60 hover:text-white transition-all duration-300 font-medium font-argesta tracking-wide text-sm group"
                     >
-                      DASHBOARD
+                      PROFILE
                       <div className="w-0 h-px bg-white/60 group-hover:w-full transition-all duration-300 mt-1" />
                     </Link>
                     <div className="w-px h-4 bg-white/20" />

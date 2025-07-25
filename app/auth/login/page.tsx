@@ -81,7 +81,7 @@ export default function LoginPage() {
           router.push(`/auth/check-email?email=${encodeURIComponent(data.email)}`);
           return;
         }
-        router.push("/dashboard");
+        router.push("/profile");
       }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "Connection error";
@@ -98,7 +98,7 @@ export default function LoginPage() {
     try {
       const { error } = await signIn.social({
         provider: "google",
-        callbackURL: "/dashboard",
+        callbackURL: "/profile",
       });
 
       if (error) {

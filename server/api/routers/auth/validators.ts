@@ -1,23 +1,25 @@
 import { z } from "zod";
 
 export const syncUserSchema = z.object({
-  id: z.string(),
-  email: z.string().email(),
-  name: z.string(),
-  image: z.string().optional(),
-  emailVerified: z.boolean().optional(),
+  email: z.string().email("Email invalide"),
+  name: z.string().min(1, "Le nom est requis"),
+  image: z.string().url("URL d'image invalide").optional(),
 });
 
 export const sendVerificationEmailSchema = z.object({
-  email: z.string().email("Invalid email address"),
-});
-
-export const verifyEmailSchema = z.object({
-  token: z.string().min(1, "Token is required"),
+  email: z.string().email("Email invalide"),
 });
 
 export const getUserEmailStatusSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  email: z.string().email("Email invalide"),
+});
+
+export const verifyEmailSchema = z.object({
+  token: z.string().min(1, "Token requis"),
+});
+
+export const updateProfileSchema = z.object({
+  name: z.string().min(1, "Le nom est requis").max(255, "Le nom est trop long"),
 });
 
 export const userCreateSchema = z.object({
