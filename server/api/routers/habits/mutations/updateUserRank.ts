@@ -35,7 +35,7 @@ export async function updateUserRank(userId: string) {
 
     // Calculer le streak actuel
     let currentStreak = 0;
-    let currentDate = new Date();
+    const currentDate = new Date();
     
     for (let i = 0; i < 30; i++) {
       const checkDate = new Date(currentDate.getTime() - i * 24 * 60 * 60 * 1000);
@@ -54,7 +54,10 @@ export async function updateUserRank(userId: string) {
 
     // Déterminer le nouveau rank basé sur le streak
     let newRank = "NEW";
-    if (currentStreak >= 30) newRank = "LEGEND";
+    if (currentStreak >= 365) newRank = "IMMORTAL";
+    else if (currentStreak >= 180) newRank = "GRANDMASTER";
+    else if (currentStreak >= 90) newRank = "MASTER";
+    else if (currentStreak >= 30) newRank = "LEGEND";
     else if (currentStreak >= 14) newRank = "EXPERT";
     else if (currentStreak >= 7) newRank = "CHAMPION";
     else if (currentStreak >= 3) newRank = "RISING";

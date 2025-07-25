@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Target, TrendingUp, Trophy, Calendar, Star, Crown, Info, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Target, TrendingUp, Trophy, Calendar, Star, Crown, Info, X, Zap, Shield, Sparkles } from "lucide-react";
 import { useHabits } from "./HabitsProvider";
 import type { HabitStatsOverview } from "@/server/api/routers/habits/types";
 
@@ -25,6 +25,27 @@ interface RankInfo {
 export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
   const { getOptimisticStats } = useHabits();
   const [isRankModalOpen, setIsRankModalOpen] = useState(false);
+  
+  // Gestion de la touche Échap pour fermer la modal
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isRankModalOpen) {
+        setIsRankModalOpen(false);
+      }
+    };
+
+    if (isRankModalOpen) {
+      document.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isRankModalOpen]);
   
   // Utiliser les données optimistes
   const optimisticData = getOptimisticStats(data, todayHabits);
@@ -109,6 +130,39 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
       description: "Living legend of discipline",
       discordRole: "Legend",
       benefits: ["Legendary Discord role", "Exclusive access to all content", "Moderator status", "VIP event invitations"]
+    },
+    {
+      name: "MASTER",
+      icon: Zap,
+      color: "text-orange-400",
+      bgColor: "bg-orange-500/10",
+      borderColor: "border-orange-500/30",
+      minStreak: 90,
+      description: "Master of consistency and discipline",
+      discordRole: "Master",
+      benefits: ["Master Discord role", "Exclusive masterclasses", "Personal coaching sessions", "Priority support", "Custom Discord badge"]
+    },
+    {
+      name: "GRANDMASTER",
+      icon: Shield,
+      color: "text-red-400",
+      bgColor: "bg-red-500/10",
+      borderColor: "border-red-500/30",
+      minStreak: 180,
+      description: "Grandmaster of productivity and life mastery",
+      discordRole: "Grandmaster",
+      benefits: ["Grandmaster Discord role", "All-access pass", "Personal mentor status", "Exclusive events", "Custom profile features", "Direct access to founders"]
+    },
+    {
+      name: "IMMORTAL",
+      icon: Sparkles,
+      color: "text-pink-400",
+      bgColor: "bg-pink-500/10",
+      borderColor: "border-pink-500/30",
+      minStreak: 365,
+      description: "Immortal legend of discipline and excellence",
+      discordRole: "Immortal",
+      benefits: ["Immortal Discord role", "Legendary status", "All platform features", "Personal consultation", "Exclusive merchandise", "Founder's circle access", "Custom integrations"]
     }
   ];
 
@@ -222,7 +276,13 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                 <div className="flex items-center space-x-3 text-sm">
                   <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                   <span className="text-green-400 font-argesta">
-                    {currentStreak >= 30 
+                    {currentStreak >= 365 
+                      ? "Immortal consistency! You&apos;re beyond legendary." 
+                      : currentStreak >= 180 
+                      ? "Grandmaster level! You&apos;re a master of life." 
+                      : currentStreak >= 90 
+                      ? "Master consistency! You&apos;re achieving legendary status." 
+                      : currentStreak >= 30 
                       ? "Incredible consistency! You&apos;re building legendary habits." 
                       : currentStreak >= 14 
                       ? "Outstanding! You&apos;re becoming a habit expert." 
@@ -251,6 +311,33 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
               )}
 
               {/* Rank-specific messages */}
+              {currentRank.name === "IMMORTAL" && (
+                <div className="flex items-center space-x-3 text-sm">
+                  <Sparkles className="w-4 h-4 text-pink-400" />
+                  <span className="text-pink-400 font-argesta">
+                    You&apos;re an immortal legend! Your discipline transcends time.
+                  </span>
+                </div>
+              )}
+              
+              {currentRank.name === "GRANDMASTER" && (
+                <div className="flex items-center space-x-3 text-sm">
+                  <Shield className="w-4 h-4 text-red-400" />
+                  <span className="text-red-400 font-argesta">
+                    Grandmaster status! You&apos;re a master of life and productivity.
+                  </span>
+                </div>
+              )}
+              
+              {currentRank.name === "MASTER" && (
+                <div className="flex items-center space-x-3 text-sm">
+                  <Zap className="w-4 h-4 text-orange-400" />
+                  <span className="text-orange-400 font-argesta">
+                    Master level achieved! Your consistency is legendary.
+                  </span>
+                </div>
+              )}
+              
               {currentRank.name === "LEGEND" && (
                 <div className="flex items-center space-x-3 text-sm">
                   <Crown className="w-4 h-4 text-yellow-400" />
@@ -284,8 +371,14 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
 
       {/* Rank System Modal */}
       {isRankModalOpen && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setIsRankModalOpen(false)}
+        >
+          <div 
+            className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="p-6">
               {/* Header */}
               <div className="flex items-center justify-between mb-6">

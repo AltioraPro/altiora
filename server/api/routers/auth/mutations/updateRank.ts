@@ -6,7 +6,7 @@ import { users } from "@/server/db/schema";
 import { type AuthMutationContext } from "./types";
 
 const updateRankSchema = z.object({
-  rank: z.enum(["NEW", "BEGINNER", "RISING", "CHAMPION", "EXPERT", "LEGEND"]),
+  rank: z.enum(["NEW", "BEGINNER", "RISING", "CHAMPION", "EXPERT", "LEGEND", "MASTER", "GRANDMASTER", "IMMORTAL"]),
 });
 
 export async function updateRank(

@@ -22,6 +22,12 @@ interface ActivityStatsProps {
 export function ActivityStats({ stats }: ActivityStatsProps) {
   const getRankColor = (rank: string) => {
     switch (rank) {
+      case "IMMORTAL":
+        return "text-pink-400";
+      case "GRANDMASTER":
+        return "text-red-400";
+      case "MASTER":
+        return "text-orange-400";
       case "LEGEND":
         return "text-yellow-400";
       case "EXPERT":
@@ -39,6 +45,12 @@ export function ActivityStats({ stats }: ActivityStatsProps) {
 
   const getRankIcon = (rank: string) => {
     switch (rank) {
+      case "IMMORTAL":
+        return "✨";
+      case "GRANDMASTER":
+        return "🛡️";
+      case "MASTER":
+        return "⚡";
       case "LEGEND":
         return "👑";
       case "EXPERT":

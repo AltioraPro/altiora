@@ -58,7 +58,10 @@ async function calculateAndUpdateRank(userId: string) {
 
     // Déterminer le nouveau rank basé sur le streak
     let newRank = "NEW";
-    if (currentStreak >= 30) newRank = "LEGEND";
+    if (currentStreak >= 365) newRank = "IMMORTAL";
+    else if (currentStreak >= 180) newRank = "GRANDMASTER";
+    else if (currentStreak >= 90) newRank = "MASTER";
+    else if (currentStreak >= 30) newRank = "LEGEND";
     else if (currentStreak >= 14) newRank = "EXPERT";
     else if (currentStreak >= 7) newRank = "CHAMPION";
     else if (currentStreak >= 3) newRank = "RISING";
