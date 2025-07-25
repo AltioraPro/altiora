@@ -14,7 +14,8 @@ import {
   createHabit, 
   updateHabit, 
   deleteHabit, 
-  toggleHabitCompletion 
+  toggleHabitCompletion,
+  updateUserRank
 } from "./mutations";
 import { 
   getUserHabits, 
@@ -96,5 +97,10 @@ export const habitsRouter = createTRPCRouter({
       await Promise.all(updatePromises);
       
       return { success: true, message: "Habit order updated" };
+    }),
+
+  updateRank: protectedProcedure
+    .mutation(async ({ ctx }) => {
+      return await updateUserRank(ctx.session.userId);
     }),
 }); 

@@ -1,6 +1,7 @@
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 import { authRouter } from "@/server/api/routers/auth/router";
 import { habitsRouter } from "@/server/api/routers/habits/router";
+import { profileRouter } from "@/server/api/routers/profile/router";
 
 /**
  * Router principal de l'API tRPC
@@ -8,6 +9,7 @@ import { habitsRouter } from "@/server/api/routers/habits/router";
 export const appRouter = createTRPCRouter({
   auth: authRouter,
   habits: habitsRouter,
+  profile: profileRouter,
 });
 
 // Export des types

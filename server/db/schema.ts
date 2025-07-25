@@ -27,6 +27,16 @@ export const users = pgTable(
     image: varchar("image", { length: 1024 }),
     emailVerified: boolean("email_verified").default(false).notNull(),
     
+    // Rank and subscription fields
+    rank: varchar("rank", { length: 50 }).default("NEW").notNull(),
+    subscriptionPlan: varchar("subscription_plan", { length: 20 }).default("FREE").notNull(),
+    
+    // Stripe fields
+    stripeCustomerId: varchar("stripe_customer_id", { length: 255 }),
+    stripeSubscriptionId: varchar("stripe_subscription_id", { length: 255 }),
+    stripeSubscriptionStatus: varchar("stripe_subscription_status", { length: 50 }),
+    stripeSubscriptionEndDate: timestamp("stripe_subscription_end_date", { withTimezone: true }),
+    
     // Timestamps
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
@@ -37,6 +47,7 @@ export const users = pgTable(
   },
   (table) => ({
     emailIdx: index("user_email_idx").on(table.email),
+    stripeCustomerIdx: index("user_stripe_customer_idx").on(table.stripeCustomerId),
   })
 );
 

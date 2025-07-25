@@ -1,6 +1,7 @@
-import { z } from "zod";
+ import { z } from "zod";
 
 export const syncUserSchema = z.object({
+  id: z.string().min(1, "ID requis"),
   email: z.string().email("Email invalide"),
   name: z.string().min(1, "Le nom est requis"),
   image: z.string().url("URL d'image invalide").optional(),
@@ -20,6 +21,10 @@ export const verifyEmailSchema = z.object({
 
 export const updateProfileSchema = z.object({
   name: z.string().min(1, "Le nom est requis").max(255, "Le nom est trop long"),
+});
+
+export const updateRankSchema = z.object({
+  rank: z.enum(["NEW", "BEGINNER", "RISING", "CHAMPION", "EXPERT", "LEGEND"]),
 });
 
 export const userCreateSchema = z.object({

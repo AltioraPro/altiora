@@ -29,6 +29,13 @@
       "when": 1753361990786,
       "tag": "0003_legal_crystal",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1753426602402,
+      "tag": "0004_loose_beast",
+      "breakpoints": true
     }
   ]
 }

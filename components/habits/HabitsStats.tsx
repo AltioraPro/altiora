@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Trophy, Target, TrendingUp, Calendar, Star, Crown, X, Info } from "lucide-react";
-import type { HabitStatsOverview } from "@/server/api/routers/habits/types";
+import { Target, TrendingUp, Trophy, Calendar, Star, Crown, Info, X } from "lucide-react";
+import { api } from "@/trpc/client";
 import { useHabits } from "./HabitsProvider";
+import type { HabitStatsOverview } from "@/server/api/routers/habits/types";
 
 interface HabitsStatsProps {
   data?: HabitStatsOverview;
@@ -29,8 +30,24 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
   // Utiliser les données optimistes
   const optimisticData = getOptimisticStats(data, todayHabits);
 
+  // Mutation pour forcer la mise à jour du rank
+  const updateRankMutation = api.habits.updateRank.useMutation({
+    onSuccess: (data) => {
+      console.log("Rank mis à jour:", data);
+      // Invalider les données pour rafraîchir l'affichage
+      window.location.reload();
+    },
+    onError: (error) => {
+      console.error("Erreur lors de la mise à jour du rank:", error);
+    },
+  });
+
+  const handleForceRankUpdate = () => {
+    updateRankMutation.mutate();
+  };
+
   if (!optimisticData) {
-    return <HabitsStatsSkeleton />;
+    return <div>Loading...</div>;
   }
 
   const {

@@ -1,7 +1,7 @@
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
-import { syncUserSchema, sendVerificationEmailSchema, getUserEmailStatusSchema, verifyEmailSchema, updateProfileSchema } from "./validators";
+import { syncUserSchema, sendVerificationEmailSchema, getUserEmailStatusSchema, verifyEmailSchema, updateProfileSchema, updateRankSchema } from "./validators";
 import { getCurrentUser, getUserEmailStatus } from "./queries";
-import { syncUser, sendVerificationEmail, verifyEmail, updateProfile } from "./mutations";
+import { syncUser, sendVerificationEmail, verifyEmail, updateProfile, updateRank } from "./mutations";
 
 export const authRouter = createTRPCRouter({
   // Queries
@@ -41,5 +41,12 @@ export const authRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { db, session } = ctx;
       return await updateProfile({ db, session }, input);
+    }),
+
+  updateRank: protectedProcedure
+    .input(updateRankSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { db, session } = ctx;
+      return await updateRank({ db, session }, input);
     }),
 }); 
