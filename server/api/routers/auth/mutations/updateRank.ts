@@ -10,10 +10,10 @@ const updateRankSchema = z.object({
 });
 
 export async function updateRank(
-  { db, session }: AuthMutationContext,
+  { db, session }: AuthMutationContext<z.infer<typeof updateRankSchema>>,
   input: z.infer<typeof updateRankSchema>
 ) {
-  if (!session?.userId) {
+  if (!session?.user?.id) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
       message: "Vous devez être connecté pour modifier votre rank",
@@ -29,7 +29,7 @@ export async function updateRank(
         rank,
         updatedAt: new Date(),
       })
-      .where(eq(users.id, session.userId))
+      .where(eq(users.id, session.user.id))
       .returning({
         id: users.id,
         rank: users.rank,
