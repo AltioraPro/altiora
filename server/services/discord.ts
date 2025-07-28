@@ -21,16 +21,21 @@ const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET!;
 const DISCORD_GUILD_ID = process.env.DISCORD_GUILD_ID!;
 const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN!;
 const DISCORD_BOT_WEBHOOK_URL = process.env.DISCORD_BOT_WEBHOOK_URL || 'http://localhost:3001';
-const REDIRECT_URI = process.env.DISCORD_REDIRECT_URI;
+const REDIRECT_URI = process.env.DISCORD_REDIRECT_URI || `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/discord/callback`;
+
+// S'assurer que REDIRECT_URI n'est jamais undefined
+if (!REDIRECT_URI) {
+  throw new Error('DISCORD_REDIRECT_URI must be defined');
+}
 
 // Validation de la configuration
-if (!DISCORD_CLIENT_ID || !DISCORD_CLIENT_SECRET || !DISCORD_GUILD_ID || !DISCORD_BOT_TOKEN) {
+if (!DISCORD_CLIENT_ID || !DISCORD_CLIENT_SECRET || !DISCORD_GUILD_ID || !DISCORD_BOT_TOKEN || !REDIRECT_URI) {
   console.error('Discord configuration missing:', {
     clientId: !!DISCORD_CLIENT_ID,
     clientSecret: !!DISCORD_CLIENT_SECRET,
     guildId: !!DISCORD_GUILD_ID,
     botToken: !!DISCORD_BOT_TOKEN,
-    redirectUri: REDIRECT_URI,
+    redirectUri: !!REDIRECT_URI,
   });
 }
 
