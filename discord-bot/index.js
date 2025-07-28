@@ -212,6 +212,29 @@ app.get('/health', (req, res) => {
   res.json(status);
 });
 
+// Route proxy pour le callback Discord OAuth
+app.get('/api/auth/discord/callback', async (req, res) => {
+  console.log(`🔄 [Discord Proxy] Callback OAuth reçu à ${new Date().toISOString()}`);
+  console.log(`📡 [Discord Proxy] IP source: ${req.ip}`); 
+  console.log(`📦 [Discord Proxy] Query params:`, req.query);
+  
+  try {
+    // Construire l'URL de redirection vers l'app Next.js
+    const nextJsUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const callbackPath = '/api/auth/discord/callback';
+    const queryString = new URLSearchParams(req.query).toString();
+    const fullUrl = `${nextJsUrl}${callbackPath}?${queryString}`;
+    
+    console.log(`🔗 [Discord Proxy] Redirection vers: ${fullUrl}`);
+    
+    // Rediriger vers l'app Next.js
+    res.redirect(302, fullUrl);
+  } catch (error) {
+    console.error(`❌ [Discord Proxy] Erreur lors de la redirection:`, error);
+    res.status(500).json({ error: 'Proxy redirect failed' });
+  }
+});
+
 app.post('/webhook/sync-rank', async (req, res) => {
   console.log(`📥 [Bot Webhook] Webhook reçu à ${new Date().toISOString()}`);
   console.log(`📡 [Bot Webhook] IP source: ${req.ip}`);
