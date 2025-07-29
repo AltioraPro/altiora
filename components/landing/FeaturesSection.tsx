@@ -194,7 +194,7 @@ export const FeaturesSection = () => {
 
           {/* Discord Integration */}
           <AnimatedCard delay={450}>
-            <SpotlightCard className="custom-spotlight-card group relative h-[400px] bg-pure-black" spotlightColor="rgba(255, 255, 255, 0.2)" >
+            <SpotlightCard className="custom-spotlight-card group relative h-[400px] bg-pure-black" spotlightColor="rgba(255, 255, 255, 0.2)" >v
                 <div className="relative mb-6">
                   <div className="w-16 h-16 bg-white/5 rounded-xl flex items-center justify-center group-hover:bg-white/10 transition-colors duration-300">
                     <DiscordIcon className="w-8 h-8 text-white/80 group-hover:text-white transition-colors duration-300" />

@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { DiscordService } from '@/server/services/discord';
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     console.log('🔄 [API] Synchronisation globale demandée');
     
@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: 'Synchronisation globale terminée',
-      ...result,
+      syncResult: result,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
