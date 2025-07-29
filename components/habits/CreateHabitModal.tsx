@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { api } from "@/trpc/client";
 import { useHabits } from "./HabitsProvider";
-import { X } from "lucide-react";
-
+import { useToast } from "@/components/ui/toast";
+import { X, Plus, AlertTriangle } from "lucide-react";
+import { LimitsBanner } from "@/components/subscription/LimitsBanner";
 
 const HABIT_EMOJIS = [
   "🎯", "💪", "📚", "🏃", "🧘", "💧", "🌱", "⚡", "🔥", "⭐",
@@ -21,159 +22,55 @@ const HABIT_COLORS = [
 ];
 
 export function CreateHabitModal() {
-  const { isCreateModalOpen, closeCreateModal, openCreateModal } = useHabits();
+  const { isCreateModalOpen, closeCreateModal } = useHabits();
+  const { addToast } = useToast();
   const [title, setTitle] = useState("");
   const [emoji, setEmoji] = useState("🎯");
   const [description, setDescription] = useState("");
   const [color, setColor] = useState("#ffffff");
-  const [targetFrequency] = useState<"daily" | "weekly" | "monthly">("daily");
-  
+
   const utils = api.useUtils();
-
-  const createHabit = api.habits.create.useMutation({
-    onMutate: async (newHabit) => {
-      await utils.habits.getDashboard.cancel();
-      await utils.habits.getPaginated.cancel();
-      
-      const previousData = utils.habits.getDashboard.getData();
-      
-      closeCreateModal();
-      resetForm();
-      
-        if (previousData) {
-        const tempId = `temp-${Date.now()}`;
-
-        const optimisticHabit = {
-          id: tempId,
-          userId: 'temp-user',
-          ...newHabit,
-          description: newHabit.description || null,
-          color: newHabit.color || null,
-          targetFrequency: newHabit.targetFrequency || null,
-          isActive: true,
-          sortOrder: previousData.habits.length,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          completions: [],
-          completionRate: 0,
-        };
-        
-        const updatedTodayStats = {
-          ...previousData.todayStats,
-          totalHabits: previousData.todayStats.totalHabits + 1,
-          habits: [
-            ...previousData.todayStats.habits,
-            {
-              id: tempId,
-              title: optimisticHabit.title,
-              emoji: optimisticHabit.emoji,
-              isCompleted: false,
-              notes: undefined,
-            }
-          ]
-        };
-        
-        const completionPercentage = updatedTodayStats.totalHabits > 0 
-          ? Math.round((updatedTodayStats.completedHabits / updatedTodayStats.totalHabits) * 100) 
-          : 0;
-        updatedTodayStats.completionPercentage = completionPercentage;
-        
-        utils.habits.getDashboard.setData(undefined, {
-          ...previousData,
-          habits: [...previousData.habits, optimisticHabit],
-          todayStats: updatedTodayStats,
-          stats: {
-            ...previousData.stats,
-            totalActiveHabits: previousData.stats.totalActiveHabits + 1,
-          }
-        });
-        
-        return { previousData, tempId };
-      }
-      
-      return { previousData, tempId: undefined };
-    },
-    onSuccess: (newHabit, variables, context) => {
-      const currentData = utils.habits.getDashboard.getData();
-      if (currentData && context?.tempId) {
-        const updatedHabits = currentData.habits.map(habit =>
-          habit.id === context.tempId ? newHabit : habit
-        );
-        
-        const updatedTodayStats = {
-          ...currentData.todayStats,
-          habits: currentData.todayStats.habits.map(habit =>
-            habit.id === context.tempId 
-              ? { ...habit, id: newHabit.id }
-              : habit
-          )
-        };
-        
-        utils.habits.getDashboard.setData(undefined, {
-          ...currentData,
-          habits: updatedHabits as typeof currentData.habits,
-          todayStats: updatedTodayStats,
-        });
-      }
-    },
-    onError: (error, variables, context) => {
-      if (context?.previousData) {
-        utils.habits.getDashboard.setData(undefined, context.previousData);
-      }
-      
-      openCreateModal();
-      console.error("Error creating habit:", error);
-    },
-    onSettled: () => {
+  const createHabitMutation = api.habits.create.useMutation({
+    onSuccess: () => {
+      utils.habits.getAll.invalidate();
       utils.habits.getDashboard.invalidate();
-      utils.habits.getPaginated.invalidate();
+      utils.subscription.getLimitsSummary.invalidate();
+      addToast({
+        type: "success",
+        title: "Habitude créée",
+        message: "Votre nouvelle habitude a été créée avec succès",
+      });
+      handleClose();
+    },
+    onError: (error) => {
+      console.error("Error creating habit:", error);
+      addToast({
+        type: "error",
+        title: "Erreur",
+        message: error.message || "Impossible de créer l'habitude",
+      });
     },
   });
 
-  const resetForm = useCallback(() => {
+  const handleClose = () => {
     setTitle("");
     setEmoji("🎯");
     setDescription("");
     setColor("#ffffff");
-  }, []);
+    closeCreateModal();
+  };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!title.trim()) return;
 
-    createHabit.mutate({
+    createHabitMutation.mutate({
       title: title.trim(),
       emoji,
       description: description.trim() || undefined,
       color,
-      targetFrequency,
     });
   };
-
-  const handleClose = useCallback(() => {
-    closeCreateModal();
-    resetForm();
-  }, [closeCreateModal, resetForm]);
-
-  // Gestion de la touche Escape
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isCreateModalOpen) {
-        handleClose();
-      }
-    };
-
-    if (isCreateModalOpen) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
-    };
-  }, [isCreateModalOpen, handleClose]);
 
   if (!isCreateModalOpen) return null;
 
@@ -204,6 +101,9 @@ export function CreateHabitModal() {
                 <X className="w-3 h-3 text-white/60" />
               </button>
             </div>
+
+            {/* Limits Banner */}
+            <LimitsBanner type="habits" />
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -317,10 +217,10 @@ export function CreateHabitModal() {
                 </button>
                 <button
                   type="submit"
-                  disabled={!title.trim() || createHabit.isPending}
+                  disabled={!title.trim() || createHabitMutation.isLoading}
                   className="flex-1 px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 rounded-lg text-white font-argesta transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                 >
-                  {createHabit.isPending ? "CREATING..." : "CREATE"}
+                  {createHabitMutation.isLoading ? "CREATING..." : "CREATE"}
                 </button>
               </div>
             </form>

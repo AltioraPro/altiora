@@ -83,7 +83,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
         <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <div className="relative flex items-center h-16">
             
-            {/* Menu Button - Gauche */}
+            {/* Menu Button - Left */}
             <div className="relative z-10">
               <button
                 onClick={toggleMenu}
@@ -135,7 +135,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
               </Link>
             </div>
 
-            {/* Auth Section - Droite */}
+            {/* Auth Section - Right */}
             <div className="flex items-center space-x-3 ml-auto z-10">
               {isPending ? (
                 <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />

@@ -3,11 +3,13 @@
 import { useState, useCallback } from "react";
 import { api } from "@/trpc/client";
 import { useHabits } from "./HabitsProvider";
+import { useToast } from "@/components/ui/toast";
 import { Edit, Trash2, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { useDebounce } from "@/lib/hooks/useDebounce";
 
 export function HabitsManager() {
   const { openEditModal } = useHabits();
+  const { addToast } = useToast();
   
   // Mutations
   const utils = api.useUtils();
@@ -15,6 +17,18 @@ export function HabitsManager() {
     onSuccess: () => {
       utils.habits.getPaginated.invalidate();
       utils.habits.getDashboard.invalidate();
+      addToast({
+        type: "success",
+        title: "Habitude supprimée",
+        message: "L'habitude a été supprimée avec succès",
+      });
+    },
+    onError: (error) => {
+      addToast({
+        type: "error",
+        title: "Erreur",
+        message: error.message || "Impossible de supprimer l'habitude",
+      });
     },
   });
 
@@ -22,6 +36,18 @@ export function HabitsManager() {
     onSuccess: () => {
       utils.habits.getPaginated.invalidate();
       utils.habits.getDashboard.invalidate();
+      addToast({
+        type: "success",
+        title: "Habitude réactivée",
+        message: "L'habitude a été réactivée avec succès",
+      });
+    },
+    onError: (error) => {
+      addToast({
+        type: "error",
+        title: "Erreur",
+        message: error.message || "Impossible de réactiver l'habitude",
+      });
     },
   });
 
@@ -39,10 +65,10 @@ export function HabitsManager() {
   const [searchInput, setSearchInput] = useState("");
   const [showInactive, setShowInactive] = useState(false);
 
-  // Debounce la recherche pour éviter les requêtes à chaque frappe
+  // Debounce the search to avoid frequent requests
   const debouncedSearch = useDebounce(searchInput, 300);
 
-  // Utiliser la pagination au lieu des habitudes statiques
+  // Use pagination instead of static habits
   const { data: paginatedData, isLoading } = api.habits.getPaginated.useQuery({
     page,
     limit,

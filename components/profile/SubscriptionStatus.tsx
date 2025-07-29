@@ -2,18 +2,34 @@
 
 import Link from "next/link";
 import { Crown, Zap, Star, ArrowRight, Shield } from "lucide-react";
+import { api } from "@/trpc/client";
 
-interface SubscriptionStatusProps {
-  user: {
-    id: string;
-    email: string;
-    name: string;
-    subscriptionPlan: string;
-    stripeSubscriptionStatus?: string | null;
-  };
-}
+export function SubscriptionStatus() {
+  const { data: user, isLoading } = api.auth.getCurrentUser.useQuery();
 
-export function SubscriptionStatus({ user }: SubscriptionStatusProps) {
+  if (isLoading || !user) {
+    return (
+      <div className="space-y-8">
+        <div className="text-center">
+          <div className="inline-flex items-center space-x-3 px-6 py-3 rounded-full border bg-white/10 text-white/60 border-white/20 animate-pulse">
+            <div className="w-5 h-5 bg-white/20 rounded" />
+            <div className="h-4 bg-white/20 rounded w-24" />
+          </div>
+        </div>
+        <div className="space-y-4">
+          {[...Array(2)].map((_, i) => (
+            <div key={i} className="p-4 bg-white/5 rounded-xl border border-white/10 animate-pulse">
+              <div className="flex items-center justify-between">
+                <div className="h-4 bg-white/20 rounded w-20" />
+                <div className="h-4 bg-white/20 rounded w-16" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   const isPro = user.subscriptionPlan === "PRO" && user.stripeSubscriptionStatus === "active";
 
   return (

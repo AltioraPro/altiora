@@ -2,6 +2,7 @@
 
 import { ReactNode } from "react";
 import { TRPCReactProvider } from "@/trpc/client";
+import { ToastProvider } from "@/components/ui/toast";
 
 interface ProvidersProps {
   children: ReactNode;
@@ -10,7 +11,9 @@ interface ProvidersProps {
 export function Providers({ children }: ProvidersProps) {
   return (
     <TRPCReactProvider>
-      {children}
+      <ToastProvider>
+        {children}
+      </ToastProvider>
     </TRPCReactProvider>
   );
 } 

@@ -70,7 +70,7 @@ export default function LoginPage() {
       });
 
       if (error) {
-        // is l'erreur est liée à un email non vérifié, rediriger vers check-email
+        // if the error is related to an unverified email, redirect to check-email
         if (error.message?.includes("email_not_verified") || error.message?.includes("verify")) {
           router.push(`/auth/check-email?email=${encodeURIComponent(data.email)}`);
           return;
@@ -130,7 +130,7 @@ export default function LoginPage() {
       </div>
 
       <div className="relative z-10 flex min-h-screen">
-        {/* Section gauche - Branding */}
+        {/* Left section - Branding */}
         <div className="hidden lg:flex lg:w-1/2 flex-col justify-center px-12 xl:px-20">
           <div className="max-w-lg">
             <h1 className="text-[4rem] font-bold font-argesta leading-none mb-6 bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent">
@@ -158,7 +158,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Section droite - Formulaire */}
+        {/* Right section - Form */}
         <div className="flex-1 lg:w-1/2 flex items-center justify-center p-8">
           <div className="w-full max-w-md">
             

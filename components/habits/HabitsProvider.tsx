@@ -63,11 +63,11 @@ export function HabitsProvider({ children }: HabitsProviderProps) {
     setIsEditModalOpen(false);
   };
 
-  // Fonction pour changer la date (pour l'instant statique sur aujourd'hui)  
+  // Function to change date (for now static on today)  
   const setSelectedDate = (date: string) => {
-    // Pour l'instant on garde la date d'aujourd'hui
-    // Cette fonction sera utile plus tard pour la navigation temporelle
-    console.log("Date sélectionnée:", date);
+    // For now, we keep today's date
+    // This function will be useful later for temporal navigation
+    console.log("Selected date:", date);
   };
 
   // Optimistic updates management
@@ -115,7 +115,7 @@ export function HabitsProvider({ children }: HabitsProviderProps) {
     return (data?: HabitStatsOverview, todayHabits?: Array<{ id: string; isCompleted: boolean }>) => {
       if (!data) return data;
 
-      // Recalculer seulement les statistiques qui peuvent être optimisées localement
+      // Recalculate only statistics that can be optimized locally
       if (todayHabits) {
         const updatedHabits = todayHabits.map(habit => ({
           ...habit,
@@ -126,10 +126,10 @@ export function HabitsProvider({ children }: HabitsProviderProps) {
         const totalHabits = updatedHabits.length;
         const todayCompletionRate = totalHabits > 0 ? Math.round((completedHabits / totalHabits) * 100) : 0;
         
-        // Utiliser le nombre réel d'habitudes d'aujourd'hui
+        // Use the real number of habits for today
         const realTotalActiveHabits = totalHabits;
         
-        // Recalculer le taux de completion moyen en incluant aujourd'hui
+        // Recalculate the average completion rate including today
         const weeklyStats = data.weeklyStats || [];
         const today = new Date().toISOString().split('T')[0]!;
         
@@ -139,31 +139,31 @@ export function HabitsProvider({ children }: HabitsProviderProps) {
             : stat
         );
         
-        // Calculer le nouveau taux moyen
+        // Calculate the new average
         const totalCompletionRates = updatedWeeklyStats.reduce((sum, stat) => sum + stat.completionPercentage, 0);
         const newAverageCompletionRate = updatedWeeklyStats.length > 0 
           ? Math.round(totalCompletionRates / updatedWeeklyStats.length) 
           : todayCompletionRate;
         
-        // Recalculer le worst day
+        // Recalculate the worst day
         const worstDay = updatedWeeklyStats.reduce((worst, stat) => 
           stat.completionPercentage < worst.percentage 
             ? { date: stat.date, percentage: stat.completionPercentage }
             : worst
         , { date: '', percentage: 100 });
         
-        // Calculer le streak optimiste : logique simple et immédiate
+        // Calculate the optimistic streak: simple and immediate logic
         const todayCompletedHabits = updatedHabits.filter(h => h.isCompleted).length;
         const hasValidatedToday = todayCompletedHabits > 0;
         
-        // Vérifier si aujourd'hui était déjà compté dans les stats du serveur
+        // Check if today was already counted in the server stats
         const todayStatsFromServer = updatedWeeklyStats.find(stat => stat.date === today);
         const todayWasAlreadyCounted = todayStatsFromServer && todayStatsFromServer.completionPercentage > 0;
         
-        // Logique optimiste intelligente :
-        // - Si validé aujourd'hui ET aujourd'hui pas encore compté par le serveur -> +1
-        // - Si validé aujourd'hui ET aujourd'hui déjà compté par le serveur -> garder
-        // - Si pas validé aujourd'hui -> garder
+        // Smart optimistic logic:
+        // - If validated today AND today not yet counted by the server -> +1
+        // - If validated today AND today already counted by the server -> keep
+        // - If not validated today -> keep
         const optimisticCurrentStreak = hasValidatedToday
           ? (todayWasAlreadyCounted ? data.currentStreak : Math.max(data.currentStreak + 1, 1))
           : data.currentStreak;
@@ -176,7 +176,7 @@ export function HabitsProvider({ children }: HabitsProviderProps) {
           averageCompletionRate: newAverageCompletionRate,
           weeklyStats: updatedWeeklyStats,
           worstDay,
-          // Streaks optimistes
+          // Optimistic streaks
           currentStreak: optimisticCurrentStreak,
           longestStreak: optimisticLongestStreak
         };
@@ -194,7 +194,7 @@ export function HabitsProvider({ children }: HabitsProviderProps) {
       
       return data.map(activity => {
         if (activity.date === today && habits) {
-          // Recalculer le pourcentage pour aujourd'hui basé sur les optimistic updates
+          // Recalculate the percentage for today based on optimistic updates
           const updatedHabits = habits.map(habit => ({
             ...habit,
             isCompleted: optimisticUpdates[habit.id] ?? habit.isCompleted

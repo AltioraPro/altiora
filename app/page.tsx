@@ -34,7 +34,7 @@ export default function HomePage() {
           }}
         ></div>
 
-        {/* Éléments décoratifs côté gauche */}
+        {/* Decorative elements left side */}
         <div className="absolute left-8 top-1/2 transform -translate-y-1/2 space-y-8 opacity-60 z-20">
           <div className="flex flex-col space-y-6">
             <div className="flex items-center space-x-3">

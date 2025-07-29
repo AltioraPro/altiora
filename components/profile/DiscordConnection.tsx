@@ -89,7 +89,9 @@ export function DiscordConnection() {
     }
   };
 
-  const RankIcon = connectionStatus?.currentRank ? rankIcons[connectionStatus.currentRank] : Target;
+  const RankIcon = connectionStatus?.currentRank && rankIcons[connectionStatus.currentRank] 
+    ? rankIcons[connectionStatus.currentRank] 
+    : Target;
 
   return (
     <Card className="bg-white/5 border border-white/10 backdrop-blur-sm">

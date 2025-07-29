@@ -10,8 +10,9 @@ import { EditHabitModal } from "./EditHabitModal";
 import { Plus } from "lucide-react";
 import { memo } from "react";
 import { useHabitsDashboard } from "@/lib/hooks/useHabitsQuery";
+import { LimitsBanner } from "@/components/subscription/LimitsBanner";
 
-// OPTIMISATION: Composant memoized pour éviter les re-renders inutiles
+// OPTIMIZATION: Memoized component to avoid unnecessary re-renders
 const ViewModeToggle = memo(({ 
   viewMode, 
   setViewMode 
@@ -40,7 +41,7 @@ const ViewModeToggle = memo(({
 
 ViewModeToggle.displayName = "ViewModeToggle";
 
-// OPTIMISATION: Composant memoized pour le bouton de création
+// OPTIMIZATION: Memoized component for creation button
 const CreateHabitButton = memo(({ 
   onClick 
 }: { 
@@ -64,7 +65,7 @@ export function HabitsDashboard() {
     setViewMode,
   } = useHabits();
 
-  // OPTIMISATION: Utilisation du hook personnalisé optimisé
+  // OPTIMIZATION: Using optimized custom hook
   const { data: dashboardData, isLoading, error } = useHabitsDashboard(viewMode);
 
   if (isLoading) {
@@ -90,6 +91,9 @@ export function HabitsDashboard() {
   return (
     <>
     <div className="space-y-6 mb-16">
+      {/* Limits Banner */}
+      <LimitsBanner type="habits" />
+      
       {/* Top Actions */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
@@ -103,7 +107,7 @@ export function HabitsDashboard() {
 
       {/* Bento Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Colonne gauche: Today's Habits + Progress */}
+        {/* Left column: Today's Habits + Progress */}
         <div className="lg:col-span-8 space-y-6">
           <TodayHabitsCard data={dashboardData?.todayStats} />
           <HabitsProgressChart 
@@ -113,7 +117,7 @@ export function HabitsDashboard() {
           />
         </div>
 
-        {/* Colonne droite: Statistics + Habits Manager */}
+        {/* Right column: Statistics + Habits Manager */}
         <div className="lg:col-span-4 space-y-6">
           <HabitsStats 
             data={dashboardData?.stats} 
@@ -143,13 +147,13 @@ function HabitsDashboardSkeleton() {
 
       {/* Bento Grid Skeleton */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Colonne gauche: Today's Habits + Progress */}
+        {/* Left column: Today's Habits + Progress */}
         <div className="lg:col-span-8 space-y-6">
           <div className="h-64 bg-white/5 rounded-2xl" />
           <div className="h-80 bg-white/5 rounded-2xl" />
         </div>
 
-        {/* Colonne droite: Statistics + Habits Manager */}
+        {/* Right column: Statistics + Habits Manager */}
         <div className="lg:col-span-4 space-y-6">
           <div className="h-64 bg-white/5 rounded-2xl" />
           <div className="h-80 bg-white/5 rounded-2xl" />

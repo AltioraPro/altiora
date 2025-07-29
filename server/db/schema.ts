@@ -1,14 +1,5 @@
+import { pgTable, varchar, text, boolean, timestamp, integer, index, pgTableCreator } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import {
-  index,
-  pgTable,
-  pgTableCreator,
-  timestamp,
-  varchar,
-  boolean,
-  text,
-  integer,
-} from "drizzle-orm/pg-core";
 
 /**
  * Table creator avec préfixe pour les tables métier
@@ -250,6 +241,111 @@ export const trades = createTable(
   })
 );
 
+/**
+ * Plans d'abonnement
+ */
+export const subscriptionPlans = pgTable(
+  "subscription_plan",
+  {
+    id: varchar("id", { length: 255 }).primaryKey(),
+    name: varchar("name", { length: 50 }).notNull(), // FREE, PRO, ALTIORANS
+    displayName: varchar("display_name", { length: 100 }).notNull(),
+    description: text("description"),
+    price: integer("price").notNull(), // Prix en centimes
+    currency: varchar("currency", { length: 3 }).default("EUR").notNull(),
+    billingInterval: varchar("billing_interval", { length: 20 }).default("monthly").notNull(), // monthly, yearly
+    stripePriceId: varchar("stripe_price_id", { length: 255 }),
+    isActive: boolean("is_active").default(true).notNull(),
+    
+    // Limitations par plan
+    maxHabits: integer("max_habits").default(3).notNull(),
+    maxTradingEntries: integer("max_trading_entries").default(10).notNull(), // par mois
+    maxAnnualGoals: integer("max_annual_goals").default(1).notNull(),
+    maxQuarterlyGoals: integer("max_quarterly_goals").default(1).notNull(),
+    maxCustomGoals: integer("max_custom_goals").default(0).notNull(),
+    
+    // Fonctionnalités incluses
+    hasDiscordIntegration: boolean("has_discord_integration").default(false).notNull(),
+    hasPrioritySupport: boolean("has_priority_support").default(false).notNull(),
+    hasEarlyAccess: boolean("has_early_access").default(false).notNull(),
+    hasMonthlyChallenges: boolean("has_monthly_challenges").default(false).notNull(),
+    hasPremiumDiscord: boolean("has_premium_discord").default(false).notNull(),
+    
+    // Timestamps
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  }
+);
+
+/**
+ * Utilisation mensuelle des utilisateurs
+ */
+export const monthlyUsage = pgTable(
+  "monthly_usage",
+  {
+    id: varchar("id", { length: 255 }).primaryKey(),
+    userId: varchar("user_id", { length: 255 })
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    month: varchar("month", { length: 7 }).notNull(), // Format: YYYY-MM
+    tradingEntriesCount: integer("trading_entries_count").default(0).notNull(),
+    habitsCreatedCount: integer("habits_created_count").default(0).notNull(),
+    goalsCreatedCount: integer("goals_created_count").default(0).notNull(),
+    
+    // Timestamps
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (table) => ({
+    userIdMonthIdx: index("monthly_usage_user_month_idx").on(table.userId, table.month),
+  })
+);
+
+/**
+ * Table des objectifs
+ */
+export const goals = createTable(
+  "goal",
+  {
+    id: varchar("id", { length: 255 }).primaryKey(),
+    userId: varchar("user_id", { length: 255 })
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    
+    title: varchar("title", { length: 255 }).notNull(),
+    description: text("description"),
+    type: varchar("type", { length: 20 }).notNull(), // annual, quarterly, custom
+    targetValue: varchar("target_value", { length: 100 }),
+    currentValue: varchar("current_value", { length: 100 }).default("0"),
+    unit: varchar("unit", { length: 50 }),
+    deadline: timestamp("deadline", { withTimezone: true }),
+    isCompleted: boolean("is_completed").default(false).notNull(),
+    isActive: boolean("is_active").default(true).notNull(),
+    sortOrder: integer("sort_order").default(0),
+    
+    // Timestamps
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (table) => ({
+    userIdIdx: index("goal_user_id_idx").on(table.userId),
+    typeIdx: index("goal_type_idx").on(table.type),
+    activeIdx: index("goal_active_idx").on(table.isActive),
+  })
+);
+
 // Export des types pour TypeScript
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -265,3 +361,11 @@ export type HabitCompletion = typeof habitCompletions.$inferSelect;
 export type NewHabitCompletion = typeof habitCompletions.$inferInsert;
 export type Trade = typeof trades.$inferSelect;
 export type NewTrade = typeof trades.$inferInsert; 
+
+export type SubscriptionPlan = typeof subscriptionPlans.$inferSelect;
+export type NewSubscriptionPlan = typeof subscriptionPlans.$inferInsert;
+export type MonthlyUsage = typeof monthlyUsage.$inferSelect;
+export type NewMonthlyUsage = typeof monthlyUsage.$inferInsert; 
+
+export type Goal = typeof goals.$inferSelect;
+export type NewGoal = typeof goals.$inferInsert; 

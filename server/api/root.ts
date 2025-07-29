@@ -1,23 +1,21 @@
-import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
-import { authRouter } from "@/server/api/routers/auth/router";
-import { habitsRouter } from "@/server/api/routers/habits/router";
-import { profileRouter } from "@/server/api/routers/profile/router";
-import { discordRouter } from "@/server/api/routers/discord/router";
+import { createTRPCRouter, createCallerFactory } from "@/server/api/trpc";
+import { authRouter } from "./routers/auth/router";
+import { habitsRouter } from "./routers/habits/router";
+import { discordRouter } from "./routers/discord/router";
+import { profileRouter } from "./routers/profile/router";
+import { subscriptionRouter } from "./routers/subscription/router";
 
-/**
- * Router principal de l'API tRPC
- */
 export const appRouter = createTRPCRouter({
   auth: authRouter,
   habits: habitsRouter,
-  profile: profileRouter,
   discord: discordRouter,
+  profile: profileRouter,
+  subscription: subscriptionRouter,
 });
 
-// Export des types
 export type AppRouter = typeof appRouter;
 
 /**
- * Créer un caller côté serveur pour l'API tRPC
+ * Create a server-side caller for the tRPC API
  */
 export const createCaller = createCallerFactory(appRouter); 

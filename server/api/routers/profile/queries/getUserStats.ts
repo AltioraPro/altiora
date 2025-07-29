@@ -8,12 +8,12 @@ export async function getUserStats({ db, session }: AuthQueryContext) {
   if (!session?.userId) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
-      message: "Vous devez être connecté pour accéder à cette ressource",
+      message: "You must be logged in to access this resource",
     });
   }
 
   try {
-    // Récupérer les statistiques des habitudes
+    // Get habit statistics
     const habitsStats = await db
       .select({
         totalHabits: count(habits.id),
@@ -27,7 +27,7 @@ export async function getUserStats({ db, session }: AuthQueryContext) {
         )
       );
 
-    // Récupérer les statistiques des trades
+    // Get trading statistics
     const tradesStats = await db
       .select({
         totalTrades: count(trades.id),
@@ -35,7 +35,7 @@ export async function getUserStats({ db, session }: AuthQueryContext) {
       .from(trades)
       .where(eq(trades.userId, session.userId));
 
-    // Récupérer les informations de l'utilisateur
+    // Get user information
     const user = await db.query.users.findFirst({
       where: eq(users.id, session.userId),
       columns: {
@@ -48,11 +48,11 @@ export async function getUserStats({ db, session }: AuthQueryContext) {
     if (!user) {
       throw new TRPCError({
         code: "NOT_FOUND",
-        message: "Utilisateur non trouvé",
+        message: "User not found",
       });
     }
 
-    // Calculer les jours depuis l'inscription
+    // Calculate days since registration
     const daysSinceRegistration = Math.floor(
       (Date.now() - user.createdAt.getTime()) / (1000 * 60 * 60 * 24)
     );
@@ -76,10 +76,10 @@ export async function getUserStats({ db, session }: AuthQueryContext) {
       throw error;
     }
     
-    console.error("Erreur lors de la récupération des statistiques:", error);
+    console.error("Error retrieving statistics:", error);
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
-      message: "Erreur lors de la récupération des statistiques",
+      message: "Error retrieving statistics",
     });
   }
 } 

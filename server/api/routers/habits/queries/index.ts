@@ -104,7 +104,7 @@ export const getDailyStats = async (userId: string, date: string): Promise<Daily
           and(
             eq(habits.userId, userId), 
             eq(habits.isActive, true),
-            sql`${habits.createdAt}::date <= ${date}::date` // Seulement les habitudes créées avant ou à cette date
+            sql`${habits.createdAt}::date <= ${date}::date` // Only habits created before or on that date
           )
         ),
       
@@ -127,7 +127,7 @@ export const getDailyStats = async (userId: string, date: string): Promise<Daily
           and(
             eq(habits.userId, userId), 
             eq(habits.isActive, true),
-            sql`${habits.createdAt}::date <= ${date}::date` // Seulement les habitudes créées avant ou à cette date
+            sql`${habits.createdAt}::date <= ${date}::date` // Only habits created before or on that date
           )
         )
         .orderBy(asc(habits.sortOrder))
@@ -223,7 +223,7 @@ export const getHabitStats = async (
         and(
           eq(habits.userId, userId), 
           eq(habits.isActive, true),
-          sql`${habits.createdAt}::date <= ${startDateStr}::date` // Seulement les habitudes qui existaient au début de la période
+          sql`${habits.createdAt}::date <= ${startDateStr}::date` // Only habits that existed at the beginning of the period
         )
       );
 
@@ -279,7 +279,7 @@ export const getHabitStats = async (
             and(
               eq(habits.userId, userId), 
               eq(habits.isActive, true),
-              sql`${habits.createdAt}::date <= ${dateStr}::date` // Seulement les habitudes créées avant ou à cette date
+              sql`${habits.createdAt}::date <= ${dateStr}::date` // Only habits created before or on that date
             )
           )
       );

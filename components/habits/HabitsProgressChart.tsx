@@ -28,11 +28,11 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
     let filteredData = [...optimisticData];
     
     if (viewMode === 'week') {
-      // Pour la semaine, commencer par lundi
+      // For the week, start with Monday
       const today = new Date();
       const monday = new Date(today);
       const dayOfWeek = today.getDay();
-      const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // 0 = dimanche
+      const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // 0 = Sunday
       monday.setDate(today.getDate() - daysToMonday);
       
       const mondayStr = monday.toISOString().split('T')[0]!;
@@ -42,7 +42,7 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
         item.date >= mondayStr && item.date <= sundayStr
       );
       
-      // Créer des entrées pour tous les jours de la semaine si manquants
+      // Create entries for all days of the week if missing
       const weekData = [];
       for (let i = 0; i < 7; i++) {
         const date = new Date(monday.getTime() + i * 24 * 60 * 60 * 1000);
@@ -63,7 +63,7 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
     }
     
     if (viewMode === 'month') {
-      // Pour le mois, commencer par le premier du mois
+      // For the month, start with the first of the month
       const today = new Date();
       const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
       const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
@@ -75,7 +75,7 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
         item.date >= firstDayStr && item.date <= lastDayStr
       );
       
-      // Créer des entrées pour tous les jours du mois si manquants
+      // Create entries for all days of the month if missing
       const monthData = [];
       for (let i = 0; i < lastDayOfMonth.getDate(); i++) {
         const date = new Date(firstDayOfMonth.getTime() + i * 24 * 60 * 60 * 1000);
@@ -95,7 +95,7 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
       return monthData;
     }
     
-    // Pour today, retourner seulement aujourd'hui
+    // For today, return only today
     if (viewMode === 'today') {
       const today = new Date().toISOString().split('T')[0]!;
       const todayData = optimisticData.find(item => item.date === today);
@@ -110,7 +110,7 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
       }];
     }
     
-    // Par défaut, retourner les données triées par date
+    // By default, return sorted data by date
     return filteredData
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
       .map((item, index) => ({

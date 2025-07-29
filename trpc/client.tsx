@@ -13,7 +13,7 @@ import { type AppRouter } from "@/server/api/root";
 let clientQueryClientSingleton: QueryClient | undefined = undefined;
 const getQueryClient = () => {
   if (typeof window === "undefined") {
-    // Server: toujours créer un nouveau query client
+    // Server: always create a new query client
     return new QueryClient({
       defaultOptions: {
         queries: {
@@ -25,7 +25,7 @@ const getQueryClient = () => {
       },
     });
   }
-  // Browser: utiliser un singleton pour éviter les re-créations
+  // Browser: use a singleton to avoid re-creations
   return (clientQueryClientSingleton ??= new QueryClient({
     defaultOptions: {
       queries: {
@@ -41,7 +41,7 @@ const getQueryClient = () => {
 export const api = createTRPCReact<AppRouter>();
 
 /**
- * Inference helper pour les inputs et outputs
+ * Inference helper for inputs and outputs
  */
 export type RouterInputs = inferRouterInputs<AppRouter>;
 export type RouterOutputs = inferRouterOutputs<AppRouter>;

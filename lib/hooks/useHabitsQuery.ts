@@ -1,22 +1,22 @@
 import { api } from "@/trpc/client";
 import { useMemo } from "react";
 
-// OPTIMISATION: Hook personnalisé pour les requêtes habits avec cache optimisé
+// OPTIMIZATION: Custom hook for habits queries with optimized cache
 export function useHabitsDashboard(viewMode: 'today' | 'week' | 'month') {
   const { data, isLoading, error, refetch } = api.habits.getDashboard.useQuery({
     viewMode
   }, {
-    // OPTIMISATION: Configuration spécifique pour les habitudes
-    staleTime: 5 * 60 * 1000, // 5 minutes - les habitudes changent peu
-    gcTime: 15 * 60 * 1000, // 15 minutes de cache
+    // OPTIMIZATION: Specific configuration for habits
+    staleTime: 5 * 60 * 1000, // 5 minutes - habits change little
+    gcTime: 15 * 60 * 1000, // 15 minutes cache
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchOnReconnect: true,
     retry: (failureCount, error) => {
-      // Retry intelligent basé sur le type d'erreur
+      // Smart retry based on error type
       if (error && typeof error === 'object' && 'code' in error) {
         const code = (error as { code?: string }).code;
-        // Ne pas retry sur les erreurs d'authentification
+        // Don't retry on authentication errors
         if (code === 'UNAUTHORIZED' || code === 'FORBIDDEN') {
           return false;
         }
@@ -25,21 +25,13 @@ export function useHabitsDashboard(viewMode: 'today' | 'week' | 'month') {
     },
   });
 
-  // OPTIMISATION: Memoization des données calculées
+  // OPTIMIZATION: Memoization of calculated data
   const memoizedData = useMemo(() => {
     if (!data) return null;
     
     return {
       ...data,
-      // Pré-calculer les statistiques fréquemment utilisées
-      todayStats: {
-        ...data.todayStats,
-        // Calculer le pourcentage une seule fois
-        completionPercentage: data.todayStats.totalHabits > 0 
-          ? Math.round((data.todayStats.completedHabits / data.todayStats.totalHabits) * 100)
-          : 0
-      },
-      // Pré-calculer les habitudes par statut
+      // Pre-calculate habits by status
       habitsByStatus: {
         completed: data.todayStats.habits.filter(h => h.isCompleted),
         pending: data.todayStats.habits.filter(h => !h.isCompleted),
@@ -52,25 +44,25 @@ export function useHabitsDashboard(viewMode: 'today' | 'week' | 'month') {
     isLoading,
     error,
     refetch,
-    // OPTIMISATION: Méthodes utilitaires
+    // OPTIMIZATION: Utility methods
     isTodayComplete: memoizedData?.todayStats.completionPercentage === 100,
     hasHabits: memoizedData?.todayStats.habits.length && memoizedData.todayStats.habits.length > 0,
   };
 }
 
-// OPTIMISATION: Hook pour les mutations avec optimistic updates
+// OPTIMIZATION: Hook for mutations with optimistic updates
 export function useHabitsMutations() {
   const utils = api.useUtils();
   
   const toggleCompletion = api.habits.toggleCompletion.useMutation({
     onMutate: async ({ habitId, isCompleted }) => {
-      // Annuler les requêtes en cours
+      // Cancel ongoing queries
       await utils.habits.getDashboard.cancel();
       
-      // Sauvegarder l'état précédent
+      // Save previous state
       const previousData = utils.habits.getDashboard.getData();
       
-      // Mise à jour optimiste
+      // Optimistic update
       if (previousData) {
         utils.habits.getDashboard.setData(undefined, {
           ...previousData,
@@ -88,14 +80,14 @@ export function useHabitsMutations() {
       return { previousData };
     },
     onError: (error, variables, context) => {
-      // Restaurer l'état précédent en cas d'erreur
+      // Restore previous state on error
       if (context?.previousData) {
         utils.habits.getDashboard.setData(undefined, context.previousData);
       }
       console.error("Error toggling habit completion:", error);
     },
     onSettled: () => {
-      // Invalider le cache pour forcer un refresh
+      // Invalidate cache to force refresh
       utils.habits.getDashboard.invalidate();
     },
   });

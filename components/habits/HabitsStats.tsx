@@ -56,30 +56,30 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
     };
   }, [isRankModalOpen]);
   
-  // Créer les habitudes optimistes directement depuis les optimistic updates
+  // Create optimistic habits directly from optimistic updates
   const optimisticTodayHabits = todayHabits?.map(habit => ({
     ...habit,
     isCompleted: optimisticUpdates[habit.id] ?? habit.isCompleted
   })) ?? [];
   
-  // Calculer immédiatement les stats de base même sans données serveur
+  // Calculate immediately the basic stats even without server data
   const todayCompletedHabits = optimisticTodayHabits.filter(h => h.isCompleted).length;
   const todayTotalHabits = optimisticTodayHabits.length;
   const todayCompletionRate = todayTotalHabits > 0 ? Math.round((todayCompletedHabits / todayTotalHabits) * 100) : 0;
   const willContinueStreak = todayCompletedHabits > 0;
   
-  // Utiliser les données optimistes si disponibles, sinon des valeurs par défaut intelligentes
+  // Use optimistic data if available, otherwise calculate from today
   const optimisticData = getOptimisticStats(data, optimisticTodayHabits);
   
-  // Stats finales : optimistes si disponibles, sinon calculées à partir d'aujourd'hui
+  // Final stats: optimistic if available, otherwise calculated from today
   const totalActiveHabits = optimisticData?.totalActiveHabits ?? todayTotalHabits;
   const averageCompletionRate = optimisticData?.averageCompletionRate ?? todayCompletionRate;
   const optimisticCurrentStreak = optimisticData?.currentStreak ?? (willContinueStreak ? 1 : 0);
   const longestStreak = optimisticData?.longestStreak ?? optimisticCurrentStreak;
 
-  // Variables déjà calculées plus haut (todayCompletedHabits et willContinueStreak)
+  // Variables already calculated above (todayCompletedHabits and willContinueStreak)
 
-  // Système de rank complet
+  // Complete rank system
   const rankSystem: RankInfo[] = [
     {
       name: "NEW",
@@ -182,7 +182,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
     }
   ];
 
-  // Trouver le rank actuel et le prochain
+  // Find current rank and next
   const currentRank = rankSystem.find(rank => optimisticCurrentStreak >= rank.minStreak) || rankSystem[0]!;
   const nextRank = rankSystem.find(rank => rank.minStreak > optimisticCurrentStreak);
   const daysToNextRank = nextRank ? nextRank.minStreak - optimisticCurrentStreak : 0;
@@ -201,7 +201,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
       value: optimisticCurrentStreak,
       suffix: "d",
       color: optimisticCurrentStreak >= 7 ? "text-green-400" : optimisticCurrentStreak >= 3 ? "text-white" : "text-white/70",
-      // Ajouter une indication visuelle si le streak va continuer
+      // Add visual indication if streak will continue
       showPulse: willContinueStreak && optimisticCurrentStreak > 0,
     },
     {
@@ -337,7 +337,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                 </div>
               )}
 
-              {/* Message optimiste pour le streak continu */}
+              {/* Optimistic message for streak continuation */}
               {willContinueStreak && optimisticCurrentStreak > 0 && (
                 <div className="flex items-center space-x-3 text-sm">
                   <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
@@ -470,9 +470,9 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                   </h3>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-white/60">Progression:</span>
+                      <span className="text-white/60">Progress:</span>
                       <span className="text-white">
-                        {optimisticCurrentStreak} / {nextRank.minStreak} jours
+                        {optimisticCurrentStreak} / {nextRank.minStreak} days
                       </span>
                     </div>
                     <div className="w-full bg-white/10 rounded-full h-2">

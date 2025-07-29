@@ -11,12 +11,22 @@ import {
   toggleHabitCompletionValidator,
 } from "../validators";
 import { updateUserRank } from "./updateUserRank";
+import { SubscriptionLimitsService } from "@/server/services/subscription-limits";
 
 export const createHabit = async (
   input: z.infer<typeof createHabitValidator>,
   userId: string
 ) => {
   try {
+    // Vérifier les limites du plan d'abonnement
+    const canCreate = await SubscriptionLimitsService.canCreateHabit(userId);
+    if (!canCreate.canCreate) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: canCreate.reason || "Habit limit reached for your plan",
+      });
+    }
+
     const habitId = createId();
     
     const [newHabit] = await db
@@ -35,9 +45,15 @@ export const createHabit = async (
       });
     }
 
+    // Incrémenter le compteur d'utilisation
+    await SubscriptionLimitsService.incrementMonthlyUsage(userId, "habits");
+
     return newHabit;
   } catch (error) {
     console.error("Error createHabit:", error);
+    if (error instanceof TRPCError) {
+      throw error;
+    }
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
       message: "Failed to create habit",

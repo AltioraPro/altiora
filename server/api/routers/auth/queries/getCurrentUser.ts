@@ -8,7 +8,7 @@ export async function getCurrentUser({ db, session }: AuthQueryContext) {
   if (!session?.userId) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
-      message: "Vous devez être connecté pour accéder à cette ressource",
+      message: "You must be logged in to access this resource",
     });
   }
 
@@ -40,7 +40,7 @@ export async function getCurrentUser({ db, session }: AuthQueryContext) {
     if (!user) {
       throw new TRPCError({
         code: "NOT_FOUND",
-        message: "Utilisateur non trouvé",
+        message: "User not found",
       });
     }
 
@@ -52,10 +52,10 @@ export async function getCurrentUser({ db, session }: AuthQueryContext) {
       throw error;
     }
     
-    console.error("Erreur lors de la récupération de l'utilisateur:", error);
+    console.error("Error retrieving user:", error);
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
-      message: "Erreur lors de la récupération de l'utilisateur",
+      message: "Error retrieving user",
     });
   }
 } 

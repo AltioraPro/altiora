@@ -23,7 +23,7 @@ export const FeaturesSection = () => {
         background: 'linear-gradient(220.55deg, #000000 0%, #0a0a0a 100%)'
       }}
     >
-      {/* Éléments décoratifs arrière-plan */}
+      {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Grille de points subtile */}
         <div className="absolute inset-0 opacity-[0.015]" 

@@ -93,14 +93,14 @@
 
   return (
     <div className="min-h-screen bg-pure-black text-pure-white relative overflow-hidden">
-      {/* Éléments décoratifs géométriques */}
+      {/* Geometric decorative elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-32 right-32 w-6 h-6 border border-white/15 rotate-12" />
         <div className="absolute bottom-40 left-40 w-3 h-3 bg-white/10 rounded-full animate-pulse" />
         <div className="absolute bottom-60 right-20 w-8 h-8 border border-white/25 rotate-45" />
         <div className="absolute top-40 left-20 w-4 h-4 border border-white/20 rotate-45" />
         
-      {/* Grille de points subtile */}
+      {/* Subtle grid of points */}
       <div className="absolute inset-0 opacity-[0.02]" 
             style={{
               backgroundImage: `radial-gradient(circle, white 1px, transparent 1px)`,
@@ -110,7 +110,7 @@
       </div>
 
       <div className="relative z-10 flex min-h-screen">
-        {/* Section gauche - Branding */}
+        {/* Left section - Branding */}
         <div className="hidden lg:flex lg:w-1/2 flex-col justify-center px-12 xl:px-20">
           <div className="max-w-lg">
             <h1 className="text-[4rem] font-bold font-argesta leading-none mb-6 bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent">
@@ -160,7 +160,7 @@
           </div>
         </div>
 
-        {/* Section droite - Contenu principal */}
+        {/* Right section - Main content */}
         <div className="flex-1 lg:w-1/2 flex items-center justify-center p-8">
           <div className="w-full max-w-md">
             
@@ -170,7 +170,7 @@
               <p className="text-gray-400 text-sm mt-2">Personal coaching platform</p>
             </div>
 
-            {/* Icône centrale avec animation */}
+            {/* Central icon with animation */}
             <div className="text-center mb-8">
               {isAlreadyVerified ? (
                 <>
@@ -287,7 +287,7 @@
             {/* Actions */}
             <div className="space-y-4">
               {isAlreadyVerified ? (
-                /* Email déjà vérifié - Bouton de connexion */
+                /* Email already verified - Login button */
                 <button
                   onClick={() => window.location.href = '/auth/login'}
                   className="w-full flex items-center justify-center space-x-3 py-3 px-4 border border-white/20 bg-white text-black hover:bg-gray-100 rounded-lg font-medium text-sm transition-all duration-200"

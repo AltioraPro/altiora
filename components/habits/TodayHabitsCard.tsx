@@ -1,30 +1,42 @@
 "use client";
 
+import { useCallback, useRef, useMemo } from "react";
 import { api } from "@/trpc/client";
-import { Check, Circle } from "lucide-react";
-import type { DailyHabitStats } from "@/server/api/routers/habits/types";
 import { useHabits } from "./HabitsProvider";
-import { memo, useCallback, useMemo, useRef } from "react";
+import { useToast } from "@/components/ui/toast";
+import { Circle, Check } from "lucide-react";
+import type { DailyHabitStats } from "@/server/api/routers/habits/types";
+import { memo } from "react";
 
 interface TodayHabitsCardProps {
   data?: DailyHabitStats;
 }
 
-// OPTIMISATION: Composant memoized pour chaque habitude
-const HabitItem = memo(({ 
+interface HabitItemProps {
+  habit: { 
+    id: string; 
+    title: string; 
+    emoji: string; 
+    isCompleted: boolean; 
+    notes?: string 
+  }; 
+  isOptimistic: boolean; 
+  onToggle: () => void; 
+}
+
+// OPTIMIZATION: Memoized component for each habit with proper prop types
+const HabitItem = memo<HabitItemProps>(({ 
   habit, 
   isOptimistic, 
   onToggle 
-}: { 
-  habit: { id: string; title: string; emoji: string; isCompleted: boolean; notes?: string }; 
-  isOptimistic: boolean; 
-  onToggle: () => void; 
 }) => {
   const handleClick = useCallback(() => {
     if (!habit.id.startsWith('temp-')) {
       onToggle();
     }
   }, [habit.id, onToggle]);
+
+  const isTempHabit = habit.id.startsWith('temp-');
 
   return (
     <div
@@ -63,16 +75,16 @@ const HabitItem = memo(({
       {/* Toggle Button */}
       <button
         onClick={handleClick}
-        disabled={habit.id.startsWith('temp-')}
+        disabled={isTempHabit}
         className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-200 hover:scale-110 disabled:opacity-50 ${
-          habit.id.startsWith('temp-')
+          isTempHabit
             ? "border-white/20 bg-white/5 cursor-not-allowed"
             : habit.isCompleted
             ? "bg-green-500 border-green-500 text-white"
             : "border-white/30 hover:border-white/60"
         }`}
       >
-        {habit.id.startsWith('temp-') ? (
+        {isTempHabit ? (
           <div className="w-3 h-3 border border-white/40 border-t-transparent rounded-full animate-spin" />
         ) : (
           habit.isCompleted && <Check className="w-4 h-4" />
@@ -85,147 +97,86 @@ const HabitItem = memo(({
 HabitItem.displayName = "HabitItem";
 
 export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
-  const utils = api.useUtils();
-  const lastClickTimes = useRef<Map<string, number>>(new Map());
   const { 
-    optimisticUpdates, 
     setOptimisticUpdate, 
-    clearOptimisticUpdate,
-    getOptimisticTodayStats 
+    clearOptimisticUpdate, 
+    getOptimisticTodayStats,
+    getOptimisticStats,
+    getOptimisticRecentActivity,
+    optimisticUpdates
   } = useHabits();
+  const { addToast } = useToast();
+  
+  const lastClickTimes = useRef<Map<string, number>>(new Map());
 
-  // OPTIMISATION: Memoization des données optimistes
-  const optimisticData = useMemo(() => 
-    getOptimisticTodayStats(data), 
-    [getOptimisticTodayStats, data]
-  );
+  const utils = api.useUtils();
+
+  // Optimistic data calculation
+  const optimisticData = useMemo(() => {
+    return getOptimisticTodayStats(data);
+  }, [data, getOptimisticTodayStats]);
 
   const toggleCompletion = api.habits.toggleCompletion.useMutation({
     onMutate: async ({ habitId, isCompleted }) => {
-      await utils.habits.getDashboard.cancel();
-      
-      const previousData = utils.habits.getDashboard.getData();
-      
-      // Mise à jour optimiste immédiate via le contexte
+      // Set optimistic update
       setOptimisticUpdate(habitId, isCompleted);
       
+      // Cancel any outgoing refetches
+      await utils.habits.getDashboard.cancel();
+      
+      // Snapshot the previous value
+      const previousData = utils.habits.getDashboard.getData();
+      
       if (previousData) {
-        const updatedTodayStats = {
-          ...previousData.todayStats,
-          habits: previousData.todayStats.habits.map(habit => 
-            habit.id === habitId 
-              ? { ...habit, isCompleted }
-              : habit
-          )
-        };
+        // Optimistically update the dashboard data
+        const optimisticTodayStats = getOptimisticTodayStats(previousData.todayStats);
+        const optimisticStats = getOptimisticStats(previousData.stats, optimisticTodayStats?.habits);
+        const optimisticRecentActivity = getOptimisticRecentActivity(previousData.recentActivity, optimisticTodayStats?.habits);
         
-        const completedHabits = updatedTodayStats.habits.filter(h => h.isCompleted).length;
-        const totalHabits = updatedTodayStats.habits.length;
-        const completionPercentage = totalHabits > 0 ? Math.round((completedHabits / totalHabits) * 100) : 0;
-        
-        updatedTodayStats.completedHabits = completedHabits;
-        updatedTodayStats.completionPercentage = completionPercentage;
-        
-        const updatedHabits = previousData.habits.map(habit => {
-          if (habit.id === habitId) {
-            const currentCompletions = habit.completions || [];
-            const today = new Date().toISOString().split('T')[0]!;
-            
-            const todayCompletionIndex = currentCompletions.findIndex(c => c.completionDate === today);
-            
-            let updatedCompletions;
-            if (todayCompletionIndex >= 0) {
-              updatedCompletions = currentCompletions.map(c => 
-                c.completionDate === today 
-                  ? { ...c, isCompleted }
-                  : c
-              );
-            } else {
-              updatedCompletions = [
-                ...currentCompletions,
-                {
-                  id: `temp-completion-${Date.now()}`,
-                  userId: habit.userId,
-                  habitId: habit.id,
-                  completionDate: today,
-                  isCompleted,
-                  notes: null,
-                  createdAt: new Date(),
-                  updatedAt: new Date(),
-                }
-              ];
-            }
-            
-            const completedCount = updatedCompletions.filter(c => c.isCompleted).length;
-            const newCompletionRate = updatedCompletions.length > 0 ? (completedCount / updatedCompletions.length) * 100 : 0;
-            
-            return {
-              ...habit,
-              completions: updatedCompletions,
-              completionRate: newCompletionRate,
-            };
-          }
-          return habit;
-        });
-        
-        const today = new Date().toISOString().split('T')[0]!;
-        const updatedRecentActivity = previousData.recentActivity.map(activity => 
-          activity.date === today 
-            ? { ...activity, completionPercentage }
-            : activity
-        );
-        
-        const updatedWeeklyStats = previousData.stats.weeklyStats.map(stat => 
-          stat.date === today 
-            ? { ...stat, completedHabits, totalHabits, completionPercentage }
-            : stat
-        );
-
-        const newData = {
+        utils.habits.getDashboard.setData(undefined, {
           ...previousData,
-          habits: updatedHabits,
-          todayStats: updatedTodayStats,
-          recentActivity: updatedRecentActivity,
-          stats: {
-            ...previousData.stats,
-            weeklyStats: updatedWeeklyStats
-          }
-        };
-        
-        utils.habits.getDashboard.setData(undefined, newData);
+          todayStats: optimisticTodayStats || previousData.todayStats,
+          stats: optimisticStats || previousData.stats,
+          recentActivity: optimisticRecentActivity || previousData.recentActivity,
+        });
       }
       
       return { previousData };
     },
+    onSuccess: () => {
+      // Optimistic updates are cleared automatically by the context
+    },
     onError: (error, variables, context) => {
-      // Nettoyer les optimistic updates en cas d'erreur
+      // Revert optimistic update
       clearOptimisticUpdate(variables.habitId);
       
+      // Revert the optimistic data
       if (context?.previousData) {
         utils.habits.getDashboard.setData(undefined, context.previousData);
       }
       
-      console.error("Error toggle completion:", error);
-    },
-    onSuccess: () => {
-      // Les optimistic updates sont nettoyées automatiquement par le contexte
+      addToast({
+        type: "error",
+        title: "Erreur",
+        message: error.message || "Impossible de mettre à jour l'habitude",
+      });
     },
     onSettled: () => {
       utils.habits.getDashboard.invalidate();
     },
   });
 
-  // OPTIMISATION: Memoization du handler de toggle avec debouncing pour éviter les clics trop rapides
+  // OPTIMIZATION: Memoization of toggle handler with debouncing to avoid rapid clicks
   const handleToggleHabit = useCallback(async (habitId: string, currentStatus: boolean) => {
     if (habitId.startsWith('temp-')) {
       return;
     }
     
-    // Éviter les clics multiples sur la même habitude en peu de temps
+    // Avoid multiple clicks on the same habit in a short time
     const now = Date.now();
     const lastClick = lastClickTimes.current.get(habitId) || 0;
     
-    if (now - lastClick < 300) { // 300ms de protection
+    if (now - lastClick < 300) { // 300ms protection
       return;
     }
     
@@ -238,13 +189,23 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
       completionDate: today,
       isCompleted: !currentStatus,
     });
-  }, [toggleCompletion, lastClickTimes]);
+  }, [toggleCompletion]);
+
+  // Memoize the habits list to prevent unnecessary re-renders
+  const habitsList = useMemo(() => {
+    if (!optimisticData?.habits) return [];
+    
+    return optimisticData.habits.map((habit) => ({
+      ...habit,
+      isOptimistic: optimisticUpdates[habit.id] !== undefined
+    }));
+  }, [optimisticData?.habits, optimisticUpdates]);
 
   if (!optimisticData) {
     return <TodayHabitsCardSkeleton />;
   }
 
-  const { habits, completionPercentage, completedHabits, totalHabits } = optimisticData;
+  const { completionPercentage, completedHabits, totalHabits } = optimisticData;
 
   return (
     <div className="bg-white/5 rounded-2xl border border-white/10 backdrop-blur-sm relative overflow-hidden">
@@ -327,30 +288,26 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
 
         {/* Habits List */}
         <div className="space-y-4">
-          {habits.length === 0 ? (
+          {habitsList.length === 0 ? (
             <div className="text-center py-8 text-white/50">
               <Circle className="w-12 h-12 mx-auto mb-4 opacity-30" />
               <p className="font-argesta">No habits configured</p>
               <p className="text-sm mt-1">Create your first habit to get started</p>
             </div>
           ) : (
-            habits.map((habit) => {
-              const isOptimistic = optimisticUpdates[habit.id] !== undefined;
-              
-              return (
-                <HabitItem
-                  key={habit.id}
-                  habit={habit}
-                  isOptimistic={isOptimistic}
-                  onToggle={() => handleToggleHabit(habit.id, habit.isCompleted)}
-                />
-              );
-            })
+            habitsList.map((habit) => (
+              <HabitItem
+                key={habit.id}
+                habit={habit}
+                isOptimistic={habit.isOptimistic}
+                onToggle={() => handleToggleHabit(habit.id, habit.isCompleted)}
+              />
+            ))
           )}
         </div>
 
         {/* Quick Actions */}
-        {habits.length > 0 && (
+        {habitsList.length > 0 && (
           <div className="mt-6 pt-6 border-t border-white/10 flex justify-between items-center text-sm text-white/60">
             <span className="font-argesta">
               {completionPercentage === 100 

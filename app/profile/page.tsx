@@ -1,144 +1,74 @@
-import { redirect } from "next/navigation";
-import { api } from "@/trpc/server";
-import { ProfileForm } from "@/components/profile/ProfileForm";
-import { ActivityStats } from "@/components/profile/ActivityStats";
+import { Suspense } from "react";
 import { Header } from "@/components/layout/Header";
+import { ActivityStats } from "@/components/profile/ActivityStats";
 import { SubscriptionStatus } from "@/components/profile/SubscriptionStatus";
 import { DiscordConnection } from "@/components/profile/DiscordConnection";
+import { ProfileForm } from "@/components/profile/ProfileForm";
+import { UsageStats } from "@/components/subscription/UsageStats";
 
-export default async function ProfilePage() {
-  try {
-    const user = await api.auth.getCurrentUser();
-    const stats = await api.profile.getUserStats();
+export default function ProfilePage() {
+  return (
+    <>
+      <Header />
+      
+      <section className="min-h-screen bg-gradient-to-br from-pure-black to-neutral-950 pt-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          
+          {/* Header */}
+          <div className="text-center mb-16">
+            <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 font-argesta">
+              Profile
+            </h1>
+            <p className="text-xl text-neutral-400 max-w-2xl mx-auto font-argesta">
+              Manage your account and track your progress
+            </p>
+          </div>
 
-    return (
-      <>
-        <Header />
-        <div className="min-h-screen bg-pure-black text-pure-white pt-20">
-          {/* Hero Section with Dynamic Background */}
-          <div className="relative overflow-hidden">
-            {/* Main Content */}
-            <div className="relative z-10 container mx-auto px-6 py-12">
-              {/* Page Header */}
-              <div className="text-center mb-16">
-                <div className="flex items-center justify-center space-x-4 mb-6">
-                  <div className="w-16 h-px bg-gradient-to-r from-transparent to-white/30" />
-                  <span className="text-xs font-argesta tracking-[0.3em] text-white/60">PROFILE</span>
-                  <div className="w-16 h-px bg-gradient-to-l from-transparent to-white/30" />
-                </div>
-                
-                <h1 className="text-5xl md:text-6xl font-argesta font-bold mb-6">
-                  <span className="bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent">
-                    YOUR
-                  </span>
-                  <br />
-                  <span className="text-white">DIGITAL IDENTITY</span>
-                </h1>
-                
-                <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto font-argesta">
-                  Manage your account, track your progress, and unlock your full potential
-                </p>
+          {/* Grid Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            {/* Left Column */}
+            <div className="lg:col-span-8 space-y-8">
+              
+              {/* Activity Stats */}
+              <Suspense fallback={<div className="h-64 bg-white/5 rounded-xl animate-pulse" />}>
+                <ActivityStats />
+              </Suspense>
+
+              {/* Profile Form */}
+              <div className="bg-white/5 rounded-xl border border-white/10 p-8">
+                <h2 className="text-2xl font-bold text-white mb-6 font-argesta">Profile Information</h2>
+                <ProfileForm />
               </div>
 
-              {/* Profile Content Grid */}
-              <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                {/* Left Column - Profile Information */}
-                <div className="xl:col-span-2 space-y-8">
-                  {/* Profile Card */}
-                  <div className="bg-white/5 rounded-2xl p-8 border border-white/10">
-                    <div className="flex items-center justify-between mb-8">
-                      <h2 className="text-2xl font-argesta font-bold tracking-wide">
-                        ACCOUNT OVERVIEW
-                      </h2>
-                      <div className="w-12 h-px bg-gradient-to-r from-white/20 to-transparent" />
-                    </div>
-                    <ProfileForm user={user} />
-                  </div>
+              {/* Discord Connection */}
+              <div className="bg-white/5 rounded-xl border border-white/10 p-8">
+                <h2 className="text-2xl font-bold text-white mb-6 font-argesta">Discord Connection</h2>
+                <DiscordConnection />
+              </div>
+            </div>
 
-                  {/* Activity Stats */}
-                  <div className="bg-white/5 rounded-2xl p-8 border border-white/10">
-                    <div className="flex items-center justify-between mb-8">
-                      <h2 className="text-2xl font-argesta font-bold tracking-wide">
-                        ACTIVITY INSIGHTS
-                      </h2>
-                      <div className="w-12 h-px bg-gradient-to-r from-white/20 to-transparent" />
-                    </div>
-                    
-                    <ActivityStats stats={stats} />
-                  </div>
-                </div>
+            {/* Right Column */}
+            <div className="lg:col-span-4 space-y-8">
+              
+              {/* Subscription Status */}
+              <div className="bg-white/5 rounded-xl border border-white/10 p-8">
+                <h2 className="text-2xl font-bold text-white mb-6 font-argesta">Subscription</h2>
+                <Suspense fallback={<div className="h-32 bg-white/5 rounded-xl animate-pulse" />}>
+                  <SubscriptionStatus />
+                </Suspense>
+              </div>
 
-                {/* Right Column - Subscription & Quick Actions */}
-                <div className="space-y-8">
-                  {/* Discord Connection */}
-                  <DiscordConnection />
-
-                  {/* Subscription Status */}
-                  <div className="bg-white/5 rounded-2xl p-8 border border-white/10">
-                    <div className="flex items-center justify-between mb-8">
-                      <h2 className="text-2xl font-argesta font-bold tracking-wide">
-                        SUBSCRIPTION
-                      </h2>
-                      <div className="w-12 h-px bg-gradient-to-r from-white/20 to-transparent" />
-                    </div>
-                    <SubscriptionStatus user={user} />
-                  </div>
-
-                  {/* Quick Actions */}
-                  <div className="bg-white/5 rounded-2xl p-8 border border-white/10">
-                    <div className="flex items-center justify-between mb-8">
-                      <h2 className="text-2xl font-argesta font-bold tracking-wide">
-                        QUICK ACTIONS
-                      </h2>
-                      <div className="w-12 h-px bg-gradient-to-r from-white/20 to-transparent" />
-                    </div>
-                    
-                    <div className="space-y-4">
-                      <a href="/habits" className="block p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 group">
-                        <div className="flex items-center space-x-4">
-                          <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center group-hover:bg-white/20 transition-colors">
-                            <span className="text-lg">🎯</span>
-                          </div>
-                          <div>
-                            <div className="font-argesta font-medium text-white">Habits Tracker</div>
-                            <div className="text-sm text-white/60">Build your daily discipline</div>
-                          </div>
-                        </div>
-                      </a>
-                      
-                      <a href="/trading-journal" className="block p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 group">
-                        <div className="flex items-center space-x-4">
-                          <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center group-hover:bg-white/20 transition-colors">
-                            <span className="text-lg">📈</span>
-                          </div>
-                          <div>
-                            <div className="font-argesta font-medium text-white">Trading Journal</div>
-                            <div className="text-sm text-white/60">Track your trading performance</div>
-                          </div>
-                        </div>
-                      </a>
-                      
-                      <a href="/goals" className="block p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 group">
-                        <div className="flex items-center space-x-4">
-                          <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center group-hover:bg-white/20 transition-colors">
-                            <span className="text-lg">🎯</span>
-                          </div>
-                          <div>
-                            <div className="font-argesta font-medium text-white">Goal Planning</div>
-                            <div className="text-sm text-white/60">Set and achieve your objectives</div>
-                          </div>
-                        </div>
-                      </a>
-                    </div>
-                  </div>
-                </div>
+              {/* Usage Stats */}
+              <div className="bg-white/5 rounded-xl border border-white/10 p-8">
+                <Suspense fallback={<div className="space-y-4"><div className="h-20 bg-white/5 rounded-xl animate-pulse" /><div className="h-20 bg-white/5 rounded-xl animate-pulse" /><div className="h-20 bg-white/5 rounded-xl animate-pulse" /></div>}>
+                  <UsageStats />
+                </Suspense>
               </div>
             </div>
           </div>
         </div>
-      </>
-    );
-  } catch {
-    redirect("/auth/login");
-  }
+      </section>
+    </>
+  );
 } 

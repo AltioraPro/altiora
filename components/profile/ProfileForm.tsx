@@ -5,25 +5,16 @@ import Image from "next/image";
 import { api } from "@/trpc/client";
 import { User, Mail, Calendar, Shield, Edit3, Save, X } from "lucide-react";
 
-interface ProfileFormProps {
-  user: {
-    id: string;
-    email: string;
-    name: string;
-    image: string | null;
-    emailVerified: boolean;
-    discordConnected: boolean;
-    discordId: string | null;
-    discordUsername: string | null;
-    discordDiscriminator: string | null;
-    discordAvatar: string | null;
-    createdAt: Date;
-  };
-}
-
-export function ProfileForm({ user }: ProfileFormProps) {
-  const [name, setName] = useState(user.name);
+export function ProfileForm() {
+  const { data: user, isLoading } = api.auth.getCurrentUser.useQuery();
+  
+  const [name, setName] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+
+  // Set name when user data loads
+  if (user && name === "") {
+    setName(user.name);
+  }
 
   const updateProfile = api.auth.updateProfile.useMutation({
     onSuccess: () => {
@@ -46,6 +37,28 @@ export function ProfileForm({ user }: ProfileFormProps) {
       day: "numeric",
     }).format(date);
   };
+
+  if (isLoading || !user) {
+    return (
+      <div className="space-y-8">
+        <div className="flex items-center space-x-6">
+          <div className="w-20 h-20 bg-white/10 rounded-full animate-pulse" />
+          <div className="flex-1 space-y-2">
+            <div className="h-6 bg-white/10 rounded animate-pulse" />
+            <div className="h-4 bg-white/10 rounded animate-pulse" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="p-6 bg-white/5 rounded-xl border border-white/10 animate-pulse">
+              <div className="h-4 bg-white/10 rounded mb-4" />
+              <div className="h-6 bg-white/10 rounded" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">

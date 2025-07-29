@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { api } from "@/trpc/client";
 import { useHabits } from "./HabitsProvider";
+import { useToast } from "@/components/ui/toast";
 import { X } from "lucide-react";
 
 const HABIT_EMOJIS = [
@@ -21,6 +22,7 @@ const HABIT_COLORS = [
 
 export function EditHabitModal() {
   const { isEditModalOpen, editingHabit, closeEditModal, openEditModal } = useHabits();
+  const { addToast } = useToast();
   const [title, setTitle] = useState("");
   const [emoji, setEmoji] = useState("🎯");
   const [description, setDescription] = useState("");
@@ -31,7 +33,7 @@ export function EditHabitModal() {
   
   const utils = api.useUtils();
 
-  // Récupérer toutes les habitudes pour l'édition (sans pagination)
+  // Get all habits for editing (without pagination)
   const { data: habits } = api.habits.getAll.useQuery(undefined, {
     enabled: isEditModalOpen && !!editingHabit,
   });
@@ -131,6 +133,11 @@ export function EditHabitModal() {
       return { previousData };
     },
     onSuccess: () => {
+      addToast({
+        type: "success",
+        title: "Habitude mise à jour",
+        message: "Votre habitude a été modifiée avec succès",
+      });
     },
     onError: (error, variables, context) => {
       if (context?.previousData) {
@@ -142,6 +149,11 @@ export function EditHabitModal() {
       }
       
       console.error("Error updating habit:", error);
+      addToast({
+        type: "error",
+        title: "Erreur",
+        message: error.message || "Impossible de mettre à jour l'habitude",
+      });
     },
     onSettled: () => {
       utils.habits.getDashboard.invalidate();

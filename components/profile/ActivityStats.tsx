@@ -1,25 +1,25 @@
 "use client";
 
 import { Target, TrendingUp, Trophy, Calendar } from "lucide-react";
+import { api } from "@/trpc/client";
 
-interface ActivityStatsProps {
-  stats: {
-    habits: {
-      total: number;
-      active: number;
-    };
-    trades: {
-      total: number;
-    };
-    user: {
-      rank: string;
-      subscriptionPlan: string;
-      daysSinceRegistration: number;
-    };
-  };
-}
+export function ActivityStats() {
+  const { data: stats, isLoading } = api.profile.getUserStats.useQuery();
 
-export function ActivityStats({ stats }: ActivityStatsProps) {
+  if (isLoading || !stats) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="text-center p-6 bg-white/5 rounded-xl border border-white/10 animate-pulse">
+            <div className="h-6 bg-white/10 rounded mb-3" />
+            <div className="h-8 bg-white/10 rounded mb-2" />
+            <div className="h-4 bg-white/10 rounded" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   const getRankColor = (rank: string) => {
     switch (rank) {
       case "IMMORTAL":
