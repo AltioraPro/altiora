@@ -2,6 +2,8 @@
 
 import ShinyText from "@/components/landing/ShinyText";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
+import { AnimatedCard } from "@/components/ui/AnimatedCard";
+import { AnimatedText } from "@/components/ui/AnimatedText";
 import { ArrowRight, BookOpen, Zap, Trophy } from "lucide-react";
 import Link from "next/link";
 
@@ -70,222 +72,237 @@ export const FeaturesSection = () => {
             />
           </h2>
           
-          <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto font-argesta">
-            A complete platform to develop your personal and professional discipline
-          </p>
+          <AnimatedText 
+            text="A complete platform to develop your personal and professional discipline"
+            className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto font-argesta"
+            delay={200}
+            charDelay={30}
+          />
         </div>
 
         {/* Grille des fonctionnalités */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
           
           {/* Trading Journal */}
-          <div className="group relative">
-            {/* Effet de hover - bord lumineux */}
-            <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
-            
-            <div className="relative bg-pure-black border border-white/10 rounded-2xl p-8 h-full transition-all duration-500 group-hover:border-white/30 group-hover:transform group-hover:scale-[1.02]">
-              {/* Icône avec animation */}
-              <div className="relative mb-6">
-                <div className="w-16 h-16 bg-white/5 rounded-xl flex items-center justify-center group-hover:bg-white/10 transition-colors duration-300">
-                  <BookOpen className="w-8 h-8 text-white/80 group-hover:text-white transition-colors duration-300" />
+          <AnimatedCard delay={0}>
+            <div className="group relative">
+              {/* Effet de hover - bord lumineux */}
+              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
+              
+              <div className="relative bg-pure-black border border-white/10 rounded-2xl p-8 h-full transition-all duration-500 group-hover:border-white/30 group-hover:transform group-hover:scale-[1.02]">
+                {/* Icône avec animation */}
+                <div className="relative mb-6">
+                  <div className="w-16 h-16 bg-white/5 rounded-xl flex items-center justify-center group-hover:bg-white/10 transition-colors duration-300">
+                    <BookOpen className="w-8 h-8 text-white/80 group-hover:text-white transition-colors duration-300" />
+                  </div>
+                  
+                  {/* Effet particule */}
+                  <div className="absolute -top-2 -right-2 w-3 h-3 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping" />
                 </div>
                 
-                {/* Effet particule */}
-                <div className="absolute -top-2 -right-2 w-3 h-3 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping" />
+                <h3 className="text-xl font-argesta font-bold mb-4 text-white">
+                  TRADING JOURNAL
+                </h3>
+                
+                <p className="text-white/60 text-sm leading-relaxed mb-6">
+                  Analyze your trades, identify patterns and optimize your strategy with an intelligent journal.
+                </p>
+                
+                {/* Points clés */}
+                <ul className="space-y-2 text-xs text-white/50">
+                  <li className="flex items-center space-x-2">
+                    <div className="w-1 h-1 bg-white/40 rounded-full" />
+                    <span>Emotional analysis</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-1 h-1 bg-white/40 rounded-full" />
+                    <span>Advanced metrics</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-1 h-1 bg-white/40 rounded-full" />
+                    <span>Detailed reports</span>
+                  </li>
+                </ul>
               </div>
-              
-              <h3 className="text-xl font-argesta font-bold mb-4 text-white">
-                TRADING JOURNAL
-              </h3>
-              
-              <p className="text-white/60 text-sm leading-relaxed mb-6">
-                Analyze your trades, identify patterns and optimize your strategy with an intelligent journal.
-              </p>
-              
-              {/* Points clés */}
-              <ul className="space-y-2 text-xs text-white/50">
-                <li className="flex items-center space-x-2">
-                  <div className="w-1 h-1 bg-white/40 rounded-full" />
-                  <span>Emotional analysis</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-1 h-1 bg-white/40 rounded-full" />
-                  <span>Advanced metrics</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-1 h-1 bg-white/40 rounded-full" />
-                  <span>Detailed reports</span>
-                </li>
-              </ul>
             </div>
-          </div>
+          </AnimatedCard>
 
           {/* Habit Tracker */}
-          <div className="group relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
-            
-            <div className="relative bg-pure-black border border-white/10 rounded-2xl p-8 h-full transition-all duration-500 group-hover:border-white/30 group-hover:transform group-hover:scale-[1.02]">
-              <div className="relative mb-6">
-                <div className="w-16 h-16 bg-white/5 rounded-xl flex items-center justify-center group-hover:bg-white/10 transition-colors duration-300">
-                  <Zap className="w-8 h-8 text-white/80 group-hover:text-white transition-colors duration-300" />
+          <AnimatedCard delay={150}>
+            <div className="group relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
+              
+              <div className="relative bg-pure-black border border-white/10 rounded-2xl p-8 h-full transition-all duration-500 group-hover:border-white/30 group-hover:transform group-hover:scale-[1.02]">
+                <div className="relative mb-6">
+                  <div className="w-16 h-16 bg-white/5 rounded-xl flex items-center justify-center group-hover:bg-white/10 transition-colors duration-300">
+                    <Zap className="w-8 h-8 text-white/80 group-hover:text-white transition-colors duration-300" />
+                  </div>
+                  <div className="absolute -top-2 -right-2 w-3 h-3 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping" />
                 </div>
-                <div className="absolute -top-2 -right-2 w-3 h-3 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping" />
+                
+                <h3 className="text-xl font-argesta font-bold mb-4 text-white">
+                  HABIT TRACKER
+                </h3>
+                
+                <p className="text-white/60 text-sm leading-relaxed mb-6">
+                  Build lasting habits with a visual and motivating tracking system.
+                </p>
+                
+                <ul className="space-y-2 text-xs text-white/50">
+                  <li className="flex items-center space-x-2">
+                    <div className="w-1 h-1 bg-white/40 rounded-full" />
+                    <span>Visual calendar</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-1 h-1 bg-white/40 rounded-full" />
+                    <span>Streaks & stats</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-1 h-1 bg-white/40 rounded-full" />
+                    <span>Smart reminders</span>
+                  </li>
+                </ul>
               </div>
-              
-              <h3 className="text-xl font-argesta font-bold mb-4 text-white">
-                HABIT TRACKER
-              </h3>
-              
-              <p className="text-white/60 text-sm leading-relaxed mb-6">
-                Build lasting habits with a visual and motivating tracking system.
-              </p>
-              
-              <ul className="space-y-2 text-xs text-white/50">
-                <li className="flex items-center space-x-2">
-                  <div className="w-1 h-1 bg-white/40 rounded-full" />
-                  <span>Visual calendar</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-1 h-1 bg-white/40 rounded-full" />
-                  <span>Streaks & stats</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-1 h-1 bg-white/40 rounded-full" />
-                  <span>Smart reminders</span>
-                </li>
-              </ul>
             </div>
-          </div>
+          </AnimatedCard>
 
           {/* Goal Planning */}
-          <div className="group relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
-            
-            <div className="relative bg-pure-black border border-white/10 rounded-2xl p-8 h-full transition-all duration-500 group-hover:border-white/30 group-hover:transform group-hover:scale-[1.02]">
-              <div className="relative mb-6">
-                <div className="w-16 h-16 bg-white/5 rounded-xl flex items-center justify-center group-hover:bg-white/10 transition-colors duration-300">
-                  <Trophy className="w-8 h-8 text-white/80 group-hover:text-white transition-colors duration-300" />
+          <AnimatedCard delay={300}>
+            <div className="group relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
+              
+              <div className="relative bg-pure-black border border-white/10 rounded-2xl p-8 h-full transition-all duration-500 group-hover:border-white/30 group-hover:transform group-hover:scale-[1.02]">
+                <div className="relative mb-6">
+                  <div className="w-16 h-16 bg-white/5 rounded-xl flex items-center justify-center group-hover:bg-white/10 transition-colors duration-300">
+                    <Trophy className="w-8 h-8 text-white/80 group-hover:text-white transition-colors duration-300" />
+                  </div>
+                  <div className="absolute -top-2 -right-2 w-3 h-3 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping" />
                 </div>
-                <div className="absolute -top-2 -right-2 w-3 h-3 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping" />
+                
+                <h3 className="text-xl font-argesta font-bold mb-4 text-white">
+                  GOAL PLANNING
+                </h3>
+                
+                <p className="text-white/60 text-sm leading-relaxed mb-6">
+                  Plan and achieve your goals with a structured and measurable approach.
+                </p>
+                
+                <ul className="space-y-2 text-xs text-white/50">
+                  <li className="flex items-center space-x-2">
+                    <div className="w-1 h-1 bg-white/40 rounded-full" />
+                    <span>Smart OKRs</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-1 h-1 bg-white/40 rounded-full" />
+                    <span>Progress tracking</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-1 h-1 bg-white/40 rounded-full" />
+                    <span>Step breakdown</span>
+                  </li>
+                </ul>
               </div>
-              
-              <h3 className="text-xl font-argesta font-bold mb-4 text-white">
-                GOAL PLANNING
-              </h3>
-              
-              <p className="text-white/60 text-sm leading-relaxed mb-6">
-                Plan and achieve your goals with a structured and measurable approach.
-              </p>
-              
-              <ul className="space-y-2 text-xs text-white/50">
-                <li className="flex items-center space-x-2">
-                  <div className="w-1 h-1 bg-white/40 rounded-full" />
-                  <span>Smart OKRs</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-1 h-1 bg-white/40 rounded-full" />
-                  <span>Progress tracking</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-1 h-1 bg-white/40 rounded-full" />
-                  <span>Step breakdown</span>
-                </li>
-              </ul>
             </div>
-          </div>
+          </AnimatedCard>
 
           {/* Discord Integration */}
-          <div className="group relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
-            
-            <div className="relative bg-pure-black border border-white/10 rounded-2xl p-8 h-full transition-all duration-500 group-hover:border-white/30 group-hover:transform group-hover:scale-[1.02]">
-              <div className="relative mb-6">
-                <div className="w-16 h-16 bg-white/5 rounded-xl flex items-center justify-center group-hover:bg-white/10 transition-colors duration-300">
-                  <DiscordIcon className="w-8 h-8 text-white/80 group-hover:text-white transition-colors duration-300" />
+          <AnimatedCard delay={450}>
+            <div className="group relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
+              
+              <div className="relative bg-pure-black border border-white/10 rounded-2xl p-8 h-full transition-all duration-500 group-hover:border-white/30 group-hover:transform group-hover:scale-[1.02]">
+                <div className="relative mb-6">
+                  <div className="w-16 h-16 bg-white/5 rounded-xl flex items-center justify-center group-hover:bg-white/10 transition-colors duration-300">
+                    <DiscordIcon className="w-8 h-8 text-white/80 group-hover:text-white transition-colors duration-300" />
+                  </div>
+                  <div className="absolute -top-2 -right-2 w-3 h-3 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping" />
                 </div>
-                <div className="absolute -top-2 -right-2 w-3 h-3 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping" />
+                
+                <h3 className="text-xl font-argesta font-bold mb-4 text-white">
+                  DISCORD POMODORO
+                </h3>
+                
+                <p className="text-white/60 text-sm leading-relaxed mb-6">
+                  Boost your productivity with our Discord bot that syncs your pomodoro sessions directly to your workspace.
+                </p>
+                
+                <ul className="space-y-2 text-xs text-white/50">
+                  <li className="flex items-center space-x-2">
+                    <div className="w-1 h-1 bg-white/40 rounded-full" />
+                    <span>Pomodoro timer bot</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-1 h-1 bg-white/40 rounded-full" />
+                    <span>Auto session tracking</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-1 h-1 bg-white/40 rounded-full" />
+                    <span>Community accountability</span>
+                  </li>
+                </ul>
               </div>
-              
-              <h3 className="text-xl font-argesta font-bold mb-4 text-white">
-                DISCORD POMODORO
-              </h3>
-              
-              <p className="text-white/60 text-sm leading-relaxed mb-6">
-                Boost your productivity with our Discord bot that syncs your pomodoro sessions directly to your workspace.
-              </p>
-              
-              <ul className="space-y-2 text-xs text-white/50">
-                <li className="flex items-center space-x-2">
-                  <div className="w-1 h-1 bg-white/40 rounded-full" />
-                  <span>Pomodoro timer bot</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-1 h-1 bg-white/40 rounded-full" />
-                  <span>Auto session tracking</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-1 h-1 bg-white/40 rounded-full" />
-                  <span>Community accountability</span>
-                </li>
-              </ul>
             </div>
-          </div>
+          </AnimatedCard>
         </div>
 
         {/* And more section */}
-        <div className="text-center mt-16 mb-8">
-          
-          <p className="text-white/50 text-sm font-argesta tracking-[0.2em]">
-            AND MUCH MORE...
-          </p>
-          
-          <div className="flex items-center justify-center space-x-6 mt-6 text-xs text-white/30">
-            <span>Analytics Dashboard</span>
-            <div className="w-1 h-1 bg-white/20 rounded-full" />
-            <span>Smart Notifications</span>
-            <div className="w-1 h-1 bg-white/20 rounded-full" />
-            <span>Export Features</span>
-          </div>
-        </div>
-
-        {/* Call to action */}
-        <div className="text-center mt-20">
-          <div className="inline-flex flex-col items-center space-y-6">
-            <p className="text-white/60 text-sm font-argesta tracking-widest">
-              READY TO TRANSFORM YOUR DISCIPLINE?
+        <AnimatedCard delay={500}>
+          <div className="text-center mt-16 mb-8">
+            
+            <p className="text-white/50 text-sm font-argesta tracking-[0.2em]">
+              AND MUCH MORE...
             </p>
             
-            <Link href="/auth/register">
-              <HoverBorderGradient
-                containerClassName="bg-pure-black"
-                className="bg-pure-black text-white border border-white/10 px-8 py-4"
-              >
-                <span className="flex items-center gap-3 font-argesta tracking-widest">
-                  START NOW
-                  <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
-                </span>
-              </HoverBorderGradient>
-            </Link>
-            
-            {/* Stats décoratives */}
-            <div className="flex items-center space-x-8 text-xs text-white/40 mt-8">
-              <div className="text-center">
-                <div className="font-argesta text-white/60">1000+</div>
-                <div>Active users</div>
-              </div>
-              <div className="w-px h-8 bg-white/20" />
-              <div className="text-center">
-                <div className="font-argesta text-white/60">50K+</div>
-                <div>Trades analyzed</div>
-              </div>
-              <div className="w-px h-8 bg-white/20" />
-              <div className="text-center">
-                <div className="font-argesta text-white/60">95%</div>
-                <div>Satisfaction</div>
+            <div className="flex items-center justify-center space-x-6 mt-6 text-xs text-white/30">
+              <span>Analytics Dashboard</span>
+              <div className="w-1 h-1 bg-white/20 rounded-full" />
+              <span>Smart Notifications</span>
+              <div className="w-1 h-1 bg-white/20 rounded-full" />
+              <span>Export Features</span>
+            </div>
+          </div>
+        </AnimatedCard>
+
+        {/* Call to action */}
+        <AnimatedCard delay={550}>
+          <div className="text-center mt-20">
+            <div className="inline-flex flex-col items-center space-y-6">
+              <p className="text-white/60 text-sm font-argesta tracking-widest">
+                READY TO TRANSFORM YOUR DISCIPLINE?
+              </p>
+              
+              <Link href="/auth/register">
+                <HoverBorderGradient
+                  containerClassName="bg-pure-black"
+                  className="bg-pure-black text-white border border-white/10 px-8 py-4"
+                >
+                  <span className="flex items-center gap-3 font-argesta tracking-widest">
+                    START NOW
+                    <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
+                  </span>
+                </HoverBorderGradient>
+              </Link>
+              
+              {/* Stats décoratives */}
+              <div className="flex items-center space-x-8 text-xs text-white/40 mt-8">
+                <div className="text-center">
+                  <div className="font-argesta text-white/60">1000+</div>
+                  <div>Active users</div>
+                </div>
+                <div className="w-px h-8 bg-white/20" />
+                <div className="text-center">
+                  <div className="font-argesta text-white/60">50K+</div>
+                  <div>Trades analyzed</div>
+                </div>
+                <div className="w-px h-8 bg-white/20" />
+                <div className="text-center">
+                  <div className="font-argesta text-white/60">95%</div>
+                  <div>Satisfaction</div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </AnimatedCard>
       </div>
     </section>
   );
