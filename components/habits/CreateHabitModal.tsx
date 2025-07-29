@@ -103,7 +103,7 @@ export function CreateHabitModal() {
             </div>
 
             {/* Limits Banner */}
-            <LimitsBanner type="habits" />
+            <LimitsBanner />
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
