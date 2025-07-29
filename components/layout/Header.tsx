@@ -5,6 +5,7 @@ import { Home, Target, TrendingUp, Users, Settings, Phone, LogOut, User } from "
 import Image from "next/image";
 import Link from "next/link";
 import { useSession, signOut } from "@/lib/auth-client";
+import GlassSurface from "@/components/GlassSurface";
 
 interface HeaderProps {
   className?: string;
@@ -77,118 +78,134 @@ export const Header = ({ className = "" }: HeaderProps) => {
 
   return (
     <>
-      <header className={`fixed top-0 left-0 right-0 z-30 bg-transparent backdrop-blur-md border border-white/10 transition-transform duration-300 ease-in-out ${className} ${
-        isVisible ? 'translate-y-0' : '-translate-y-full'
-      }`}>
-        <div className="mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative flex items-center h-16">
-            
-            {/* Menu Button - Gauche */}
-            <div className="relative z-10">
-              <button
-                onClick={toggleMenu}
-                className="relative w-12 h-12 flex items-center justify-center group"
-                aria-label="Toggle menu"
-              >
-                <div className="relative w-6 h-6 cursor-pointer">
-                  <div className={`absolute inset-0 transition-all duration-700 ease-out `} />
-                  
-                  <div className="absolute inset-0 flex flex-col justify-center items-center">
-                    <span className={`block h-0.5 bg-white transition-all duration-500 ease-out ${
+      <header className={`fixed top-0 left-0 right-0 z-30 transition-transform duration-300 ease-in-out ${className}`}>
+        <GlassSurface
+          borderRadius={0}
+          backgroundOpacity={0.51}
+          saturation={3}
+          borderWidth={0.04}
+          brightness={49}
+          opacity={1}
+          blur={30}
+          displace={0.5}
+          distortionScale={-180}
+          redOffset={0}
+          greenOffset={10}
+          blueOffset={20}
+          width="100%"
+          height={64}
+          className="w-full h-16 border-none"
+        >
+          <div className="mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div className="relative flex items-center h-16 w-full">
+              
+              {/* Menu Button - Gauche */}
+              <div className="relative z-10">
+                <button
+                  onClick={toggleMenu}
+                  className="relative w-12 h-12 flex items-center justify-center group"
+                  aria-label="Toggle menu"
+                >
+                  <div className="relative w-6 h-6 cursor-pointer">
+                    <div className={`absolute inset-0 transition-all duration-700 ease-out `} />
+                    
+                    <div className="absolute inset-0 flex flex-col justify-center items-center">
+                      <span className={`block h-0.5 bg-white transition-all duration-500 ease-out ${
+                        isMenuOpen 
+                          ? 'w-4 rotate-45 translate-y-[1px] shadow-[0_0_10px_rgba(255,255,255,0.5)]' 
+                          : 'w-4 rotate-0 translate-y-[-3px] group-hover:w-5'
+                      }`} />
+                      <span className={`block h-0.5 bg-white transition-all duration-300 ${
+                        isMenuOpen 
+                          ? 'w-0 opacity-0' 
+                          : 'w-3 opacity-100 group-hover:w-4'
+                      }`} />
+                      <span className={`block h-0.5 bg-white transition-all duration-500 ease-out ${
+                        isMenuOpen 
+                          ? 'w-4 -rotate-45 translate-y-[-1px] shadow-[0_0_10px_rgba(255,255,255,0.5)]' 
+                          : 'w-4 rotate-0 translate-y-[3px] group-hover:w-5'
+                      }`} />
+                    </div>
+
+                    {/* Pulse Effect */}
+                    <div className={`absolute inset-0 transition-all duration-300 ${
                       isMenuOpen 
-                        ? 'w-4 rotate-45 translate-y-[1px] shadow-[0_0_10px_rgba(255,255,255,0.5)]' 
-                        : 'w-4 rotate-0 translate-y-[-3px] group-hover:w-5'
-                    }`} />
-                    <span className={`block h-0.5 bg-white transition-all duration-300 ${
-                      isMenuOpen 
-                        ? 'w-0 opacity-0' 
-                        : 'w-3 opacity-100 group-hover:w-4'
-                    }`} />
-                    <span className={`block h-0.5 bg-white transition-all duration-500 ease-out ${
-                      isMenuOpen 
-                        ? 'w-4 -rotate-45 translate-y-[-1px] shadow-[0_0_10px_rgba(255,255,255,0.5)]' 
-                        : 'w-4 rotate-0 translate-y-[3px] group-hover:w-5'
+                        ? 'opacity-0' 
+                        : 'opacity-0 group-hover:opacity-100 bg-white/5 animate-ping'
                     }`} />
                   </div>
+                </button>
+              </div>
 
-                  {/* Pulse Effect */}
-                  <div className={`absolute inset-0 transition-all duration-300 ${
-                    isMenuOpen 
-                      ? 'opacity-0' 
-                      : 'opacity-0 group-hover:opacity-100 bg-white/5 animate-ping'
-                  }`} />
-                </div>
-              </button>
-            </div>
+              {/* Logo - Centre absolu */}
+              <div className="absolute left-1/2 transform -translate-x-1/2 z-5">
+                <Link href="/" className="flex items-center">
+                  <Image
+                    src="/img/logo.png"
+                    alt="Altiora Logo"
+                    width={70}
+                    height={20}
+                    className="h-10 w-auto"  
+                    priority
+                  />
+                </Link>
+              </div>
 
-            {/* Logo - Centre absolu */}
-            <div className="absolute left-1/2 transform -translate-x-1/2 z-5">
-              <Link href="/" className="flex items-center">
-                <Image
-                  src="/img/logo.png"
-                  alt="Altiora Logo"
-                  width={70}
-                  height={20}
-                  className="h-10 w-auto"  
-                  priority
-                />
-              </Link>
-            </div>
-
-            {/* Auth Section - Droite */}
-            <div className="flex items-center space-x-3 ml-auto z-10">
-              {isPending ? (
-                <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-              ) : session?.user ? (
-                /* User Profile - Connecté */
-                <div className="flex items-center space-x-3">
-                  <Link
-                    href="/profile"
-                    className="flex items-center space-x-2 text-white/80 hover:text-white px-3 py-2 rounded-xl border border-white/20 hover:bg-white/5 hover:border-white/40 transition-all duration-300 group"
-                  >
-                    <div className="w-6 h-6 bg-white/10 rounded-full flex items-center justify-center">
-                      <User className="w-3 h-3" />
-                    </div>
-                    <span className="text-sm font-medium">
-                      {session.user.name?.split(' ')[0] || session.user.email.split('@')[0]}
-                    </span>
-                  </Link>
-                  
-                  <button
-                    onClick={async () => {
-                      await signOut();
-                      window.location.href = "/";
-                    }}
-                    className="p-2 text-white/60 hover:text-white rounded-xl border border-white/20 hover:bg-white/5 hover:border-white/40 transition-all duration-300"
-                    title="Sign Out"
-                  >
-                    <LogOut className="w-4 h-4" />
-                  </button>
-                </div>
-              ) : (
-                /* Auth Buttons - Non connecté */
-                <>
-                  <Link
-                    href="/auth/login"
-                    className="text-white/80 hover:text-white px-4 py-2 rounded-xl border border-white/20 hover:bg-white/5 hover:border-white/40 transition-all duration-300 text-sm font-semibold backdrop-blur-sm tracking-wider group"
-                  >
-                    <span className="relative">
-                      Login
-                      <div className="absolute -bottom-1 left-0 w-0 h-px bg-white/60 group-hover:w-full transition-all duration-300" />
-                    </span>
-                  </Link>
-                  
-                  <Link
-                    href="/auth/register"
-                    className="text-white px-5 py-2.5 rounded-xl bg-white/10 border border-white/30 hover:bg-white/20 hover:border-white/50 transition-all duration-300 text-sm font-semibold backdrop-blur-md tracking-wider shadow-lg hover:shadow-white/20 hover:scale-[1.02] transform"
-                  >
-                    Register
-                  </Link>
-                </>
-              )}
+              {/* Auth Section - Droite */}
+              <div className="flex items-center space-x-3 ml-auto z-10">
+                {isPending ? (
+                  <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                ) : session?.user ? (
+                  /* User Profile - Connecté */
+                  <div className="flex items-center space-x-3">
+                    <Link
+                      href="/profile"
+                      className="flex items-center space-x-2 text-white/80 hover:text-white px-3 py-2 rounded-xl border border-white/20 hover:bg-white/5 hover:border-white/40 transition-all duration-300 group"
+                    >
+                      <div className="w-6 h-6 bg-white/10 rounded-full flex items-center justify-center">
+                        <User className="w-3 h-3" />
+                      </div>
+                      <span className="text-sm font-medium">
+                        {session.user.name?.split(' ')[0] || session.user.email.split('@')[0]}
+                      </span>
+                    </Link>
+                    
+                    <button
+                      onClick={async () => {
+                        await signOut();
+                        window.location.href = "/";
+                      }}
+                      className="p-2 text-white/60 hover:text-white rounded-xl border border-white/20 hover:bg-white/5 hover:border-white/40 transition-all duration-300"
+                      title="Sign Out"
+                    >
+                      <LogOut className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  /* Auth Buttons - Non connecté */
+                  <>
+                    <Link
+                      href="/auth/login"
+                      className="text-white/80 hover:text-white px-4 py-2 rounded-xl border border-white/20 hover:bg-white/5 hover:border-white/40 transition-all duration-300 text-sm font-semibold backdrop-blur-sm tracking-wider group"
+                    >
+                      <span className="relative">
+                        Login
+                        <div className="absolute -bottom-1 left-0 w-0 h-px bg-white/60 group-hover:w-full transition-all duration-300" />
+                      </span>
+                    </Link>
+                    
+                    <Link
+                      href="/auth/register"
+                      className="text-white px-5 py-2.5 rounded-xl bg-white/10 border border-white/30 hover:bg-white/20 hover:border-white/50 transition-all duration-300 text-sm font-semibold backdrop-blur-md tracking-wider shadow-lg hover:shadow-white/20 hover:scale-[1.02] transform"
+                    >
+                      Register
+                    </Link>
+                  </>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        </GlassSurface>
       </header>
 
       {/* Revolutionary Full-Screen Menu */}

@@ -4,15 +4,17 @@ import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { ArrowRight, TrendingUp, Target, Zap, BarChart3, Clock, Star } from "lucide-react";
+import { ArrowRight, TrendingUp, Target, Zap, BarChart3, Clock, Star, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import Silk from "@/components/Silk/Silk";
+
+
 
 export default function HomePage() {
   return (
     <>
       <Header />
-      <section className="h-screen w-full flex items-center justify-center bg-cover bg-center bg-no-repeat relative overflow-hidden grayscale">
+      <section className="h-screen w-full flex items-center justify-center bg-cover bg-center bg-no-repeat relative overflow-hidden grayscale ">
         {/* Background Silk */}
         <div className="absolute inset-0 w-full h-full">
         <Silk
@@ -131,6 +133,12 @@ export default function HomePage() {
                 </HoverBorderGradient>
               </Link>
             </div>
+          </div>
+        </div>
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30">
+          <div className="flex flex-col items-center space-y-2 animate-bounce">
+            <span className="text-white/50 text-xs font-argesta tracking-widest">EXPLORE</span>
+            <ChevronDown className="w-5 h-5 text-white/50" />
           </div>
         </div>
       </section>
