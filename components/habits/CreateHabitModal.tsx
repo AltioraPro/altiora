@@ -4,7 +4,7 @@ import { useState } from "react";
 import { api } from "@/trpc/client";
 import { useHabits } from "./HabitsProvider";
 import { useToast } from "@/components/ui/toast";
-import { X, Plus, AlertTriangle } from "lucide-react";
+import { X } from "lucide-react";
 import { LimitsBanner } from "@/components/subscription/LimitsBanner";
 
 const HABIT_EMOJIS = [

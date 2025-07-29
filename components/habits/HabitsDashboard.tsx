@@ -92,7 +92,7 @@ export function HabitsDashboard() {
     <>
     <div className="space-y-6 mb-16">
       {/* Limits Banner */}
-      <LimitsBanner type="habits" />
+      <LimitsBanner />
       
       {/* Top Actions */}
       <div className="flex items-center justify-between">
