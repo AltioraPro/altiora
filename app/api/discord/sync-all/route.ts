@@ -1,0 +1,31 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { DiscordService } from '@/server/services/discord';
+
+export async function POST(request: NextRequest) {
+  try {
+    console.log('🔄 [API] Synchronisation globale demandée');
+    
+    // Appeler le service Discord pour synchroniser tous les utilisateurs
+    const result = await DiscordService.syncAllConnectedUsers();
+    
+    console.log('✅ [API] Synchronisation globale terminée', result);
+    
+    return NextResponse.json({
+      success: true,
+      message: 'Synchronisation globale terminée',
+      ...result,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('❌ [API] Erreur lors de la synchronisation globale:', error);
+    
+    return NextResponse.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'Erreur inconnue',
+        timestamp: new Date().toISOString()
+      },
+      { status: 500 }
+    );
+  }
+}
