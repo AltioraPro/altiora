@@ -85,7 +85,7 @@ export const FeaturesSection = () => {
           
           {/* Trading Journal */}
           <AnimatedCard delay={0}>
-            <div className="group relative">
+            <div className="group relative h-[400px]">
               {/* Effet de hover - bord lumineux */}
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
               
@@ -129,7 +129,7 @@ export const FeaturesSection = () => {
 
           {/* Habit Tracker */}
           <AnimatedCard delay={150}>
-            <div className="group relative">
+            <div className="group relative h-[400px]">
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
               
               <div className="relative bg-pure-black border border-white/10 rounded-2xl p-8 h-full transition-all duration-500 group-hover:border-white/30 group-hover:transform group-hover:scale-[1.02]">
@@ -168,7 +168,7 @@ export const FeaturesSection = () => {
 
           {/* Goal Planning */}
           <AnimatedCard delay={300}>
-            <div className="group relative">
+            <div className="group relative h-[400px]">
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
               
               <div className="relative bg-pure-black border border-white/10 rounded-2xl p-8 h-full transition-all duration-500 group-hover:border-white/30 group-hover:transform group-hover:scale-[1.02]">
@@ -207,7 +207,7 @@ export const FeaturesSection = () => {
 
           {/* Discord Integration */}
           <AnimatedCard delay={450}>
-            <div className="group relative">
+            <div className="group relative h-[400px]  ">
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
               
               <div className="relative bg-pure-black border border-white/10 rounded-2xl p-8 h-full transition-all duration-500 group-hover:border-white/30 group-hover:transform group-hover:scale-[1.02]">
