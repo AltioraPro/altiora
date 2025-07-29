@@ -217,10 +217,10 @@ export function CreateHabitModal() {
                 </button>
                 <button
                   type="submit"
-                  disabled={!title.trim() || createHabitMutation.isLoading}
+                  disabled={!title.trim() || createHabitMutation.isPending}
                   className="flex-1 px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 rounded-lg text-white font-argesta transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                 >
-                  {createHabitMutation.isLoading ? "CREATING..." : "CREATE"}
+                  {createHabitMutation.isPending ? "CREATING..." : "CREATE"}
                 </button>
               </div>
             </form>
