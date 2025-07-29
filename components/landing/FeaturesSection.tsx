@@ -6,6 +6,7 @@ import { AnimatedCard } from "@/components/ui/AnimatedCard";
 import { AnimatedText } from "@/components/ui/AnimatedText";
 import { ArrowRight, BookOpen, Zap, Trophy } from "lucide-react";
 import Link from "next/link";
+import SpotlightCard from "../SpotlightCard";
 
 // Discord Icon SVG Component
 const DiscordIcon = ({ className }: { className?: string }) => (
@@ -85,132 +86,115 @@ export const FeaturesSection = () => {
           
           {/* Trading Journal */}
           <AnimatedCard delay={0}>
-            <div className="group relative h-[400px]">
-              {/* Effet de hover - bord lumineux */}
-              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
-              
-              <div className="relative bg-pure-black border border-white/10 rounded-2xl p-8 h-full transition-all duration-500 group-hover:border-white/30 group-hover:transform group-hover:scale-[1.02]">
-                {/* Icône avec animation */}
-                <div className="relative mb-6">
-                  <div className="w-16 h-16 bg-white/5 rounded-xl flex items-center justify-center group-hover:bg-white/10 transition-colors duration-300">
-                    <BookOpen className="w-8 h-8 text-white/80 group-hover:text-white transition-colors duration-300" />
-                  </div>
-                  
-                  {/* Effet particule */}
-                  <div className="absolute -top-2 -right-2 w-3 h-3 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping" />
+            <SpotlightCard className="custom-spotlight-card group relative h-[400px] bg-pure-black" spotlightColor="rgba(255, 255, 255, 0.2)">
+              <div className="relative mb-6">
+                <div className="w-16 h-16 bg-white/5 rounded-xl flex items-center justify-center group-hover:bg-white/10 transition-colors duration-300">
+                  <BookOpen className="w-8 h-8 text-white/80 group-hover:text-white transition-colors duration-300" />
                 </div>
                 
-                <h3 className="text-xl font-argesta font-bold mb-4 text-white">
-                  TRADING JOURNAL
-                </h3>
-                
-                <p className="text-white/60 text-sm leading-relaxed mb-6">
-                  Analyze your trades, identify patterns and optimize your strategy with an intelligent journal.
-                </p>
-                
-                {/* Points clés */}
-                <ul className="space-y-2 text-xs text-white/50">
-                  <li className="flex items-center space-x-2">
-                    <div className="w-1 h-1 bg-white/40 rounded-full" />
-                    <span>Emotional analysis</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <div className="w-1 h-1 bg-white/40 rounded-full" />
-                    <span>Advanced metrics</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <div className="w-1 h-1 bg-white/40 rounded-full" />
-                    <span>Detailed reports</span>
-                  </li>
-                </ul>
+                {/* Effet particule */}
+                <div className="absolute -top-2 -right-2 w-3 h-3 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping" />
               </div>
-            </div>
+              
+              <h3 className="text-xl font-argesta font-bold mb-4 text-white">
+                TRADING JOURNAL
+              </h3>
+              
+              <p className="text-white/60 text-sm leading-relaxed mb-6">
+                Analyze your trades, identify patterns and optimize your strategy with an intelligent journal.
+              </p>
+              
+              {/* Points clés */}
+              <ul className="space-y-2 text-xs text-white/50">
+                <li className="flex items-center space-x-2">
+                  <div className="w-1 h-1 bg-white/40 rounded-full" />
+                  <span>Emotional analysis</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <div className="w-1 h-1 bg-white/40 rounded-full" />
+                  <span>Advanced metrics</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <div className="w-1 h-1 bg-white/40 rounded-full" />
+                  <span>Detailed reports</span>
+                </li>
+              </ul>
+            </SpotlightCard>
           </AnimatedCard>
 
           {/* Habit Tracker */}
           <AnimatedCard delay={150}>
-            <div className="group relative h-[400px]">
-              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
-              
-              <div className="relative bg-pure-black border border-white/10 rounded-2xl p-8 h-full transition-all duration-500 group-hover:border-white/30 group-hover:transform group-hover:scale-[1.02]">
-                <div className="relative mb-6">
-                  <div className="w-16 h-16 bg-white/5 rounded-xl flex items-center justify-center group-hover:bg-white/10 transition-colors duration-300">
-                    <Zap className="w-8 h-8 text-white/80 group-hover:text-white transition-colors duration-300" />
-                  </div>
-                  <div className="absolute -top-2 -right-2 w-3 h-3 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping" />
+            <SpotlightCard className="custom-spotlight-card group relative h-[400px] bg-pure-black" spotlightColor="rgba(255, 255, 255, 0.2)">
+              <div className="relative mb-6">
+                <div className="w-16 h-16 bg-white/5 rounded-xl flex items-center justify-center group-hover:bg-white/10 transition-colors duration-300">
+                  <Zap className="w-8 h-8 text-white/80 group-hover:text-white transition-colors duration-300" />
                 </div>
-                
-                <h3 className="text-xl font-argesta font-bold mb-4 text-white">
-                  HABIT TRACKER
-                </h3>
-                
-                <p className="text-white/60 text-sm leading-relaxed mb-6">
-                  Build lasting habits with a visual and motivating tracking system.
-                </p>
-                
-                <ul className="space-y-2 text-xs text-white/50">
-                  <li className="flex items-center space-x-2">
-                    <div className="w-1 h-1 bg-white/40 rounded-full" />
-                    <span>Visual calendar</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <div className="w-1 h-1 bg-white/40 rounded-full" />
-                    <span>Streaks & stats</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <div className="w-1 h-1 bg-white/40 rounded-full" />
-                    <span>Smart reminders</span>
-                  </li>
-                </ul>
+                <div className="absolute -top-2 -right-2 w-3 h-3 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping" />
               </div>
-            </div>
+              
+              <h3 className="text-xl font-argesta font-bold mb-4 text-white">
+                HABIT TRACKER
+              </h3>
+              
+              <p className="text-white/60 text-sm leading-relaxed mb-6">
+                Build lasting habits with a visual and motivating tracking system.
+              </p>
+              
+              <ul className="space-y-2 text-xs text-white/50">
+                <li className="flex items-center space-x-2">
+                  <div className="w-1 h-1 bg-white/40 rounded-full" />
+                  <span>Visual calendar</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <div className="w-1 h-1 bg-white/40 rounded-full" />
+                  <span>Streaks & stats</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <div className="w-1 h-1 bg-white/40 rounded-full" />
+                  <span>Smart reminders</span>
+                </li>
+              </ul>
+            </SpotlightCard>
           </AnimatedCard>
 
           {/* Goal Planning */}
           <AnimatedCard delay={300}>
-            <div className="group relative h-[400px]">
-              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
-              
-              <div className="relative bg-pure-black border border-white/10 rounded-2xl p-8 h-full transition-all duration-500 group-hover:border-white/30 group-hover:transform group-hover:scale-[1.02]">
-                <div className="relative mb-6">
-                  <div className="w-16 h-16 bg-white/5 rounded-xl flex items-center justify-center group-hover:bg-white/10 transition-colors duration-300">
-                    <Trophy className="w-8 h-8 text-white/80 group-hover:text-white transition-colors duration-300" />
-                  </div>
-                  <div className="absolute -top-2 -right-2 w-3 h-3 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping" />
+            <SpotlightCard className="custom-spotlight-card group relative h-[400px] bg-pure-black" spotlightColor="rgba(255, 255, 255, 0.2)">
+              <div className="relative mb-6">
+                <div className="w-16 h-16 bg-white/5 rounded-xl flex items-center justify-center group-hover:bg-white/10 transition-colors duration-300">
+                  <Trophy className="w-8 h-8 text-white/80 group-hover:text-white transition-colors duration-300" />
                 </div>
-                
-                <h3 className="text-xl font-argesta font-bold mb-4 text-white">
-                  GOAL PLANNING
-                </h3>
-                
-                <p className="text-white/60 text-sm leading-relaxed mb-6">
-                  Plan and achieve your goals with a structured and measurable approach.
-                </p>
-                
-                <ul className="space-y-2 text-xs text-white/50">
-                  <li className="flex items-center space-x-2">
-                    <div className="w-1 h-1 bg-white/40 rounded-full" />
-                    <span>Smart OKRs</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <div className="w-1 h-1 bg-white/40 rounded-full" />
-                    <span>Progress tracking</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <div className="w-1 h-1 bg-white/40 rounded-full" />
-                    <span>Step breakdown</span>
-                  </li>
-                </ul>
+                <div className="absolute -top-2 -right-2 w-3 h-3 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping" />
               </div>
-            </div>
+              
+              <h3 className="text-xl font-argesta font-bold mb-4 text-white">
+                GOAL PLANNING
+              </h3>
+              
+              <p className="text-white/60 text-sm leading-relaxed mb-6">
+                Plan and achieve your goals with a structured and measurable approach.
+              </p>
+              
+              <ul className="space-y-2 text-xs text-white/50">
+                <li className="flex items-center space-x-2">
+                  <div className="w-1 h-1 bg-white/40 rounded-full" />
+                  <span>Smart OKRs</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <div className="w-1 h-1 bg-white/40 rounded-full" />
+                  <span>Progress tracking</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <div className="w-1 h-1 bg-white/40 rounded-full" />
+                  <span>Step breakdown</span>
+                </li>
+              </ul>
+            </SpotlightCard>
           </AnimatedCard>
 
           {/* Discord Integration */}
           <AnimatedCard delay={450}>
-            <div className="group relative h-[400px]  ">
-              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
-              
-              <div className="relative bg-pure-black border border-white/10 rounded-2xl p-8 h-full transition-all duration-500 group-hover:border-white/30 group-hover:transform group-hover:scale-[1.02]">
+            <SpotlightCard className="custom-spotlight-card group relative h-[400px] bg-pure-black" spotlightColor="rgba(255, 255, 255, 0.2)" >
                 <div className="relative mb-6">
                   <div className="w-16 h-16 bg-white/5 rounded-xl flex items-center justify-center group-hover:bg-white/10 transition-colors duration-300">
                     <DiscordIcon className="w-8 h-8 text-white/80 group-hover:text-white transition-colors duration-300" />
@@ -240,8 +224,7 @@ export const FeaturesSection = () => {
                     <span>Community accountability</span>
                   </li>
                 </ul>
-              </div>
-            </div>
+            </SpotlightCard>
           </AnimatedCard>
         </div>
 
