@@ -57,6 +57,13 @@
       "when": 1753791487307,
       "tag": "0007_chubby_hairball",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1753863478740,
+      "tag": "0008_mushy_cargill",
+      "breakpoints": true
     }
   ]
 }

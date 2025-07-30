@@ -323,6 +323,7 @@ export const goals = createTable(
     title: varchar("title", { length: 255 }).notNull(),
     description: text("description"),
     type: varchar("type", { length: 20 }).notNull(), // annual, quarterly, custom
+    goalType: varchar("goal_type", { length: 20 }).notNull(), // binary, gradual
     targetValue: varchar("target_value", { length: 100 }),
     currentValue: varchar("current_value", { length: 100 }).default("0"),
     unit: varchar("unit", { length: 50 }),
@@ -330,6 +331,12 @@ export const goals = createTable(
     isCompleted: boolean("is_completed").default(false).notNull(),
     isActive: boolean("is_active").default(true).notNull(),
     sortOrder: integer("sort_order").default(0),
+    
+    // Rappels et notifications
+    remindersEnabled: boolean("reminders_enabled").default(false).notNull(),
+    reminderFrequency: varchar("reminder_frequency", { length: 20 }), // daily, weekly, monthly
+    lastReminderSent: timestamp("last_reminder_sent", { withTimezone: true }),
+    nextReminderDate: timestamp("next_reminder_date", { withTimezone: true }),
     
     // Timestamps
     createdAt: timestamp("created_at", { withTimezone: true })
@@ -343,6 +350,106 @@ export const goals = createTable(
     userIdIdx: index("goal_user_id_idx").on(table.userId),
     typeIdx: index("goal_type_idx").on(table.type),
     activeIdx: index("goal_active_idx").on(table.isActive),
+    reminderIdx: index("goal_reminder_idx").on(table.remindersEnabled, table.nextReminderDate),
+  })
+);
+
+/**
+ * Table des sous-objectifs
+ */
+export const subGoals = createTable(
+  "sub_goal",
+  {
+    id: varchar("id", { length: 255 }).primaryKey(),
+    goalId: varchar("goal_id", { length: 255 })
+      .references(() => goals.id, { onDelete: "cascade" })
+      .notNull(),
+    userId: varchar("user_id", { length: 255 })
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    
+    title: varchar("title", { length: 255 }).notNull(),
+    description: text("description"),
+    isCompleted: boolean("is_completed").default(false).notNull(),
+    sortOrder: integer("sort_order").default(0),
+    
+    // Timestamps
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (table) => ({
+    goalIdIdx: index("sub_goal_goal_id_idx").on(table.goalId),
+    userIdIdx: index("sub_goal_user_id_idx").on(table.userId),
+  })
+);
+
+/**
+ * Table des tâches associées aux objectifs
+ */
+export const goalTasks = createTable(
+  "goal_task",
+  {
+    id: varchar("id", { length: 255 }).primaryKey(),
+    goalId: varchar("goal_id", { length: 255 })
+      .references(() => goals.id, { onDelete: "cascade" })
+      .notNull(),
+    userId: varchar("user_id", { length: 255 })
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    
+    title: varchar("title", { length: 255 }).notNull(),
+    description: text("description"),
+    dueDate: timestamp("due_date", { withTimezone: true }),
+    isCompleted: boolean("is_completed").default(false).notNull(),
+    priority: varchar("priority", { length: 20 }).default("medium"), // low, medium, high
+    sortOrder: integer("sort_order").default(0),
+    
+    // Timestamps
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (table) => ({
+    goalIdIdx: index("goal_task_goal_id_idx").on(table.goalId),
+    userIdIdx: index("goal_task_user_id_idx").on(table.userId),
+    dueDateIdx: index("goal_task_due_date_idx").on(table.dueDate),
+  })
+);
+
+/**
+ * Table des rappels envoyés
+ */
+export const goalReminders = createTable(
+  "goal_reminder",
+  {
+    id: varchar("id", { length: 255 }).primaryKey(),
+    goalId: varchar("goal_id", { length: 255 })
+      .references(() => goals.id, { onDelete: "cascade" })
+      .notNull(),
+    userId: varchar("user_id", { length: 255 })
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    
+    reminderType: varchar("reminder_type", { length: 20 }).notNull(), // email, push, discord
+    sentAt: timestamp("sent_at", { withTimezone: true }).notNull(),
+    status: varchar("status", { length: 20 }).default("sent"), // sent, delivered, failed
+    
+    // Timestamps
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (table) => ({
+    goalIdIdx: index("goal_reminder_goal_id_idx").on(table.goalId),
+    userIdIdx: index("goal_reminder_user_id_idx").on(table.userId),
+    sentAtIdx: index("goal_reminder_sent_at_idx").on(table.sentAt),
   })
 );
 
@@ -368,4 +475,10 @@ export type MonthlyUsage = typeof monthlyUsage.$inferSelect;
 export type NewMonthlyUsage = typeof monthlyUsage.$inferInsert; 
 
 export type Goal = typeof goals.$inferSelect;
-export type NewGoal = typeof goals.$inferInsert; 
+export type NewGoal = typeof goals.$inferInsert;
+export type SubGoal = typeof subGoals.$inferSelect;
+export type NewSubGoal = typeof subGoals.$inferInsert;
+export type GoalTask = typeof goalTasks.$inferSelect;
+export type NewGoalTask = typeof goalTasks.$inferInsert;
+export type GoalReminder = typeof goalReminders.$inferSelect;
+export type NewGoalReminder = typeof goalReminders.$inferInsert; 

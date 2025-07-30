@@ -15,6 +15,14 @@ export interface DiscordGuildMember {
   nick?: string;
 }
 
+export interface Goal {
+  id: string;
+  title: string;
+  description?: string | null;
+  deadline?: Date | null;
+  userId: string;
+}
+
 // Configuration Discord
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID!;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET!;
@@ -340,6 +348,161 @@ export class DiscordService {
       console.error(`💥 [Discord BulkSync] Erreur générale:`, error);
       throw error;
     }
+  }
+
+  /**
+   * Envoie un message privé (DM) à un utilisateur Discord
+   */
+  static async sendDirectMessage(discordId: string, message: string): Promise<void> {
+    try {
+      // Créer un DM channel avec l'utilisateur
+      const createDMResponse = await fetch('https://discord.com/api/users/@me/channels', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bot ${DISCORD_BOT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          recipient_id: discordId,
+        }),
+      });
+
+      if (!createDMResponse.ok) {
+        throw new Error(`Failed to create DM channel: ${createDMResponse.status}`);
+      }
+
+      const dmChannel = await createDMResponse.json();
+
+      // Envoyer le message dans le DM
+      const sendMessageResponse = await fetch(`https://discord.com/api/channels/${dmChannel.id}/messages`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bot ${DISCORD_BOT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: message,
+        }),
+      });
+
+      if (!sendMessageResponse.ok) {
+        throw new Error(`Failed to send DM: ${sendMessageResponse.status}`);
+      }
+
+      console.log(`✅ [Discord DM] Message envoyé à ${discordId}`);
+    } catch (error) {
+      console.error(`❌ [Discord DM] Erreur lors de l'envoi du DM à ${discordId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Envoie un rappel d'objectif via Discord DM
+   */
+  static async sendGoalReminder(discordId: string, goal: Goal): Promise<void> {
+    const message = this.formatGoalReminderMessage(goal);
+    await this.sendDirectMessage(discordId, message);
+  }
+
+  /**
+   * Envoie un message de félicitations quand un objectif est complété
+   */
+  static async sendGoalCompletion(discordId: string, goal: Goal): Promise<void> {
+    const message = this.formatGoalCompletionMessage(goal);
+    await this.sendDirectMessage(discordId, message);
+  }
+
+  /**
+   * Formate le message de rappel d'objectif
+   */
+  private static formatGoalReminderMessage(goal: Goal): string {
+    const deadline = goal.deadline ? new Date(goal.deadline).toLocaleDateString('fr-FR') : 'Aucune date limite';
+    const daysLeft = goal.deadline ? Math.ceil((new Date(goal.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : null;
+    
+    // Emoji dynamique selon l'urgence
+    let urgencyEmoji = '⏰';
+    let urgencyText = '';
+    if (daysLeft !== null) {
+      if (daysLeft < 0) {
+        urgencyEmoji = '🚨';
+        urgencyText = '**URGENT**';
+      } else if (daysLeft === 0) {
+        urgencyEmoji = '⚡';
+        urgencyText = '**AUJOURD\'HUI**';
+      } else if (daysLeft <= 3) {
+        urgencyEmoji = '🔥';
+        urgencyText = '**Bientôt dû**';
+      }
+    }
+    
+    let message = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    message += `${urgencyEmoji} **RAPPEL D'OBJECTIF** ${urgencyEmoji}\n`;
+    message += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    
+    message += `🎯 **${goal.title}**\n`;
+    if (urgencyText) {
+      message += `⚠️ ${urgencyText}\n\n`;
+    }
+    
+    if (goal.description) {
+      message += `📝 **Description:**\n> ${goal.description}\n\n`;
+    }
+    
+    message += `📅 **Date limite:** ${deadline}`;
+    
+    if (daysLeft !== null) {
+      if (daysLeft > 0) {
+        message += ` \`${daysLeft} jour${daysLeft > 1 ? 's' : ''} restant${daysLeft > 1 ? 's' : ''}\``;
+      } else if (daysLeft === 0) {
+        message += ` \`À faire aujourd'hui !\``;
+      } else {
+        message += ` \`En retard de ${Math.abs(daysLeft)} jour${Math.abs(daysLeft) > 1 ? 's' : ''}\``;
+      }
+    }
+    
+    message += `\n\n💪 **N'oubliez pas de travailler sur cet objectif !**\n`;
+    message += `🚀 **Chaque petit pas compte vers votre succès !**\n\n`;
+    message += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+    
+    return message;
+  }
+
+  /**
+   * Formate le message de félicitations pour un objectif complété
+   */
+  private static formatGoalCompletionMessage(goal: Goal): string {
+    const completionDate = new Date().toLocaleDateString('fr-FR');
+    const completionTime = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    
+    let message = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    message += `🎉 **FÉLICITATIONS ! OBJECTIF ATTEINT !** 🎉\n`;
+    message += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    
+    message += `🏆 **${goal.title}**\n\n`;
+    
+    if (goal.description) {
+      message += `📝 **Description:**\n> ${goal.description}\n\n`;
+    }
+    
+    message += `✅ **Complété le:** ${completionDate} à ${completionTime}\n\n`;
+    
+    // Messages de motivation aléatoires
+    const motivationalMessages = [
+      "🌟 **Vous êtes incroyable ! Continuez comme ça !** 🌟",
+      "🔥 **Un objectif de plus dans votre collection de succès !** 🔥",
+      "💫 **Votre persévérance porte ses fruits !** 💫",
+      "⭐ **Chaque accomplissement vous rapproche de vos rêves !** ⭐",
+      "🚀 **Vous prouvez que tout est possible avec de la détermination !** 🚀"
+    ];
+    
+    const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+    message += `${randomMessage}\n\n`;
+    
+    message += `💪 **Prochain défi ?** Créez un nouvel objectif pour continuer votre progression !\n`;
+    message += `📈 **Votre parcours d'excellence continue...**\n\n`;
+    message += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+    
+    return message;
   }
 }
 
