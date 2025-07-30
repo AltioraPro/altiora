@@ -323,7 +323,7 @@ export const goals = createTable(
     title: varchar("title", { length: 255 }).notNull(),
     description: text("description"),
     type: varchar("type", { length: 20 }).notNull(), // annual, quarterly, custom
-    goalType: varchar("goal_type", { length: 20 }).notNull(), // binary, gradual
+    goalType: varchar("goal_type", { length: 20 }).notNull(), // gradual
     targetValue: varchar("target_value", { length: 100 }),
     currentValue: varchar("current_value", { length: 100 }).default("0"),
     unit: varchar("unit", { length: 50 }),

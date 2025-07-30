@@ -14,6 +14,9 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
     title: "",
     description: "",
     type: "custom" as "annual" | "quarterly" | "custom",
+    targetValue: "",
+    currentValue: "0",
+    unit: "",
     deadline: "",
     remindersEnabled: false,
     reminderFrequency: "weekly" as "daily" | "weekly" | "monthly",
@@ -36,6 +39,9 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
       title: "",
       description: "",
       type: "custom",
+      targetValue: "",
+      currentValue: "0",
+      unit: "",
       deadline: "",
       remindersEnabled: false,
       reminderFrequency: "weekly",
@@ -130,6 +136,51 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
                 <option value="quarterly" className="bg-neutral-900 text-white">Quarterly</option>
                 <option value="custom" className="bg-neutral-900 text-white">Custom</option>
               </select>
+            </div>
+
+            {/* Valeur cible */}
+            <div>
+              <label htmlFor="targetValue" className="block text-sm font-medium text-white mb-2">
+                Target Value
+              </label>
+              <input
+                type="text"
+                id="targetValue"
+                value={formData.targetValue}
+                onChange={(e) => setFormData({ ...formData, targetValue: e.target.value })}
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent"
+                placeholder="Ex: 10000"
+              />
+            </div>
+
+            {/* Valeur actuelle */}
+            <div>
+              <label htmlFor="currentValue" className="block text-sm font-medium text-white mb-2">
+                Current Value
+              </label>
+              <input
+                type="text"
+                id="currentValue"
+                value={formData.currentValue}
+                onChange={(e) => setFormData({ ...formData, currentValue: e.target.value })}
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent"
+                placeholder="Ex: 5000"
+              />
+            </div>
+
+            {/* Unité */}
+            <div>
+              <label htmlFor="unit" className="block text-sm font-medium text-white mb-2">
+                Unit
+              </label>
+              <input
+                type="text"
+                id="unit"
+                value={formData.unit}
+                onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent"
+                placeholder="Ex: €, kg, pages"
+              />
             </div>
 
             {/* Date limite */}

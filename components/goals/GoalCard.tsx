@@ -49,7 +49,7 @@ export function GoalCard({ goal, viewMode, onGoalChange, onEditGoal }: GoalCardP
   });
 
   const isOverdue = goal.deadline && new Date(goal.deadline) < new Date() && !goal.isCompleted;
-  const progressPercentage = goal.goalType === "gradual" && goal.targetValue && goal.currentValue
+  const progressPercentage = goal.targetValue && goal.currentValue
     ? Math.min(100, Math.round((parseFloat(goal.currentValue) / parseFloat(goal.targetValue)) * 100))
     : 0;
 
@@ -63,7 +63,7 @@ export function GoalCard({ goal, viewMode, onGoalChange, onEditGoal }: GoalCardP
   };
 
   const getStatusColor = () => {
-    if (goal.isCompleted) return "bg-green-500/20 text-green-400 border-green-500/30";
+    if (goal.isCompleted) return "bg-green-500/30 text-green-400 border-green-500/50 shadow-lg shadow-green-500/20";
     if (isOverdue) return "bg-red-500/20 text-red-400 border-red-500/30";
     return "bg-blue-500/20 text-blue-400 border-blue-500/30";
   };
@@ -97,19 +97,19 @@ export function GoalCard({ goal, viewMode, onGoalChange, onEditGoal }: GoalCardP
               disabled={markCompletedMutation.isPending}
             >
               {goal.isCompleted ? (
-                <div className="w-6 h-6 bg-gradient-to-br from-white/20 to-white/10 rounded-full flex items-center justify-center border border-white/20 group-hover/button:scale-110 transition-transform duration-300">
-                  <CheckCircle className="w-4 h-4 text-white" />
+                <div className="w-6 h-6 bg-gradient-to-br from-green-500/30 to-green-400/20 rounded-full flex items-center justify-center border border-green-400/40 group-hover/button:scale-110 transition-transform duration-300 shadow-lg shadow-green-500/20">
+                  <CheckCircle className="w-4 h-4 text-green-400" />
                 </div>
               ) : (
-                <div className="w-6 h-6 bg-white/5 rounded-full flex items-center justify-center border border-white/20 hover:border-white/40 hover:bg-white/10 transition-all duration-300 group-hover/button:scale-110">
-                  <Circle className="w-4 h-4 text-white/60" />
+                <div className="w-6 h-6 bg-white/5 rounded-full flex items-center justify-center border border-white/20 hover:border-green-400/40 hover:bg-green-500/10 transition-all duration-300 group-hover/button:scale-110">
+                  <Circle className="w-4 h-4 text-white/60 group-hover/button:text-green-400" />
                 </div>
               )}
             </button>
             
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-3 mb-2">
-                <h3 className={`text-lg font-semibold ${goal.isCompleted ? 'line-through text-white/40' : 'text-white'} transition-all duration-300`}>
+                <h3 className={`text-lg font-semibold ${goal.isCompleted ? 'line-through text-green-400/60' : 'text-white'} transition-all duration-300`}>
                   {goal.title}
                 </h3>
                 <Badge className={`text-xs ${getTypeColor(goal.goalType)}`}>
@@ -121,7 +121,7 @@ export function GoalCard({ goal, viewMode, onGoalChange, onEditGoal }: GoalCardP
               </div>
               
               {goal.description && (
-                <p className={`text-sm ${goal.isCompleted ? 'text-white/30' : 'text-white/60'} line-clamp-2`}>
+                <p className={`text-sm ${goal.isCompleted ? 'text-green-400/40' : 'text-white/60'} line-clamp-2`}>
                   {goal.description}
                 </p>
               )}
@@ -208,33 +208,39 @@ export function GoalCard({ goal, viewMode, onGoalChange, onEditGoal }: GoalCardP
 
         {/* Titre et description */}
         <div className="mb-4">
-          <h3 className={`text-lg font-semibold mb-2 ${goal.isCompleted ? 'line-through text-white/40' : 'text-white'} transition-all duration-300`}>
+          <h3 className={`text-lg font-semibold mb-2 ${goal.isCompleted ? 'line-through text-green-400/60' : 'text-white'} transition-all duration-300`}>
             {goal.title}
           </h3>
           {goal.description && (
-            <p className={`text-sm ${goal.isCompleted ? 'text-white/30' : 'text-white/60'} line-clamp-2`}>
+            <p className={`text-sm ${goal.isCompleted ? 'text-green-400/40' : 'text-white/60'} line-clamp-2`}>
               {goal.description}
             </p>
           )}
         </div>
 
-        {/* Progress Bar pour les objectifs graduels */}
-        {goal.goalType === "gradual" && goal.targetValue && goal.currentValue && (
+        {/* Progress Bar */}
+        {goal.targetValue && goal.currentValue && (
           <div className="mb-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm text-white/60">Progress</span>
-              <span className="text-sm font-medium text-white/80">{progressPercentage}%</span>
+              <span className={`text-sm font-medium ${goal.isCompleted ? 'text-green-400' : 'text-white/80'}`}>{progressPercentage}%</span>
             </div>
             <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-white/5 to-white/10 rounded-full" />
               <div 
-                className="relative h-2 rounded-full bg-gradient-to-r from-white/60 via-white/40 to-white/20 transition-all duration-1000 ease-out"
+                className={`relative h-2 rounded-full transition-all duration-1000 ease-out ${
+                  goal.isCompleted 
+                    ? 'bg-gradient-to-r from-green-500 via-green-400 to-green-300' 
+                    : 'bg-gradient-to-r from-white/60 via-white/40 to-white/20'
+                }`}
                 style={{ 
                   width: `${progressPercentage}%`,
-                  boxShadow: `0 0 10px rgba(255, 255, 255, ${progressPercentage / 100 * 0.3})`
+                  boxShadow: goal.isCompleted 
+                    ? `0 0 10px rgba(34, 197, 94, ${progressPercentage / 100 * 0.5})`
+                    : `0 0 10px rgba(255, 255, 255, ${progressPercentage / 100 * 0.3})`
                 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
+                <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-${goal.isCompleted ? 'green' : 'white'}/20 to-transparent animate-pulse`} />
               </div>
             </div>
             <div className="flex justify-between text-xs text-white/40 mt-1">
@@ -257,18 +263,22 @@ export function GoalCard({ goal, viewMode, onGoalChange, onEditGoal }: GoalCardP
           
           <button
             onClick={handleMarkCompleted}
-            className="group/button flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg transition-all duration-300"
+            className={`group/button flex items-center gap-2 px-4 py-2 border rounded-lg transition-all duration-300 ${
+              goal.isCompleted 
+                ? 'bg-green-500/20 hover:bg-green-500/30 border-green-400/40 hover:border-green-400/60' 
+                : 'bg-white/5 hover:bg-green-500/10 border-white/10 hover:border-green-400/40'
+            }`}
             disabled={markCompletedMutation.isPending}
           >
             {goal.isCompleted ? (
               <>
-                <CheckCircle className="w-4 h-4 text-white" />
-                <span className="text-sm text-white">Done</span>
+                <CheckCircle className="w-4 h-4 text-green-400" />
+                <span className="text-sm text-green-400">Done</span>
               </>
             ) : (
               <>
-                <Circle className="w-4 h-4 text-white/60 group-hover/button:text-white transition-colors" />
-                <span className="text-sm text-white/60 group-hover/button:text-white transition-colors">Complete</span>
+                <Circle className="w-4 h-4 text-white/60 group-hover/button:text-green-400 transition-colors" />
+                <span className="text-sm text-white/60 group-hover/button:text-green-400 transition-colors">Complete</span>
               </>
             )}
           </button>

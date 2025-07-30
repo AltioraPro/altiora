@@ -71,18 +71,9 @@ export default function GoalsPage() {
   return (
     <>
       <Header />
-      
-      <div className="min-h-screen bg-pure-black text-pure-white relative overflow-hidden">
-        {/* Background avec effets de profondeur */}
-        <div className="fixed inset-0 pointer-events-none -z-10">
-          <div className="absolute top-20 left-20 w-96 h-96 bg-white/[0.008] rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-20 right-20 w-[500px] h-[500px] bg-white/[0.005] rounded-full blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-white/[0.003] rounded-full blur-3xl" />
-          <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-white/[0.01] rounded-full blur-2xl" />
-        </div>
-
+      <div className="min-h-screen mt-8 bg-pure-black text-pure-white">
+        {/* Main Content */}
         <div className="relative max-w-7xl mx-auto px-6 py-8">
-          
           {/* Header */}
           <div className="relative border-b border-white/10 mb-8">
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
@@ -90,10 +81,10 @@ export default function GoalsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <h1 className="text-3xl font-bold font-argesta tracking-tight">
-                    Goals
+                    Goals Tracker
                   </h1>
                   <p className="text-white/60 font-argesta text-sm mt-2">
-                    Define and track your personal and professional goals
+                    Define your vision. Achieve your destiny.
                   </p>
                 </div>
                 
@@ -111,7 +102,6 @@ export default function GoalsPage() {
             </div>
           </div>
 
-
           {/* Quick Stats Bento Grid */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
             {/* Active Goals */}
@@ -120,8 +110,8 @@ export default function GoalsPage() {
               <div className="relative bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-white/20 transition-all duration-300 hover:scale-105 backdrop-blur-sm">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-white/60 text-sm font-medium mb-2">Active Goals</p>
-                    <p className="text-3xl font-bold text-white tracking-tight">
+                    <p className="text-white/60 text-sm font-medium mb-2 font-argesta">Active Goals</p>
+                    <p className="text-3xl font-bold text-green-400 tracking-tight font-argesta">
                       {animatedStats.active}
                     </p>
                   </div>
@@ -138,8 +128,8 @@ export default function GoalsPage() {
               <div className="relative bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-white/20 transition-all duration-300 hover:scale-105 backdrop-blur-sm">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-white/60 text-sm font-medium mb-2">Completed</p>
-                    <p className="text-3xl font-bold text-white tracking-tight">
+                    <p className="text-white/60 text-sm font-medium mb-2 font-argesta">Completed</p>
+                    <p className="text-3xl font-bold text-green-400 tracking-tight font-argesta">
                       {animatedStats.completed}
                     </p>
                   </div>
@@ -156,8 +146,8 @@ export default function GoalsPage() {
               <div className="relative bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-white/20 transition-all duration-300 hover:scale-105 backdrop-blur-sm">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-white/60 text-sm font-medium mb-2">Overdue</p>
-                    <p className="text-3xl font-bold text-white tracking-tight">
+                    <p className="text-white/60 text-sm font-medium mb-2 font-argesta">Overdue</p>
+                    <p className="text-3xl font-bold text-red-400 tracking-tight font-argesta">
                       {animatedStats.overdue}
                     </p>
                   </div>
@@ -174,8 +164,8 @@ export default function GoalsPage() {
               <div className="relative bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-white/20 transition-all duration-300 hover:scale-105 backdrop-blur-sm">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-white/60 text-sm font-medium mb-2">Success Rate</p>
-                    <p className="text-3xl font-bold text-white tracking-tight">
+                    <p className="text-white/60 text-sm font-medium mb-2 font-argesta">Success Rate</p>
+                    <p className="text-3xl font-bold text-green-400 tracking-tight font-argesta">
                       {animatedStats.successRate}%
                     </p>
                   </div>
@@ -187,7 +177,7 @@ export default function GoalsPage() {
             </div>
           </div>
 
-          {/* Goals Dashboard avec Bento Grid */}
+          {/* Goals Dashboard */}
           <GoalsDashboard />
 
           {/* Create Goal Modal */}
@@ -196,11 +186,17 @@ export default function GoalsPage() {
             onClose={() => setIsCreateModalOpen(false)}
           />
         </div>
-        
+
+        {/* Background decoration */}
+        <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+          <div className="absolute top-20 left-20 w-64 h-64 bg-white/[0.01] rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-white/[0.005] rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white/[0.002] rounded-full blur-3xl" />
+        </div>
       </div>
 
+      {/* Footer */}
       <Footer />
-
     </>
   );
 } 

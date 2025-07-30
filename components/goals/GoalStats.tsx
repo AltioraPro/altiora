@@ -87,7 +87,7 @@ export function GoalStats({ stats }: GoalStatsProps) {
         <div className="relative mb-6">
           <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-white/10 to-white/5 rounded-lg blur-sm" />
           <div className="relative bg-white/[0.05] border border-white/10 rounded-lg p-3">
-            <h3 className="text-lg font-bold text-white tracking-wide">
+            <h3 className="text-lg font-bold text-white tracking-wide font-argesta">
               Monthly Performance
             </h3>
             <p className="text-white/60 text-xs mt-1">
@@ -161,7 +161,7 @@ export function GoalStats({ stats }: GoalStatsProps) {
           <div className="relative bg-white/[0.03] border border-white/10 rounded-lg p-4">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="text-xs text-white/60 font-medium mb-1">Success Rate</p>
+                <p className="text-xs text-white/60 font-medium mb-1 font-argesta">Success Rate</p>
                 <p className={`text-2xl font-bold ${getCompletionRateColor(animatedStats.completionRate)} tracking-tight`}>
                   {animatedStats.completionRate}%
                 </p>
