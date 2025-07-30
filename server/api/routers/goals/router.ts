@@ -69,7 +69,7 @@ export const goalsRouter = createTRPCRouter({
   getStats: protectedProcedure
     .input(getGoalStatsValidator)
     .query(async ({ ctx, input }) => {
-      return await getGoalStats(ctx.session.userId, input);
+      return await getGoalStats(ctx.session.userId);
     }),
 
   getByType: protectedProcedure

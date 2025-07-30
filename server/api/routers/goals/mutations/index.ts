@@ -5,14 +5,13 @@ import { type NewGoal, type NewSubGoal, type NewGoalTask } from "@/server/db/sch
 import { nanoid } from "nanoid";
 import { DiscordService } from "@/server/services/discord";
 
-export async function createGoal(input: NewGoal, userId: string) {
+export async function createGoal(input: Omit<NewGoal, 'id' | 'userId'>, userId: string) {
   const goalId = nanoid();
-  const { id: _, userId: __, ...inputWithoutId } = input;
   
   const newGoal = {
     id: goalId,
     userId,
-    ...inputWithoutId,
+    ...input,
     currentValue: input.currentValue || "0",
   };
 
@@ -113,14 +112,13 @@ export async function reorderGoals(goalIds: string[], userId: string) {
 }
 
 // Sous-objectifs
-export async function createSubGoal(input: NewSubGoal, userId: string) {
+export async function createSubGoal(input: Omit<NewSubGoal, 'id' | 'userId'>, userId: string) {
   const subGoalId = nanoid();
-  const { id: _, userId: __, ...inputWithoutId } = input;
   
   const newSubGoal = {
     id: subGoalId,
     userId,
-    ...inputWithoutId,
+    ...input,
   };
 
   const [createdSubGoal] = await db
@@ -155,14 +153,13 @@ export async function deleteSubGoal(subGoalId: string, userId: string) {
 }
 
 // Tâches
-export async function createGoalTask(input: NewGoalTask, userId: string) {
+export async function createGoalTask(input: Omit<NewGoalTask, 'id' | 'userId'>, userId: string) {
   const taskId = nanoid();
-  const { id: _, userId: __, ...inputWithoutId } = input;
   
   const newTask = {
     id: taskId,
     userId,
-    ...inputWithoutId,
+    ...input,
   };
 
   const [createdTask] = await db

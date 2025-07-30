@@ -142,8 +142,7 @@ export async function getGoalWithDetails(goalId: string, userId: string) {
 }
 
 export async function getGoalStats(
-  userId: string,
-  _input: { period: "week" | "month" | "quarter" | "year" }
+  userId: string
 ) {
   const now = new Date();
 
