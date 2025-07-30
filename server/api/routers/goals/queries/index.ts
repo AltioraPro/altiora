@@ -1,7 +1,7 @@
 import { db } from "@/server/db";
-import { goals, subGoals, goalTasks, goalReminders } from "@/server/db/schema";
-import { eq, and, desc, asc, like, gte, lte, sql, or } from "drizzle-orm";
-import { type Goal, type SubGoal, type GoalTask } from "@/server/db/schema";
+import { goals, subGoals, goalTasks } from "@/server/db/schema";
+import { eq, and, desc, asc, like, gte, lte, sql } from "drizzle-orm";
+import { type Goal } from "@/server/db/schema";
 
 export async function getUserGoals(userId: string): Promise<Goal[]> {
   return await db
@@ -29,7 +29,7 @@ export async function getGoalsPaginated(
 
   console.log("🔍 [Goals API] Filter params:", { search, type, status, showInactive });
 
-  let whereConditions = [eq(goals.userId, userId)];
+  const whereConditions = [eq(goals.userId, userId)];
 
   if (!showInactive) {
     whereConditions.push(eq(goals.isActive, true));
@@ -52,41 +52,50 @@ export async function getGoalsPaginated(
         console.log("🔍 [Goals API] Applied completed filter");
         break;
       case "overdue":
-        whereConditions.push(
-          and(
-            eq(goals.isCompleted, false),
-            lte(goals.deadline, new Date())
-          )
-        );
+        whereConditions.push(eq(goals.isCompleted, false));
+        whereConditions.push(lte(goals.deadline, new Date()));
         console.log("🔍 [Goals API] Applied overdue filter");
         break;
       case "active":
-        whereConditions.push(
-          and(
-            eq(goals.isCompleted, false),
-            sql`${goals.deadline} > NOW() OR ${goals.deadline} IS NULL`
-          )
-        );
+        whereConditions.push(eq(goals.isCompleted, false));
+        whereConditions.push(sql`${goals.deadline} > NOW() OR ${goals.deadline} IS NULL`);
         console.log("🔍 [Goals API] Applied active filter");
         break;
     }
   }
 
-  const sortColumn = goals[sortBy as keyof typeof goals];
-  const sortDirection = sortOrder === "asc" ? asc : desc;
+  const whereClause = whereConditions.length === 1 ? whereConditions[0] : and(...whereConditions);
+
+  let orderByClause;
+  switch (sortBy) {
+    case "title":
+      orderByClause = sortOrder === "asc" ? asc(goals.title) : desc(goals.title);
+      break;
+    case "createdAt":
+      orderByClause = sortOrder === "asc" ? asc(goals.createdAt) : desc(goals.createdAt);
+      break;
+    case "deadline":
+      orderByClause = sortOrder === "asc" ? asc(goals.deadline) : desc(goals.deadline);
+      break;
+    case "sortOrder":
+      orderByClause = sortOrder === "asc" ? asc(goals.sortOrder) : desc(goals.sortOrder);
+      break;
+    default:
+      orderByClause = asc(goals.sortOrder);
+  }
 
   const results = await db
     .select()
     .from(goals)
-    .where(and(...whereConditions))
-    .orderBy(sortDirection(sortColumn), desc(goals.createdAt))
+    .where(whereClause)
+    .orderBy(orderByClause, desc(goals.createdAt))
     .limit(limit)
     .offset(offset);
 
   const total = await db
     .select({ count: sql<number>`count(*)` })
     .from(goals)
-    .where(and(...whereConditions));
+    .where(whereClause);
 
   return {
     goals: results,
@@ -134,9 +143,8 @@ export async function getGoalWithDetails(goalId: string, userId: string) {
 
 export async function getGoalStats(
   userId: string,
-  input: { period: "week" | "month" | "quarter" | "year" }
+  _input: { period: "week" | "month" | "quarter" | "year" }
 ) {
-  const { period } = input;
   const now = new Date();
 
   // Récupérer tous les goals de l'utilisateur pour calculer les stats
