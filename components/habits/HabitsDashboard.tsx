@@ -100,7 +100,6 @@ export function HabitsDashboard() {
           {/* View Mode Toggle */}
           <ViewModeToggle viewMode={viewMode} setViewMode={setViewMode} />
         </div>
-
         {/* Create Habit Button */}
         <CreateHabitButton onClick={openCreateModal} />
       </div>
