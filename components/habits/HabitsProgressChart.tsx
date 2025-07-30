@@ -63,22 +63,22 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
     }
     
     if (viewMode === 'month') {
-      // For the month, start with the first of the month
+      // For the month, show last 30 days from today
       const today = new Date();
-      const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-      const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      const thirtyDaysAgo = new Date(today);
+      thirtyDaysAgo.setDate(today.getDate() - 29); // 29 to include today (30 days total)
       
-      const firstDayStr = firstDayOfMonth.toISOString().split('T')[0]!;
-      const lastDayStr = lastDayOfMonth.toISOString().split('T')[0]!;
+      const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split('T')[0]!;
+      const todayStr = today.toISOString().split('T')[0]!;
       
       filteredData = optimisticData.filter(item => 
-        item.date >= firstDayStr && item.date <= lastDayStr
+        item.date >= thirtyDaysAgoStr && item.date <= todayStr
       );
       
-      // Create entries for all days of the month if missing
+      // Create entries for all 30 days if missing
       const monthData = [];
-      for (let i = 0; i < lastDayOfMonth.getDate(); i++) {
-        const date = new Date(firstDayOfMonth.getTime() + i * 24 * 60 * 60 * 1000);
+      for (let i = 0; i < 30; i++) {
+        const date = new Date(thirtyDaysAgo.getTime() + i * 24 * 60 * 60 * 1000);
         const dateStr = date.toISOString().split('T')[0]!;
         const existingData = filteredData.find(item => item.date === dateStr);
         
@@ -199,17 +199,21 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
           </div>
 
           {/* Chart Bars */}
-          <div className="relative flex items-end justify-between h-[230px] space-x-2">
+          <div className={`relative flex items-end justify-between h-[230px] ${
+            viewMode === 'month' ? 'space-x-1' : 'space-x-2'
+          }`}>
             {chartData.map((item) => {
               const height = (item.completionPercentage / 100) * chartHeight;
               const isToday = item.isToday;
               
               return (
-                <div key={item.date} className="flex-1 flex flex-col items-center">
+                <div key={item.date} className="flex-1 flex flex-col items-center min-w-0">
                   {/* Bar */}
                   <div className="relative w-full flex justify-center">
                     <div
-                      className={`w-full max-w-8 rounded-t-lg transition-all duration-300 ease-out ${
+                      className={`${
+                        viewMode === 'month' ? 'w-1 max-w-1' : 'w-full max-w-8'
+                      } rounded-t-lg transition-all duration-300 ease-out ${
                         isToday 
                           ? "bg-gradient-to-t from-green-500 to-green-400 shadow-lg shadow-green-500/25" 
                           : "bg-white/20 hover:bg-white/30"
@@ -219,22 +223,32 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
                   </div>
                   
                   {/* Day Label */}
-                  <div className="mt-2 text-center">
-                    <div className={`text-xs font-argesta ${
+                  <div className={`text-center ${
+                    viewMode === 'month' ? 'mt-1' : 'mt-2'
+                  }`}>
+                    <div className={`${
+                      viewMode === 'month' ? 'text-[10px]' : 'text-xs'
+                    } font-argesta ${
                       isToday ? "text-green-400 font-bold" : "text-white/60"
                     }`}>
-                      {item.dayName}
+                      {viewMode === 'month' ? item.dayNumber : item.dayName}
                     </div>
-                    <div className={`text-xs ${
-                      isToday ? "text-green-400" : "text-white/40"
-                    }`}>
-                      {item.dayNumber}
-                    </div>
+                    {viewMode !== 'month' && (
+                      <div className={`text-xs ${
+                        isToday ? "text-green-400" : "text-white/40"
+                      }`}>
+                        {item.dayNumber}
+                      </div>
+                    )}
                   </div>
                   
                   {/* Percentage */}
-                  <div className="mt-1 text-center">
-                    <div className={`text-xs font-argesta ${
+                  <div className={`text-center ${
+                    viewMode === 'month' ? 'mt-0.5' : 'mt-1'
+                  }`}>
+                    <div className={`${
+                      viewMode === 'month' ? 'text-[10px]' : 'text-xs'
+                    } font-argesta ${
                       isToday ? "text-green-400" : "text-white/50"
                     }`}>
                       {Math.round(item.completionPercentage)}%
