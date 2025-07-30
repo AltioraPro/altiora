@@ -36,30 +36,7 @@ export function GoalsDashboard() {
     type: filters.type !== "all" ? filters.type : undefined,
   });
 
-  // Fonction pour trier les objectifs par fréquence de rappels
-  const sortGoalsByReminderFrequency = (goals: any[]) => {
-    const frequencyOrder = { daily: 1, weekly: 2, monthly: 3 };
-    
-    return goals.sort((a, b) => {
-      // D'abord par type (annual, quarterly, custom)
-      if (filters.type !== "all") {
-        return 0; // Pas de tri supplémentaire si un type est sélectionné
-      }
-      
-      // Ensuite par fréquence de rappels
-      if (a.remindersEnabled && b.remindersEnabled) {
-        const aFreq = frequencyOrder[a.reminderFrequency as keyof typeof frequencyOrder] || 4;
-        const bFreq = frequencyOrder[b.reminderFrequency as keyof typeof frequencyOrder] || 4;
-        return aFreq - bFreq;
-      }
-      
-      // Les objectifs avec rappels en premier
-      if (a.remindersEnabled && !b.remindersEnabled) return -1;
-      if (!a.remindersEnabled && b.remindersEnabled) return 1;
-      
-      return 0;
-    });
-  };
+
 
   // Debug: afficher les paramètres de requête
   console.log("Query params:", {

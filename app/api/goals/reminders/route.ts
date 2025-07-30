@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { goalReminderService } from "@/server/services/goal-reminders";
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     console.log("🚀 Déclenchement manuel des rappels d'objectifs");
     

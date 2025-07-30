@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { api } from "@/trpc/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +16,7 @@ import {
   Clock
 } from "lucide-react";
 import { type Goal } from "@/server/db/schema";
-import { EditGoalModal } from "./EditGoalModal";
+
 
 interface GoalCardProps {
   goal: Goal;
