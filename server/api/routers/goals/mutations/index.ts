@@ -1,17 +1,18 @@
 import { db } from "@/server/db";
 import { goals, subGoals, goalTasks, goalReminders, users } from "@/server/db/schema";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { type NewGoal, type NewSubGoal, type NewGoalTask } from "@/server/db/schema";
 import { nanoid } from "nanoid";
 import { DiscordService } from "@/server/services/discord";
 
 export async function createGoal(input: NewGoal, userId: string) {
   const goalId = nanoid();
+  const { id: _, userId: __, ...inputWithoutId } = input;
   
   const newGoal = {
     id: goalId,
     userId,
-    ...input,
+    ...inputWithoutId,
     currentValue: input.currentValue || "0",
   };
 
@@ -114,11 +115,12 @@ export async function reorderGoals(goalIds: string[], userId: string) {
 // Sous-objectifs
 export async function createSubGoal(input: NewSubGoal, userId: string) {
   const subGoalId = nanoid();
+  const { id: _, userId: __, ...inputWithoutId } = input;
   
   const newSubGoal = {
     id: subGoalId,
     userId,
-    ...input,
+    ...inputWithoutId,
   };
 
   const [createdSubGoal] = await db
@@ -155,11 +157,12 @@ export async function deleteSubGoal(subGoalId: string, userId: string) {
 // Tâches
 export async function createGoalTask(input: NewGoalTask, userId: string) {
   const taskId = nanoid();
+  const { id: _, userId: __, ...inputWithoutId } = input;
   
   const newTask = {
     id: taskId,
     userId,
-    ...input,
+    ...inputWithoutId,
   };
 
   const [createdTask] = await db
