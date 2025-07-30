@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { goalReminderService } from "@/server/services/goal-reminders";
 
 export async function POST() {
