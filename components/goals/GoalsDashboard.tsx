@@ -106,7 +106,6 @@ function QuarterlyGoalItem({
 
 export function GoalsDashboard() {
   const [search, setSearch] = useState("");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [page, setPage] = useState(0);
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
   const [filters, setFilters] = useState({
@@ -169,9 +168,27 @@ export function GoalsDashboard() {
   const organizeGoalsByType = (goals: Goal[]) => {
     const annualGoals = goals.filter(goal => goal.type === "annual");
     const quarterlyGoals = goals.filter(goal => goal.type === "quarterly");
-    const customGoals = goals.filter(goal => goal.type === "custom");
+    const monthlyGoals = goals.filter(goal => goal.type === "monthly");
 
-    return { annualGoals, quarterlyGoals, customGoals };
+    // Group quarterly and monthly goals by year
+    const groupGoalsByYear = (goals: Goal[]) => {
+      const grouped: Record<number, Goal[]> = {};
+      goals.forEach(goal => {
+        if (goal.deadline) {
+          const year = new Date(goal.deadline).getFullYear();
+          if (!grouped[year]) {
+            grouped[year] = [];
+          }
+          grouped[year].push(goal);
+        }
+      });
+      return grouped;
+    };
+
+    const quarterlyByYear = groupGoalsByYear(quarterlyGoals);
+    const monthlyByYear = groupGoalsByYear(monthlyGoals);
+
+    return { annualGoals, quarterlyByYear, monthlyByYear };
   };
 
   if (error) {
@@ -185,7 +202,7 @@ export function GoalsDashboard() {
     );
   }
 
-  const { annualGoals, quarterlyGoals, customGoals } = organizeGoalsByType(goalsData?.goals || []);
+  const { annualGoals, quarterlyByYear, monthlyByYear } = organizeGoalsByType(goalsData?.goals || []);
 
   return (
     <div className="space-y-8">
@@ -280,175 +297,477 @@ export function GoalsDashboard() {
               )}
 
               {/* Quarterly Goals Section */}
-              {quarterlyGoals.length > 0 && (
+              {Object.keys(quarterlyByYear).length > 0 && (
                 <div className="space-y-6">
                   <h2 className="text-2xl font-bold text-white">Quarterly Goals</h2>
                   
-                  {/* Quarters Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {/* Quarter 1 */}
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-white/80 border-b border-white/20 pb-2">
-                        Quarter 1 (January to March)
-                      </h3>
-                      <div className="space-y-3">
-                        {quarterlyGoals
-                          .filter(goal => {
-                            const deadline = goal.deadline ? new Date(goal.deadline) : null;
-                            return deadline && deadline.getMonth() >= 0 && deadline.getMonth() <= 2;
-                          })
-                          .map((goal, index) => (
-                          <div
-                            key={goal.id}
-                            className="animate-in fade-in-0 slide-in-from-bottom-4"
-                            style={{ animationDelay: `${index * 100}ms` }}
-                          >
-                            <QuarterlyGoalItem
-                              goal={goal}
-                              onGoalChange={() => forceUpdateStats()}
-                              onEditGoal={() => handleEditGoal(goal)}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                  {/* Quarterly goals organized by year */}
+                  <div className="space-y-8">
+                    {Object.keys(quarterlyByYear)
+                      .map(Number)
+                      .sort((a, b) => a - b) // Sort years ascending (older years first)
+                      .map(year => (
+                        <div key={year} className="space-y-4">
+                          <h3 className="text-xl font-semibold text-white/90 border-b border-white/20 pb-2">
+                            {year}
+                          </h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {/* Quarter 1 */}
+                            <div className="space-y-4">
+                              <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
+                                Q1 (Jan-Mar)
+                              </h4>
+                              <div className="space-y-3">
+                                {quarterlyByYear[year]
+                                  .filter(goal => {
+                                    const deadline = goal.deadline ? new Date(goal.deadline) : null;
+                                    return deadline && deadline.getMonth() >= 0 && deadline.getMonth() <= 2;
+                                  })
+                                  .map((goal, index) => (
+                                  <div
+                                    key={goal.id}
+                                    className="animate-in fade-in-0 slide-in-from-bottom-4"
+                                    style={{ animationDelay: `${index * 100}ms` }}
+                                  >
+                                    <QuarterlyGoalItem
+                                      goal={goal}
+                                      onGoalChange={() => forceUpdateStats()}
+                                      onEditGoal={() => handleEditGoal(goal)}
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
 
-                    {/* Quarter 2 */}
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-white/80 border-b border-white/20 pb-2">
-                        Quarter 2 (April to June)
-                      </h3>
-                      <div className="space-y-3">
-                        {quarterlyGoals
-                          .filter(goal => {
-                            const deadline = goal.deadline ? new Date(goal.deadline) : null;
-                            return deadline && deadline.getMonth() >= 3 && deadline.getMonth() <= 5;
-                          })
-                          .map((goal, index) => (
-                          <div
-                            key={goal.id}
-                            className="animate-in fade-in-0 slide-in-from-bottom-4"
-                            style={{ animationDelay: `${index * 100}ms` }}
-                          >
-                            <QuarterlyGoalItem
-                              goal={goal}
-                              onGoalChange={() => forceUpdateStats()}
-                              onEditGoal={() => handleEditGoal(goal)}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                            {/* Quarter 2 */}
+                            <div className="space-y-4">
+                              <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
+                                Q2 (Apr-Jun)
+                              </h4>
+                              <div className="space-y-3">
+                                {quarterlyByYear[year]
+                                  .filter(goal => {
+                                    const deadline = goal.deadline ? new Date(goal.deadline) : null;
+                                    return deadline && deadline.getMonth() >= 3 && deadline.getMonth() <= 5;
+                                  })
+                                  .map((goal, index) => (
+                                  <div
+                                    key={goal.id}
+                                    className="animate-in fade-in-0 slide-in-from-bottom-4"
+                                    style={{ animationDelay: `${index * 100}ms` }}
+                                  >
+                                    <QuarterlyGoalItem
+                                      goal={goal}
+                                      onGoalChange={() => forceUpdateStats()}
+                                      onEditGoal={() => handleEditGoal(goal)}
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
 
-                    {/* Quarter 3 */}
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-white/80 border-b border-white/20 pb-2">
-                        Quarter 3 (July to September)
-                      </h3>
-                      <div className="space-y-3">
-                        {quarterlyGoals
-                          .filter(goal => {
-                            const deadline = goal.deadline ? new Date(goal.deadline) : null;
-                            return deadline && deadline.getMonth() >= 6 && deadline.getMonth() <= 8;
-                          })
-                          .map((goal, index) => (
-                          <div
-                            key={goal.id}
-                            className="animate-in fade-in-0 slide-in-from-bottom-4"
-                            style={{ animationDelay: `${index * 100}ms` }}
-                          >
-                            <QuarterlyGoalItem
-                              goal={goal}
-                              onGoalChange={() => forceUpdateStats()}
-                              onEditGoal={() => handleEditGoal(goal)}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                            {/* Quarter 3 */}
+                            <div className="space-y-4">
+                              <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
+                                Q3 (Jul-Sep)
+                              </h4>
+                              <div className="space-y-3">
+                                {quarterlyByYear[year]
+                                  .filter(goal => {
+                                    const deadline = goal.deadline ? new Date(goal.deadline) : null;
+                                    return deadline && deadline.getMonth() >= 6 && deadline.getMonth() <= 8;
+                                  })
+                                  .map((goal, index) => (
+                                  <div
+                                    key={goal.id}
+                                    className="animate-in fade-in-0 slide-in-from-bottom-4"
+                                    style={{ animationDelay: `${index * 100}ms` }}
+                                  >
+                                    <QuarterlyGoalItem
+                                      goal={goal}
+                                      onGoalChange={() => forceUpdateStats()}
+                                      onEditGoal={() => handleEditGoal(goal)}
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
 
-                    {/* Quarter 4 */}
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-white/80 border-b border-white/20 pb-2">
-                        Quarter 4 (October to December)
-                      </h3>
-                      <div className="space-y-3">
-                        {quarterlyGoals
-                          .filter(goal => {
-                            const deadline = goal.deadline ? new Date(goal.deadline) : null;
-                            return deadline && deadline.getMonth() >= 9 && deadline.getMonth() <= 11;
-                          })
-                          .map((goal, index) => (
-                          <div
-                            key={goal.id}
-                            className="animate-in fade-in-0 slide-in-from-bottom-4"
-                            style={{ animationDelay: `${index * 100}ms` }}
-                          >
-                            <QuarterlyGoalItem
-                              goal={goal}
-                              onGoalChange={() => forceUpdateStats()}
-                              onEditGoal={() => handleEditGoal(goal)}
-                            />
+                            {/* Quarter 4 */}
+                            <div className="space-y-4">
+                              <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
+                                Q4 (Oct-Dec)
+                              </h4>
+                              <div className="space-y-3">
+                                {quarterlyByYear[year]
+                                  .filter(goal => {
+                                    const deadline = goal.deadline ? new Date(goal.deadline) : null;
+                                    return deadline && deadline.getMonth() >= 9 && deadline.getMonth() <= 11;
+                                  })
+                                  .map((goal, index) => (
+                                  <div
+                                    key={goal.id}
+                                    className="animate-in fade-in-0 slide-in-from-bottom-4"
+                                    style={{ animationDelay: `${index * 100}ms` }}
+                                  >
+                                    <QuarterlyGoalItem
+                                      goal={goal}
+                                      onGoalChange={() => forceUpdateStats()}
+                                      onEditGoal={() => handleEditGoal(goal)}
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
                           </div>
-                        ))}
-                      </div>
-                    </div>
+                        </div>
+                      ))}
                   </div>
                 </div>
               )}
 
-              {/* Custom Goals Section */}
-              {customGoals.length > 0 && (
+              {/* Monthly Goals Section */}
+              {Object.keys(monthlyByYear).length > 0 && (
                 <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-bold text-white">Custom Goals</h2>
-                    
-                    {/* View Mode Toggle */}
-                    <div className="flex items-center bg-white/5 rounded-xl border border-white/10 p-1">
-                      <button
-                        onClick={() => setViewMode("grid")}
-                        className={`px-4 py-2 text-sm font-argesta rounded-lg transition-all duration-200 ${
-                          viewMode === "grid"
-                            ? "bg-white/15 text-white border border-white/20"
-                            : "text-white/60 hover:text-white/80 hover:bg-white/5"
-                        }`}
-                      >
-                        GRID
-                      </button>
-                      <button
-                        onClick={() => setViewMode("list")}
-                        className={`px-4 py-2 text-sm font-argesta rounded-lg transition-all duration-200 ${
-                          viewMode === "list"
-                            ? "bg-white/15 text-white border border-white/20"
-                            : "text-white/60 hover:text-white/80 hover:bg-white/5"
-                        }`}
-                      >
-                        LIST
-                      </button>
-                    </div>
-                  </div>
+                  <h2 className="text-2xl font-bold text-white">Monthly Goals</h2>
                   
-                  <div
-                    className={
-                      viewMode === "grid"
-                        ? "grid grid-cols-1 md:grid-cols-2 gap-6"
-                        : "space-y-4"
-                    }
-                  >
-                    {customGoals.map((goal, index) => (
-                      <div
-                        key={goal.id}
-                        className="animate-in fade-in-0 slide-in-from-bottom-4"
-                        style={{ animationDelay: `${index * 100}ms` }}
-                      >
-                        <GoalCard
-                          goal={goal}
-                          viewMode={viewMode}
-                          onGoalChange={() => forceUpdateStats()}
-                          onEditGoal={() => handleEditGoal(goal)}
-                        />
-                      </div>
-                    ))}
+                  {/* Monthly goals organized by year */}
+                  <div className="space-y-8">
+                    {Object.keys(monthlyByYear)
+                      .map(Number)
+                      .sort((a, b) => a - b) // Sort years ascending (older years first)
+                      .map(year => (
+                        <div key={year} className="space-y-4">
+                          <h3 className="text-xl font-semibold text-white/90 border-b border-white/20 pb-2">
+                            {year}
+                          </h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {/* January */}
+                            <div className="space-y-4">
+                              <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
+                                January
+                              </h4>
+                              <div className="space-y-3">
+                                {monthlyByYear[year]
+                                  .filter(goal => {
+                                    const deadline = goal.deadline ? new Date(goal.deadline) : null;
+                                    return deadline && deadline.getMonth() === 0;
+                                  })
+                                  .map((goal, index) => (
+                                  <div
+                                    key={goal.id}
+                                    className="animate-in fade-in-0 slide-in-from-bottom-4"
+                                    style={{ animationDelay: `${index * 100}ms` }}
+                                  >
+                                    <QuarterlyGoalItem
+                                      goal={goal}
+                                      onGoalChange={() => forceUpdateStats()}
+                                      onEditGoal={() => handleEditGoal(goal)}
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* February */}
+                            <div className="space-y-4">
+                              <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
+                                February
+                              </h4>
+                              <div className="space-y-3">
+                                {monthlyByYear[year]
+                                  .filter(goal => {
+                                    const deadline = goal.deadline ? new Date(goal.deadline) : null;
+                                    return deadline && deadline.getMonth() === 1;
+                                  })
+                                  .map((goal, index) => (
+                                  <div
+                                    key={goal.id}
+                                    className="animate-in fade-in-0 slide-in-from-bottom-4"
+                                    style={{ animationDelay: `${index * 100}ms` }}
+                                  >
+                                    <QuarterlyGoalItem
+                                      goal={goal}
+                                      onGoalChange={() => forceUpdateStats()}
+                                      onEditGoal={() => handleEditGoal(goal)}
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* March */}
+                            <div className="space-y-4">
+                              <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
+                                March
+                              </h4>
+                              <div className="space-y-3">
+                                {monthlyByYear[year]
+                                  .filter(goal => {
+                                    const deadline = goal.deadline ? new Date(goal.deadline) : null;
+                                    return deadline && deadline.getMonth() === 2;
+                                  })
+                                  .map((goal, index) => (
+                                  <div
+                                    key={goal.id}
+                                    className="animate-in fade-in-0 slide-in-from-bottom-4"
+                                    style={{ animationDelay: `${index * 100}ms` }}
+                                  >
+                                    <QuarterlyGoalItem
+                                      goal={goal}
+                                      onGoalChange={() => forceUpdateStats()}
+                                      onEditGoal={() => handleEditGoal(goal)}
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* April */}
+                            <div className="space-y-4">
+                              <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
+                                April
+                              </h4>
+                              <div className="space-y-3">
+                                {monthlyByYear[year]
+                                  .filter(goal => {
+                                    const deadline = goal.deadline ? new Date(goal.deadline) : null;
+                                    return deadline && deadline.getMonth() === 3;
+                                  })
+                                  .map((goal, index) => (
+                                  <div
+                                    key={goal.id}
+                                    className="animate-in fade-in-0 slide-in-from-bottom-4"
+                                    style={{ animationDelay: `${index * 100}ms` }}
+                                  >
+                                    <QuarterlyGoalItem
+                                      goal={goal}
+                                      onGoalChange={() => forceUpdateStats()}
+                                      onEditGoal={() => handleEditGoal(goal)}
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* May */}
+                            <div className="space-y-4">
+                              <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
+                                May
+                              </h4>
+                              <div className="space-y-3">
+                                {monthlyByYear[year]
+                                  .filter(goal => {
+                                    const deadline = goal.deadline ? new Date(goal.deadline) : null;
+                                    return deadline && deadline.getMonth() === 4;
+                                  })
+                                  .map((goal, index) => (
+                                  <div
+                                    key={goal.id}
+                                    className="animate-in fade-in-0 slide-in-from-bottom-4"
+                                    style={{ animationDelay: `${index * 100}ms` }}
+                                  >
+                                    <QuarterlyGoalItem
+                                      goal={goal}
+                                      onGoalChange={() => forceUpdateStats()}
+                                      onEditGoal={() => handleEditGoal(goal)}
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* June */}
+                            <div className="space-y-4">
+                              <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
+                                June
+                              </h4>
+                              <div className="space-y-3">
+                                {monthlyByYear[year]
+                                  .filter(goal => {
+                                    const deadline = goal.deadline ? new Date(goal.deadline) : null;
+                                    return deadline && deadline.getMonth() === 5;
+                                  })
+                                  .map((goal, index) => (
+                                  <div
+                                    key={goal.id}
+                                    className="animate-in fade-in-0 slide-in-from-bottom-4"
+                                    style={{ animationDelay: `${index * 100}ms` }}
+                                  >
+                                    <QuarterlyGoalItem
+                                      goal={goal}
+                                      onGoalChange={() => forceUpdateStats()}
+                                      onEditGoal={() => handleEditGoal(goal)}
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* July */}
+                            <div className="space-y-4">
+                              <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
+                                July
+                              </h4>
+                              <div className="space-y-3">
+                                {monthlyByYear[year]
+                                  .filter(goal => {
+                                    const deadline = goal.deadline ? new Date(goal.deadline) : null;
+                                    return deadline && deadline.getMonth() === 6;
+                                  })
+                                  .map((goal, index) => (
+                                  <div
+                                    key={goal.id}
+                                    className="animate-in fade-in-0 slide-in-from-bottom-4"
+                                    style={{ animationDelay: `${index * 100}ms` }}
+                                  >
+                                    <QuarterlyGoalItem
+                                      goal={goal}
+                                      onGoalChange={() => forceUpdateStats()}
+                                      onEditGoal={() => handleEditGoal(goal)}
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* August */}
+                            <div className="space-y-4">
+                              <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
+                                August
+                              </h4>
+                              <div className="space-y-3">
+                                {monthlyByYear[year]
+                                  .filter(goal => {
+                                    const deadline = goal.deadline ? new Date(goal.deadline) : null;
+                                    return deadline && deadline.getMonth() === 7;
+                                  })
+                                  .map((goal, index) => (
+                                  <div
+                                    key={goal.id}
+                                    className="animate-in fade-in-0 slide-in-from-bottom-4"
+                                    style={{ animationDelay: `${index * 100}ms` }}
+                                  >
+                                    <QuarterlyGoalItem
+                                      goal={goal}
+                                      onGoalChange={() => forceUpdateStats()}
+                                      onEditGoal={() => handleEditGoal(goal)}
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* September */}
+                            <div className="space-y-4">
+                              <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
+                                September
+                              </h4>
+                              <div className="space-y-3">
+                                {monthlyByYear[year]
+                                  .filter(goal => {
+                                    const deadline = goal.deadline ? new Date(goal.deadline) : null;
+                                    return deadline && deadline.getMonth() === 8;
+                                  })
+                                  .map((goal, index) => (
+                                  <div
+                                    key={goal.id}
+                                    className="animate-in fade-in-0 slide-in-from-bottom-4"
+                                    style={{ animationDelay: `${index * 100}ms` }}
+                                  >
+                                    <QuarterlyGoalItem
+                                      goal={goal}
+                                      onGoalChange={() => forceUpdateStats()}
+                                      onEditGoal={() => handleEditGoal(goal)}
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* October */}
+                            <div className="space-y-4">
+                              <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
+                                October
+                              </h4>
+                              <div className="space-y-3">
+                                {monthlyByYear[year]
+                                  .filter(goal => {
+                                    const deadline = goal.deadline ? new Date(goal.deadline) : null;
+                                    return deadline && deadline.getMonth() === 9;
+                                  })
+                                  .map((goal, index) => (
+                                  <div
+                                    key={goal.id}
+                                    className="animate-in fade-in-0 slide-in-from-bottom-4"
+                                    style={{ animationDelay: `${index * 100}ms` }}
+                                  >
+                                    <QuarterlyGoalItem
+                                      goal={goal}
+                                      onGoalChange={() => forceUpdateStats()}
+                                      onEditGoal={() => handleEditGoal(goal)}
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* November */}
+                            <div className="space-y-4">
+                              <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
+                                November
+                              </h4>
+                              <div className="space-y-3">
+                                {monthlyByYear[year]
+                                  .filter(goal => {
+                                    const deadline = goal.deadline ? new Date(goal.deadline) : null;
+                                    return deadline && deadline.getMonth() === 10;
+                                  })
+                                  .map((goal, index) => (
+                                  <div
+                                    key={goal.id}
+                                    className="animate-in fade-in-0 slide-in-from-bottom-4"
+                                    style={{ animationDelay: `${index * 100}ms` }}
+                                  >
+                                    <QuarterlyGoalItem
+                                      goal={goal}
+                                      onGoalChange={() => forceUpdateStats()}
+                                      onEditGoal={() => handleEditGoal(goal)}
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* December */}
+                            <div className="space-y-4">
+                              <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
+                                December
+                              </h4>
+                              <div className="space-y-3">
+                                {monthlyByYear[year]
+                                  .filter(goal => {
+                                    const deadline = goal.deadline ? new Date(goal.deadline) : null;
+                                    return deadline && deadline.getMonth() === 11;
+                                  })
+                                  .map((goal, index) => (
+                                  <div
+                                    key={goal.id}
+                                    className="animate-in fade-in-0 slide-in-from-bottom-4"
+                                    style={{ animationDelay: `${index * 100}ms` }}
+                                  >
+                                    <QuarterlyGoalItem
+                                      goal={goal}
+                                      onGoalChange={() => forceUpdateStats()}
+                                      onEditGoal={() => handleEditGoal(goal)}
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                   </div>
                 </div>
               )}

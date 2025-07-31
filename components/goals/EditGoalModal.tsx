@@ -52,7 +52,7 @@ export function EditGoalModal({ goal, onClose, onGoalChange }: EditGoalModalProp
     updateGoalMutation.mutate({
       id: goal.id,
       ...formData,
-      type: formData.type as "annual" | "quarterly" | "custom",
+      type: formData.type as "annual" | "quarterly" | "monthly",
       deadline: formData.deadline ? new Date(formData.deadline) : undefined,
       reminderFrequency: formData.remindersEnabled ? (formData.reminderFrequency as "daily" | "weekly" | "monthly") : undefined,
     });
@@ -130,7 +130,7 @@ export function EditGoalModal({ goal, onClose, onGoalChange }: EditGoalModalProp
               >
                 <option value="annual" className="bg-neutral-900 text-white">Annual</option>
                 <option value="quarterly" className="bg-neutral-900 text-white">Quarterly</option>
-                <option value="custom" className="bg-neutral-900 text-white">Custom</option>
+                <option value="monthly" className="bg-neutral-900 text-white">Monthly</option>
               </select>
             </div>
 

@@ -13,7 +13,7 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    type: "custom" as "annual" | "quarterly" | "custom",
+    type: "monthly" as "annual" | "quarterly" | "monthly",
     deadline: "",
     remindersEnabled: false,
     reminderFrequency: "weekly" as "daily" | "weekly" | "monthly",
@@ -35,7 +35,7 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
     setFormData({
       title: "",
       description: "",
-      type: "custom",
+      type: "monthly",
       deadline: "",
       remindersEnabled: false,
       reminderFrequency: "weekly",
@@ -116,7 +116,7 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
               <select
                 id="type"
                 value={formData.type}
-                onChange={(e) => setFormData({ ...formData, type: e.target.value as "annual" | "quarterly" | "custom" })}
+                onChange={(e) => setFormData({ ...formData, type: e.target.value as "annual" | "quarterly" | "monthly" })}
                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent appearance-none"
                 style={{
                   backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
@@ -128,7 +128,7 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
               >
                 <option value="annual" className="bg-neutral-900 text-white">Annual</option>
                 <option value="quarterly" className="bg-neutral-900 text-white">Quarterly</option>
-                <option value="custom" className="bg-neutral-900 text-white">Custom</option>
+                <option value="monthly" className="bg-neutral-900 text-white">Monthly</option>
               </select>
             </div>
 

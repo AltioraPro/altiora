@@ -40,7 +40,7 @@ export const subscriptionRouter = createTRPCRouter({
    */
   canCreateGoal: protectedProcedure
     .input(z.object({
-      goalType: z.enum(["annual", "quarterly", "custom"])
+      goalType: z.enum(["annual", "quarterly", "monthly"])
     }))
     .query(async ({ ctx, input }) => {
       return await SubscriptionLimitsService.canCreateGoal(ctx.session.userId, input.goalType);
@@ -80,7 +80,7 @@ export const subscriptionRouter = createTRPCRouter({
         canCreateTradingEntry: usage.monthlyTradingEntries < limits.maxTradingEntries,
         canCreateAnnualGoal: usage.currentAnnualGoals < limits.maxAnnualGoals,
         canCreateQuarterlyGoal: usage.currentQuarterlyGoals < limits.maxQuarterlyGoals,
-        canCreateCustomGoal: usage.currentCustomGoals < limits.maxCustomGoals,
+        canCreateMonthlyGoal: usage.currentMonthlyGoals < limits.maxMonthlyGoals,
       };
     }),
 });

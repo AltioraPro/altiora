@@ -3,7 +3,7 @@ import { z } from "zod";
 export const createGoalValidator = z.object({
   title: z.string().min(1, "Title is required").max(255, "Title too long"),
   description: z.string().optional(),
-  type: z.enum(["annual", "quarterly", "custom"]).default("custom"),
+  type: z.enum(["annual", "quarterly", "monthly"]).default("monthly"),
   goalType: z.enum(["gradual"]).default("gradual"),
   targetValue: z.string().optional(),
   currentValue: z.string().optional(),
@@ -18,7 +18,7 @@ export const updateGoalValidator = z.object({
   id: z.string().min(1, "Goal ID is required"),
   title: z.string().min(1, "Title is required").max(255, "Title too long").optional(),
   description: z.string().optional(),
-  type: z.enum(["annual", "quarterly", "custom"]).optional(),
+  type: z.enum(["annual", "quarterly", "monthly"]).optional(),
   goalType: z.enum(["gradual"]).optional(),
   targetValue: z.string().optional(),
   currentValue: z.string().optional(),
@@ -51,7 +51,7 @@ export const getGoalsPaginatedValidator = z.object({
   sortBy: z.enum(["title", "createdAt", "deadline", "sortOrder"]).default("sortOrder"),
   sortOrder: z.enum(["asc", "desc"]).default("asc"),
   search: z.string().optional(),
-  type: z.enum(["annual", "quarterly", "custom"]).optional(),
+  type: z.enum(["annual", "quarterly", "monthly"]).optional(),
   status: z.enum(["active", "completed", "overdue"]).optional(),
   showInactive: z.boolean().default(false),
 });

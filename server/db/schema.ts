@@ -262,7 +262,7 @@ export const subscriptionPlans = pgTable(
     maxTradingEntries: integer("max_trading_entries").default(10).notNull(), // par mois
     maxAnnualGoals: integer("max_annual_goals").default(1).notNull(),
     maxQuarterlyGoals: integer("max_quarterly_goals").default(1).notNull(),
-    maxCustomGoals: integer("max_custom_goals").default(0).notNull(),
+    maxMonthlyGoals: integer("max_monthly_goals").default(0).notNull(),
     
     // Fonctionnalités incluses
     hasDiscordIntegration: boolean("has_discord_integration").default(false).notNull(),

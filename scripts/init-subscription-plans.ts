@@ -22,7 +22,7 @@ async function initSubscriptionPlans() {
       maxTradingEntries: 10,
       maxAnnualGoals: 1,
       maxQuarterlyGoals: 1,
-      maxCustomGoals: 0,
+      maxMonthlyGoals: 0,
       
       // Fonctionnalités
       hasDiscordIntegration: false,
@@ -47,7 +47,7 @@ async function initSubscriptionPlans() {
       maxTradingEntries: 999, // Illimité
       maxAnnualGoals: 5,
       maxQuarterlyGoals: 999, // Illimité
-      maxCustomGoals: 0,
+      maxMonthlyGoals: 0,
       
       // Fonctionnalités
       hasDiscordIntegration: true,
@@ -72,7 +72,7 @@ async function initSubscriptionPlans() {
       maxTradingEntries: 999, // Illimité
       maxAnnualGoals: 999, // Illimité
       maxQuarterlyGoals: 999, // Illimité
-      maxCustomGoals: 999, // Illimité
+      maxMonthlyGoals: 999, // Illimité
       
       // Fonctionnalités
       hasDiscordIntegration: true,
@@ -100,7 +100,7 @@ async function initSubscriptionPlans() {
       console.log(`    Entrées trading: ${plan.maxTradingEntries === 999 ? 'Illimité' : plan.maxTradingEntries}/mois`);
       console.log(`    Objectifs annuels: ${plan.maxAnnualGoals === 999 ? 'Illimité' : plan.maxAnnualGoals}`);
       console.log(`    Objectifs trimestriels: ${plan.maxQuarterlyGoals === 999 ? 'Illimité' : plan.maxQuarterlyGoals}`);
-      console.log(`    Objectifs personnalisés: ${plan.maxCustomGoals === 999 ? 'Illimité' : plan.maxCustomGoals}`);
+      console.log(`    Objectifs mensuels: ${plan.maxMonthlyGoals === 999 ? 'Illimité' : plan.maxMonthlyGoals}`);
       console.log("");
     });
 

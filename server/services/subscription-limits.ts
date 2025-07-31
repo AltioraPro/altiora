@@ -9,7 +9,7 @@ export interface PlanLimits {
   maxTradingEntries: number;
   maxAnnualGoals: number;
   maxQuarterlyGoals: number;
-  maxCustomGoals: number;
+  maxMonthlyGoals: number;
   hasDiscordIntegration: boolean;
   hasPrioritySupport: boolean;
   hasEarlyAccess: boolean;
@@ -22,7 +22,7 @@ export interface UsageStats {
   currentTradingEntries: number;
   currentAnnualGoals: number;
   currentQuarterlyGoals: number;
-  currentCustomGoals: number;
+  currentMonthlyGoals: number;
   monthlyTradingEntries: number;
 }
 
@@ -57,7 +57,7 @@ export class SubscriptionLimitsService {
         maxTradingEntries: 10,
         maxAnnualGoals: 1,
         maxQuarterlyGoals: 1,
-        maxCustomGoals: 0,
+        maxMonthlyGoals: 0,
         hasDiscordIntegration: false,
         hasPrioritySupport: false,
         hasEarlyAccess: false,
@@ -71,7 +71,7 @@ export class SubscriptionLimitsService {
       maxTradingEntries: plan[0].maxTradingEntries,
       maxAnnualGoals: plan[0].maxAnnualGoals,
       maxQuarterlyGoals: plan[0].maxQuarterlyGoals,
-      maxCustomGoals: plan[0].maxCustomGoals,
+      maxMonthlyGoals: plan[0].maxMonthlyGoals,
       hasDiscordIntegration: plan[0].hasDiscordIntegration,
       hasPrioritySupport: plan[0].hasPrioritySupport,
       hasEarlyAccess: plan[0].hasEarlyAccess,
@@ -129,7 +129,7 @@ export class SubscriptionLimitsService {
       currentTradingEntries: Number(tradingEntriesCount[0]?.count || 0),
       currentAnnualGoals: goalsByType["annual"] || 0,
       currentQuarterlyGoals: goalsByType["quarterly"] || 0,
-      currentCustomGoals: goalsByType["custom"] || 0,
+      currentMonthlyGoals: goalsByType["monthly"] || 0,
       monthlyTradingEntries: Number(tradingEntriesCount[0]?.count || 0),
     };
   }
@@ -175,7 +175,7 @@ export class SubscriptionLimitsService {
   /**
    * Check if user can create a new goal
    */
-  static async canCreateGoal(userId: string, goalType: "annual" | "quarterly" | "custom"): Promise<{ canCreate: boolean; reason?: string }> {
+  static async canCreateGoal(userId: string, goalType: "annual" | "quarterly" | "monthly"): Promise<{ canCreate: boolean; reason?: string }> {
     const [limits, usage] = await Promise.all([
       this.getUserPlanLimits(userId),
       this.getUserUsageStats(userId),
@@ -193,10 +193,10 @@ export class SubscriptionLimitsService {
         currentCount = usage.currentQuarterlyGoals;
         maxCount = limits.maxQuarterlyGoals;
         break;
-      case "custom":
-        currentCount = usage.currentCustomGoals;
-        maxCount = limits.maxCustomGoals;
-        break;
+              case "monthly":
+          currentCount = usage.currentMonthlyGoals;
+          maxCount = limits.maxMonthlyGoals;
+          break;
       default:
         return { canCreate: false, reason: "Unrecognized goal type." };
     }
@@ -261,7 +261,7 @@ export class SubscriptionLimitsService {
   /**
    * Check if user has access to a specific feature
    */
-  static async hasFeatureAccess(userId: string, feature: keyof Omit<PlanLimits, "maxHabits" | "maxTradingEntries" | "maxAnnualGoals" | "maxQuarterlyGoals" | "maxCustomGoals">): Promise<boolean> {
+  static async hasFeatureAccess(userId: string, feature: keyof Omit<PlanLimits, "maxHabits" | "maxTradingEntries" | "maxAnnualGoals" | "maxQuarterlyGoals" | "maxMonthlyGoals">): Promise<boolean> {
     const limits = await this.getUserPlanLimits(userId);
     return limits[feature];
   }
