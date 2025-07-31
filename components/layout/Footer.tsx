@@ -233,16 +233,6 @@
                         </li>
                     );
                     })}
-                    <li>
-                    <a
-                        href="mailto:support@altiora.app"
-                        className="flex items-center space-x-3 text-white/60 hover:text-white transition-all duration-300 group"
-                    >
-                        <Mail className="w-4 h-4 transition-transform duration-300 group-hover:scale-110" />
-                        <span className="text-sm font-argesta">SUPPORT</span>
-                        <div className="w-0 h-px bg-white/60 group-hover:w-6 transition-all duration-300" />
-                    </a>
-                    </li>
                 </ul>
                 </div>
 
@@ -257,7 +247,7 @@
                 <div className="space-y-3 text-sm text-white/60">
                     <div className="flex items-center space-x-3">
                     <Mail className="w-4 h-4" />
-                    <span className="font-argesta">hello@altiora.app</span>
+                    <span className="font-argesta">contact@altiora.app</span>
                     </div>
                     <div className="flex items-center space-x-3">
                     <MapPin className="w-4 h-4" />
