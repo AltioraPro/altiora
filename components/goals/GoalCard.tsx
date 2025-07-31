@@ -11,7 +11,6 @@ import {
   Trash2, 
   Target, 
   Calendar,
-  TrendingUp,
   Award,
   Clock
 } from "lucide-react";
