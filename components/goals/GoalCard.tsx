@@ -49,18 +49,8 @@ export function GoalCard({ goal, viewMode, onGoalChange, onEditGoal }: GoalCardP
   });
 
   const isOverdue = goal.deadline && new Date(goal.deadline) < new Date() && !goal.isCompleted;
-  const progressPercentage = goal.targetValue && goal.currentValue
-    ? Math.min(100, Math.round((parseFloat(goal.currentValue) / parseFloat(goal.targetValue)) * 100))
-    : 0;
 
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case "annual": return "bg-white/10 text-white/80 border-white/20";
-      case "quarterly": return "bg-white/10 text-white/80 border-white/20";
-      case "custom": return "bg-white/10 text-white/80 border-white/20";
-      default: return "bg-white/10 text-white/80 border-white/20";
-    }
-  };
+
 
   const getStatusColor = () => {
     if (goal.isCompleted) return "bg-green-500/30 text-green-400 border-green-500/50 shadow-lg shadow-green-500/20";
@@ -71,7 +61,6 @@ export function GoalCard({ goal, viewMode, onGoalChange, onEditGoal }: GoalCardP
   const getGoalIcon = () => {
     if (goal.isCompleted) return <Award className="w-5 h-5" />;
     if (isOverdue) return <Clock className="w-5 h-5" />;
-    if (progressPercentage > 50) return <TrendingUp className="w-5 h-5" />;
     return <Target className="w-5 h-5" />;
   };
 
@@ -112,9 +101,6 @@ export function GoalCard({ goal, viewMode, onGoalChange, onEditGoal }: GoalCardP
                 <h3 className={`text-lg font-semibold ${goal.isCompleted ? 'line-through text-green-400/60' : 'text-white'} transition-all duration-300`}>
                   {goal.title}
                 </h3>
-                <Badge className={`text-xs ${getTypeColor(goal.goalType)}`}>
-                  {goal.goalType}
-                </Badge>
                 <Badge className={`text-xs ${getStatusColor()}`}>
                   {goal.isCompleted ? 'Completed' : isOverdue ? 'Overdue' : 'Active'}
                 </Badge>
@@ -177,9 +163,6 @@ export function GoalCard({ goal, viewMode, onGoalChange, onEditGoal }: GoalCardP
               </div>
             </div>
             <div className="flex gap-2">
-              <Badge className={`text-xs ${getTypeColor(goal.goalType)}`}>
-                {goal.goalType}
-              </Badge>
               <Badge className={`text-xs ${getStatusColor()}`}>
                 {goal.isCompleted ? 'Done' : isOverdue ? 'Late' : 'Active'}
               </Badge>
@@ -218,37 +201,7 @@ export function GoalCard({ goal, viewMode, onGoalChange, onEditGoal }: GoalCardP
           )}
         </div>
 
-        {/* Progress Bar */}
-        {goal.targetValue && goal.currentValue && (
-          <div className="mb-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-white/60">Progress</span>
-              <span className={`text-sm font-medium ${goal.isCompleted ? 'text-green-400' : 'text-white/80'}`}>{progressPercentage}%</span>
-            </div>
-            <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-white/5 to-white/10 rounded-full" />
-              <div 
-                className={`relative h-2 rounded-full transition-all duration-1000 ease-out ${
-                  goal.isCompleted 
-                    ? 'bg-gradient-to-r from-green-500 via-green-400 to-green-300' 
-                    : 'bg-gradient-to-r from-white/60 via-white/40 to-white/20'
-                }`}
-                style={{ 
-                  width: `${progressPercentage}%`,
-                  boxShadow: goal.isCompleted 
-                    ? `0 0 10px rgba(34, 197, 94, ${progressPercentage / 100 * 0.5})`
-                    : `0 0 10px rgba(255, 255, 255, ${progressPercentage / 100 * 0.3})`
-                }}
-              >
-                <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-${goal.isCompleted ? 'green' : 'white'}/20 to-transparent animate-pulse`} />
-              </div>
-            </div>
-            <div className="flex justify-between text-xs text-white/40 mt-1">
-              <span>{goal.currentValue}</span>
-              <span>{goal.targetValue}</span>
-            </div>
-          </div>
-        )}
+
 
         {/* Footer compact */}
         <div className="flex items-center justify-between pt-4 border-t border-white/10">

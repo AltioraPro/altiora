@@ -16,9 +16,6 @@ export function EditGoalModal({ goal, onClose, onGoalChange }: EditGoalModalProp
     title: goal.title,
     description: goal.description || "",
     type: goal.type,
-    targetValue: goal.targetValue || "",
-    currentValue: goal.currentValue || "0",
-    unit: goal.unit || "",
     deadline: goal.deadline ? new Date(goal.deadline).toISOString().slice(0, 16) : "",
     remindersEnabled: goal.remindersEnabled,
     reminderFrequency: goal.reminderFrequency || "weekly",
@@ -42,9 +39,6 @@ export function EditGoalModal({ goal, onClose, onGoalChange }: EditGoalModalProp
       title: goal.title,
       description: goal.description || "",
       type: goal.type,
-      targetValue: goal.targetValue || "",
-      currentValue: goal.currentValue || "0",
-      unit: goal.unit || "",
       deadline: goal.deadline ? new Date(goal.deadline).toISOString().slice(0, 16) : "",
       remindersEnabled: goal.remindersEnabled,
       reminderFrequency: goal.reminderFrequency || "weekly",
@@ -96,7 +90,7 @@ export function EditGoalModal({ goal, onClose, onGoalChange }: EditGoalModalProp
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent"
-                placeholder="Ex: Reach 10k€ passive income"
+                placeholder="Ex: Learn React"
                 required
               />
             </div>
@@ -140,51 +134,6 @@ export function EditGoalModal({ goal, onClose, onGoalChange }: EditGoalModalProp
               </select>
             </div>
 
-            {/* Valeur cible */}
-            <div>
-              <label htmlFor="edit-targetValue" className="block text-sm font-medium text-white mb-2">
-                Target Value
-              </label>
-              <input
-                type="text"
-                id="edit-targetValue"
-                value={formData.targetValue}
-                onChange={(e) => setFormData({ ...formData, targetValue: e.target.value })}
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent"
-                placeholder="Ex: 10000"
-              />
-            </div>
-
-            {/* Valeur actuelle */}
-            <div>
-              <label htmlFor="edit-currentValue" className="block text-sm font-medium text-white mb-2">
-                Current Value
-              </label>
-              <input
-                type="text"
-                id="edit-currentValue"
-                value={formData.currentValue}
-                onChange={(e) => setFormData({ ...formData, currentValue: e.target.value })}
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent"
-                placeholder="Ex: 5000"
-              />
-            </div>
-
-            {/* Unité */}
-            <div>
-              <label htmlFor="edit-unit" className="block text-sm font-medium text-white mb-2">
-                Unit
-              </label>
-              <input
-                type="text"
-                id="edit-unit"
-                value={formData.unit}
-                onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent"
-                placeholder="Ex: €, kg, pages"
-              />
-            </div>
-
             {/* Date limite */}
             <div>
               <label htmlFor="edit-deadline" className="block text-sm font-medium text-white mb-2">
@@ -213,14 +162,14 @@ export function EditGoalModal({ goal, onClose, onGoalChange }: EditGoalModalProp
                   className="w-4 h-4 text-white bg-white/5 border-white/20 rounded focus:ring-white/20 focus:ring-2"
                 />
                 <label htmlFor="edit-remindersEnabled" className="text-sm font-medium text-white">
-                  Enable Discord reminders
+                  Enable reminders
                 </label>
               </div>
 
               {formData.remindersEnabled && (
                 <div>
                   <label htmlFor="edit-reminderFrequency" className="block text-sm font-medium text-white mb-2">
-                    Reminder frequency
+                    Reminder Frequency
                   </label>
                   <select
                     id="edit-reminderFrequency"
