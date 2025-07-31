@@ -9,12 +9,12 @@ interface GoalFiltersProps {
   onSearchChange: (search: string) => void;
   filters: {
     status: "all" | "active" | "completed" | "overdue";
-    type: "all" | "annual" | "quarterly" | "custom";
+    type: "all" | "annual" | "quarterly" | "monthly";
     hasReminders: boolean | null;
   };
   onFiltersChange: (filters: {
     status: "all" | "active" | "completed" | "overdue";
-    type: "all" | "annual" | "quarterly" | "custom";
+    type: "all" | "annual" | "quarterly" | "monthly";
     hasReminders: boolean | null;
   }) => void;
 }
@@ -133,11 +133,11 @@ export function GoalFilters({ search, onSearchChange, filters, onFiltersChange }
                     { value: "all", label: "All" },
                     { value: "annual", label: "Annual" },
                     { value: "quarterly", label: "Quarterly" },
-                    { value: "custom", label: "Custom" },
+                    { value: "monthly", label: "Monthly" },
                   ].map(({ value, label }) => (
                     <button
                       key={value}
-                      onClick={() => onFiltersChange({ ...filters, type: value as "all" | "annual" | "quarterly" | "custom" })}
+                                              onClick={() => onFiltersChange({ ...filters, type: value as "all" | "annual" | "quarterly" | "monthly" })}
                       className={`px-3 py-2 rounded-lg text-sm transition-all duration-200 ${
                         filters.type === value
                           ? "bg-white/20 text-white border border-white/30"

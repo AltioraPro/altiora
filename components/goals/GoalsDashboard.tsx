@@ -110,7 +110,7 @@ export function GoalsDashboard() {
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
   const [filters, setFilters] = useState({
     status: "all" as "all" | "active" | "completed" | "overdue",
-    type: "all" as "all" | "annual" | "quarterly" | "custom",
+    type: "all" as "all" | "annual" | "quarterly" | "monthly",
     hasReminders: null as boolean | null,
   });
 
