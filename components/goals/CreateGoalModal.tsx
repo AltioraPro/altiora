@@ -138,7 +138,7 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
                 Deadline
               </label>
               <input
-                type="datetime-local"
+                type="date"
                 id="deadline"
                 value={formData.deadline}
                 onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}

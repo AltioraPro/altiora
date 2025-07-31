@@ -16,7 +16,7 @@ export function EditGoalModal({ goal, onClose, onGoalChange }: EditGoalModalProp
     title: goal.title,
     description: goal.description || "",
     type: goal.type,
-    deadline: goal.deadline ? new Date(goal.deadline).toISOString().slice(0, 16) : "",
+    deadline: goal.deadline ? new Date(goal.deadline).toISOString().slice(0, 10) : "",
     remindersEnabled: goal.remindersEnabled,
     reminderFrequency: goal.reminderFrequency || "weekly",
   });
@@ -39,7 +39,7 @@ export function EditGoalModal({ goal, onClose, onGoalChange }: EditGoalModalProp
       title: goal.title,
       description: goal.description || "",
       type: goal.type,
-      deadline: goal.deadline ? new Date(goal.deadline).toISOString().slice(0, 16) : "",
+      deadline: goal.deadline ? new Date(goal.deadline).toISOString().slice(0, 10) : "",
       remindersEnabled: goal.remindersEnabled,
       reminderFrequency: goal.reminderFrequency || "weekly",
     });
@@ -140,7 +140,7 @@ export function EditGoalModal({ goal, onClose, onGoalChange }: EditGoalModalProp
                 Deadline
               </label>
               <input
-                type="datetime-local"
+                type="date"
                 id="edit-deadline"
                 value={formData.deadline}
                 onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
