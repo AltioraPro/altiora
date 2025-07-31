@@ -126,7 +126,7 @@ export function UsageStats() {
           </span>
         </div>
         <p className="text-sm text-white/80 font-argesta">
-          {limits.maxHabits === 3 ? "Free Plan" : limits.maxHabits === 999 && limits.maxCustomGoals === 0 ? "Pro Plan" : "Altiorans"}
+          {limits.maxHabits === 3 ? "Free Plan" : limits.maxHabits === 999 && limits.maxMonthlyGoals === 0 ? "Pro Plan" : "Altiorans"}
         </p>
       </div>
     </div>
