@@ -19,7 +19,7 @@ export async function getGoalsPaginated(
     sortBy: "title" | "createdAt" | "deadline" | "sortOrder";
     sortOrder: "asc" | "desc";
     search?: string;
-    type?: "annual" | "quarterly" | "custom";
+    type?: "annual" | "quarterly" | "monthly";
     status?: "active" | "completed" | "overdue";
     showInactive?: boolean;
   }
@@ -182,7 +182,7 @@ export async function getGoalStats(
   };
 }
 
-export async function getGoalsByType(userId: string, type: "annual" | "quarterly" | "custom") {
+export async function getGoalsByType(userId: string, type: "annual" | "quarterly" | "monthly") {
   return await db
     .select()
     .from(goals)

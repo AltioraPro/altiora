@@ -73,7 +73,7 @@ export const goalsRouter = createTRPCRouter({
     }),
 
   getByType: protectedProcedure
-    .input(z.object({ type: z.enum(["annual", "quarterly", "custom"]) }))
+    .input(z.object({ type: z.enum(["annual", "quarterly", "monthly"]) }))
     .query(async ({ ctx, input }) => {
       return await getGoalsByType(ctx.session.userId, input.type);
     }),
