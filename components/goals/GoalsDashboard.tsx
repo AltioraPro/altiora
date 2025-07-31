@@ -2,107 +2,121 @@
 
 import React, { useState, useEffect } from "react";
 import { api } from "@/trpc/client";
-import { GoalCard } from "./GoalCard";
+
 import { GoalFilters } from "./GoalFilters";
 import { GoalStats } from "./GoalStats";
 import { EditGoalModal } from "./EditGoalModal";
 import { Search, Sparkles, TrendingUp, CheckCircle, Circle, Edit, Trash2, Calendar } from "lucide-react";
 import { type Goal } from "@/server/db/schema";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
-// Compact component for quarterly goals
-function QuarterlyGoalItem({ 
-  goal, 
-  onGoalChange, 
-  onEditGoal 
-}: { 
-  goal: Goal; 
-  onGoalChange?: () => void; 
-  onEditGoal?: (goal: Goal) => void; 
-}) {
-  const utils = api.useUtils();
+  // Compact component for quarterly and monthly goals
+  function QuarterlyGoalItem({
+    goal,
+    onGoalChange,
+    onEditGoal
+  }: {
+    goal: Goal;
+    onGoalChange?: () => void;
+    onEditGoal?: (goal: Goal) => void;
+  }) {
+    const utils = api.useUtils();
 
-  const markCompletedMutation = api.goals.markCompleted.useMutation({
-    onSuccess: () => {
-      utils.goals.getPaginated.invalidate();
-      utils.goals.getStats.invalidate();
-      utils.goals.getAll.invalidate();
-      onGoalChange?.();
-    },
-  });
+    const markCompletedMutation = api.goals.markCompleted.useMutation({
+      onSuccess: () => {
+        utils.goals.getPaginated.invalidate();
+        utils.goals.getStats.invalidate();
+        utils.goals.getAll.invalidate();
+        onGoalChange?.();
+      },
+    });
 
-  const deleteMutation = api.goals.delete.useMutation({
-    onSuccess: () => {
-      utils.goals.getPaginated.invalidate();
-      utils.goals.getStats.invalidate();
-      utils.goals.getAll.invalidate();
-      onGoalChange?.();
-    },
-  });
+    const deleteMutation = api.goals.delete.useMutation({
+      onSuccess: () => {
+        utils.goals.getPaginated.invalidate();
+        utils.goals.getStats.invalidate();
+        utils.goals.getAll.invalidate();
+        onGoalChange?.();
+      },
+    });
 
-  const handleMarkCompleted = () => {
-    markCompletedMutation.mutate({ id: goal.id, isCompleted: !goal.isCompleted });
-  };
+    const isOverdue = goal.deadline && new Date(goal.deadline) < new Date() && !goal.isCompleted;
 
-  const handleDelete = () => {
-    if (confirm("Are you sure you want to delete this goal?")) {
-      deleteMutation.mutate({ id: goal.id });
-    }
-  };
+    const getStatusColor = () => {
+      if (goal.isCompleted) return "bg-green-500/30 text-green-400 border-green-500/50";
+      if (isOverdue) return "bg-red-500/20 text-red-400 border-red-500/30";
+      return "bg-blue-500/20 text-blue-400 border-blue-500/30";
+    };
 
-  return (
-    <div className="group relative bg-white/[0.02] border border-white/10 rounded-lg p-3 hover:border-white/20 transition-all duration-200">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3 flex-1 min-w-0">
-          <button
-            onClick={handleMarkCompleted}
-            className="flex-shrink-0"
-            disabled={markCompletedMutation.isPending}
-          >
-            {goal.isCompleted ? (
-              <CheckCircle className="w-4 h-4 text-green-400" />
-            ) : (
-              <Circle className="w-4 h-4 text-white/60 hover:text-green-400 transition-colors" />
-            )}
-          </button>
-          
-          <div className="flex-1 min-w-0">
-            <h4 className={`text-sm font-medium truncate ${goal.isCompleted ? 'line-through text-green-400/60' : 'text-white'}`}>
-              {goal.title}
-            </h4>
-            {goal.deadline && (
-              <div className="flex items-center gap-1 mt-1">
-                <Calendar className="w-3 h-3 text-white/40" />
-                <span className="text-xs text-white/40">
-                  {new Date(goal.deadline).toLocaleDateString()}
-                </span>
+    const handleMarkCompleted = () => {
+      markCompletedMutation.mutate({ id: goal.id, isCompleted: !goal.isCompleted });
+    };
+
+    const handleDelete = () => {
+      if (confirm("Are you sure you want to delete this goal?")) {
+        deleteMutation.mutate({ id: goal.id });
+      }
+    };
+
+    return (
+      <div className="group relative bg-white/[0.03] border border-white/10 rounded-lg p-3 hover:border-white/20 transition-all duration-200">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <button
+              onClick={handleMarkCompleted}
+              className="flex-shrink-0"
+              disabled={markCompletedMutation.isPending}
+            >
+              {goal.isCompleted ? (
+                <CheckCircle className="w-4 h-4 text-green-400" />
+              ) : (
+                <Circle className="w-4 h-4 text-white/60 hover:text-green-400 transition-colors" />
+              )}
+            </button>
+
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <h4 className={`text-sm font-medium truncate ${goal.isCompleted ? 'line-through text-green-400/60' : 'text-white'}`}>
+                  {goal.title}
+                </h4>
+                <Badge className={`text-xs ${getStatusColor()}`}>
+                  {goal.isCompleted ? 'Done' : isOverdue ? 'Late' : 'Active'}
+                </Badge>
               </div>
-            )}
+              {goal.deadline && (
+                <div className="flex items-center gap-1">
+                  <Calendar className="w-3 h-3 text-white/40" />
+                  <span className="text-xs text-white/40">
+                    {new Date(goal.deadline).toLocaleDateString()}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onEditGoal?.(goal)}
+              className="h-6 w-6 p-0 text-white/60 hover:text-white hover:bg-white/10"
+            >
+              <Edit className="w-3 h-3" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleDelete}
+              className="h-6 w-6 p-0 text-white/60 hover:text-red-400 hover:bg-red-400/10"
+            >
+              <Trash2 className="w-3 h-3" />
+            </Button>
           </div>
         </div>
-        
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onEditGoal?.(goal)}
-            className="h-6 w-6 p-0 text-white/60 hover:text-white hover:bg-white/10"
-          >
-            <Edit className="w-3 h-3" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleDelete}
-            className="h-6 w-6 p-0 text-white/60 hover:text-red-400 hover:bg-red-400/10"
-          >
-            <Trash2 className="w-3 h-3" />
-          </Button>
-        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
 export function GoalsDashboard() {
   const [search, setSearch] = useState("");
@@ -170,7 +184,7 @@ export function GoalsDashboard() {
     const quarterlyGoals = goals.filter(goal => goal.type === "quarterly");
     const monthlyGoals = goals.filter(goal => goal.type === "monthly");
 
-    // Group quarterly and monthly goals by year
+    // Group goals by year
     const groupGoalsByYear = (goals: Goal[]) => {
       const grouped: Record<number, Goal[]> = {};
       goals.forEach(goal => {
@@ -185,10 +199,11 @@ export function GoalsDashboard() {
       return grouped;
     };
 
+    const annualByYear = groupGoalsByYear(annualGoals);
     const quarterlyByYear = groupGoalsByYear(quarterlyGoals);
     const monthlyByYear = groupGoalsByYear(monthlyGoals);
 
-    return { annualGoals, quarterlyByYear, monthlyByYear };
+    return { annualByYear, quarterlyByYear, monthlyByYear };
   };
 
   if (error) {
@@ -202,7 +217,7 @@ export function GoalsDashboard() {
     );
   }
 
-  const { annualGoals, quarterlyByYear, monthlyByYear } = organizeGoalsByType(goalsData?.goals || []);
+  const { annualByYear, quarterlyByYear, monthlyByYear } = organizeGoalsByType(goalsData?.goals || []);
 
   return (
     <div className="space-y-8">
@@ -274,24 +289,37 @@ export function GoalsDashboard() {
           ) : (
             <div className="space-y-8">
               {/* Annual Goals Section */}
-              {annualGoals.length > 0 && (
+              {Object.keys(annualByYear).length > 0 && (
                 <div className="space-y-6">
-                  <h2 className="text-2xl font-bold text-white">Annual Goals 2025</h2>
-                  <div className="space-y-3">
-                    {annualGoals.map((goal, index) => (
-                      <div
-                        key={goal.id}
-                        className="animate-in fade-in-0 slide-in-from-bottom-4"
-                        style={{ animationDelay: `${index * 100}ms` }}
-                      >
-                        <GoalCard
-                          goal={goal}
-                          viewMode="list"
-                          onGoalChange={() => forceUpdateStats()}
-                          onEditGoal={() => handleEditGoal(goal)}
-                        />
-                      </div>
-                    ))}
+                  <h2 className="text-2xl font-bold text-white">Annual Goals</h2>
+                  
+                  {/* Annual goals organized by year */}
+                  <div className="space-y-8">
+                    {Object.keys(annualByYear)
+                      .map(Number)
+                      .sort((a, b) => a - b) // Sort years ascending (older years first)
+                      .map(year => (
+                        <div key={year} className="space-y-4">
+                          <h3 className="text-xl font-semibold text-white/90 border-b border-white/20 pb-2">
+                            {year}
+                          </h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {annualByYear[year].map((goal, index) => (
+                              <div
+                                key={goal.id}
+                                className="animate-in fade-in-0 slide-in-from-bottom-4"
+                                style={{ animationDelay: `${index * 100}ms` }}
+                              >
+                                <QuarterlyGoalItem
+                                  goal={goal}
+                                  onGoalChange={() => forceUpdateStats()}
+                                  onEditGoal={() => handleEditGoal(goal)}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
                   </div>
                 </div>
               )}
