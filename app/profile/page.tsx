@@ -59,11 +59,9 @@ export default function ProfilePage() {
                 </Suspense>
               </div>
 
-              {/* Usage Stats */}
+              {/* Usage Stats - Client component outside Suspense */}
               <div className="bg-white/5 rounded-xl border border-white/10 p-8">
-                <Suspense fallback={<div className="space-y-4"><div className="h-20 bg-white/5 rounded-xl animate-pulse" /><div className="h-20 bg-white/5 rounded-xl animate-pulse" /><div className="h-20 bg-white/5 rounded-xl animate-pulse" /></div>}>
-                  <UsageStats />
-                </Suspense>
+                <UsageStats />
               </div>
             </div>
           </div>

@@ -31,27 +31,57 @@ export class SubscriptionLimitsService {
    * Get user plan limits
    */
   static async getUserPlanLimits(userId: string): Promise<PlanLimits> {
-    const user = await db
-      .select({ subscriptionPlan: users.subscriptionPlan })
-      .from(users)
-      .where(eq(users.id, userId))
-      .limit(1);
+    try {
+      const user = await db
+        .select({ subscriptionPlan: users.subscriptionPlan })
+        .from(users)
+        .where(eq(users.id, userId))
+        .limit(1);
 
-    if (!user[0]) {
-      throw new TRPCError({
-        code: "NOT_FOUND",
-        message: "User not found",
-      });
-    }
+      if (!user[0]) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
 
-    const plan = await db
-      .select()
-      .from(subscriptionPlans)
-      .where(eq(subscriptionPlans.name, user[0].subscriptionPlan))
-      .limit(1);
+      const plan = await db
+        .select()
+        .from(subscriptionPlans)
+        .where(eq(subscriptionPlans.name, user[0].subscriptionPlan))
+        .limit(1);
 
-    if (!plan[0]) {
-      // Default plan (FREE)
+      if (!plan[0]) {
+        // Default plan (FREE)
+        return {
+          maxHabits: 3,
+          maxTradingEntries: 10,
+          maxAnnualGoals: 1,
+          maxQuarterlyGoals: 1,
+          maxMonthlyGoals: 0,
+          hasDiscordIntegration: false,
+          hasPrioritySupport: false,
+          hasEarlyAccess: false,
+          hasMonthlyChallenges: false,
+          hasPremiumDiscord: false,
+        };
+      }
+
+      return {
+        maxHabits: plan[0].maxHabits,
+        maxTradingEntries: plan[0].maxTradingEntries,
+        maxAnnualGoals: plan[0].maxAnnualGoals,
+        maxQuarterlyGoals: plan[0].maxQuarterlyGoals,
+        maxMonthlyGoals: plan[0].maxMonthlyGoals,
+        hasDiscordIntegration: plan[0].hasDiscordIntegration,
+        hasPrioritySupport: plan[0].hasPrioritySupport,
+        hasEarlyAccess: plan[0].hasEarlyAccess,
+        hasMonthlyChallenges: plan[0].hasMonthlyChallenges,
+        hasPremiumDiscord: plan[0].hasPremiumDiscord,
+      };
+    } catch (error) {
+      console.error("Error getting user plan limits:", error);
+      // Return default plan if there's an error
       return {
         maxHabits: 3,
         maxTradingEntries: 10,
@@ -65,19 +95,6 @@ export class SubscriptionLimitsService {
         hasPremiumDiscord: false,
       };
     }
-
-    return {
-      maxHabits: plan[0].maxHabits,
-      maxTradingEntries: plan[0].maxTradingEntries,
-      maxAnnualGoals: plan[0].maxAnnualGoals,
-      maxQuarterlyGoals: plan[0].maxQuarterlyGoals,
-      maxMonthlyGoals: plan[0].maxMonthlyGoals,
-      hasDiscordIntegration: plan[0].hasDiscordIntegration,
-      hasPrioritySupport: plan[0].hasPrioritySupport,
-      hasEarlyAccess: plan[0].hasEarlyAccess,
-      hasMonthlyChallenges: plan[0].hasMonthlyChallenges,
-      hasPremiumDiscord: plan[0].hasPremiumDiscord,
-    };
   }
 
   /**
@@ -103,7 +120,7 @@ export class SubscriptionLimitsService {
       .where(and(eq(trades.userId, userId), gte(trades.createdAt, monthStart)));
 
     // Count goals by type (with error handling for missing table)
-    let goalsByType: Record<string, number> = { annual: 0, quarterly: 0, custom: 0 };
+    let goalsByType: Record<string, number> = { annual: 0, quarterly: 0, monthly: 0 };
     
     try {
       const goalsCounts = await db

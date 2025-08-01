@@ -4,22 +4,32 @@ import { api } from "@/trpc/client";
 import { Target, BookOpen, Trophy, Crown, BarChart3 } from "lucide-react";
 
 export function UsageStats() {
-  const { data: limitsSummary, isLoading } = api.subscription.getLimitsSummary.useQuery();
+  const { data: limitsSummary, error, isLoading } = api.subscription.getLimitsSummary.useQuery();
 
-  if (isLoading || !limitsSummary) {
-    return (
-      <div className="space-y-4">
-        <div className="h-20 bg-white/5 rounded-xl animate-pulse" />
-        <div className="h-20 bg-white/5 rounded-xl animate-pulse" />
-        <div className="h-20 bg-white/5 rounded-xl animate-pulse" />
-      </div>
-    );
-  }
+  // Fallback data si la requête échoue ou est en cours de chargement
+  const fallbackData = {
+    limits: {
+      maxHabits: 3,
+      maxTradingEntries: 10,
+      maxAnnualGoals: 1,
+      maxQuarterlyGoals: 1,
+      maxMonthlyGoals: 0,
+    },
+    usage: {
+      currentHabits: 0,
+      monthlyTradingEntries: 0,
+      currentAnnualGoals: 0,
+      currentQuarterlyGoals: 0,
+      currentMonthlyGoals: 0,
+    }
+  };
 
-  const { limits, usage } = limitsSummary;
+  const data = limitsSummary || fallbackData;
+  const { limits, usage } = data;
 
   const getUsagePercentage = (current: number, max: number) => {
     if (max === 999) return 0; // Unlimited
+    if (max === 0) return 0; // No limit set
     return Math.min((current / max) * 100, 100);
   };
 
@@ -35,6 +45,34 @@ export function UsageStats() {
     return "bg-green-500";
   };
 
+  const getPlanName = () => {
+    if (limits.maxHabits === 3 && limits.maxTradingEntries === 10) return "Free Plan";
+    if (limits.maxHabits === 999 && limits.maxMonthlyGoals === 0) return "Pro Plan";
+    if (limits.maxHabits === 999 && limits.maxMonthlyGoals === 999) return "Altiorans";
+    return "Custom Plan";
+  };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center space-x-3 mb-4">
+          <BarChart3 className="w-5 h-5 text-white/60" />
+          <h3 className="text-lg font-argesta font-bold text-white tracking-wide">
+            PLAN USAGE
+          </h3>
+        </div>
+        <div className="space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="p-4 bg-white/5 rounded-xl border border-white/10 animate-pulse">
+              <div className="h-4 bg-white/10 rounded mb-3"></div>
+              <div className="h-2 bg-white/10 rounded"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center space-x-3 mb-4">
@@ -42,6 +80,11 @@ export function UsageStats() {
         <h3 className="text-lg font-argesta font-bold text-white tracking-wide">
           PLAN USAGE
         </h3>
+        {error && (
+          <span className="text-xs text-red-400 bg-red-500/10 px-2 py-1 rounded">
+            Offline
+          </span>
+        )}
       </div>
 
       <div className="space-y-4">
@@ -57,7 +100,7 @@ export function UsageStats() {
             </span>
           </div>
           
-          {limits.maxHabits !== 999 && (
+          {limits.maxHabits !== 999 && limits.maxHabits > 0 && (
             <div className="w-full bg-white/10 rounded-full h-2">
               <div 
                 className={`h-2 rounded-full transition-all duration-300 ${getProgressColor(getUsagePercentage(usage.currentHabits, limits.maxHabits))}`}
@@ -79,7 +122,7 @@ export function UsageStats() {
             </span>
           </div>
           
-          {limits.maxTradingEntries !== 999 && (
+          {limits.maxTradingEntries !== 999 && limits.maxTradingEntries > 0 && (
             <div className="w-full bg-white/10 rounded-full h-2">
               <div 
                 className={`h-2 rounded-full transition-all duration-300 ${getProgressColor(getUsagePercentage(usage.monthlyTradingEntries, limits.maxTradingEntries))}`}
@@ -101,7 +144,7 @@ export function UsageStats() {
             </span>
           </div>
           
-          {limits.maxAnnualGoals + limits.maxQuarterlyGoals !== 999 && (
+          {limits.maxAnnualGoals + limits.maxQuarterlyGoals !== 999 && limits.maxAnnualGoals + limits.maxQuarterlyGoals > 0 && (
             <div className="w-full bg-white/10 rounded-full h-2">
               <div 
                 className={`h-2 rounded-full transition-all duration-300 ${getProgressColor(getUsagePercentage(usage.currentAnnualGoals + usage.currentQuarterlyGoals, limits.maxAnnualGoals + limits.maxQuarterlyGoals))}`}
@@ -126,7 +169,7 @@ export function UsageStats() {
           </span>
         </div>
         <p className="text-sm text-white/80 font-argesta">
-          {limits.maxHabits === 3 ? "Free Plan" : limits.maxHabits === 999 && limits.maxMonthlyGoals === 0 ? "Pro Plan" : "Altiorans"}
+          {getPlanName()}
         </p>
       </div>
     </div>

@@ -8,7 +8,7 @@ DELETE FROM subscription_plan;
 INSERT INTO subscription_plan (
   id, name, display_name, description, price, currency, billing_interval, 
   stripe_price_id, is_active, max_habits, max_trading_entries, max_annual_goals, 
-  max_quarterly_goals, max_custom_goals, has_discord_integration, has_priority_support, 
+  max_quarterly_goals, max_monthly_goals, has_discord_integration, has_priority_support, 
   has_early_access, has_monthly_challenges, has_premium_discord, created_at, updated_at
 ) VALUES 
 -- Free Plan
@@ -93,7 +93,7 @@ SELECT
   max_trading_entries,
   max_annual_goals,
   max_quarterly_goals,
-  max_custom_goals,
+  max_monthly_goals,
   has_discord_integration,
   has_priority_support,
   has_early_access,
