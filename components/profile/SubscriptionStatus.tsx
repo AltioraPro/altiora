@@ -112,19 +112,23 @@ export function SubscriptionStatus() {
           <div className="space-y-3">
             <div className="flex items-center space-x-3">
               <div className="w-2 h-2 bg-white/60 rounded-full" />
-              <span className="text-sm font-argesta text-white/80">Basic habit tracking</span>
+              <span className="text-sm font-argesta text-white/80">Trading journal (10 entries/month)</span>
             </div>
             <div className="flex items-center space-x-3">
               <div className="w-2 h-2 bg-white/60 rounded-full" />
-              <span className="text-sm font-argesta text-white/80">Simple trading journal</span>
+              <span className="text-sm font-argesta text-white/80">Habit tracking (3 max)</span>
             </div>
             <div className="flex items-center space-x-3">
               <div className="w-2 h-2 bg-white/60 rounded-full" />
-              <span className="text-sm font-argesta text-white/80">Goal setting</span>
+              <span className="text-sm font-argesta text-white/80">1 annual goal + 1 quarterly</span>
             </div>
             <div className="flex items-center space-x-3">
               <div className="w-2 h-2 bg-white/60 rounded-full" />
               <span className="text-sm font-argesta text-white/80">Basic analytics</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="w-2 h-2 bg-white/60 rounded-full" />
+              <span className="text-sm font-argesta text-white/80">Community access</span>
             </div>
           </div>
 
@@ -133,27 +137,60 @@ export function SubscriptionStatus() {
             <div className="space-y-3 pt-4 border-t border-white/10">
               <div className="flex items-center space-x-3">
                 <div className="w-2 h-2 bg-green-400 rounded-full" />
+                <span className="text-sm font-argesta text-green-400">Unlimited trading journal</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-green-400 rounded-full" />
+                <span className="text-sm font-argesta text-green-400">Unlimited habit tracking</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-green-400 rounded-full" />
+                <span className="text-sm font-argesta text-green-400">Unlimited goal planning</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-green-400 rounded-full" />
+                <span className="text-sm font-argesta text-green-400">Virtual assistant & Pomodoro</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-green-400 rounded-full" />
+                <span className="text-sm font-argesta text-green-400">Deep work tracking</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-green-400 rounded-full" />
                 <span className="text-sm font-argesta text-green-400">Discord integration</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 bg-green-400 rounded-full" />
-                <span className="text-sm font-argesta text-green-400">Advanced analytics</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 bg-green-400 rounded-full" />
-                <span className="text-sm font-argesta text-green-400">Data export</span>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-2 h-2 bg-green-400 rounded-full" />
                 <span className="text-sm font-argesta text-green-400">Priority support</span>
               </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 bg-green-400 rounded-full" />
-                <span className="text-sm font-argesta text-green-400">Unlimited habits</span>
-              </div>
             </div>
           ) : (
             <div className="space-y-3 pt-4 border-t border-white/10">
+              <div className="flex items-center space-x-3 opacity-50">
+                <div className="w-2 h-2 bg-white/20 rounded-full" />
+                <span className="text-sm font-argesta text-white/40">Unlimited trading journal</span>
+                <Star className="w-3 h-3 text-white/20" />
+              </div>
+              <div className="flex items-center space-x-3 opacity-50">
+                <div className="w-2 h-2 bg-white/20 rounded-full" />
+                <span className="text-sm font-argesta text-white/40">Unlimited habit tracking</span>
+                <Star className="w-3 h-3 text-white/20" />
+              </div>
+              <div className="flex items-center space-x-3 opacity-50">
+                <div className="w-2 h-2 bg-white/20 rounded-full" />
+                <span className="text-sm font-argesta text-white/40">Unlimited goal planning</span>
+                <Star className="w-3 h-3 text-white/20" />
+              </div>
+              <div className="flex items-center space-x-3 opacity-50">
+                <div className="w-2 h-2 bg-white/20 rounded-full" />
+                <span className="text-sm font-argesta text-white/40">Virtual assistant & Pomodoro</span>
+                <Star className="w-3 h-3 text-white/20" />
+              </div>
+              <div className="flex items-center space-x-3 opacity-50">
+                <div className="w-2 h-2 bg-white/20 rounded-full" />
+                <span className="text-sm font-argesta text-white/40">Deep work tracking</span>
+                <Star className="w-3 h-3 text-white/20" />
+              </div>
               <div className="flex items-center space-x-3 opacity-50">
                 <div className="w-2 h-2 bg-white/20 rounded-full" />
                 <span className="text-sm font-argesta text-white/40">Discord integration</span>
@@ -161,22 +198,7 @@ export function SubscriptionStatus() {
               </div>
               <div className="flex items-center space-x-3 opacity-50">
                 <div className="w-2 h-2 bg-white/20 rounded-full" />
-                <span className="text-sm font-argesta text-white/40">Advanced analytics</span>
-                <Star className="w-3 h-3 text-white/20" />
-              </div>
-              <div className="flex items-center space-x-3 opacity-50">
-                <div className="w-2 h-2 bg-white/20 rounded-full" />
-                <span className="text-sm font-argesta text-white/40">Data export</span>
-                <Star className="w-3 h-3 text-white/20" />
-              </div>
-              <div className="flex items-center space-x-3 opacity-50">
-                <div className="w-2 h-2 bg-white/20 rounded-full" />
                 <span className="text-sm font-argesta text-white/40">Priority support</span>
-                <Star className="w-3 h-3 text-white/20" />
-              </div>
-              <div className="flex items-center space-x-3 opacity-50">
-                <div className="w-2 h-2 bg-white/20 rounded-full" />
-                <span className="text-sm font-argesta text-white/40">Unlimited habits</span>
                 <Star className="w-3 h-3 text-white/20" />
               </div>
             </div>
