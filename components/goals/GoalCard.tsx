@@ -15,6 +15,7 @@ import {
   Clock
 } from "lucide-react";
 import { type Goal } from "@/server/db/schema";
+import { GoalReminders } from "./GoalReminders";
 
 
 interface GoalCardProps {
@@ -205,37 +206,48 @@ export function GoalCard({ goal, viewMode, onGoalChange, onEditGoal }: GoalCardP
 
 
         {/* Footer compact */}
-        <div className="flex items-center justify-between pt-4 border-t border-white/10">
-          {goal.deadline && (
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-white/40" />
-              <span className={`text-sm ${isOverdue ? 'text-white/60' : 'text-white/40'}`}>
-                {new Date(goal.deadline).toLocaleDateString()}
-              </span>
-            </div>
-          )}
+        <div className="space-y-4 pt-4 border-t border-white/10">
+          {/* Rappels */}
+          <GoalReminders
+            goalId={goal.id}
+            currentFrequency={goal.reminderFrequency}
+            nextReminderDate={goal.nextReminderDate}
+            isActive={goal.isActive}
+          />
           
-          <button
-            onClick={handleMarkCompleted}
-            className={`group/button flex items-center gap-2 px-4 py-2 border rounded-lg transition-all duration-300 ${
-              goal.isCompleted 
-                ? 'bg-green-500/20 hover:bg-green-500/30 border-green-400/40 hover:border-green-400/60' 
-                : 'bg-white/5 hover:bg-green-500/10 border-white/10 hover:border-green-400/40'
-            }`}
-            disabled={markCompletedMutation.isPending}
-          >
-            {goal.isCompleted ? (
-              <>
-                <CheckCircle className="w-4 h-4 text-green-400" />
-                <span className="text-sm text-green-400">Done</span>
-              </>
-            ) : (
-              <>
-                <Circle className="w-4 h-4 text-white/60 group-hover/button:text-green-400 transition-colors" />
-                <span className="text-sm text-white/60 group-hover/button:text-green-400 transition-colors">Complete</span>
-              </>
+          {/* Deadline et bouton de completion */}
+          <div className="flex items-center justify-between">
+            {goal.deadline && (
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-white/40" />
+                <span className={`text-sm ${isOverdue ? 'text-white/60' : 'text-white/40'}`}>
+                  {new Date(goal.deadline).toLocaleDateString()}
+                </span>
+              </div>
             )}
-          </button>
+            
+            <button
+              onClick={handleMarkCompleted}
+              className={`group/button flex items-center gap-2 px-4 py-2 border rounded-lg transition-all duration-300 ${
+                goal.isCompleted 
+                  ? 'bg-green-500/20 hover:bg-green-500/30 border-green-400/40 hover:border-green-400/60' 
+                  : 'bg-white/5 hover:bg-green-500/10 border-white/10 hover:border-green-400/40'
+              }`}
+              disabled={markCompletedMutation.isPending}
+            >
+              {goal.isCompleted ? (
+                <>
+                  <CheckCircle className="w-4 h-4 text-green-400" />
+                  <span className="text-sm text-green-400">Done</span>
+                </>
+              ) : (
+                <>
+                  <Circle className="w-4 h-4 text-white/60 group-hover/button:text-green-400 transition-colors" />
+                  <span className="text-sm text-white/60 group-hover/button:text-green-400 transition-colors">Complete</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>

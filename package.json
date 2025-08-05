@@ -10,7 +10,8 @@
     "db:generate": "drizzle-kit generate --config=drizzle.kit.config.ts",
     "db:migrate": "drizzle-kit migrate --config=drizzle.kit.config.ts",
     "db:studio": "drizzle-kit studio --config=drizzle.kit.config.ts",
-    "optimize:db": "tsx scripts/apply-performance-optimizations.ts"
+    "optimize:db": "tsx scripts/apply-performance-optimizations.ts",
+    "test-reminders": "tsx scripts/test-reminders.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^5.7.5",

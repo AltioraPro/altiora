@@ -353,7 +353,7 @@ export class DiscordService {
   /**
    * Envoie un message privé (DM) à un utilisateur Discord
    */
-  static async sendDirectMessage(discordId: string, message: string): Promise<void> {
+  static async sendDirectMessage(discordId: string, message: string | object): Promise<void> {
     try {
       // Créer un DM channel avec l'utilisateur
       const createDMResponse = await fetch('https://discord.com/api/users/@me/channels', {
@@ -373,6 +373,9 @@ export class DiscordService {
 
       const dmChannel = await createDMResponse.json();
 
+      // Préparer le payload du message
+      const messagePayload = typeof message === 'string' ? { content: message } : message;
+
       // Envoyer le message dans le DM
       const sendMessageResponse = await fetch(`https://discord.com/api/channels/${dmChannel.id}/messages`, {
         method: 'POST',
@@ -380,9 +383,7 @@ export class DiscordService {
           'Authorization': `Bot ${DISCORD_BOT_TOKEN}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          content: message,
-        }),
+        body: JSON.stringify(messagePayload),
       });
 
       if (!sendMessageResponse.ok) {

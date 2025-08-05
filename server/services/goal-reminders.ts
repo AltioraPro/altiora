@@ -1,202 +1,332 @@
 import { db } from "@/server/db";
-import { goals, goalReminders, users } from "@/server/db/schema";
-import { eq, and, lte, gte } from "drizzle-orm";
-import { addDays, addWeeks, addMonths } from "date-fns";
+import { goals, users, goalReminders } from "@/server/db/schema";
+import { eq, and, lte, gte, isNotNull, count } from "drizzle-orm";
 import { DiscordService } from "./discord";
+import { createId } from "@paralleldrive/cuid2";
 
-export interface GoalReminderService {
-  sendReminders(): Promise<void>;
-  scheduleNextReminder(goalId: string, userId: string): Promise<void>;
+export interface GoalReminder {
+  id: string;
+  goalId: string;
+  userId: string;
+  title: string;
+  description?: string;
+  deadline?: Date;
+  reminderType: "discord" | "email" | "push";
+  reminderFrequency: "daily" | "weekly" | "monthly";
+  nextReminderDate: Date;
+  lastReminderSent?: Date;
 }
 
-export class GoalReminderServiceImpl implements GoalReminderService {
-  
+export class GoalRemindersService {
   /**
-   * Envoie les rappels pour les objectifs qui doivent être notifiés
+   * Envoyer les rappels en retard
    */
-  async sendReminders(): Promise<void> {
-    const now = new Date();
+  static async sendOverdueReminders() {
+    console.log("🔔 [Reminders] Checking for overdue reminders...");
     
-    // Récupérer tous les objectifs avec des rappels activés et une date de prochain rappel passée
-    const goalsToRemind = await db
-      .select({
-        goal: goals,
-        user: {
-          id: users.id,
+    try {
+      const now = new Date();
+      
+      // Récupérer tous les goals avec des rappels activés qui sont en retard
+      const overdueGoals = await db
+        .select({
+          id: goals.id,
+          userId: goals.userId,
+          title: goals.title,
+          description: goals.description,
+          deadline: goals.deadline,
+          reminderFrequency: goals.reminderFrequency,
+          nextReminderDate: goals.nextReminderDate,
+          lastReminderSent: goals.lastReminderSent,
+        })
+        .from(goals)
+                 .where(
+           and(
+             eq(goals.isActive, true),
+             eq(goals.isCompleted, false),
+             lte(goals.nextReminderDate, now),
+             isNotNull(goals.reminderFrequency),
+             isNotNull(goals.nextReminderDate)
+           )
+         );
+
+      console.log(`📊 [Reminders] Found ${overdueGoals.length} overdue reminders`);
+
+      for (const goal of overdueGoals) {
+        if (goal.reminderFrequency) {
+          await this.sendReminder({
+            id: goal.id,
+            userId: goal.userId,
+            title: goal.title,
+            description: goal.description || undefined,
+            deadline: goal.deadline || undefined,
+            reminderFrequency: goal.reminderFrequency as "daily" | "weekly" | "monthly",
+          });
+          await this.updateNextReminderDate(goal.id, goal.reminderFrequency as "daily" | "weekly" | "monthly");
+        }
+      }
+
+      console.log("✅ [Reminders] Overdue reminders processed successfully");
+    } catch (error) {
+      console.error("❌ [Reminders] Error processing overdue reminders:", error);
+    }
+  }
+
+  /**
+   * Envoyer un rappel pour un goal spécifique
+   */
+  static async sendReminder(goal: {
+    id: string;
+    userId: string;
+    title: string;
+    description?: string;
+    deadline?: Date;
+    reminderFrequency: "daily" | "weekly" | "monthly";
+  }) {
+    try {
+      // Récupérer les informations de l'utilisateur
+      const [user] = await db
+        .select({
           discordId: users.discordId,
           discordConnected: users.discordConnected,
-        }
-      })
-      .from(goals)
-      .leftJoin(users, eq(goals.userId, users.id))
-      .where(
-        and(
-          eq(goals.remindersEnabled, true),
-          lte(goals.nextReminderDate, now),
-          eq(goals.isCompleted, false),
-          eq(goals.isActive, true)
-        )
-      );
+          email: users.email,
+        })
+        .from(users)
+        .where(eq(users.id, goal.userId))
+        .limit(1);
 
-    for (const { goal, user } of goalsToRemind) {
-      try {
-        await this.sendGoalReminder(goal, user);
-        await this.scheduleNextReminder(goal.id, goal.userId);
-      } catch (error) {
-        console.error(`Erreur lors de l'envoi du rappel pour l'objectif ${goal.id}:`, error);
+      if (!user) {
+        console.warn(`⚠️ [Reminders] User not found for goal ${goal.id}`);
+        return;
       }
-    }
-  }
 
-  /**
-   * Envoie un rappel pour un objectif spécifique
-   */
-  private async sendGoalReminder(goal: any, user: any): Promise<void> {
-    // Créer l'enregistrement du rappel
-    await db.insert(goalReminders).values({
-      id: crypto.randomUUID(),
-      goalId: goal.id,
-      userId: goal.userId,
-      reminderType: "discord", // Maintenant on utilise Discord
-      sentAt: new Date(),
-      status: "sent",
-    });
-
-    // Envoyer le rappel via Discord si l'utilisateur est connecté
-    if (user?.discordId && user?.discordConnected) {
-      try {
-        await DiscordService.sendGoalReminder(user.discordId, {
-          id: goal.id,
-          title: goal.title,
-          description: goal.description,
-          deadline: goal.deadline,
-          userId: goal.userId,
-        });
-        console.log(`✅ Rappel Discord envoyé pour l'objectif: ${goal.title} à ${user.discordId}`);
-      } catch (discordError) {
-        console.error(`❌ Erreur Discord pour l'objectif ${goal.title}:`, discordError);
-        // Fallback vers email si Discord échoue
-        await this.sendEmailReminder(goal, user);
+      // Envoyer le rappel Discord si l'utilisateur est connecté
+      if (user.discordId && user.discordConnected) {
+        await this.sendDiscordReminder(user.discordId, goal);
       }
-    } else {
-      // Fallback vers email si l'utilisateur n'est pas connecté à Discord
-      await this.sendEmailReminder(goal, user);
+
+      // Enregistrer le rappel envoyé
+      await this.recordReminderSent(goal.id, goal.userId, "discord");
+
+      console.log(`📨 [Reminders] Reminder sent for goal: ${goal.title}`);
+    } catch (error) {
+      console.error(`❌ [Reminders] Error sending reminder for goal ${goal.id}:`, error);
     }
   }
 
   /**
-   * Envoie un rappel par email (fallback)
+   * Envoyer un rappel Discord
    */
-  private async sendEmailReminder(goal: any, user: any): Promise<void> {
-    // TODO: Implémenter l'envoi réel d'email
-    console.log(`📧 Rappel email envoyé pour l'objectif: ${goal.title}`);
-    
-    // Ici, vous pourriez intégrer avec un service d'email comme SendGrid, Resend, etc.
-    // await emailService.sendGoalReminder({
-    //   to: user.email,
-    //   goalTitle: goal.title,
-    //   goalDescription: goal.description,
-    //   deadline: goal.deadline,
-    // });
-  }
+  static async sendDiscordReminder(discordId: string, goal: {
+    title: string;
+    description?: string;
+    deadline?: Date;
+    reminderFrequency: "daily" | "weekly" | "monthly";
+  }) {
+    try {
+      const deadlineText = goal.deadline 
+        ? `\n📅 **Deadline:** ${new Date(goal.deadline).toLocaleDateString()}`
+        : "";
 
-  /**
-   * Programme le prochain rappel pour un objectif
-   */
-  async scheduleNextReminder(goalId: string, userId: string): Promise<void> {
-    const goal = await db
-      .select()
-      .from(goals)
-      .where(and(eq(goals.id, goalId), eq(goals.userId, userId)))
-      .limit(1);
+      const frequencyText = {
+        daily: "quotidien",
+        weekly: "hebdomadaire", 
+        monthly: "mensuel"
+      }[goal.reminderFrequency];
 
-    if (!goal[0] || !goal[0].reminderFrequency) {
-      return;
+      const message = {
+        embeds: [{
+          title: "🎯 Rappel d'Objectif",
+          description: `Il est temps de travailler sur votre objectif !`,
+          color: 0x00ff00,
+          fields: [
+            {
+              name: "📋 Objectif",
+              value: goal.title,
+              inline: false
+            },
+            {
+              name: "📝 Description", 
+              value: goal.description || "Aucune description",
+              inline: false
+            },
+            {
+              name: "⏰ Fréquence",
+              value: `Rappel ${frequencyText}`,
+              inline: true
+            }
+          ],
+          footer: {
+            text: "Altiora - Votre assistant de productivité"
+          },
+          timestamp: new Date().toISOString()
+        }]
+      };
+
+      await DiscordService.sendDirectMessage(discordId, message);
+      console.log(`📨 [Discord] Reminder sent to ${discordId} for goal: ${goal.title}`);
+    } catch (error) {
+      console.error(`❌ [Discord] Error sending reminder to ${discordId}:`, error);
     }
+  }
 
-    const now = new Date();
-    let nextReminderDate: Date;
+  /**
+   * Mettre à jour la prochaine date de rappel
+   */
+  static async updateNextReminderDate(goalId: string, frequency: "daily" | "weekly" | "monthly") {
+    try {
+      const now = new Date();
+      let nextDate = new Date(now);
 
-    switch (goal[0].reminderFrequency) {
-      case "daily":
-        nextReminderDate = addDays(now, 1);
-        break;
-      case "weekly":
-        nextReminderDate = addWeeks(now, 1);
-        break;
-      case "monthly":
-        nextReminderDate = addMonths(now, 1);
-        break;
-      default:
-        nextReminderDate = addWeeks(now, 1);
+      switch (frequency) {
+        case "daily":
+          nextDate.setDate(nextDate.getDate() + 1);
+          break;
+        case "weekly":
+          nextDate.setDate(nextDate.getDate() + 7);
+          break;
+        case "monthly":
+          nextDate.setMonth(nextDate.getMonth() + 1);
+          break;
+      }
+
+      // Définir l'heure à 9h00 du matin
+      nextDate.setHours(9, 0, 0, 0);
+
+      await db
+        .update(goals)
+        .set({
+          nextReminderDate: nextDate,
+          lastReminderSent: now,
+          updatedAt: now,
+        })
+        .where(eq(goals.id, goalId));
+
+      console.log(`📅 [Reminders] Next reminder date updated for goal ${goalId}: ${nextDate}`);
+    } catch (error) {
+      console.error(`❌ [Reminders] Error updating next reminder date for goal ${goalId}:`, error);
     }
-
-    await db
-      .update(goals)
-      .set({
-        lastReminderSent: now,
-        nextReminderDate: nextReminderDate,
-        updatedAt: now,
-      })
-      .where(eq(goals.id, goalId));
   }
 
   /**
-   * Récupère les rappels envoyés pour un objectif
+   * Enregistrer qu'un rappel a été envoyé
    */
-  async getGoalReminders(goalId: string, userId: string): Promise<any[]> {
-    return await db
-      .select()
-      .from(goalReminders)
-      .where(and(eq(goalReminders.goalId, goalId), eq(goalReminders.userId, userId)))
-      .orderBy(goalReminders.sentAt);
-  }
+  static async recordReminderSent(goalId: string, userId: string, reminderType: "discord" | "email" | "push") {
+    try {
+      const reminderId = createId();
+      
+      await db.insert(goalReminders).values({
+        id: reminderId,
+        goalId,
+        userId,
+        reminderType,
+        sentAt: new Date(),
+        status: "sent",
+      });
 
-  /**
-   * Active les rappels pour un objectif
-   */
-  async enableReminders(goalId: string, userId: string, frequency: "daily" | "weekly" | "monthly"): Promise<void> {
-    const now = new Date();
-    let nextReminderDate: Date;
-
-    switch (frequency) {
-      case "daily":
-        nextReminderDate = addDays(now, 1);
-        break;
-      case "weekly":
-        nextReminderDate = addWeeks(now, 1);
-        break;
-      case "monthly":
-        nextReminderDate = addMonths(now, 1);
-        break;
+      console.log(`📝 [Reminders] Reminder record created: ${reminderId}`);
+    } catch (error) {
+      console.error(`❌ [Reminders] Error recording reminder sent:`, error);
     }
-
-    await db
-      .update(goals)
-      .set({
-        remindersEnabled: true,
-        reminderFrequency: frequency,
-        nextReminderDate: nextReminderDate,
-        updatedAt: now,
-      })
-      .where(and(eq(goals.id, goalId), eq(goals.userId, userId)));
   }
 
   /**
-   * Désactive les rappels pour un objectif
+   * Programmer un rappel pour un goal
    */
-  async disableReminders(goalId: string, userId: string): Promise<void> {
-    await db
-      .update(goals)
-      .set({
-        remindersEnabled: false,
-        reminderFrequency: null,
-        nextReminderDate: null,
-        updatedAt: new Date(),
-      })
-      .where(and(eq(goals.id, goalId), eq(goals.userId, userId)));
-  }
-}
+  static async scheduleReminder(goalId: string, frequency: "daily" | "weekly" | "monthly") {
+    try {
+      const now = new Date();
+      let nextDate = new Date(now);
 
-// Instance singleton
-export const goalReminderService = new GoalReminderServiceImpl(); 
+      // Programmer pour demain à 9h00
+      nextDate.setDate(nextDate.getDate() + 1);
+      nextDate.setHours(9, 0, 0, 0);
+
+      await db
+        .update(goals)
+        .set({
+          reminderFrequency: frequency,
+          nextReminderDate: nextDate,
+          updatedAt: now,
+        })
+        .where(eq(goals.id, goalId));
+
+      console.log(`📅 [Reminders] Reminder scheduled for goal ${goalId} at ${nextDate}`);
+    } catch (error) {
+      console.error(`❌ [Reminders] Error scheduling reminder for goal ${goalId}:`, error);
+    }
+  }
+
+  /**
+   * Annuler les rappels pour un goal
+   */
+  static async cancelReminders(goalId: string) {
+    try {
+      await db
+        .update(goals)
+        .set({
+          reminderFrequency: null,
+          nextReminderDate: null,
+          lastReminderSent: null,
+          updatedAt: new Date(),
+        })
+        .where(eq(goals.id, goalId));
+
+      console.log(`❌ [Reminders] Reminders cancelled for goal ${goalId}`);
+    } catch (error) {
+      console.error(`❌ [Reminders] Error cancelling reminders for goal ${goalId}:`, error);
+    }
+  }
+
+  /**
+   * Obtenir les statistiques des rappels
+   */
+  static async getReminderStats(userId: string) {
+    try {
+      const [totalReminders, sentReminders, activeReminders] = await Promise.all([
+        // Total des rappels programmés
+        db
+          .select({ count: db.$count() })
+          .from(goals)
+          .where(and(eq(goals.userId, userId), eq(goals.isActive, true), isNotNull(goals.reminderFrequency))),
+
+        // Rappels envoyés ce mois
+        db
+          .select({ count: db.$count() })
+          .from(goalReminders)
+          .where(
+            and(
+              eq(goalReminders.userId, userId),
+              gte(goalReminders.sentAt, new Date(new Date().getFullYear(), new Date().getMonth(), 1))
+            )
+          ),
+
+        // Rappels actifs
+        db
+          .select({ count: db.$count() })
+          .from(goals)
+          .where(
+            and(
+              eq(goals.userId, userId),
+              eq(goals.isActive, true),
+              eq(goals.isCompleted, false),
+              isNotNull(goals.reminderFrequency)
+            )
+          ),
+      ]);
+
+      return {
+        totalReminders: Number(totalReminders[0]?.count || 0),
+        sentThisMonth: Number(sentReminders[0]?.count || 0),
+        activeReminders: Number(activeReminders[0]?.count || 0),
+      };
+    } catch (error) {
+      console.error("❌ [Reminders] Error getting reminder stats:", error);
+      return {
+        totalReminders: 0,
+        sentThisMonth: 0,
+        activeReminders: 0,
+      };
+    }
+  }
+} 

@@ -5,6 +5,7 @@ import { discordRouter } from "./routers/discord/router";
 import { profileRouter } from "./routers/profile/router";
 import { subscriptionRouter } from "./routers/subscription/router";
 import { goalsRouter } from "./routers/goals/router";
+import { remindersRouter } from "./routers/reminders/router";
 
 export const appRouter = createTRPCRouter({
   auth: authRouter,
@@ -13,6 +14,7 @@ export const appRouter = createTRPCRouter({
   profile: profileRouter,
   subscription: subscriptionRouter,
   goals: goalsRouter,
+  reminders: remindersRouter,
 });
 
 export type AppRouter = typeof appRouter;
