@@ -20,10 +20,8 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
     reminderFrequency: "weekly" as "daily" | "weekly" | "monthly",
   });
 
-  const utils = api.useUtils();
-
   // Vérifier toutes les restrictions en une seule requête optimisée
-  const { data: goalLimits, isLoading: limitsLoading } = api.goals.getAllGoalLimits.useQuery(
+  const { data: goalLimits } = api.goals.getAllGoalLimits.useQuery(
     undefined,
     { 
       staleTime: 60000, // 1 minute
@@ -46,7 +44,13 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
 
   const { createGoal, isCreating, createError } = useOptimizedGoalMutation();
 
-  const handleCreateGoal = (data: any) => {
+  const handleCreateGoal = (data: {
+    title: string;
+    description: string;
+    type: "annual" | "quarterly" | "monthly";
+    deadline?: Date;
+    reminderFrequency?: "daily" | "weekly" | "monthly";
+  }) => {
     createGoal(data, {
       onSuccess: () => {
         handleClose();
