@@ -103,43 +103,50 @@ export class SubscriptionLimitsService {
   static async getUserUsageStats(userId: string): Promise<UsageStats> {
     const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
 
-    // Count active habits
-    const habitsCount = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(habits)
-      .where(and(eq(habits.userId, userId), eq(habits.isActive, true)));
+    // Optimized: Get all usage stats in parallel
+    const [habitsCount, tradingEntriesCount, goalsCounts] = await Promise.all([
+      // Count active habits
+      db
+        .select({ count: sql<number>`count(*)` })
+        .from(habits)
+        .where(and(eq(habits.userId, userId), eq(habits.isActive, true))),
 
-    // Count current month trading entries
-    const monthStart = new Date();
-    monthStart.setDate(1);
-    monthStart.setHours(0, 0, 0, 0);
+      // Count current month trading entries
+      (async () => {
+        const monthStart = new Date();
+        monthStart.setDate(1);
+        monthStart.setHours(0, 0, 0, 0);
 
-    const tradingEntriesCount = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(trades)
-      .where(and(eq(trades.userId, userId), gte(trades.createdAt, monthStart)));
+        return await db
+          .select({ count: sql<number>`count(*)` })
+          .from(trades)
+          .where(and(eq(trades.userId, userId), gte(trades.createdAt, monthStart)));
+      })(),
 
-    // Count goals by type (with error handling for missing table)
-    let goalsByType: Record<string, number> = { annual: 0, quarterly: 0, monthly: 0 };
-    
-    try {
-      const goalsCounts = await db
-        .select({
-          type: goals.type,
-          count: sql<number>`count(*)`,
-        })
-        .from(goals)
-        .where(eq(goals.userId, userId))
-        .groupBy(goals.type);
+      // Count goals by type (with error handling for missing table)
+      (async () => {
+        try {
+          return await db
+            .select({
+              type: goals.type,
+              count: sql<number>`count(*)`,
+            })
+            .from(goals)
+            .where(eq(goals.userId, userId))
+            .groupBy(goals.type);
+        } catch (error) {
+          // If goals table doesn't exist yet, use default values
+          console.warn("Goals table not found, using default values:", error);
+          return [];
+        }
+      })(),
+    ]);
 
-      goalsByType = goalsCounts.reduce((acc, goal) => {
-        acc[goal.type] = Number(goal.count);
-        return acc;
-      }, {} as Record<string, number>);
-    } catch (error) {
-      // If goals table doesn't exist yet, use default values
-      console.warn("Goals table not found, using default values:", error);
-    }
+    // Process goals by type
+    const goalsByType: Record<string, number> = { annual: 0, quarterly: 0, monthly: 0 };
+    goalsCounts.forEach(goal => {
+      goalsByType[goal.type] = Number(goal.count);
+    });
 
     return {
       currentHabits: Number(habitsCount[0]?.count || 0),
@@ -210,10 +217,10 @@ export class SubscriptionLimitsService {
         currentCount = usage.currentQuarterlyGoals;
         maxCount = limits.maxQuarterlyGoals;
         break;
-              case "monthly":
-          currentCount = usage.currentMonthlyGoals;
-          maxCount = limits.maxMonthlyGoals;
-          break;
+      case "monthly":
+        currentCount = usage.currentMonthlyGoals;
+        maxCount = limits.maxMonthlyGoals;
+        break;
       default:
         return { canCreate: false, reason: "Unrecognized goal type." };
     }
@@ -226,6 +233,55 @@ export class SubscriptionLimitsService {
     }
 
     return { canCreate: true };
+  }
+
+  /**
+   * Get all goal creation limits for a user in a single optimized query
+   */
+  static async getAllGoalLimits(userId: string): Promise<{
+    annual: { canCreate: boolean; reason?: string; current: number; max: number };
+    quarterly: { canCreate: boolean; reason?: string; current: number; max: number };
+    monthly: { canCreate: boolean; reason?: string; current: number; max: number };
+    canCreateAny: boolean;
+  }> {
+    const [limits, usage] = await Promise.all([
+      this.getUserPlanLimits(userId),
+      this.getUserUsageStats(userId),
+    ]);
+
+    const annual = {
+      current: usage.currentAnnualGoals,
+      max: limits.maxAnnualGoals,
+      canCreate: usage.currentAnnualGoals < limits.maxAnnualGoals,
+      reason: usage.currentAnnualGoals >= limits.maxAnnualGoals 
+        ? `You have reached the limit of ${limits.maxAnnualGoals} annual goals for your plan.`
+        : undefined,
+    };
+
+    const quarterly = {
+      current: usage.currentQuarterlyGoals,
+      max: limits.maxQuarterlyGoals,
+      canCreate: usage.currentQuarterlyGoals < limits.maxQuarterlyGoals,
+      reason: usage.currentQuarterlyGoals >= limits.maxQuarterlyGoals 
+        ? `You have reached the limit of ${limits.maxQuarterlyGoals} quarterly goals for your plan.`
+        : undefined,
+    };
+
+    const monthly = {
+      current: usage.currentMonthlyGoals,
+      max: limits.maxMonthlyGoals,
+      canCreate: usage.currentMonthlyGoals < limits.maxMonthlyGoals,
+      reason: usage.currentMonthlyGoals >= limits.maxMonthlyGoals 
+        ? `You have reached the limit of ${limits.maxMonthlyGoals} monthly goals for your plan.`
+        : undefined,
+    };
+
+    return {
+      annual,
+      quarterly,
+      monthly,
+      canCreateAny: annual.canCreate || quarterly.canCreate || monthly.canCreate,
+    };
   }
 
   /**

@@ -28,6 +28,7 @@ import { Badge } from "@/components/ui/badge";
         utils.goals.getPaginated.invalidate();
         utils.goals.getStats.invalidate();
         utils.goals.getAll.invalidate();
+        utils.goals.getAllGoalLimits.invalidate();
         onGoalChange?.();
       },
     });
@@ -37,6 +38,7 @@ import { Badge } from "@/components/ui/badge";
         utils.goals.getPaginated.invalidate();
         utils.goals.getStats.invalidate();
         utils.goals.getAll.invalidate();
+        utils.goals.getAllGoalLimits.invalidate();
         onGoalChange?.();
       },
     });

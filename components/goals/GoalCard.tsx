@@ -29,20 +29,22 @@ export function GoalCard({ goal, viewMode, onGoalChange, onEditGoal }: GoalCardP
 
   const markCompletedMutation = api.goals.markCompleted.useMutation({
     onSuccess: () => {
-      // Invalider toutes les requêtes goals
+      // Invalider toutes les requêtes goals et les restrictions
       utils.goals.getPaginated.invalidate();
       utils.goals.getStats.invalidate();
       utils.goals.getAll.invalidate();
+      utils.goals.getAllGoalLimits.invalidate();
       onGoalChange?.(); // Appeler le callback pour mettre à jour les stats
     },
   });
 
   const deleteMutation = api.goals.delete.useMutation({
     onSuccess: () => {
-      // Invalider toutes les requêtes goals
+      // Invalider toutes les requêtes goals et les restrictions
       utils.goals.getPaginated.invalidate();
       utils.goals.getStats.invalidate();
       utils.goals.getAll.invalidate();
+      utils.goals.getAllGoalLimits.invalidate();
       onGoalChange?.(); // Appeler le callback pour mettre à jour les stats
     },
   });

@@ -5,7 +5,7 @@ import { Header } from "@/components/layout/Header";
 import { GoalsDashboard } from "@/components/goals/GoalsDashboard";
 import { CreateGoalModal } from "@/components/goals/CreateGoalModal";
 import { Button } from "@/components/ui/button";
-import { Plus, Target, Calendar, TrendingUp, Sparkles } from "lucide-react";
+import { Plus, Target, Calendar, TrendingUp, Sparkles, Crown } from "lucide-react";
 import { api } from "@/trpc/client";
 import { Footer } from "@/components/layout/Footer";
 
@@ -26,6 +26,20 @@ export default function GoalsPage() {
       staleTime: 30000, // 30 secondes
     }
   );
+
+  // Vérifier toutes les restrictions en une seule requête optimisée
+  const { data: goalLimits, isLoading: limitsLoading } = api.goals.getAllGoalLimits.useQuery(
+    undefined,
+    { 
+      staleTime: 60000, // 1 minute
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+    }
+  );
+
+  // Vérifier si l'utilisateur peut créer au moins un type de goal
+  const canCreateAnyGoal = goalLimits?.canCreateAny ?? true;
 
   // Animation des stats quand les vraies données sont chargées
   useEffect(() => {
@@ -88,16 +102,39 @@ export default function GoalsPage() {
                   </p>
                 </div>
                 
-                <Button
-                  onClick={() => setIsCreateModalOpen(true)}
-                  className="group relative bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 border border-white/10 hover:border-white/20 overflow-hidden"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="relative flex items-center gap-2">
-                    <Plus className="w-4 h-4 transition-transform group-hover:scale-110" />
-                    <span>New Goal</span>
-                  </div>
-                </Button>
+                {limitsLoading ? (
+                  <Button
+                    disabled
+                    className="group relative bg-white/5 text-white/50 px-6 py-3 rounded-lg font-semibold transition-all duration-300 border border-white/10 overflow-hidden"
+                  >
+                    <div className="relative flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
+                      <span>Loading...</span>
+                    </div>
+                  </Button>
+                ) : canCreateAnyGoal ? (
+                  <Button
+                    onClick={() => setIsCreateModalOpen(true)}
+                    className="group relative bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 border border-white/10 hover:border-white/20 overflow-hidden"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="relative flex items-center gap-2">
+                      <Plus className="w-4 h-4 transition-transform group-hover:scale-110" />
+                      <span>New Goal</span>
+                    </div>
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => window.location.href = '/pricing'}
+                    className="group relative bg-gradient-to-r from-yellow-500/20 to-orange-500/20 hover:from-yellow-500/30 hover:to-orange-500/30 text-yellow-400 px-6 py-3 rounded-lg font-semibold transition-all duration-300 border border-yellow-500/30 hover:border-yellow-500/50 overflow-hidden"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/10 via-yellow-500/5 to-yellow-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="relative flex items-center gap-2">
+                      <Crown className="w-4 h-4 transition-transform group-hover:scale-110" />
+                      <span>Upgrade to Create More Goals</span>
+                    </div>
+                  </Button>
+                )}
               </div>
             </div>
           </div>

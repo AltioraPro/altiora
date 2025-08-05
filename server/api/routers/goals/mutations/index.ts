@@ -4,8 +4,20 @@ import { eq, and } from "drizzle-orm";
 import { type NewGoal, type NewSubGoal, type NewGoalTask } from "@/server/db/schema";
 import { nanoid } from "nanoid";
 import { DiscordService } from "@/server/services/discord";
+import { SubscriptionLimitsService } from "@/server/services/subscription-limits";
+import { TRPCError } from "@trpc/server";
 
 export async function createGoal(input: Omit<NewGoal, 'id' | 'userId'>, userId: string) {
+  // Vérifier les restrictions d'abonnement avant de créer le goal
+  const canCreateResult = await SubscriptionLimitsService.canCreateGoal(userId, input.type);
+  
+  if (!canCreateResult.canCreate) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: canCreateResult.reason || "You have reached the limit for this type of goal.",
+    });
+  }
+
   const goalId = nanoid();
   
   const newGoal = {
@@ -19,6 +31,14 @@ export async function createGoal(input: Omit<NewGoal, 'id' | 'userId'>, userId: 
     .insert(goals)
     .values(newGoal)
     .returning();
+
+  // Incrémenter le compteur d'utilisation mensuelle
+  try {
+    await SubscriptionLimitsService.incrementMonthlyUsage(userId, "goals");
+  } catch (error) {
+    console.error("Error incrementing monthly usage:", error);
+    // Ne pas faire échouer la création du goal si l'incrémentation échoue
+  }
 
   return createdGoal;
 }

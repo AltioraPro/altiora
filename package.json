@@ -12,7 +12,8 @@
     "db:studio": "drizzle-kit studio --config=drizzle.kit.config.ts",
     "test-goals": "tsx scripts/test-goals.ts",
     "test-reminders": "tsx scripts/test-goal-reminders.ts",
-    "diagnose-reminders": "tsx scripts/diagnose-reminders.ts"
+    "diagnose-reminders": "tsx scripts/diagnose-reminders.ts",
+    "optimize:db": "tsx scripts/apply-performance-optimizations.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^5.7.5",

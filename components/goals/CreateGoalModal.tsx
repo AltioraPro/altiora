@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { api } from "@/trpc/client";
-import { X } from "lucide-react";
+import { X, Crown, AlertCircle } from "lucide-react";
+import { useOptimizedGoalMutation } from "@/hooks/useOptimizedGoalMutation";
 
 interface CreateGoalModalProps {
   isOpen: boolean;
@@ -13,7 +14,7 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    type: "monthly" as "annual" | "quarterly" | "monthly",
+    type: "annual" as "annual" | "quarterly" | "monthly",
     deadline: "",
     remindersEnabled: false,
     reminderFrequency: "weekly" as "daily" | "weekly" | "monthly",
@@ -21,21 +22,43 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
 
   const utils = api.useUtils();
 
-  const createGoalMutation = api.goals.create.useMutation({
-    onSuccess: () => {
-      // Invalider toutes les requêtes goals
-      utils.goals.getPaginated.invalidate();
-      utils.goals.getStats.invalidate();
-      utils.goals.getAll.invalidate();
-      handleClose();
-    },
-  });
+  // Vérifier toutes les restrictions en une seule requête optimisée
+  const { data: goalLimits, isLoading: limitsLoading } = api.goals.getAllGoalLimits.useQuery(
+    undefined,
+    { 
+      staleTime: 60000, // 1 minute
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+    }
+  );
+
+  // Déterminer le type par défaut basé sur les restrictions
+  React.useEffect(() => {
+    if (goalLimits?.annual.canCreate) {
+      setFormData(prev => ({ ...prev, type: "annual" }));
+    } else if (goalLimits?.quarterly.canCreate) {
+      setFormData(prev => ({ ...prev, type: "quarterly" }));
+    } else if (goalLimits?.monthly.canCreate) {
+      setFormData(prev => ({ ...prev, type: "monthly" }));
+    }
+  }, [goalLimits?.annual.canCreate, goalLimits?.quarterly.canCreate, goalLimits?.monthly.canCreate]);
+
+  const { createGoal, isCreating, createError } = useOptimizedGoalMutation();
+
+  const handleCreateGoal = (data: any) => {
+    createGoal(data, {
+      onSuccess: () => {
+        handleClose();
+      },
+    });
+  };
 
   const handleClose = () => {
     setFormData({
       title: "",
       description: "",
-      type: "monthly",
+      type: "annual",
       deadline: "",
       remindersEnabled: false,
       reminderFrequency: "weekly",
@@ -47,7 +70,7 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
     e.preventDefault();
     if (!formData.title.trim()) return;
     
-    createGoalMutation.mutate({
+    handleCreateGoal({
       ...formData,
       deadline: formData.deadline ? new Date(formData.deadline) : undefined,
       reminderFrequency: formData.remindersEnabled ? formData.reminderFrequency : undefined,
@@ -126,10 +149,50 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
                   paddingRight: '2.5rem'
                 }}
               >
-                <option value="annual" className="bg-neutral-900 text-white">Annual</option>
-                <option value="quarterly" className="bg-neutral-900 text-white">Quarterly</option>
-                <option value="monthly" className="bg-neutral-900 text-white">Monthly</option>
+                <option 
+                  value="annual" 
+                  className="bg-neutral-900 text-white"
+                  disabled={!goalLimits?.annual.canCreate}
+                >
+                  Annual {!goalLimits?.annual.canCreate && `(${goalLimits?.annual.current}/${goalLimits?.annual.max})`}
+                </option>
+                <option 
+                  value="quarterly" 
+                  className="bg-neutral-900 text-white"
+                  disabled={!goalLimits?.quarterly.canCreate}
+                >
+                  Quarterly {!goalLimits?.quarterly.canCreate && `(${goalLimits?.quarterly.current}/${goalLimits?.quarterly.max})`}
+                </option>
+                <option 
+                  value="monthly" 
+                  className="bg-neutral-900 text-white"
+                  disabled={!goalLimits?.monthly.canCreate}
+                >
+                  Monthly {!goalLimits?.monthly.canCreate && `(${goalLimits?.monthly.current}/${goalLimits?.monthly.max})`}
+                </option>
               </select>
+              
+              {/* Afficher les restrictions */}
+              {(!goalLimits?.annual.canCreate || !goalLimits?.quarterly.canCreate || !goalLimits?.monthly.canCreate) && (
+                <div className="mt-3 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <Crown className="w-4 h-4 text-yellow-400 mt-0.5 flex-shrink-0" />
+                    <div className="text-sm">
+                      <p className="text-yellow-400 font-medium mb-1">Plan Limitations</p>
+                      <p className="text-yellow-300/80 text-xs">
+                        You&apos;ve reached the limit for some goal types. 
+                        <button 
+                          onClick={() => window.open('/pricing', '_blank')}
+                          className="text-yellow-400 hover:text-yellow-300 underline ml-1 mr-1"
+                        >
+                          Upgrade your plan
+                        </button> 
+                        to create unlimited goals.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Date limite */}
@@ -190,6 +253,21 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
               )}
             </div>
 
+            {/* Error Message */}
+            {createError && (
+              <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" />
+                  <div className="text-sm">
+                    <p className="text-red-400 font-medium mb-1">Error</p>
+                    <p className="text-red-300/80 text-xs">
+                      {createError.message}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Buttons */}
             <div className="flex items-center space-x-3 pt-3">
               <button
@@ -201,10 +279,10 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
               </button>
               <button
                 type="submit"
-                disabled={createGoalMutation.isPending || !formData.title.trim()}
+                disabled={isCreating || !formData.title.trim()}
                 className="flex-1 px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 rounded-lg text-white font-argesta transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
               >
-                {createGoalMutation.isPending ? "CREATING..." : "CREATE"}
+                {isCreating ? "CREATING..." : "CREATE"}
               </button>
             </div>
           </form>
