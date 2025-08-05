@@ -1,6 +1,6 @@
 import { db } from "@/server/db";
 import { goals, users, goalReminders } from "@/server/db/schema";
-import { eq, and, lte, gte, isNotNull, count } from "drizzle-orm";
+import { eq, and, lte, gte, isNotNull } from "drizzle-orm";
 import { DiscordService } from "./discord";
 import { createId } from "@paralleldrive/cuid2";
 
@@ -124,9 +124,7 @@ export class GoalRemindersService {
     reminderFrequency: "daily" | "weekly" | "monthly";
   }) {
     try {
-      const deadlineText = goal.deadline 
-        ? `\n📅 **Deadline:** ${new Date(goal.deadline).toLocaleDateString()}`
-        : "";
+
 
       const frequencyText = {
         daily: "quotidien",
@@ -176,7 +174,7 @@ export class GoalRemindersService {
   static async updateNextReminderDate(goalId: string, frequency: "daily" | "weekly" | "monthly") {
     try {
       const now = new Date();
-      let nextDate = new Date(now);
+      const nextDate = new Date(now);
 
       switch (frequency) {
         case "daily":
@@ -236,7 +234,7 @@ export class GoalRemindersService {
   static async scheduleReminder(goalId: string, frequency: "daily" | "weekly" | "monthly") {
     try {
       const now = new Date();
-      let nextDate = new Date(now);
+      const nextDate = new Date(now);
 
       // Programmer pour demain à 9h00
       nextDate.setDate(nextDate.getDate() + 1);
@@ -283,42 +281,40 @@ export class GoalRemindersService {
    */
   static async getReminderStats(userId: string) {
     try {
-      const [totalReminders, sentReminders, activeReminders] = await Promise.all([
-        // Total des rappels programmés
-        db
-          .select({ count: db.$count() })
-          .from(goals)
-          .where(and(eq(goals.userId, userId), eq(goals.isActive, true), isNotNull(goals.reminderFrequency))),
+      // Total des rappels programmés
+      const totalReminders = await db
+        .select()
+        .from(goals)
+        .where(and(eq(goals.userId, userId), eq(goals.isActive, true), isNotNull(goals.reminderFrequency)));
 
-        // Rappels envoyés ce mois
-        db
-          .select({ count: db.$count() })
-          .from(goalReminders)
-          .where(
-            and(
-              eq(goalReminders.userId, userId),
-              gte(goalReminders.sentAt, new Date(new Date().getFullYear(), new Date().getMonth(), 1))
-            )
-          ),
+      // Rappels envoyés ce mois
+      const sentReminders = await db
+        .select()
+        .from(goalReminders)
+        .where(
+          and(
+            eq(goalReminders.userId, userId),
+            gte(goalReminders.sentAt, new Date(new Date().getFullYear(), new Date().getMonth(), 1))
+          )
+        );
 
-        // Rappels actifs
-        db
-          .select({ count: db.$count() })
-          .from(goals)
-          .where(
-            and(
-              eq(goals.userId, userId),
-              eq(goals.isActive, true),
-              eq(goals.isCompleted, false),
-              isNotNull(goals.reminderFrequency)
-            )
-          ),
-      ]);
+      // Rappels actifs
+      const activeReminders = await db
+        .select()
+        .from(goals)
+        .where(
+          and(
+            eq(goals.userId, userId),
+            eq(goals.isActive, true),
+            eq(goals.isCompleted, false),
+            isNotNull(goals.reminderFrequency)
+          )
+        );
 
       return {
-        totalReminders: Number(totalReminders[0]?.count || 0),
-        sentThisMonth: Number(sentReminders[0]?.count || 0),
-        activeReminders: Number(activeReminders[0]?.count || 0),
+        totalReminders: totalReminders.length,
+        sentThisMonth: sentReminders.length,
+        activeReminders: activeReminders.length,
       };
     } catch (error) {
       console.error("❌ [Reminders] Error getting reminder stats:", error);

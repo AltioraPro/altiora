@@ -6,7 +6,7 @@ import { api } from "@/trpc/client";
 import { GoalFilters } from "./GoalFilters";
 import { GoalStats } from "./GoalStats";
 import { EditGoalModal } from "./EditGoalModal";
-import { Search, Sparkles, TrendingUp, CheckCircle, Circle, Edit, Trash2, Calendar, Bell } from "lucide-react";
+import { Search, Sparkles, TrendingUp, CheckCircle, Circle, Edit, Trash2, Calendar } from "lucide-react";
 import { type Goal } from "@/server/db/schema";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -134,23 +134,7 @@ export function GoalsDashboard() {
   // Hook pour les toasts
   const { addToast } = useToast();
 
-  // Hook pour tester les rappels
-  const testRemindersMutation = api.reminders.processReminders.useMutation({
-    onSuccess: () => {
-      addToast({
-        type: "success",
-        title: "Test des rappels",
-        message: "Les rappels ont été traités avec succès !",
-      });
-    },
-    onError: (error) => {
-      addToast({
-        type: "error",
-        title: "Erreur",
-        message: error.message,
-      });
-    },
-  });
+
 
   // Reset page when filters change
   useEffect(() => {
@@ -252,18 +236,6 @@ export function GoalsDashboard() {
 
       {/* Top Actions with improved design */}
       <div className="flex items-center justify-between">
-        {/* Test Reminders Button */}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => testRemindersMutation.mutate()}
-          disabled={testRemindersMutation.isPending}
-          className="bg-yellow-500/10 hover:bg-yellow-500/20 border-yellow-500/30 text-yellow-400"
-        >
-          <Bell className="w-4 h-4 mr-2" />
-          {testRemindersMutation.isPending ? "Test en cours..." : "Test Rappels"}
-        </Button>
-
         {/* Search Bar */}
         <GoalFilters 
           search={search} 
