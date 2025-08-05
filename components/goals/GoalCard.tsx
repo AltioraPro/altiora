@@ -210,7 +210,7 @@ export function GoalCard({ goal, viewMode, onGoalChange, onEditGoal }: GoalCardP
           {/* Rappels */}
           <GoalReminders
             goalId={goal.id}
-            currentFrequency={goal.reminderFrequency}
+            currentFrequency={goal.reminderFrequency as "daily" | "weekly" | "monthly" | null}
             nextReminderDate={goal.nextReminderDate}
             isActive={goal.isActive}
           />
