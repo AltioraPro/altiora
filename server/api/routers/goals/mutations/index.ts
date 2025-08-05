@@ -9,7 +9,8 @@ import { TRPCError } from "@trpc/server";
 
 export async function createGoal(input: Omit<NewGoal, 'id' | 'userId'>, userId: string) {
   // Vérifier les restrictions d'abonnement avant de créer le goal
-  const canCreateResult = await SubscriptionLimitsService.canCreateGoal(userId, input.type);
+  const goalType = input.type as "annual" | "quarterly" | "monthly";
+  const canCreateResult = await SubscriptionLimitsService.canCreateGoal(userId, goalType);
   
   if (!canCreateResult.canCreate) {
     throw new TRPCError({
