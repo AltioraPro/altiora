@@ -10,7 +10,6 @@ import { Search, Sparkles, TrendingUp, CheckCircle, Circle, Edit, Trash2, Calend
 import { type Goal } from "@/server/db/schema";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/components/ui/toast";
 
   // Compact component for quarterly and monthly goals
   function QuarterlyGoalItem({
@@ -131,8 +130,7 @@ export function GoalsDashboard() {
     hasReminders: null as boolean | null,
   });
 
-  // Hook pour les toasts
-  const { addToast } = useToast();
+
 
 
 
