@@ -68,7 +68,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
 
   const menuItems = [
     { href: "/", label: "HOME", icon: Home, angle: -60 },
-    { href: "/trading-journal", label: "TRADING", icon: TrendingUp, angle: -30 },
+    { href: "/trading", label: "TRADING", icon: TrendingUp, angle: -30 },
     { href: "/habits", label: "HABITS", icon: Target, angle: 0 },
     { href: "/goals", label: "GOALS", icon: Users, angle: 30 },
     { href: "/settings", label: "SETTINGS", icon: Settings, angle: 60 },

@@ -242,6 +242,198 @@ export const trades = createTable(
 );
 
 /**
+ * Table des journaux de trading
+ */
+export const tradingJournals = createTable(
+  "trading_journal",
+  {
+    id: varchar("id", { length: 255 }).primaryKey(),
+    userId: varchar("user_id", { length: 255 })
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    
+    name: varchar("name", { length: 255 }).notNull(),
+    description: text("description"),
+    isDefault: boolean("is_default").default(false).notNull(),
+    isActive: boolean("is_active").default(true).notNull(),
+    
+    // Timestamps
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (table) => ({
+    userIdIdx: index("trading_journal_user_id_idx").on(table.userId),
+    activeIdx: index("trading_journal_active_idx").on(table.isActive),
+  })
+);
+
+/**
+ * Table des assets (instruments financiers)
+ */
+export const tradingAssets = createTable(
+  "trading_asset",
+  {
+    id: varchar("id", { length: 255 }).primaryKey(),
+    userId: varchar("user_id", { length: 255 })
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    journalId: varchar("journal_id", { length: 255 })
+      .references(() => tradingJournals.id, { onDelete: "cascade" })
+      .notNull(),
+    
+    name: varchar("name", { length: 50 }).notNull(), // XAUUSD, EURUSD, etc.
+    symbol: varchar("symbol", { length: 20 }).notNull(),
+    type: varchar("type", { length: 20 }).default("forex"), // forex, crypto, stocks, commodities
+    isActive: boolean("is_active").default(true).notNull(),
+    
+    // Timestamps
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (table) => ({
+    userIdIdx: index("trading_asset_user_id_idx").on(table.userId),
+    journalIdIdx: index("trading_asset_journal_id_idx").on(table.journalId),
+    symbolIdx: index("trading_asset_symbol_idx").on(table.symbol),
+  })
+);
+
+/**
+ * Table des sessions de trading
+ */
+export const tradingSessions = createTable(
+  "trading_session",
+  {
+    id: varchar("id", { length: 255 }).primaryKey(),
+    userId: varchar("user_id", { length: 255 })
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    journalId: varchar("journal_id", { length: 255 })
+      .references(() => tradingJournals.id, { onDelete: "cascade" })
+      .notNull(),
+    
+    name: varchar("name", { length: 100 }).notNull(), // London Open, New York Close, etc.
+    description: text("description"),
+    startTime: varchar("start_time", { length: 5 }), // Format HH:MM
+    endTime: varchar("end_time", { length: 5 }), // Format HH:MM
+    timezone: varchar("timezone", { length: 50 }).default("UTC"),
+    isActive: boolean("is_active").default(true).notNull(),
+    
+    // Timestamps
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (table) => ({
+    userIdIdx: index("trading_session_user_id_idx").on(table.userId),
+    journalIdIdx: index("trading_session_journal_id_idx").on(table.journalId),
+  })
+);
+
+/**
+ * Table des setups de trading
+ */
+export const tradingSetups = createTable(
+  "trading_setup",
+  {
+    id: varchar("id", { length: 255 }).primaryKey(),
+    userId: varchar("user_id", { length: 255 })
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    journalId: varchar("journal_id", { length: 255 })
+      .references(() => tradingJournals.id, { onDelete: "cascade" })
+      .notNull(),
+    
+    name: varchar("name", { length: 100 }).notNull(), // LIT CYCLE, BINKS, etc.
+    description: text("description"),
+    strategy: text("strategy"), // Description détaillée de la stratégie
+    successRate: integer("success_rate"), // Pourcentage de réussite
+    isActive: boolean("is_active").default(true).notNull(),
+    
+    // Timestamps
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (table) => ({
+    userIdIdx: index("trading_setup_user_id_idx").on(table.userId),
+    journalIdIdx: index("trading_setup_journal_id_idx").on(table.journalId),
+  })
+);
+
+/**
+ * Table des trades avancés (remplace l'ancienne table trades)
+ */
+export const advancedTrades = createTable(
+  "advanced_trade",
+  {
+    id: varchar("id", { length: 255 }).primaryKey(),
+    userId: varchar("user_id", { length: 255 })
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    journalId: varchar("journal_id", { length: 255 })
+      .references(() => tradingJournals.id, { onDelete: "cascade" })
+      .notNull(),
+    
+    // Références optionnelles
+    assetId: varchar("asset_id", { length: 255 })
+      .references(() => tradingAssets.id, { onDelete: "set null" }),
+    sessionId: varchar("session_id", { length: 255 })
+      .references(() => tradingSessions.id, { onDelete: "set null" }),
+    setupId: varchar("setup_id", { length: 255 })
+      .references(() => tradingSetups.id, { onDelete: "set null" }),
+    
+    // Informations de base du trade
+    tradeDate: varchar("trade_date", { length: 10 }).notNull(), // Format YYYY-MM-DD
+    symbol: varchar("symbol", { length: 50 }).notNull(), // Fallback si pas d'asset
+    
+    // Gestion du risque
+    riskInput: varchar("risk_input", { length: 50 }), // 1%, 2R, etc.
+    
+    // Résultats
+    profitLossPercentage: varchar("profit_loss_percentage", { length: 50 }),
+    exitReason: varchar("exit_reason", { length: 20 }), // TP, BE, SL, Manual
+    
+    // Liens et notes
+    tradingviewLink: varchar("tradingview_link", { length: 1024 }),
+    notes: text("notes"),
+    
+    // Métadonnées
+    isClosed: boolean("is_closed").default(false).notNull(),
+    
+    // Timestamps
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (table) => ({
+    userIdIdx: index("advanced_trade_user_id_idx").on(table.userId),
+    journalIdIdx: index("advanced_trade_journal_id_idx").on(table.journalId),
+    assetIdIdx: index("advanced_trade_asset_id_idx").on(table.assetId),
+    sessionIdIdx: index("advanced_trade_session_id_idx").on(table.sessionId),
+    setupIdIdx: index("advanced_trade_setup_id_idx").on(table.setupId),
+    tradeDateIdx: index("advanced_trade_date_idx").on(table.tradeDate),
+    symbolIdx: index("advanced_trade_symbol_idx").on(table.symbol),
+  })
+);
+
+/**
  * Plans d'abonnement
  */
 export const subscriptionPlans = pgTable(
@@ -468,6 +660,18 @@ export type HabitCompletion = typeof habitCompletions.$inferSelect;
 export type NewHabitCompletion = typeof habitCompletions.$inferInsert;
 export type Trade = typeof trades.$inferSelect;
 export type NewTrade = typeof trades.$inferInsert; 
+
+// Types pour le système de trading avancé
+export type TradingJournal = typeof tradingJournals.$inferSelect;
+export type NewTradingJournal = typeof tradingJournals.$inferInsert;
+export type TradingAsset = typeof tradingAssets.$inferSelect;
+export type NewTradingAsset = typeof tradingAssets.$inferInsert;
+export type TradingSession = typeof tradingSessions.$inferSelect;
+export type NewTradingSession = typeof tradingSessions.$inferInsert;
+export type TradingSetup = typeof tradingSetups.$inferSelect;
+export type NewTradingSetup = typeof tradingSetups.$inferInsert;
+export type AdvancedTrade = typeof advancedTrades.$inferSelect;
+export type NewAdvancedTrade = typeof advancedTrades.$inferInsert;
 
 export type SubscriptionPlan = typeof subscriptionPlans.$inferSelect;
 export type NewSubscriptionPlan = typeof subscriptionPlans.$inferInsert;

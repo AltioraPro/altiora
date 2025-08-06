@@ -71,6 +71,13 @@
       "when": 1754035352671,
       "tag": "0009_lucky_amazoness",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1754471191546,
+      "tag": "0010_abnormal_agent_zero",
+      "breakpoints": true
     }
   ]
 }

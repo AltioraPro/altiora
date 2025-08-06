@@ -6,6 +6,7 @@ import { profileRouter } from "./routers/profile/router";
 import { subscriptionRouter } from "./routers/subscription/router";
 import { goalsRouter } from "./routers/goals/router";
 import { remindersRouter } from "./routers/reminders/router";
+import { tradingRouter } from "./routers/trading/router";
 
 export const appRouter = createTRPCRouter({
   auth: authRouter,
@@ -15,6 +16,7 @@ export const appRouter = createTRPCRouter({
   subscription: subscriptionRouter,
   goals: goalsRouter,
   reminders: remindersRouter,
+  trading: tradingRouter,
 });
 
 export type AppRouter = typeof appRouter;
