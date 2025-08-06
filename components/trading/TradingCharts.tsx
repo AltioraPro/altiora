@@ -127,8 +127,8 @@ export function TradingCharts({ stats, setups, trades }: TradingChartsProps) {
                     ))}
                   </Pie>
                   <Tooltip 
-                    formatter={(value: number, name: string, props: any) => [
-                      `${(props.payload?.percentage || 0).toFixed(1)}%`, 
+                    formatter={(value: number, name: string) => [
+                      `${name === 'Gagnants' ? stats.winRate.toFixed(1) : (100 - stats.winRate).toFixed(1)}%`, 
                       name
                     ]}
                     labelFormatter={(label: string) => label}
