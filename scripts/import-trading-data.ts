@@ -160,18 +160,18 @@ async function importSetups(journalId: string, userId: string) {
     const setupsData = parseCSV("sql/setups_rows.csv");
     
     for (const setup of setupsData) {
-      await db.insert(tradingSetups).values({
-        id: `setup_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        journalId,
-        userId,
-        name: setup.name || "Setup inconnu",
-        description: setup.description || "",
-        strategy: setup.strategy || "",
-        riskLevel: setup.risk_level || "medium",
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
+             await db.insert(tradingSetups).values({
+         id: `setup_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+         journalId,
+         userId,
+         name: setup.name || "Setup inconnu",
+         description: setup.description || "",
+         strategy: setup.strategy || "",
+         successRate: null,
+         isActive: true,
+         createdAt: new Date(),
+         updatedAt: new Date(),
+       });
     }
     
     console.log(`${setupsData.length} setups importés`);
@@ -186,18 +186,18 @@ async function importSetups(journalId: string, userId: string) {
     ];
 
     for (const setup of defaultSetups) {
-      await db.insert(tradingSetups).values({
-        id: `setup_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        journalId,
-        userId,
-        name: setup.name,
-        description: `Setup ${setup.name}`,
-        strategy: setup.strategy,
-        riskLevel: setup.riskLevel,
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
+             await db.insert(tradingSetups).values({
+         id: `setup_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+         journalId,
+         userId,
+         name: setup.name,
+         description: `Setup ${setup.name}`,
+         strategy: setup.strategy,
+         successRate: null,
+         isActive: true,
+         createdAt: new Date(),
+         updatedAt: new Date(),
+       });
     }
     
     console.log(`${defaultSetups.length} setups par défaut créés`);
