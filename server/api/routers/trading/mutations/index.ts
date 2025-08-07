@@ -143,6 +143,54 @@ export const tradingMutationsRouter = createTRPCRouter({
       return { success: true };
     }),
 
+  setDefaultTradingJournal: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { session } = ctx;
+      const userId = session.userId;
+
+      // Vérifier que le journal appartient à l'utilisateur
+      const existingJournal = await db
+        .select()
+        .from(tradingJournals)
+        .where(and(
+          eq(tradingJournals.id, input.id),
+          eq(tradingJournals.userId, userId)
+        ))
+        .limit(1);
+
+      if (!existingJournal.length) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Journal de trading non trouvé",
+        });
+      }
+
+      // Désactiver tous les autres journaux par défaut
+      await db
+        .update(tradingJournals)
+        .set({ isDefault: false })
+        .where(and(
+          eq(tradingJournals.userId, userId),
+          eq(tradingJournals.isDefault, true)
+        ));
+
+      // Définir le journal sélectionné comme par défaut
+      const [journal] = await db
+        .update(tradingJournals)
+        .set({ 
+          isDefault: true,
+          updatedAt: new Date(),
+        })
+        .where(and(
+          eq(tradingJournals.id, input.id),
+          eq(tradingJournals.userId, userId)
+        ))
+        .returning();
+
+      return journal;
+    }),
+
   // Mutations pour les assets
   createTradingAsset: protectedProcedure
     .input(createTradingAssetSchema)

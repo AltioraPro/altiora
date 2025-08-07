@@ -3,18 +3,21 @@
 import { useState, useEffect } from "react";
 import { useSession } from "@/lib/auth-client";
 import { api } from "@/trpc/client";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Plus, TrendingUp, TrendingDown } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { Plus, ArrowLeft, Edit, BarChart3, Trash2 } from "lucide-react";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import { CreateTradeModal } from "@/components/trading/CreateTradeModal";
 import { TradingStats } from "@/components/trading/TradingStats";
 import { TradingCharts } from "@/components/trading/TradingCharts";
 
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
+
 export default function TradingPage() {
   const { data: session } = useSession();
+  const searchParams = useSearchParams();
   const [selectedJournalId, setSelectedJournalId] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
@@ -36,7 +39,7 @@ export default function TradingPage() {
   const { data: allTrades } = api.trading.getTrades.useQuery(
     { 
       journalId: selectedJournalId || undefined,
-      limit: 100, // Récupérer les trades pour les graphiques (limite max)
+      limit: 100,
       offset: 0
     },
     { enabled: !!selectedJournalId }
@@ -49,6 +52,10 @@ export default function TradingPage() {
     { journalId: selectedJournalId || undefined },
     { enabled: !!selectedJournalId }
   );
+  const { data: assets } = api.trading.getAssets.useQuery(
+    { journalId: selectedJournalId || undefined },
+    { enabled: !!selectedJournalId }
+  );
 
   // Mutations
   const createJournalMutation = api.trading.createJournal.useMutation({
@@ -57,25 +64,51 @@ export default function TradingPage() {
     },
   });
 
+  const deleteTradeMutation = api.trading.deleteTrade.useMutation({
+    onSuccess: () => {
+      // Refetch trades
+    },
+  });
+
   // Set default journal when loaded
   useEffect(() => {
-    if (defaultJournal && !selectedJournalId) {
+    const journalFromUrl = searchParams.get('journal');
+    if (journalFromUrl) {
+      setSelectedJournalId(journalFromUrl);
+    } else if (defaultJournal && !selectedJournalId) {
       setSelectedJournalId(defaultJournal.id);
     }
-  }, [defaultJournal, selectedJournalId]);
+  }, [defaultJournal, selectedJournalId, searchParams]);
 
   const handleCreateDefaultJournal = async () => {
     if (!session?.user?.id) return;
 
     try {
       await createJournalMutation.mutateAsync({
-        name: "Journal Principal",
-        description: "Mon journal de trading principal",
+        name: "Main Journal",
+        description: "My main trading journal",
         isDefault: true,
       });
     } catch (error) {
-      console.error("Erreur lors de la création du journal:", error);
+      console.error("Error creating journal:", error);
     }
+  };
+
+
+
+  const handleDeleteTrade = async (tradeId: string) => {
+    if (confirm("Are you sure you want to delete this trade? This action is irreversible.")) {
+      try {
+        await deleteTradeMutation.mutateAsync({ id: tradeId });
+      } catch (error) {
+        console.error("Error deleting trade:", error);
+      }
+    }
+  };
+
+  const handleEditTrade = (tradeId: string) => {
+    // TODO: Implement edit trade functionality
+    console.log("Edit trade:", tradeId);
   };
 
   if (journalsLoading) {
@@ -96,19 +129,32 @@ export default function TradingPage() {
   if (!journals || journals.length === 0) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold mb-4">Journal de Trading</h1>
-          <p className="text-gray-600 mb-8">
-            Commencez votre journal de trading en créant votre premier journal
-          </p>
-                     <Button 
-             onClick={handleCreateDefaultJournal}
-             disabled={createJournalMutation.isPending}
-             className="bg-black text-white hover:bg-gray-800"
-           >
-            <Plus className="w-4 h-4 mr-2" />
-            Créer mon premier journal
-          </Button>
+        <div className="text-center max-w-2xl mx-auto">
+          <div className="mb-8">
+            <h1 className="text-4xl font-argesta text-white mb-4">Trading Dashboard</h1>
+            <p className="text-white/60">
+              Start your trading journey by creating your first journal
+            </p>
+          </div>
+          
+          <Card className="p-8 border border-white/10 bg-black/20">
+            <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <BarChart3 className="w-8 h-8 text-white/60" />
+            </div>
+            <h3 className="text-xl font-argesta text-white mb-4">No Journal Created</h3>
+            <p className="text-white/60 mb-8">
+              Create your first trading journal to start tracking your performance.
+            </p>
+            
+            <Button 
+              onClick={handleCreateDefaultJournal}
+              disabled={createJournalMutation.isPending}
+              className="bg-white text-black hover:bg-gray-200"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Create First Journal
+            </Button>
+          </Card>
         </div>
       </div>
     );
@@ -116,118 +162,185 @@ export default function TradingPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* Header */}
       <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold">Journal de Trading</h1>
-          <p className="text-gray-600 mt-2">
-            Suivez vos performances et analysez vos trades
-          </p>
+        <div className="flex items-center space-x-4">
+          <Link className="text-pure-black" href="/trading/journals">
+            <Button variant="outline" size="sm">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Journals
+            </Button>
+          </Link>
+          <div>
+            <h1 className="text-3xl font-argesta text-white">Trading Dashboard</h1>
+            <p className="text-white/60">
+              Performance analytics & trade management
+            </p>
+          </div>
         </div>
-        <Button 
-          onClick={() => setIsCreateModalOpen(true)}
-          className="bg-black text-white hover:bg-gray-800"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Nouveau Trade
-        </Button>
+        
+                 <div className="flex items-center space-x-2">
+           <Button 
+             onClick={() => setIsCreateModalOpen(true)}
+             className="bg-white text-black hover:bg-gray-200"
+           >
+             <Plus className="w-4 h-4 mr-2" />
+             New Trade
+           </Button>
+         </div>
       </div>
 
-      {/* Sélection du journal */}
-      <div className="mb-8">
-        <label className="block text-sm font-medium mb-2">Journal actuel</label>
-        <select
-          value={selectedJournalId || ""}
-          onChange={(e) => setSelectedJournalId(e.target.value)}
-          className="w-full max-w-xs px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
-        >
-          {journals.map((journal) => (
-            <option key={journal.id} value={journal.id}>
-              {journal.name} {journal.isDefault && "(Par défaut)"}
-            </option>
-          ))}
-        </select>
-      </div>
+      
 
-      {/* Statistiques */}
+      {/* Statistics */}
       {stats && (
-        <TradingStats stats={stats} />
+        <div className="mb-8">
+          <TradingStats stats={stats} />
+        </div>
       )}
 
-      {/* Graphiques */}
+      {/* Charts */}
       {stats && sessions && allTrades && setups && (
-        <TradingCharts 
-          stats={stats} 
-          sessions={sessions} 
-          trades={allTrades}
-          setups={setups}
-        />
+        <div className="mb-8">
+          <Card className="border border-white/10 bg-black/20">
+            <CardHeader>
+              <CardTitle className="font-argesta text-white">Performance Charts</CardTitle>
+              <CardDescription className="text-white/60">
+                Visual analysis of your trading performance
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <TradingCharts 
+                stats={stats} 
+                sessions={sessions} 
+                trades={allTrades}
+                setups={setups}
+              />
+            </CardContent>
+          </Card>
+        </div>
       )}
 
-      {/* Trades récents */}
-      <Card>
+      {/* Recent trades */}
+      <Card className="border border-white/10 bg-black/20">
         <CardHeader>
-          <CardTitle>Trades récents</CardTitle>
-          <CardDescription>
-            Vos derniers trades effectués
+          <CardTitle className="font-argesta text-white">Recent Trades</CardTitle>
+          <CardDescription className="text-white/60">
+            Your latest trading activity
           </CardDescription>
         </CardHeader>
         <CardContent>
           {recentTrades && recentTrades.length > 0 ? (
-            <div className="space-y-4">
-              {recentTrades.map((trade) => (
-                <div key={trade.id} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex items-center space-x-4">
-                                         <div className={`p-2 rounded-full ${trade.symbol.includes('BUY') ? 'bg-green-100' : 'bg-red-100'}`}>
-                       {trade.symbol.includes('BUY') ? (
-                         <TrendingUp className="h-4 w-4 text-green-600" />
-                       ) : (
-                         <TrendingDown className="h-4 w-4 text-red-600" />
-                       )}
-                     </div>
-                    <div>
-                      <div className="font-medium">{trade.symbol}</div>
-                      <div className="text-sm text-gray-600">
-                        {format(new Date(trade.tradeDate), 'dd/MM/yyyy', { locale: fr })}
-                      </div>
-                    </div>
-                  </div>
-                                    <div className="text-right">
-                    <div className={`font-medium ${Number(trade.profitLossPercentage || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      {Number(trade.profitLossPercentage || 0) >= 0 ? '+' : ''}{trade.profitLossPercentage || 0}%
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      Trade {trade.isClosed ? 'fermé' : 'ouvert'}
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Badge variant={trade.isClosed ? "default" : "secondary"}>
-                      {trade.isClosed ? "Fermé" : "Ouvert"}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-white/10">
+                    <th className="text-left py-3 px-4 text-sm text-white/80">DATE</th>
+                    <th className="text-left py-3 px-4 text-sm text-white/80">ACTIF</th>
+                    <th className="text-left py-3 px-4 text-sm text-white/80">SESSION</th>
+                    <th className="text-left py-3 px-4 text-sm text-white/80">SETUP</th>
+                    <th className="text-left py-3 px-4 text-sm text-white/80">RISK</th>
+                    <th className="text-left py-3 px-4 text-sm text-white/80">PERFORMANCE</th>
+                    <th className="text-left py-3 px-4 text-sm text-white/80">NOTES</th>
+                    <th className="text-left py-3 px-4 text-sm text-white/80">GRAPH</th>
+                    <th className="text-left py-3 px-4 text-sm text-white/80">ACTIONS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentTrades.map((trade) => (
+                    <tr key={trade.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                      <td className="py-3 px-4 text-sm text-white">
+                        {format(new Date(trade.tradeDate), 'dd MMM', { locale: enUS })}
+                      </td>
+                                             <td className="py-3 px-4 text-sm text-white">
+                         {assets?.find(a => a.id === trade.assetId)?.name || trade.symbol || '-'}
+                       </td>
+                       <td className="py-3 px-4 text-sm text-white">
+                         {sessions?.find(s => s.id === trade.sessionId)?.name || '-'}
+                       </td>
+                       <td className="py-3 px-4 text-sm text-white">
+                         {setups?.find(s => s.id === trade.setupId)?.name || '-'}
+                       </td>
+                      <td className="py-3 px-4 text-sm text-white">
+                        1.00%
+                      </td>
+                      <td className="py-3 px-4 text-sm">
+                        <span className={`${Number(trade.profitLossPercentage || 0) > 0 ? 'text-green-400' : Number(trade.profitLossPercentage || 0) < 0 ? 'text-red-400' : 'text-blue-400'}`}>
+                          {Number(trade.profitLossPercentage || 0) >= 0 ? '+' : ''}{trade.profitLossPercentage || 0}%
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-sm text-white">
+                        {trade.notes || '-'}
+                      </td>
+                                             <td className="py-3 px-4 text-sm">
+                         <Button
+                           variant="ghost"
+                           size="sm"
+                           className="text-white/60 hover:text-white hover:bg-white/10 p-1"
+                           onClick={() => {
+                             const symbol = assets?.find(a => a.id === trade.assetId)?.name || trade.symbol || 'EURUSD';
+                             const tradingViewUrl = `https://www.tradingview.com/symbols/${symbol.replace('/', '')}`;
+                             window.open(tradingViewUrl, '_blank');
+                           }}
+                         >
+                           Graph
+                         </Button>
+                       </td>
+                                             <td className="py-3 px-4 text-sm">
+                         <div className="flex items-center space-x-2">
+                           <Button
+                             onClick={() => handleEditTrade(trade.id)}
+                             variant="ghost"
+                             size="sm"
+                             className="text-white/60 hover:text-white hover:bg-white/10 p-1"
+                           >
+                             <Edit className="w-4 h-4" />
+                           </Button>
+                           <Button
+                             onClick={() => handleDeleteTrade(trade.id)}
+                             variant="ghost"
+                             size="sm"
+                             className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-1"
+                           >
+                             <Trash2 className="w-4 h-4" />
+                           </Button>
+                         </div>
+                       </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           ) : (
-            <div className="text-center py-8">
-              <p className="text-gray-600">Aucun trade trouvé</p>
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <BarChart3 className="w-8 h-8 text-white/40" />
+              </div>
+              <h3 className="text-lg font-argesta text-white mb-2">No Trades Found</h3>
+              <p className="text-white/60 mb-6">
+                Start your trading journey by adding your first trade
+              </p>
+              
               <Button 
                 onClick={() => setIsCreateModalOpen(true)}
-                className="mt-4 bg-black text-white hover:bg-gray-800"
+                className="bg-white text-black hover:bg-gray-200"
               >
                 <Plus className="w-4 h-4 mr-2" />
-                Ajouter un trade
+                Add First Trade
               </Button>
             </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Modal de création de trade */}
+      {/* Modals */}
       <CreateTradeModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         journalId={selectedJournalId || undefined}
       />
+
+      
     </div>
   );
 } 

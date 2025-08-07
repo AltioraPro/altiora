@@ -614,3 +614,72 @@ input[type="datetime-local"]::-webkit-datetime-edit-hour-field,
 input[type="datetime-local"]::-webkit-datetime-edit-minute-field {
   color: white;
 } 
+
+@layer utilities {
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* Améliorations pour les cartes de trading */
+.trading-card {
+  @apply transition-all duration-200 ease-in-out;
+}
+
+.trading-card:hover {
+  @apply shadow-lg transform scale-[1.02];
+}
+
+/* Animations pour les métriques */
+.metric-value {
+  @apply transition-all duration-300 ease-out;
+}
+
+.metric-value:hover {
+  @apply scale-105;
+}
+
+/* Styles pour les badges de statut */
+.status-badge {
+  @apply inline-flex items-center px-2 py-1 rounded-full text-xs font-medium;
+}
+
+.status-badge.default {
+  @apply bg-blue-100 text-blue-800;
+}
+
+.status-badge.success {
+  @apply bg-green-100 text-green-800;
+}
+
+.status-badge.warning {
+  @apply bg-yellow-100 text-yellow-800;
+}
+
+/* Améliorations pour les boutons d'action */
+.action-button {
+  @apply transition-all duration-200 ease-in-out;
+}
+
+.action-button:hover {
+  @apply transform scale-105;
+}
+
+/* Styles pour les gradients subtils */
+.gradient-bg {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.gradient-bg-hover:hover {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+} 

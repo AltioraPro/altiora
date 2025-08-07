@@ -14,8 +14,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { X, Plus } from "lucide-react";
 
 const createTradeSchema = z.object({
-  tradeDate: z.string().min(1, "La date est requise"),
-  symbol: z.string().min(1, "L'actif est requis"),
+  tradeDate: z.string().min(1, "Date is required"),
+  symbol: z.string().min(1, "Asset is required"),
   sessionId: z.string().optional(),
   setupId: z.string().optional(),
   riskInput: z.string().optional(),
@@ -23,7 +23,7 @@ const createTradeSchema = z.object({
   exitReason: z.enum(["TP", "BE", "SL", "Manual"]).optional(),
   tradingviewLink: z.string().optional(),
   notes: z.string().optional(),
-  journalId: z.string().min(1, "Le journal est requis"),
+  journalId: z.string().min(1, "Journal is required"),
 });
 
 type CreateTradeForm = z.infer<typeof createTradeSchema>;
@@ -41,7 +41,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
   
   const utils = api.useUtils();
   
-  // Formulaires pour les nouveaux éléments
+  // Forms for new elements
   const [newAsset, setNewAsset] = useState({ name: "", symbol: "", type: "forex" as const });
   const [newSession, setNewSession] = useState({ name: "", description: "" });
   const [newSetup, setNewSetup] = useState({ name: "", description: "", strategy: "" });
@@ -59,7 +59,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
     },
   });
 
-  // Queries pour les données
+  // Data queries
   const { data: assets, refetch: refetchAssets } = api.trading.getAssets.useQuery({ journalId });
   const { data: sessions, refetch: refetchSessions } = api.trading.getSessions.useQuery({ journalId });
   const { data: setups, refetch: refetchSetups } = api.trading.getSetups.useQuery({ journalId });
@@ -69,7 +69,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
     onSuccess: () => {
       form.reset();
       onClose();
-      // Invalider les queries pour rafraîchir les données
+      // Invalidate queries to refresh data
       utils.trading.getTrades.invalidate();
       utils.trading.getStats.invalidate();
     },
@@ -101,11 +101,11 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
 
   const handleSubmit = async (data: CreateTradeForm) => {
     try {
-      console.log("=== DÉBUT CRÉATION TRADE ===");
-      console.log("Données du formulaire:", data);
+      console.log("=== TRADE CREATION START ===");
+      console.log("Form data:", data);
       console.log("JournalId:", journalId);
-      console.log("Formulaire valide:", form.formState.isValid);
-      console.log("Erreurs du formulaire:", form.formState.errors);
+      console.log("Form valid:", form.formState.isValid);
+      console.log("Form errors:", form.formState.errors);
       
              const tradeData = {
          ...data,
@@ -114,15 +114,15 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
          isClosed: true,
        };
       
-      console.log("Données envoyées à la mutation:", tradeData);
+      console.log("Data sent to mutation:", tradeData);
       
       const result = await createTradeMutation.mutateAsync(tradeData);
-      console.log("Trade créé avec succès:", result);
+      console.log("Trade created successfully:", result);
     } catch (error) {
-      console.error("=== ERREUR CRÉATION TRADE ===");
-      console.error("Erreur complète:", error);
-      console.error("Message d'erreur:", error instanceof Error ? error.message : "Erreur inconnue");
-      console.error("Stack trace:", error instanceof Error ? error.stack : "Pas de stack trace");
+      console.error("=== TRADE CREATION ERROR ===");
+      console.error("Complete error:", error);
+      console.error("Error message:", error instanceof Error ? error.message : "Unknown error");
+      console.error("Stack trace:", error instanceof Error ? error.stack : "No stack trace");
     }
   };
 
@@ -136,7 +136,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
           type: newAsset.type,
         });
       } catch (error) {
-        console.error("Erreur lors de la création de l'asset:", error);
+        console.error("Error creating asset:", error);
       }
     }
   };
@@ -150,7 +150,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
           description: newSession.description,
         });
       } catch (error) {
-        console.error("Erreur lors de la création de la session:", error);
+        console.error("Error creating session:", error);
       }
     }
   };
@@ -165,7 +165,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
           strategy: newSetup.strategy,
         });
       } catch (error) {
-        console.error("Erreur lors de la création du setup:", error);
+        console.error("Error creating setup:", error);
       }
     }
   };
@@ -178,9 +178,9 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Nouveau Trade</CardTitle>
+              <CardTitle>New Trade</CardTitle>
               <CardDescription>
-                Ajoutez un nouveau trade à votre journal
+                Add a new trade to your journal
               </CardDescription>
             </div>
             <Button variant="ghost" size="sm" onClick={onClose}>
@@ -205,16 +205,16 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
               )}
             </div>
 
-                         {/* Actif */}
+                         {/* Asset */}
              <div>
-               <Label htmlFor="symbol">Actif</Label>
+               <Label htmlFor="symbol">Asset</Label>
                <div className="flex gap-2">
                  <Select
                    value={form.watch("symbol")}
                    onValueChange={(value) => form.setValue("symbol", value)}
                  >
                    <SelectTrigger className="flex-1">
-                     <SelectValue placeholder="Sélectionner un actif" />
+                     <SelectValue placeholder="Select an asset" />
                    </SelectTrigger>
                    <SelectContent>
                      {assets?.map((asset) => (
@@ -239,12 +239,12 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                 <div className="mt-2 p-3 border rounded-lg bg-gray-50">
                   <div className="grid grid-cols-2 gap-2">
                     <Input
-                      placeholder="Nom de l'actif"
+                      placeholder="Asset name"
                       value={newAsset.name}
                       onChange={(e) => setNewAsset({ ...newAsset, name: e.target.value })}
                     />
                     <Input
-                      placeholder="Symbole"
+                      placeholder="Symbol"
                       value={newAsset.symbol}
                       onChange={(e) => setNewAsset({ ...newAsset, symbol: e.target.value })}
                     />
@@ -256,7 +256,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                     onClick={handleCreateAsset}
                     disabled={createAssetMutation.isPending}
                   >
-                    {createAssetMutation.isPending ? "Création..." : "Créer l'actif"}
+                    {createAssetMutation.isPending ? "Creating..." : "Create asset"}
                   </Button>
                 </div>
               )}
@@ -276,7 +276,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                   onValueChange={(value) => form.setValue("sessionId", value)}
                 >
                   <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Sélectionner une session" />
+                                         <SelectValue placeholder="Select a session" />
                   </SelectTrigger>
                   <SelectContent>
                     {sessions?.map((session) => (
@@ -298,7 +298,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
               {showNewSessionForm && (
                 <div className="mt-2 p-3 border rounded-lg bg-gray-50">
                   <Input
-                    placeholder="Nom de la session"
+                    placeholder="Session name"
                     value={newSession.name}
                     onChange={(e) => setNewSession({ ...newSession, name: e.target.value })}
                     className="mb-2"
@@ -316,7 +316,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                     onClick={handleCreateSession}
                     disabled={createSessionMutation.isPending}
                   >
-                    {createSessionMutation.isPending ? "Création..." : "Créer la session"}
+                    {createSessionMutation.isPending ? "Creating..." : "Create session"}
                   </Button>
                 </div>
               )}
@@ -331,7 +331,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                   onValueChange={(value) => form.setValue("setupId", value)}
                 >
                   <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Sélectionner un setup" />
+                                         <SelectValue placeholder="Select a setup" />
                   </SelectTrigger>
                   <SelectContent>
                     {setups?.map((setup) => (
@@ -353,7 +353,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
               {showNewSetupForm && (
                 <div className="mt-2 p-3 border rounded-lg bg-gray-50">
                   <Input
-                    placeholder="Nom du setup"
+                    placeholder="Setup name"
                     value={newSetup.name}
                     onChange={(e) => setNewSetup({ ...newSetup, name: e.target.value })}
                     className="mb-2"
@@ -366,7 +366,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                     className="mb-2"
                   />
                   <Input
-                    placeholder="Stratégie"
+                    placeholder="Strategy"
                     value={newSetup.strategy}
                     onChange={(e) => setNewSetup({ ...newSetup, strategy: e.target.value })}
                   />
@@ -377,13 +377,13 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                     onClick={handleCreateSetup}
                     disabled={createSetupMutation.isPending}
                   >
-                    {createSetupMutation.isPending ? "Création..." : "Créer le setup"}
+                    {createSetupMutation.isPending ? "Creating..." : "Create setup"}
                   </Button>
                 </div>
               )}
             </div>
 
-                         {/* Risk, Résultat et Raison de sortie */}
+                         {/* Risk, Result and Exit reason */}
              <div className="grid grid-cols-3 gap-4">
                <div>
                  <Label htmlFor="riskInput">Risk (%)</Label>
@@ -400,7 +400,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                </div>
 
                <div>
-                 <Label htmlFor="profitLossPercentage">Résultat (%)</Label>
+                 <Label htmlFor="profitLossPercentage">Result (%)</Label>
                  <Input
                    id="profitLossPercentage"
                    {...form.register("profitLossPercentage")}
@@ -414,13 +414,13 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                </div>
 
                <div>
-                 <Label htmlFor="exitReason">Raison de sortie</Label>
+                 <Label htmlFor="exitReason">Exit reason</Label>
                  <Select
                    value={form.watch("exitReason") || ""}
                    onValueChange={(value) => form.setValue("exitReason", value as "TP" | "BE" | "SL" | "Manual")}
                  >
                    <SelectTrigger>
-                     <SelectValue placeholder="Sélectionner" />
+                     <SelectValue placeholder="Select" />
                    </SelectTrigger>
                    <SelectContent>
                      <SelectItem value="TP">TP (Take Profit)</SelectItem>
@@ -437,9 +437,9 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                </div>
              </div>
 
-            {/* Lien TradingView */}
+            {/* TradingView link */}
             <div>
-              <Label htmlFor="tradingviewLink">Lien TradingView (optionnel)</Label>
+              <Label htmlFor="tradingviewLink">TradingView link (optional)</Label>
               <Input
                 id="tradingviewLink"
                 {...form.register("tradingviewLink")}
@@ -449,11 +449,11 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
 
             {/* Notes */}
             <div>
-              <Label htmlFor="notes">Notes (optionnel)</Label>
+              <Label htmlFor="notes">Notes (optional)</Label>
               <Textarea
                 id="notes"
                 {...form.register("notes")}
-                placeholder="Notes sur le trade..."
+                placeholder="Trade notes..."
                 rows={3}
               />
             </div>
@@ -461,14 +461,14 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
             {/* Actions */}
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={onClose}>
-                Annuler
+                Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={createTradeMutation.isPending}
                 className="bg-black text-white hover:bg-gray-800"
               >
-                {createTradeMutation.isPending ? "Création..." : "Créer le trade"}
+                {createTradeMutation.isPending ? "Creating..." : "Create trade"}
               </Button>
             </div>
           </form>
