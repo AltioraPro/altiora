@@ -43,10 +43,6 @@ interface TradingChartsProps {
     id: string;
     name: string;
   }>;
-  setups?: Array<{
-    id: string;
-    name: string;
-  }>;
   trades?: Array<{
     id: string;
     tradeDate: string;
@@ -55,9 +51,9 @@ interface TradingChartsProps {
   }>;
 }
 
-const COLORS = ['#ffffff', '#cccccc', '#999999', '#666666', '#333333', '#000000'];
+const COLORS = ['#8B5CF6', '#3B82F6', '#06B6D4', '#10B981', '#F59E0B', '#EF4444', '#EC4899'];
 
-export function TradingCharts({ stats, setups, trades }: TradingChartsProps) {
+export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
   // Data for win rate donut chart
   const winRateData = [
     { name: 'Winners', value: stats.winningTrades, color: '#ffffff', percentage: stats.winRate },
@@ -65,19 +61,43 @@ export function TradingCharts({ stats, setups, trades }: TradingChartsProps) {
   ];
 
   // Data for session performance chart
-  const sessionPerformanceData = stats.tradesBySetup
-          .filter(item => item.setupId) // Filter null values
-    .map((item, index) => {
-      const setup = setups?.find(s => s.id === item.setupId);
-      const pnl = item.totalPnL ? parseFloat(item.totalPnL) || 0 : 0;
-      return {
-        name: setup?.name || 'Undefined',
-        pnl: pnl,
+  const sessionPerformanceData = (() => {
+    if (!trades || !sessions) return [];
+    
+    // Group trades by session and calculate total PnL for each session
+    const sessionStats = new Map<string, { name: string; totalPnL: number; count: number }>();
+    
+    trades.forEach(trade => {
+      if (trade.sessionId) {
+        const session = sessions.find(s => s.id === trade.sessionId);
+        if (session) {
+          const pnl = trade.profitLossPercentage ? parseFloat(trade.profitLossPercentage) || 0 : 0;
+          const existing = sessionStats.get(trade.sessionId);
+          
+          if (existing) {
+            existing.totalPnL += pnl;
+            existing.count += 1;
+          } else {
+            sessionStats.set(trade.sessionId, {
+              name: session.name,
+              totalPnL: pnl,
+              count: 1
+            });
+          }
+        }
+      }
+    });
+    
+    // Convert to array and sort by performance
+    return Array.from(sessionStats.values())
+      .map((item, index) => ({
+        name: item.name,
+        pnl: item.totalPnL,
         count: item.count,
         color: COLORS[index % COLORS.length]
-      };
-    })
-    .sort((a, b) => b.pnl - a.pnl); // Sort by decreasing performance
+      }))
+      .sort((a, b) => b.pnl - a.pnl); // Sort by decreasing performance
+  })();
 
   // Data for cumulative performance chart
   const cumulativeData = trades
@@ -154,9 +174,9 @@ export function TradingCharts({ stats, setups, trades }: TradingChartsProps) {
         {/* Performance by Session */}
         <Card className="border border-white/10 bg-black/20 lg:col-span-2">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg text-white">Performance by Session</CardTitle>
+            <CardTitle className="text-lg text-white">Performance par Session (% PnL)</CardTitle>
             <CardDescription className="text-white/60">
-              Performance by trading session
+              Performance par session de trading
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -177,6 +197,7 @@ export function TradingCharts({ stats, setups, trades }: TradingChartsProps) {
                   strokeOpacity={0.6}
                   fontSize={10}
                   tickFormatter={(value) => `${value}%`}
+                  domain={['dataMin - 5', 'dataMax + 5']}
                 />
                 <Tooltip 
                   formatter={(value: number) => [
@@ -191,7 +212,11 @@ export function TradingCharts({ stats, setups, trades }: TradingChartsProps) {
                     color: '#ffffff'
                   }}
                 />
-                <Bar dataKey="pnl" fill="#ffffff" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="pnl" radius={[4, 4, 0, 0]}>
+                  {sessionPerformanceData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </CardContent>

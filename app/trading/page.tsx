@@ -4,10 +4,11 @@ import { useState, useEffect } from "react";
 import { useSession } from "@/lib/auth-client";
 import { api } from "@/trpc/client";
 import { useSearchParams } from "next/navigation";
-import { Plus, ArrowLeft, Edit, BarChart3, Trash2 } from "lucide-react";
+import { Plus, ArrowLeft, Edit, BarChart3, Trash2, Upload } from "lucide-react";
 import { format } from "date-fns";
 import { enUS } from "date-fns/locale";
 import { CreateTradeModal } from "@/components/trading/CreateTradeModal";
+import { ImportTradesModal } from "@/components/trading/ImportTradesModal";
 import { TradingStats } from "@/components/trading/TradingStats";
 import { TradingCharts } from "@/components/trading/TradingCharts";
 
@@ -20,6 +21,7 @@ export default function TradingPage() {
   const searchParams = useSearchParams();
   const [selectedJournalId, setSelectedJournalId] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   // Queries
   const { data: journals, isLoading: journalsLoading } = api.trading.getJournals.useQuery();
@@ -181,6 +183,14 @@ export default function TradingPage() {
         
                  <div className="flex items-center space-x-2">
            <Button 
+             onClick={() => setIsImportModalOpen(true)}
+             variant="outline"
+             className="border-white/20 text-black hover:bg-white/10"
+           >
+             <Upload className="w-4 h-4 mr-2" />
+             Import Excel
+           </Button>
+           <Button 
              onClick={() => setIsCreateModalOpen(true)}
              className="bg-white text-black hover:bg-gray-200"
            >
@@ -214,7 +224,6 @@ export default function TradingPage() {
                 stats={stats} 
                 sessions={sessions} 
                 trades={allTrades}
-                setups={setups}
               />
             </CardContent>
           </Card>
@@ -278,9 +287,15 @@ export default function TradingPage() {
                            size="sm"
                            className="text-white/60 hover:text-white hover:bg-white/10 p-1"
                            onClick={() => {
-                             const symbol = assets?.find(a => a.id === trade.assetId)?.name || trade.symbol || 'EURUSD';
-                             const tradingViewUrl = `https://www.tradingview.com/symbols/${symbol.replace('/', '')}`;
-                             window.open(tradingViewUrl, '_blank');
+                             // Utiliser le lien TradingView spécifique importé depuis l'Excel
+                             if (trade.tradingviewLink) {
+                               window.open(trade.tradingviewLink, '_blank');
+                             } else {
+                               // Fallback vers l'URL générique si aucun lien spécifique
+                               const symbol = assets?.find(a => a.id === trade.assetId)?.name || trade.symbol || 'EURUSD';
+                               const tradingViewUrl = `https://www.tradingview.com/symbols/${symbol.replace('/', '')}`;
+                               window.open(tradingViewUrl, '_blank');
+                             }
                            }}
                          >
                            Graph
@@ -337,6 +352,12 @@ export default function TradingPage() {
       <CreateTradeModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
+        journalId={selectedJournalId || undefined}
+      />
+
+      <ImportTradesModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
         journalId={selectedJournalId || undefined}
       />
 

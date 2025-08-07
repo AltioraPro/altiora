@@ -222,7 +222,7 @@ export const tradingMutationsRouter = createTRPCRouter({
           userId,
           journalId: input.journalId,
           name: input.name,
-          symbol: input.symbol,
+          symbol: input.symbol || input.name,
           type: input.type,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -504,24 +504,32 @@ export const tradingMutationsRouter = createTRPCRouter({
       }
 
       console.log("Insertion du trade dans la base de données...");
-             const tradeValues = {
-         id: crypto.randomUUID(),
-         userId,
-         journalId: input.journalId,
-         assetId: assetId || null,
-         sessionId: input.sessionId || null,
-         setupId: input.setupId || null,
-         tradeDate: input.tradeDate,
-         symbol: input.symbol,
-                   riskInput: input.riskInput || null,
-          profitLossPercentage: input.profitLossPercentage || null,
-          exitReason: input.exitReason || null,
-          tradingviewLink: input.tradingviewLink || null,
-          notes: input.notes || null,
-          isClosed: input.isClosed ?? true,
-         createdAt: new Date(),
-         updatedAt: new Date(),
-       };
+      
+      // Nettoyer les valeurs numériques
+      const cleanRiskInput = input.riskInput ? String(input.riskInput).replace(/[%,]/g, '').trim() : null;
+      const cleanProfitLossPercentage = input.profitLossPercentage ? String(input.profitLossPercentage).replace(/[%,]/g, '').trim() : null;
+      
+      // Si profitLossPercentage est vide ou null, le définir comme '0' pour les BE
+      const finalProfitLossPercentage = cleanProfitLossPercentage || '0';
+      
+      const tradeValues = {
+        id: crypto.randomUUID(),
+        userId,
+        journalId: input.journalId,
+        assetId: assetId || null,
+        sessionId: input.sessionId || null,
+        setupId: input.setupId || null,
+        tradeDate: input.tradeDate,
+        symbol: input.symbol || '',
+        riskInput: cleanRiskInput,
+        profitLossPercentage: finalProfitLossPercentage,
+        exitReason: input.exitReason || null,
+        tradingviewLink: input.tradingviewLink || null,
+        notes: input.notes || null,
+        isClosed: input.isClosed ?? true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
       
       console.log("Valeurs du trade à insérer:", tradeValues);
       

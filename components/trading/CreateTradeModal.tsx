@@ -59,10 +59,10 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
     },
   });
 
-  // Data queries
-  const { data: assets, refetch: refetchAssets } = api.trading.getAssets.useQuery({ journalId });
-  const { data: sessions, refetch: refetchSessions } = api.trading.getSessions.useQuery({ journalId });
-  const { data: setups, refetch: refetchSetups } = api.trading.getSetups.useQuery({ journalId });
+  // Data queries - Get assets, sessions, and setups for all user's journals
+  const { data: assets, refetch: refetchAssets } = api.trading.getAssets.useQuery({ journalId: "" });
+  const { data: sessions, refetch: refetchSessions } = api.trading.getSessions.useQuery({ journalId: "" });
+  const { data: setups, refetch: refetchSetups } = api.trading.getSetups.useQuery({ journalId: "" });
 
   // Mutations
   const createTradeMutation = api.trading.createTrade.useMutation({
@@ -127,10 +127,10 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
   };
 
   const handleCreateAsset = async () => {
-    if (newAsset.name && newAsset.symbol && journalId) {
+    if (newAsset.name && newAsset.symbol) {
       try {
         await createAssetMutation.mutateAsync({
-          journalId,
+          journalId: "", // Create for all user's journals
           name: newAsset.name,
           symbol: newAsset.symbol,
           type: newAsset.type,
@@ -142,10 +142,10 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
   };
 
   const handleCreateSession = async () => {
-    if (newSession.name && journalId) {
+    if (newSession.name) {
       try {
         await createSessionMutation.mutateAsync({
-          journalId,
+          journalId: "", // Create for all user's journals
           name: newSession.name,
           description: newSession.description,
         });
@@ -156,10 +156,10 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
   };
 
   const handleCreateSetup = async () => {
-    if (newSetup.name && journalId) {
+    if (newSetup.name) {
       try {
         await createSetupMutation.mutateAsync({
-          journalId,
+          journalId: "", // Create for all user's journals
           name: newSetup.name,
           description: newSetup.description,
           strategy: newSetup.strategy,
@@ -173,30 +173,31 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-white/10 bg-black/20">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>New Trade</CardTitle>
-              <CardDescription>
+              <CardTitle className="font-argesta text-white">New Trade</CardTitle>
+              <CardDescription className="text-white/60">
                 Add a new trade to your journal
               </CardDescription>
             </div>
-            <Button variant="ghost" size="sm" onClick={onClose}>
+            <Button variant="ghost" size="sm" onClick={onClose} className="text-white/60 hover:text-white hover:bg-white/10">
               <X className="h-4 w-4" />
             </Button>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="text-white">
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
             {/* Date */}
             <div>
-              <Label htmlFor="tradeDate">Date</Label>
+              <Label htmlFor="tradeDate" className="text-white/80">Date</Label>
               <Input
                 id="tradeDate"
                 type="date"
                 {...form.register("tradeDate")}
+                className="bg-black/30 border-white/20 text-white placeholder:text-white/40 focus:border-white/40"
               />
               {form.formState.errors.tradeDate && (
                 <p className="text-red-500 text-sm mt-1">
@@ -207,13 +208,13 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
 
                          {/* Asset */}
              <div>
-               <Label htmlFor="symbol">Asset</Label>
+               <Label htmlFor="symbol" className="text-white/80">Asset</Label>
                <div className="flex gap-2">
                  <Select
                    value={form.watch("symbol")}
                    onValueChange={(value) => form.setValue("symbol", value)}
                  >
-                   <SelectTrigger className="flex-1">
+                   <SelectTrigger className="flex-1 bg-black/30 border-white/20 text-white">
                      <SelectValue placeholder="Select an asset" />
                    </SelectTrigger>
                    <SelectContent>
@@ -230,29 +231,32 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                    variant="outline"
                    size="sm"
                    onClick={() => setShowNewAssetForm(!showNewAssetForm)}
+                   className="border-white/20 text-white/80 hover:bg-white/10"
                  >
                    <Plus className="h-4 w-4" />
                  </Button>
                </div>
                
                {showNewAssetForm && (
-                <div className="mt-2 p-3 border rounded-lg bg-gray-50">
+                <div className="mt-2 p-3 border border-white/20 rounded-lg bg-black/30">
                   <div className="grid grid-cols-2 gap-2">
                     <Input
                       placeholder="Asset name"
                       value={newAsset.name}
                       onChange={(e) => setNewAsset({ ...newAsset, name: e.target.value })}
+                      className="bg-black/30 border-white/20 text-white placeholder:text-white/40"
                     />
                     <Input
                       placeholder="Symbol"
                       value={newAsset.symbol}
                       onChange={(e) => setNewAsset({ ...newAsset, symbol: e.target.value })}
+                      className="bg-black/30 border-white/20 text-white placeholder:text-white/40"
                     />
                   </div>
                   <Button
                     type="button"
                     size="sm"
-                    className="mt-2"
+                    className="mt-2 bg-white text-black hover:bg-gray-200"
                     onClick={handleCreateAsset}
                     disabled={createAssetMutation.isPending}
                   >
@@ -269,13 +273,13 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
 
             {/* Session */}
             <div>
-              <Label htmlFor="sessionId">Session</Label>
+              <Label htmlFor="sessionId" className="text-white/80">Session</Label>
               <div className="flex gap-2">
                 <Select
                   value={form.watch("sessionId") || ""}
                   onValueChange={(value) => form.setValue("sessionId", value)}
                 >
-                  <SelectTrigger className="flex-1">
+                  <SelectTrigger className="flex-1 bg-black/30 border-white/20 text-white">
                                          <SelectValue placeholder="Select a session" />
                   </SelectTrigger>
                   <SelectContent>
@@ -291,28 +295,30 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                   variant="outline"
                   size="sm"
                   onClick={() => setShowNewSessionForm(!showNewSessionForm)}
+                  className="border-white/20 text-white/80 hover:bg-white/10"
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
               {showNewSessionForm && (
-                <div className="mt-2 p-3 border rounded-lg bg-gray-50">
+                <div className="mt-2 p-3 border border-white/20 rounded-lg bg-black/30">
                   <Input
                     placeholder="Session name"
                     value={newSession.name}
                     onChange={(e) => setNewSession({ ...newSession, name: e.target.value })}
-                    className="mb-2"
+                    className="mb-2 bg-black/30 border-white/20 text-white placeholder:text-white/40"
                   />
                   <Textarea
                     placeholder="Description"
                     value={newSession.description}
                     onChange={(e) => setNewSession({ ...newSession, description: e.target.value })}
                     rows={2}
+                    className="bg-black/30 border-white/20 text-white placeholder:text-white/40"
                   />
                   <Button
                     type="button"
                     size="sm"
-                    className="mt-2"
+                    className="mt-2 bg-white text-black hover:bg-gray-200"
                     onClick={handleCreateSession}
                     disabled={createSessionMutation.isPending}
                   >
@@ -324,13 +330,13 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
 
             {/* Setup */}
             <div>
-              <Label htmlFor="setupId">Setup</Label>
+              <Label htmlFor="setupId" className="text-white/80">Setup</Label>
               <div className="flex gap-2">
                 <Select
                   value={form.watch("setupId") || ""}
                   onValueChange={(value) => form.setValue("setupId", value)}
                 >
-                  <SelectTrigger className="flex-1">
+                  <SelectTrigger className="flex-1 bg-black/30 border-white/20 text-white">
                                          <SelectValue placeholder="Select a setup" />
                   </SelectTrigger>
                   <SelectContent>
@@ -346,34 +352,36 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                   variant="outline"
                   size="sm"
                   onClick={() => setShowNewSetupForm(!showNewSetupForm)}
+                  className="border-white/20 text-white/80 hover:bg-white/10"
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
               {showNewSetupForm && (
-                <div className="mt-2 p-3 border rounded-lg bg-gray-50">
+                <div className="mt-2 p-3 border border-white/20 rounded-lg bg-black/30">
                   <Input
                     placeholder="Setup name"
                     value={newSetup.name}
                     onChange={(e) => setNewSetup({ ...newSetup, name: e.target.value })}
-                    className="mb-2"
+                    className="mb-2 bg-black/30 border-white/20 text-white placeholder:text-white/40"
                   />
                   <Textarea
                     placeholder="Description"
                     value={newSetup.description}
                     onChange={(e) => setNewSetup({ ...newSetup, description: e.target.value })}
                     rows={2}
-                    className="mb-2"
+                    className="mb-2 bg-black/30 border-white/20 text-white placeholder:text-white/40"
                   />
                   <Input
                     placeholder="Strategy"
                     value={newSetup.strategy}
                     onChange={(e) => setNewSetup({ ...newSetup, strategy: e.target.value })}
+                    className="bg-black/30 border-white/20 text-white placeholder:text-white/40"
                   />
                   <Button
                     type="button"
                     size="sm"
-                    className="mt-2"
+                    className="mt-2 bg-white text-black hover:bg-gray-200"
                     onClick={handleCreateSetup}
                     disabled={createSetupMutation.isPending}
                   >
@@ -386,11 +394,12 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                          {/* Risk, Result and Exit reason */}
              <div className="grid grid-cols-3 gap-4">
                <div>
-                 <Label htmlFor="riskInput">Risk (%)</Label>
+                 <Label htmlFor="riskInput" className="text-white/80">Risk (%)</Label>
                  <Input
                    id="riskInput"
                    {...form.register("riskInput")}
                    placeholder="2.0"
+                   className="bg-black/30 border-white/20 text-white placeholder:text-white/40"
                  />
                  {form.formState.errors.riskInput && (
                    <p className="text-red-500 text-sm mt-1">
@@ -400,11 +409,12 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                </div>
 
                <div>
-                 <Label htmlFor="profitLossPercentage">Result (%)</Label>
+                 <Label htmlFor="profitLossPercentage" className="text-white/80">Result (%)</Label>
                  <Input
                    id="profitLossPercentage"
                    {...form.register("profitLossPercentage")}
                    placeholder="2.5"
+                   className="bg-black/30 border-white/20 text-white placeholder:text-white/40"
                  />
                  {form.formState.errors.profitLossPercentage && (
                    <p className="text-red-500 text-sm mt-1">
@@ -414,12 +424,12 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                </div>
 
                <div>
-                 <Label htmlFor="exitReason">Exit reason</Label>
+                 <Label htmlFor="exitReason" className="text-white/80">Exit reason</Label>
                  <Select
                    value={form.watch("exitReason") || ""}
                    onValueChange={(value) => form.setValue("exitReason", value as "TP" | "BE" | "SL" | "Manual")}
                  >
-                   <SelectTrigger>
+                   <SelectTrigger className="bg-black/30 border-white/20 text-white">
                      <SelectValue placeholder="Select" />
                    </SelectTrigger>
                    <SelectContent>
@@ -439,34 +449,36 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
 
             {/* TradingView link */}
             <div>
-              <Label htmlFor="tradingviewLink">TradingView link (optional)</Label>
+              <Label htmlFor="tradingviewLink" className="text-white/80">TradingView link (optional)</Label>
               <Input
                 id="tradingviewLink"
                 {...form.register("tradingviewLink")}
                 placeholder="https://www.tradingview.com/..."
+                className="bg-black/30 border-white/20 text-white placeholder:text-white/40"
               />
             </div>
 
             {/* Notes */}
             <div>
-              <Label htmlFor="notes">Notes (optional)</Label>
+              <Label htmlFor="notes" className="text-white/80">Notes (optional)</Label>
               <Textarea
                 id="notes"
                 {...form.register("notes")}
                 placeholder="Trade notes..."
                 rows={3}
+                className="bg-black/30 border-white/20 text-white placeholder:text-white/40"
               />
             </div>
 
             {/* Actions */}
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={onClose}>
+              <Button type="button" variant="outline" onClick={onClose} className="border-white/20 text-white/80 hover:bg-white/10">
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={createTradeMutation.isPending}
-                className="bg-black text-white hover:bg-gray-800"
+                className="bg-white text-black hover:bg-gray-200"
               >
                 {createTradeMutation.isPending ? "Creating..." : "Create trade"}
               </Button>

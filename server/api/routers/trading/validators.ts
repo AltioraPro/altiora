@@ -20,7 +20,7 @@ export const updateTradingJournalSchema = z.object({
 export const createTradingAssetSchema = z.object({
   journalId: z.string().min(1, "L'ID du journal est requis"),
   name: z.string().min(1, "Le nom de l'asset est requis").max(50),
-  symbol: z.string().min(1, "Le symbole est requis").max(20),
+  symbol: z.string().max(20).optional(),
   type: z.enum(["forex", "crypto", "stocks", "commodities"]).default("forex"),
 });
 
@@ -28,7 +28,7 @@ export const createTradingAssetSchema = z.object({
 export const updateTradingAssetSchema = z.object({
   id: z.string().min(1, "L'ID de l'asset est requis"),
   name: z.string().min(1, "Le nom de l'asset est requis").max(50).optional(),
-  symbol: z.string().min(1, "Le symbole est requis").max(20).optional(),
+  symbol: z.string().max(20).optional(),
   type: z.enum(["forex", "crypto", "stocks", "commodities"]).optional(),
   isActive: z.boolean().optional(),
 });
@@ -81,7 +81,7 @@ export const createAdvancedTradeSchema = z.object({
   setupId: z.string().optional(),
   
   tradeDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Format de date invalide (YYYY-MM-DD)"),
-  symbol: z.string().min(1, "Le symbole est requis").max(50),
+  symbol: z.string().max(50).optional(),
   
   // Gestion du risque
   riskInput: z.string().max(50).optional(),
@@ -106,7 +106,7 @@ export const updateAdvancedTradeSchema = z.object({
   setupId: z.string().optional(),
   
   tradeDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Format de date invalide (YYYY-MM-DD)").optional(),
-  symbol: z.string().min(1, "Le symbole est requis").max(50).optional(),
+  symbol: z.string().max(50).optional(),
   
   // Gestion du risque
   riskInput: z.string().max(50).optional(),
