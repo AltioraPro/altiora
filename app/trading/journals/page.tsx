@@ -6,13 +6,14 @@ import { Plus, BarChart3, BookOpen } from "lucide-react";
 import { CreateJournalModal } from "@/components/trading/CreateJournalModal";
 import { EditJournalModal } from "@/components/trading/EditJournalModal";
 import { JournalPerformanceCard } from "@/components/trading/JournalPerformanceCard";
+import type { TradingJournal } from "@/server/db/schema";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 
 export default function JournalsPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  type EditingJournal = { id: string; name: string; description?: string | null; isDefault: boolean } | null;
+  type EditingJournal = Pick<TradingJournal, "id" | "name" | "description" | "isDefault"> | null;
   const [editingJournal, setEditingJournal] = useState<EditingJournal>(null);
 
   // Queries
