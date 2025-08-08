@@ -6,8 +6,10 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+const computedBaseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+
 export const auth = betterAuth({
-  baseURL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+  baseURL: computedBaseUrl,
   secret: process.env.BETTER_AUTH_SECRET || "secret-key-development",
   database: drizzleAdapter(db, {
     provider: "pg",

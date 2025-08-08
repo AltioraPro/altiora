@@ -21,9 +21,12 @@ export async function middleware(request: NextRequest) {
 
   // Vérifier l'authentification pour les routes protégées
   if (pathname.startsWith("/dashboard") || pathname.startsWith("/app")) {
-    // Vérifier simplement la présence du cookie de session
-    const sessionCookie = request.cookies.get("better-auth.session_token");
-    
+    // Vérifier la présence de l'un des cookies possibles (Better Auth peut utiliser des prefixes différents selon config/domaine)
+    const sessionCookie = request.cookies.get("better-auth.session_token")
+      || request.cookies.get("better-auth.session-id")
+      || request.cookies.get("session_token")
+      || request.cookies.get("session");
+
     if (!sessionCookie || !sessionCookie.value) {
       return NextResponse.redirect(new URL("/auth/login", request.url));
     }
