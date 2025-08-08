@@ -49,7 +49,7 @@ async function testTradingSystem() {
         userId: testUserId,
         name: asset.name,
         symbol: asset.symbol,
-        description: `Asset ${asset.name}`,
+        type: "forex",
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -99,7 +99,7 @@ async function testTradingSystem() {
         name: setup.name,
         description: `Setup ${setup.name}`,
         strategy: setup.strategy,
-        riskLevel: setup.riskLevel,
+        successRate: null,
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -113,43 +113,34 @@ async function testTradingSystem() {
     const testTrades = [
       {
         symbol: "XAUUSD",
-        side: "buy" as const,
-        quantity: 1,
-        entryPrice: "1950.50",
-        exitPrice: "1960.25",
-        reasoning: "Support sur la zone 1950, rebond attendu",
-        notes: "Trade gagnant, bon timing d'entrée",
-        profitLossAmount: "97.50",
         profitLossPercentage: "0.50",
+        notes: "Trade gagnant, bon timing d'entrée",
+        exitReason: "TP" as const,
         isClosed: true,
-        tags: JSON.stringify(["support", "rebond", "gagnant"]),
       },
       {
         symbol: "EURUSD",
-        side: "sell" as const,
-        quantity: 1,
-        entryPrice: "1.0850",
-        exitPrice: "1.0820",
-        reasoning: "Résistance sur 1.0850, retracement attendu",
-        notes: "Trade perdant, stop loss touché",
-        profitLossAmount: "-30.00",
         profitLossPercentage: "-0.28",
+        notes: "Trade perdant, stop loss touché",
+        exitReason: "SL" as const,
         isClosed: true,
-        tags: JSON.stringify(["résistance", "retracement", "perdant"]),
       },
       {
         symbol: "GBPUSD",
-        side: "buy" as const,
-        quantity: 1,
-        entryPrice: "1.2650",
-        reasoning: "Breakout de la ligne de tendance",
-        notes: "Trade ouvert, en cours",
-        profitLossAmount: "0.00",
         profitLossPercentage: "0.00",
+        notes: "Trade ouvert, en cours",
+        exitReason: null,
         isClosed: false,
-        tags: JSON.stringify(["breakout", "tendance", "ouvert"]),
       },
     ];
+
+    const toDate = () => {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${dd}`;
+    };
 
     for (const trade of testTrades) {
       await db.insert(advancedTrades).values({
@@ -159,19 +150,13 @@ async function testTradingSystem() {
         assetId: null,
         sessionId: null,
         setupId: null,
+        tradeDate: toDate(),
         symbol: trade.symbol,
-        side: trade.side,
-        quantity: trade.quantity,
-        entryPrice: trade.entryPrice,
-        exitPrice: trade.exitPrice || null,
-        tradeDate: new Date(),
-        entryTime: new Date(),
-        exitTime: trade.exitPrice ? new Date() : null,
-        reasoning: trade.reasoning,
-        notes: trade.notes,
-        tags: trade.tags,
-        profitLossAmount: trade.profitLossAmount,
+        riskInput: null,
         profitLossPercentage: trade.profitLossPercentage,
+        exitReason: trade.exitReason,
+        tradingviewLink: null,
+        notes: trade.notes,
         isClosed: trade.isClosed,
         createdAt: new Date(),
         updatedAt: new Date(),
