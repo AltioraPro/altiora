@@ -20,7 +20,17 @@ export async function middleware(request: NextRequest) {
   }
 
   // Vérifier l'authentification pour les routes protégées
-  if (pathname.startsWith("/dashboard") || pathname.startsWith("/app")) {
+  const protectedPrefixes = [
+    "/dashboard",
+    "/trading",
+    "/habits",
+    "/goals",
+    "/settings",
+    "/profile",
+    "/app",
+  ];
+
+  if (protectedPrefixes.some((p) => pathname.startsWith(p))) {
     // Vérifier la présence de l'un des cookies possibles (Better Auth peut utiliser des prefixes différents selon config/domaine)
     const sessionCookie = request.cookies.get("better-auth.session_token")
       || request.cookies.get("better-auth.session-id")
