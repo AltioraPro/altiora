@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import type { TradingJournal } from "@/server/db/schema";
 import { api } from "@/trpc/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +20,7 @@ import {
 interface EditJournalModalProps {
   isOpen: boolean;
   onClose: () => void;
-  journal: any;
+  journal: Pick<TradingJournal, "id" | "name" | "description" | "isDefault">;
   onSuccess?: () => void;
 }
 
