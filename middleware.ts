@@ -31,14 +31,27 @@ export async function middleware(request: NextRequest) {
   ];
 
   if (protectedPrefixes.some((p) => pathname.startsWith(p))) {
-    // Vérifier la présence de l'un des cookies possibles (Better Auth peut utiliser des prefixes différents selon config/domaine)
-    const sessionCookie = request.cookies.get("better-auth.session_token")
-      || request.cookies.get("better-auth.session-id")
-      || request.cookies.get("session_token")
-      || request.cookies.get("session");
+    // Vérification robuste: si pas de cookie détecté, tente une validation serveur via route interne
+    const hasAnyCookie =
+      request.cookies.get("better-auth.session_token") ||
+      request.cookies.get("better-auth.session-id") ||
+      request.cookies.get("session_token") ||
+      request.cookies.get("session");
 
-    if (!sessionCookie || !sessionCookie.value) {
-      return NextResponse.redirect(new URL("/auth/login", request.url));
+    if (!hasAnyCookie) {
+      // Double check: ping l'API de session (évite les soucis de nom de cookie en prod)
+      try {
+        const apiUrl = new URL("/api/auth/session-check", request.url);
+        const res = await fetch(apiUrl, {
+          headers: { cookie: request.headers.get("cookie") || "" },
+          cache: "no-store",
+        });
+        if (res.status !== 200) {
+          return NextResponse.redirect(new URL("/auth/login", request.url));
+        }
+      } catch {
+        return NextResponse.redirect(new URL("/auth/login", request.url));
+      }
     }
   }
 

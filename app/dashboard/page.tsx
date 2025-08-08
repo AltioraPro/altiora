@@ -4,7 +4,7 @@ import { useState } from "react";
 import { api } from "@/trpc/client";
 import { useSession } from "@/lib/auth-client";
 import Link from "next/link";
-import { Plus, BarChart3, ArrowLeft, Upload } from "lucide-react";
+import { BarChart3, ArrowLeft } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,14 +12,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 import { GlobalTradingStats } from "@/components/trading/GlobalTradingStats";
 import { GlobalTradingCharts } from "@/components/trading/GlobalTradingCharts";
-import { CreateTradeModal } from "@/components/trading/CreateTradeModal";
-import { ImportTradesModal } from "@/components/trading/ImportTradesModal";
+// Removed trade creation/import modals from global dashboard
 
 export default function GlobalDashboardPage() {
   useSession();
   const [selectedJournalId, setSelectedJournalId] = useState<string>("all");
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  // Removed create/import modal state for global dashboard
 
   const { data: journals, isLoading: journalsLoading } = api.trading.getJournals.useQuery();
 
@@ -57,15 +55,14 @@ export default function GlobalDashboardPage() {
           </div>
 
           <Card className="p-8 border border-white/10 bg-black/20">
-            <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
-              <BarChart3 className="w-8 h-8 text-white/60" />
-            </div>
+          <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <BarChart3 className="w-8 h-8 text-white/60" />
+          </div>
             <h3 className="text-xl font-argesta text-white mb-4">Aucun journal</h3>
             <p className="text-white/60 mb-8">Crée un journal pour commencer à suivre ta performance.</p>
 
             <Link href="/trading/journals">
               <Button className="bg-white text-black hover:bg-gray-200">
-                <Plus className="w-4 h-4 mr-2" />
                 Créer un Journal
               </Button>
             </Link>
@@ -106,15 +103,7 @@ export default function GlobalDashboardPage() {
               </SelectContent>
             </Select>
           </div>
-
-          <Button onClick={() => setIsImportModalOpen(true)} variant="outline" className="border-white/20 text-black hover:bg-white/10">
-            <Upload className="w-4 h-4 mr-2" />
-            Import Excel
-          </Button>
-          <Button onClick={() => setIsCreateModalOpen(true)} className="bg-white text-black hover:bg-gray-200">
-            <Plus className="w-4 h-4 mr-2" />
-            New Trade
-          </Button>
+          {/* Import Excel and New Trade buttons removed on global dashboard */}
         </div>
       </div>
 
@@ -140,9 +129,7 @@ export default function GlobalDashboardPage() {
         </div>
       )}
 
-      {/* Modals */}
-      <CreateTradeModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} journalId={effectiveJournalId} />
-      <ImportTradesModal isOpen={isImportModalOpen} onClose={() => setIsImportModalOpen(false)} journalId={effectiveJournalId} />
+      {/* Trade creation/import modals removed on global dashboard */}
     </div>
   );
 }
