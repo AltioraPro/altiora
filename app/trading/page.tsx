@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSession } from "@/lib/auth-client";
 import { api } from "@/trpc/client";
 import { useSearchParams } from "next/navigation";
@@ -16,9 +16,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 
+function JournalParamSync({ onFound }: { onFound: (journalId: string) => void }) {
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const journalFromUrl = searchParams.get("journal");
+    if (journalFromUrl) {
+      onFound(journalFromUrl);
+    }
+  }, [searchParams, onFound]);
+  return null;
+}
+
 export default function TradingPage() {
   const { data: session } = useSession();
-  const searchParams = useSearchParams();
   const [selectedJournalId, setSelectedJournalId] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
@@ -72,15 +82,12 @@ export default function TradingPage() {
     },
   });
 
-  // Set default journal when loaded
+  // Set default journal when loaded (independent of search params)
   useEffect(() => {
-    const journalFromUrl = searchParams.get('journal');
-    if (journalFromUrl) {
-      setSelectedJournalId(journalFromUrl);
-    } else if (defaultJournal && !selectedJournalId) {
+    if (!selectedJournalId && defaultJournal) {
       setSelectedJournalId(defaultJournal.id);
     }
-  }, [defaultJournal, selectedJournalId, searchParams]);
+  }, [defaultJournal, selectedJournalId]);
 
   const handleCreateDefaultJournal = async () => {
     if (!session?.user?.id) return;
@@ -164,6 +171,9 @@ export default function TradingPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <Suspense fallback={null}>
+        <JournalParamSync onFound={setSelectedJournalId} />
+      </Suspense>
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div className="flex items-center space-x-4">
