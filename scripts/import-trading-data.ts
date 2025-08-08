@@ -204,48 +204,43 @@ async function importSetups(journalId: string, userId: string) {
   }
 }
 
-// Fonction pour importer les trades
+function toDateStringYYYYMMDD(input?: string): string {
+  const d = input ? new Date(input) : new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+// Fonction pour importer les trades (schéma avancé actuel)
 async function importTrades(journalId: string, userId: string) {
   try {
     const tradesData = parseCSV("sql/trades_rows.csv");
     
-    for (const trade of tradesData) {
-      // Parser les tags JSON si présents
-      let tags = null;
-      if (trade.tags) {
-        try {
-          tags = JSON.stringify(JSON.parse(trade.tags));
-        } catch {
-          tags = JSON.stringify([trade.tags]);
-        }
-      }
+    for (const raw of tradesData) {
+      const tradeDate = toDateStringYYYYMMDD(raw.trade_date);
+      const riskInput = raw.risk_input ? String(raw.risk_input) : null;
+      const profitLossPercentage = raw.profit_loss_percentage ? String(raw.profit_loss_percentage) : "0";
+      const exitReason = raw.exit_reason ? String(raw.exit_reason).toUpperCase() : null; // TP | BE | SL | Manual
+      const tradingviewLink = raw.tradingview_link ? String(raw.tradingview_link) : null;
+      const notes = raw.notes ? String(raw.notes) : null;
+      const isClosed = raw.is_closed === "true" || !!raw.exit_price;
 
       await db.insert(advancedTrades).values({
         id: `trade_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         journalId,
         userId,
-        assetId: null, // Sera mis à jour plus tard
-        sessionId: null, // Sera mis à jour plus tard
-        setupId: null, // Sera mis à jour plus tard
-        
-        symbol: trade.symbol || "UNKNOWN",
-        side: trade.side || "buy",
-        quantity: parseInt(trade.quantity) || 1,
-        entryPrice: trade.entry_price || "0",
-        exitPrice: trade.exit_price || null,
-        
-        tradeDate: new Date(trade.trade_date || Date.now()),
-        entryTime: new Date(trade.entry_time || Date.now()),
-        exitTime: trade.exit_time ? new Date(trade.exit_time) : null,
-        
-        reasoning: trade.reasoning || "Aucun raisonnement fourni",
-        notes: trade.notes || "",
-        tags,
-        
-        profitLossAmount: trade.profit_loss_amount || "0",
-        profitLossPercentage: trade.profit_loss_percentage || "0",
-        isClosed: trade.is_closed === "true" || trade.exit_price ? true : false,
-        
+        assetId: null,
+        sessionId: null,
+        setupId: null,
+        tradeDate,
+        symbol: raw.symbol || "UNKNOWN",
+        riskInput,
+        profitLossPercentage,
+        exitReason,
+        tradingviewLink,
+        notes,
+        isClosed,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
