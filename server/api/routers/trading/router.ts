@@ -24,7 +24,7 @@ export const tradingRouter = createTRPCRouter({
   createTrade: tradingMutationsRouter.createAdvancedTrade,
   updateTrade: tradingMutationsRouter.updateAdvancedTrade,
   deleteTrade: tradingMutationsRouter.deleteAdvancedTrade,
-  closeTrade: tradingMutationsRouter.closeAdvancedTrade,
+  // closeTrade removed; no corresponding mutation
 
   // Queries
   getJournals: tradingQueriesRouter.getTradingJournals,
