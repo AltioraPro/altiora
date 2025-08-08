@@ -10,7 +10,7 @@ interface JournalPerformanceCardProps {
   journal: {
     id: string;
     name: string;
-    description?: string;
+    description?: string | null;
     isDefault: boolean;
   };
   onEdit: () => void;

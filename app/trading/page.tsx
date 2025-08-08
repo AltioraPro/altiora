@@ -181,23 +181,23 @@ export default function TradingPage() {
           </div>
         </div>
         
-                 <div className="flex items-center space-x-2">
-           <Button 
-             onClick={() => setIsImportModalOpen(true)}
-             variant="outline"
-             className="border-white/20 text-black hover:bg-white/10"
-           >
-             <Upload className="w-4 h-4 mr-2" />
-             Import Excel
-           </Button>
-           <Button 
-             onClick={() => setIsCreateModalOpen(true)}
-             className="bg-white text-black hover:bg-gray-200"
-           >
-             <Plus className="w-4 h-4 mr-2" />
-             New Trade
-           </Button>
-         </div>
+                <div className="flex items-center space-x-2">
+          <Button 
+            onClick={() => setIsImportModalOpen(true)}
+            variant="outline"
+            className="border-white/20 text-black hover:bg-white/10"
+          >
+            <Upload className="w-4 h-4 mr-2" />
+            Import Excel
+          </Button>
+          <Button 
+            onClick={() => setIsCreateModalOpen(true)}
+            className="bg-white text-black hover:bg-gray-200"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            New Trade
+          </Button>
+        </div>
       </div>
 
       
@@ -261,15 +261,15 @@ export default function TradingPage() {
                       <td className="py-3 px-4 text-sm text-white">
                         {format(new Date(trade.tradeDate), 'dd MMM', { locale: enUS })}
                       </td>
-                                             <td className="py-3 px-4 text-sm text-white">
-                         {assets?.find(a => a.id === trade.assetId)?.name || trade.symbol || '-'}
-                       </td>
-                       <td className="py-3 px-4 text-sm text-white">
-                         {sessions?.find(s => s.id === trade.sessionId)?.name || '-'}
-                       </td>
-                       <td className="py-3 px-4 text-sm text-white">
-                         {setups?.find(s => s.id === trade.setupId)?.name || '-'}
-                       </td>
+                                            <td className="py-3 px-4 text-sm text-white">
+                        {assets?.find(a => a.id === trade.assetId)?.name || trade.symbol || '-'}
+                      </td>
+                      <td className="py-3 px-4 text-sm text-white">
+                        {sessions?.find(s => s.id === trade.sessionId)?.name || '-'}
+                      </td>
+                      <td className="py-3 px-4 text-sm text-white">
+                        {setups?.find(s => s.id === trade.setupId)?.name || '-'}
+                      </td>
                       <td className="py-3 px-4 text-sm text-white">
                         1.00%
                       </td>
@@ -281,46 +281,46 @@ export default function TradingPage() {
                       <td className="py-3 px-4 text-sm text-white">
                         {trade.notes || '-'}
                       </td>
-                                             <td className="py-3 px-4 text-sm">
-                         <Button
-                           variant="ghost"
-                           size="sm"
-                           className="text-white/60 hover:text-white hover:bg-white/10 p-1"
-                           onClick={() => {
-                             // Utiliser le lien TradingView spécifique importé depuis l'Excel
-                             if (trade.tradingviewLink) {
-                               window.open(trade.tradingviewLink, '_blank');
-                             } else {
-                               // Fallback vers l'URL générique si aucun lien spécifique
-                               const symbol = assets?.find(a => a.id === trade.assetId)?.name || trade.symbol || 'EURUSD';
-                               const tradingViewUrl = `https://www.tradingview.com/symbols/${symbol.replace('/', '')}`;
-                               window.open(tradingViewUrl, '_blank');
-                             }
-                           }}
-                         >
-                           Graph
-                         </Button>
-                       </td>
-                                             <td className="py-3 px-4 text-sm">
-                         <div className="flex items-center space-x-2">
-                           <Button
-                             onClick={() => handleEditTrade(trade.id)}
-                             variant="ghost"
-                             size="sm"
-                             className="text-white/60 hover:text-white hover:bg-white/10 p-1"
-                           >
-                             <Edit className="w-4 h-4" />
-                           </Button>
-                           <Button
-                             onClick={() => handleDeleteTrade(trade.id)}
-                             variant="ghost"
-                             size="sm"
-                             className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-1"
-                           >
-                             <Trash2 className="w-4 h-4" />
-                           </Button>
-                         </div>
-                       </td>
+                                            <td className="py-3 px-4 text-sm">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-white/60 hover:text-white hover:bg-white/10 p-1"
+                          onClick={() => {
+                            // Utiliser le lien TradingView spécifique importé depuis l'Excel
+                            if (trade.tradingviewLink) {
+                              window.open(trade.tradingviewLink, '_blank');
+                            } else {
+                              // Fallback vers l'URL générique si aucun lien spécifique
+                              const symbol = assets?.find(a => a.id === trade.assetId)?.name || trade.symbol || 'EURUSD';
+                              const tradingViewUrl = `https://www.tradingview.com/symbols/${symbol.replace('/', '')}`;
+                              window.open(tradingViewUrl, '_blank');
+                            }
+                          }}
+                        >
+                          Graph
+                        </Button>
+                      </td>
+                                            <td className="py-3 px-4 text-sm">
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            onClick={() => handleEditTrade(trade.id)}
+                            variant="ghost"
+                            size="sm"
+                            className="text-white/60 hover:text-white hover:bg-white/10 p-1"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            onClick={() => handleDeleteTrade(trade.id)}
+                            variant="ghost"
+                            size="sm"
+                            className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-1"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

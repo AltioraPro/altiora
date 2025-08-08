@@ -12,7 +12,8 @@ import Link from "next/link";
 
 export default function JournalsPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [editingJournal, setEditingJournal] = useState<any>(null);
+  type EditingJournal = { id: string; name: string; description?: string | null; isDefault: boolean } | null;
+  const [editingJournal, setEditingJournal] = useState<EditingJournal>(null);
 
   // Queries
   const { data: journals, isLoading: journalsLoading, refetch: refetchJournals } = api.trading.getJournals.useQuery();
@@ -104,7 +105,7 @@ export default function JournalsPage() {
                 Create First Journal
               </Button>
               
-              <Link href="/trading">
+              <Link href="/dashboard">
                                   <Button variant="outline">
                   <BarChart3 className="w-4 h-4 mr-2" />
                   View Dashboard
@@ -163,7 +164,7 @@ export default function JournalsPage() {
                   Create New Journal
                 </Button>
                 
-                <Link href="/trading">
+                <Link href="/dashboard">
                   <Button variant="outline">
                     <BarChart3 className="w-4 h-4 mr-2" />
                     View Dashboard
