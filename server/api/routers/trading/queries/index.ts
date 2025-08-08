@@ -260,11 +260,8 @@ export const tradingQueriesRouter = createTRPCRouter({
         .limit(input.limit)
         .offset(input.offset);
 
-      // Parser les tags JSON
-      return trades.map(trade => ({
-        ...trade,
-        tags: trade.tags ? JSON.parse(trade.tags) : null,
-      }));
+      // Plus de champ tags dans advancedTrades
+      return trades;
     }),
 
   getAdvancedTradeById: protectedProcedure
@@ -289,10 +286,7 @@ export const tradingQueriesRouter = createTRPCRouter({
         });
       }
 
-      return {
-        ...trade,
-        tags: trade.tags ? JSON.parse(trade.tags) : null,
-      };
+      return trade;
     }),
 
   getTradingStats: protectedProcedure
