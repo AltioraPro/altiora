@@ -35,6 +35,9 @@ export async function middleware(request: NextRequest) {
     const hasAnyCookie =
       request.cookies.get("better-auth.session_token") ||
       request.cookies.get("better-auth.session-id") ||
+      // Certains environnements ajoutent le préfixe __Secure- pour les cookies HTTPS only
+      request.cookies.get("__Secure-better-auth.session_token") ||
+      request.cookies.get("__Secure-better-auth.session-id") ||
       request.cookies.get("session_token") ||
       request.cookies.get("session");
 
