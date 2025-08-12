@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ ok: true }, { status: 200 });
     }
     return NextResponse.json({ ok: false }, { status: 401 });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ ok: false }, { status: 401 });
   }
 }
