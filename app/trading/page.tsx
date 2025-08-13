@@ -255,13 +255,13 @@ export default function TradingPage() {
                 <thead>
                   <tr className="border-b border-white/10">
                     <th className="text-left py-3 px-4 text-sm text-white/80">DATE</th>
-                    <th className="text-left py-3 px-4 text-sm text-white/80">ACTIF</th>
+                    <th className="text-left py-3 px-4 text-sm text-white/80">ASSET</th>
                     <th className="text-left py-3 px-4 text-sm text-white/80">SESSION</th>
                     <th className="text-left py-3 px-4 text-sm text-white/80">SETUP</th>
                     <th className="text-left py-3 px-4 text-sm text-white/80">RISK</th>
                     <th className="text-left py-3 px-4 text-sm text-white/80">PERFORMANCE</th>
                     <th className="text-left py-3 px-4 text-sm text-white/80">NOTES</th>
-                    <th className="text-left py-3 px-4 text-sm text-white/80">GRAPH</th>
+                    <th className="text-left py-3 px-4 text-sm text-white/80">CHART</th>
                     <th className="text-left py-3 px-4 text-sm text-white/80">ACTIONS</th>
                   </tr>
                 </thead>
@@ -308,7 +308,7 @@ export default function TradingPage() {
                             }
                           }}
                         >
-                          Graph
+                          Chart
                         </Button>
                       </td>
                                             <td className="py-3 px-4 text-sm">

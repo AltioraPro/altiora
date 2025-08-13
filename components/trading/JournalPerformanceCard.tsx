@@ -89,7 +89,7 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete, onSetDefault
           </div>
         )}
 
-        {/* Meilleur trade */}
+        {/* Best trade */}
         {bestTrade && (
           <div className="mb-4 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
             <div className="flex items-center justify-between">

@@ -174,10 +174,10 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
         {/* Performance by Session */}
         <Card className="border border-white/10 bg-black/20 lg:col-span-2">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg text-white">Performance par Session (% PnL)</CardTitle>
-            <CardDescription className="text-white/60">
-              Performance par session de trading
-            </CardDescription>
+             <CardTitle className="text-lg text-white">Performance by Session (% PnL)</CardTitle>
+             <CardDescription className="text-white/60">
+               Performance by trading session
+             </CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={200}>

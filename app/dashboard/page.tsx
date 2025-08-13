@@ -51,19 +51,19 @@ export default function GlobalDashboardPage() {
         <div className="text-center max-w-2xl mx-auto">
           <div className="mb-8">
             <h1 className="text-4xl font-argesta text-white mb-4">Global Dashboard</h1>
-            <p className="text-white/60">Crée ton premier journal pour voir les statistiques globales.</p>
+            <p className="text-white/60">Create your first journal to see global statistics.</p>
           </div>
 
           <Card className="p-8 border border-white/10 bg-black/20">
           <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
             <BarChart3 className="w-8 h-8 text-white/60" />
           </div>
-            <h3 className="text-xl font-argesta text-white mb-4">Aucun journal</h3>
-            <p className="text-white/60 mb-8">Crée un journal pour commencer à suivre ta performance.</p>
+            <h3 className="text-xl font-argesta text-white mb-4">No journals</h3>
+            <p className="text-white/60 mb-8">Create a journal to start tracking your performance.</p>
 
             <Link href="/trading/journals">
               <Button className="bg-white text-black hover:bg-gray-200">
-                Créer un Journal
+                Create Journal
               </Button>
             </Link>
           </Card>
@@ -85,7 +85,7 @@ export default function GlobalDashboardPage() {
           </Link>
           <div>
             <h1 className="text-3xl font-argesta text-white">Global Dashboard</h1>
-            <p className="text-white/60">Vue d’ensemble de toutes tes statistiques. Sélectionne un journal pour filtrer.</p>
+            <p className="text-white/60">Overview of all your statistics. Select a journal to filter.</p>
           </div>
         </div>
 
@@ -93,10 +93,10 @@ export default function GlobalDashboardPage() {
           <div className="w-64">
             <Select value={selectedJournalId} onValueChange={setSelectedJournalId}>
               <SelectTrigger className="border-white/20 bg-black/20 text-white">
-                <SelectValue placeholder="Tous les journaux" />
+                <SelectValue placeholder="All journals" />
               </SelectTrigger>
               <SelectContent className="bg-black/90 border-white/20 text-white">
-                <SelectItem value="all">Tous les journaux</SelectItem>
+                <SelectItem value="all">All journals</SelectItem>
                 {journals?.map((j: { id: string; name: string }) => (
                   <SelectItem key={j.id} value={j.id}>{j.name}</SelectItem>
                 ))}
@@ -120,7 +120,7 @@ export default function GlobalDashboardPage() {
           <Card className="border border-white/10 bg-black/20">
             <CardHeader>
               <CardTitle className="font-argesta text-white">Performance Charts</CardTitle>
-              <CardDescription className="text-white/60">Analyse visuelle de ta performance globale</CardDescription>
+              <CardDescription className="text-white/60">Visual analysis of your overall performance</CardDescription>
             </CardHeader>
             <CardContent>
               <GlobalTradingCharts sessions={sessions} trades={allTrades} />

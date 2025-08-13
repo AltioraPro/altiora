@@ -49,7 +49,7 @@ export function TradingStats({ stats }: TradingStatsProps) {
 
   return (
     <div className="space-y-6">
-      {/* Statistiques principales */}
+      {/* Main statistics */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card className="border border-white/10 bg-black/20 p-4">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-0 pt-0">
@@ -106,7 +106,7 @@ export function TradingStats({ stats }: TradingStatsProps) {
         </Card>
       </div>
 
-      {/* Métriques de sortie */}
+      {/* Exit metrics */}
       <div className="grid grid-cols-3 gap-4">
         <Card className="border border-white/10 bg-black/20 p-4">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-0 pt-0">

@@ -24,16 +24,16 @@ interface GlobalTradingChartsProps {
 }
 
 export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
-  // Monthly performance (sum of PnL per month)
+      // Monthly performance (sum of PnL per month)
   const monthlyPerformanceData = (() => {
     if (!trades) return [];
-    const monthStats = new Map<string, { key: string; label: string; totalPnL: number }>();
+      const monthStats = new Map<string, { key: string; label: string; totalPnL: number }>();
     trades.forEach((trade) => {
       const date = new Date(trade.tradeDate);
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const key = `${year}-${month}`;
-      const label = `${date.toLocaleString('fr-FR', { month: 'short' })}. ${String(year).slice(-2)}`;
+      const label = `${date.toLocaleString('en-US', { month: 'short' })}. ${String(year).slice(-2)}`;
       const pnl = trade.profitLossPercentage ? parseFloat(trade.profitLossPercentage) || 0 : 0;
       const existing = monthStats.get(key);
       if (existing) existing.totalPnL += pnl; else monthStats.set(key, { key, label, totalPnL: pnl });
@@ -75,7 +75,7 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
                 <XAxis dataKey="tradeNumber" stroke="#ffffff" strokeOpacity={0.6} fontSize={10} />
                 <YAxis stroke="#ffffff" strokeOpacity={0.6} fontSize={10} tickFormatter={(value) => `${value.toFixed(2)}%`} />
                 <Tooltip 
-                  formatter={(value: number, name: string) => [ `${value.toFixed(2)}%`, name === 'cumulative' ? 'PnL Cumulatif' : 'PnL du trade' ]}
+                  formatter={(value: number, name: string) => [ `${value.toFixed(2)}%`, name === 'cumulative' ? 'Cumulative PnL' : 'Trade PnL' ]}
                   labelFormatter={(label: string) => `Trade #${label}`}
                   contentStyle={{ backgroundColor: '#000000', border: '1px solid #ffffff', borderRadius: '8px', color: '#ffffff' }}
                 />
@@ -98,7 +98,7 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
                 <XAxis dataKey="name" stroke="#ffffff" strokeOpacity={0.6} fontSize={10} height={30} />
                 <YAxis stroke="#ffffff" strokeOpacity={0.6} fontSize={10} tickFormatter={(value) => `${value}%`} domain={['dataMin - 5', 'dataMax + 5']} />
                 <Tooltip 
-                  formatter={(value: number) => [ `${value}%`, 'PnL Total' ]}
+                  formatter={(value: number) => [ `${value}%`, 'Total PnL' ]}
                   labelFormatter={(label: string) => label}
                   contentStyle={{ backgroundColor: '#000000', border: '1px solid #ffffff', borderRadius: '8px', color: '#ffffff' }}
                 />

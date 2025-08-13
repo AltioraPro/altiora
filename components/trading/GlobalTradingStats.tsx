@@ -29,7 +29,7 @@ export function GlobalTradingStats({ stats }: GlobalTradingStatsProps) {
 
   return (
     <div className="space-y-6">
-      {/* Toutes les cartes sur 2 lignes (5 colonnes à partir de lg) */}
+      {/* All cards across 2 rows (5 columns from lg) */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         <Card className="border border-white/10 bg-black/20 p-4">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-0 pt-0">
@@ -74,7 +74,7 @@ export function GlobalTradingStats({ stats }: GlobalTradingStatsProps) {
           </CardHeader>
           <CardContent className="px-0 pb-0">
             <div className="text-2xl font-bold text-white">{avgPnL.toFixed(2)}%</div>
-            <p className="text-sm text-white/60">Moyenne par trade</p>
+            <p className="text-sm text-white/60">Average per trade</p>
           </CardContent>
         </Card>
 
