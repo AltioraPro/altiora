@@ -20,6 +20,15 @@ export const auth = betterAuth({
       verification: verifications,
     },
   }),
+  cookies: {
+    sessionToken: {
+      name: "better-auth.session_token",
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+    },
+  },
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,

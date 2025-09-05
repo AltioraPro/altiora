@@ -31,6 +31,14 @@ export async function middleware(request: NextRequest) {
   ];
 
   if (protectedPrefixes.some((p) => pathname.startsWith(p))) {
+    // Debug: log des cookies disponibles en développement
+    if (process.env.NODE_ENV === "development") {
+      console.log("🔍 Middleware debug:", {
+        pathname,
+        cookies: Array.from(request.cookies.getAll()).map(c => c.name),
+      });
+    }
+
     // Vérification robuste: si pas de cookie détecté, tente une validation serveur via route interne
     const hasAnyCookie =
       request.cookies.get("better-auth.session_token") ||
@@ -46,13 +54,26 @@ export async function middleware(request: NextRequest) {
       try {
         const apiUrl = new URL("/api/auth/session-check", request.url);
         const res = await fetch(apiUrl, {
-          headers: { cookie: request.headers.get("cookie") || "" },
+          headers: { 
+            cookie: request.headers.get("cookie") || "",
+            "user-agent": "NextJS-Middleware"
+          },
           cache: "no-store",
         });
+        
+        if (process.env.NODE_ENV === "development") {
+          console.log("🔍 Session check result:", {
+            status: res.status,
+            headers: Object.fromEntries(res.headers.entries()),
+          });
+        }
+        
         if (res.status !== 200) {
+          console.log("🚫 Redirecting to login - session check failed:", res.status);
           return NextResponse.redirect(new URL("/auth/login", request.url));
         }
-      } catch {
+      } catch (error) {
+        console.log("🚫 Redirecting to login - session check error:", error);
         return NextResponse.redirect(new URL("/auth/login", request.url));
       }
     }
