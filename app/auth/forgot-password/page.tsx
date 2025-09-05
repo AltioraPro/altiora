@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -18,8 +17,6 @@ export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
-  const router = useRouter();
 
   const {
     register,
@@ -95,7 +92,7 @@ export default function ForgotPasswordPage() {
                 Check Your Email
               </h1>
               <p className="text-gray-400 mb-2">
-                We've sent a password reset link to:
+                We&apos;ve sent a password reset link to:
               </p>
               <p className="text-white font-medium">
                 {getValues("email")}
@@ -132,7 +129,7 @@ export default function ForgotPasswordPage() {
             {/* Help text */}
             <div className="mt-8">
               <p className="text-gray-400 text-sm">
-                Didn't receive the email? Check your spam folder or{" "}
+                Didn&apos;t receive the email? Check your spam folder or{" "}
                 <button
                   onClick={() => {
                     setIsSuccess(false);
@@ -180,7 +177,7 @@ export default function ForgotPasswordPage() {
                 Reset your password.
               </p>
               <p className="text-base opacity-80">
-                Enter your email address and we'll send you a link 
+                Enter your email address and we&apos;ll send you a link 
                 to reset your password.
               </p>
             </div>
