@@ -84,6 +84,14 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
         // Lire les données brutes avec les indices de colonnes
         const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as ExcelRow[];
         
+        // Debug: Afficher la structure du fichier Excel
+        console.log('📊 Structure du fichier Excel:');
+        console.log('Nombre de lignes:', rawData.length);
+        if (rawData.length > 0) {
+          console.log('Première ligne (en-têtes):', rawData[0]);
+          console.log('Deuxième ligne (exemple):', rawData[1]);
+        }
+        
         // Convertir les données brutes en format structuré
         const processedTrades: ExcelTrade[] = [];
         
@@ -309,17 +317,33 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
 
     for (const trade of tradesToImport) {
       try {
-        // Parse date - handle YYYY-MM-DD format
+        // Parse date - handle various formats and ensure YYYY-MM-DD output
         let tradeDate = new Date().toISOString().split('T')[0]; // Default to today
         if (trade.Date) {
-          const dateStr = String(trade.Date);
+          const dateStr = String(trade.Date).trim();
+          
+          // Check if already in YYYY-MM-DD format
           if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
             tradeDate = dateStr;
           } else {
-            // Try to parse other date formats
-            const parsedDate = new Date(dateStr);
-            if (!isNaN(parsedDate.getTime())) {
+            // Try to parse various date formats
+            let parsedDate: Date;
+            
+            // Handle Excel date serial numbers (days since 1900-01-01)
+            if (/^\d+\.?\d*$/.test(dateStr)) {
+              const excelDate = parseFloat(dateStr);
+              // Excel date serial number conversion
+              parsedDate = new Date((excelDate - 25569) * 86400 * 1000);
+            } else {
+              // Try standard date parsing
+              parsedDate = new Date(dateStr);
+            }
+            
+            // Validate the parsed date
+            if (!isNaN(parsedDate.getTime()) && parsedDate.getFullYear() > 1900) {
               tradeDate = parsedDate.toISOString().split('T')[0];
+            } else {
+              console.warn(`Invalid date format: ${dateStr}, using today's date`);
             }
           }
         }
@@ -344,6 +368,8 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
         
         // Debug logging
         console.log('Trade data:', {
+          originalDate: trade.Date,
+          parsedTradeDate: tradeDate,
           originalResult: trade.Result,
           cleanProfitValue,
           profitLossPercentage
@@ -368,6 +394,12 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
           profitLossPercentage,
           exitReason
         });
+
+        // Validate tradeDate format before sending
+        if (!tradeDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          console.error(`Invalid tradeDate format: ${tradeDate}`);
+          throw new Error(`Format de date invalide: ${tradeDate}`);
+        }
 
         // Create trade
         await createTradeMutation.mutateAsync({

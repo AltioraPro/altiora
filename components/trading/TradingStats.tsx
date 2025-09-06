@@ -17,6 +17,7 @@ interface TradingStatsProps {
     closedTrades: number;
     totalPnL: string | number;
     avgPnL: string | number;
+    totalAmountPnL?: number;
     winningTrades: number;
     losingTrades: number;
     winRate: number;
@@ -34,6 +35,10 @@ interface TradingStatsProps {
     tpTrades: number;
     beTrades: number;
     slTrades: number;
+    journal?: {
+      usePercentageCalculation?: boolean;
+      startingCapital?: string;
+    };
   };
   setups?: Array<{
     id: string;
@@ -60,8 +65,13 @@ export function TradingStats({ stats }: TradingStatsProps) {
             <div className={`text-2xl font-bold ${totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
               {totalPnL >= 0 ? '+' : ''}{totalPnL.toFixed(2)}%
             </div>
+            {stats.totalAmountPnL !== undefined && (
+              <div className={`text-lg font-semibold ${Number(stats.totalAmountPnL) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                {Number(stats.totalAmountPnL) >= 0 ? '+' : ''}{Number(stats.totalAmountPnL).toFixed(2)}€
+              </div>
+            )}
             <p className="text-sm text-white/60">
-              Total P&L
+              {stats.journal?.usePercentageCalculation ? 'Total Realized P&L' : 'Total P&L'}
             </p>
           </CardContent>
         </Card>

@@ -5,6 +5,8 @@ export const createTradingJournalSchema = z.object({
   name: z.string().min(1, "Le nom du journal est requis").max(255),
   description: z.string().optional(),
   isDefault: z.boolean().default(false),
+  startingCapital: z.string().optional(),
+  usePercentageCalculation: z.boolean().default(false),
 });
 
 // Validateur pour mettre à jour un journal de trading
@@ -14,6 +16,8 @@ export const updateTradingJournalSchema = z.object({
   description: z.string().optional(),
   isDefault: z.boolean().optional(),
   isActive: z.boolean().optional(),
+  startingCapital: z.string().optional(),
+  usePercentageCalculation: z.boolean().optional(),
 });
 
 // Validateur pour créer un asset
@@ -87,6 +91,7 @@ export const createAdvancedTradeSchema = z.object({
   riskInput: z.string().max(50).optional(),
   
   // Résultats
+  profitLossAmount: z.string().max(50).optional(),
   profitLossPercentage: z.string().max(50).optional(),
   exitReason: z.enum(["TP", "BE", "SL", "Manual"]).optional(),
   
@@ -112,6 +117,7 @@ export const updateAdvancedTradeSchema = z.object({
   riskInput: z.string().max(50).optional(),
   
   // Résultats
+  profitLossAmount: z.string().max(50).optional(),
   profitLossPercentage: z.string().max(50).optional(),
   exitReason: z.enum(["TP", "BE", "SL", "Manual"]).optional(),
   

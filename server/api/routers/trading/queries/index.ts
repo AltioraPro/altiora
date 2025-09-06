@@ -307,6 +307,20 @@ export const tradingQueriesRouter = createTRPCRouter({
         whereConditions.push(lte(advancedTrades.tradeDate, input.endDate));
       }
 
+      // Récupérer les infos du journal si journalId est fourni
+      let journal = null;
+      if (input.journalId) {
+        const [journalResult] = await db
+          .select()
+          .from(tradingJournals)
+          .where(and(
+            eq(tradingJournals.id, input.journalId),
+            eq(tradingJournals.userId, userId)
+          ))
+          .limit(1);
+        journal = journalResult;
+      }
+
       // Statistiques de base
       const [totalTrades] = await db
         .select({ count: count() })
@@ -323,6 +337,7 @@ export const tradingQueriesRouter = createTRPCRouter({
         .select({
           totalPnL: sum(sql`CAST(${advancedTrades.profitLossPercentage} AS DECIMAL)`),
           avgPnL: avg(sql`CAST(${advancedTrades.profitLossPercentage} AS DECIMAL)`),
+          totalAmountPnL: sum(sql`CAST(${advancedTrades.profitLossAmount} AS DECIMAL)`),
         })
         .from(advancedTrades)
         .where(and(...whereConditions, eq(advancedTrades.isClosed, true)));
@@ -386,11 +401,48 @@ export const tradingQueriesRouter = createTRPCRouter({
         .from(advancedTrades)
         .where(and(...whereConditions, eq(advancedTrades.exitReason, "SL")));
 
+      // Calculer le gain total en euros et le pourcentage total correct
+      let totalAmountPnL = pnlStats.totalAmountPnL || 0;
+      let totalPnLPercentage = pnlStats.totalPnL || 0;
+      
+      // Si on n'a pas de montant direct mais qu'on a le pourcentage et le capital de départ
+      if ((!totalAmountPnL || totalAmountPnL === 0) && journal?.usePercentageCalculation && journal?.startingCapital) {
+        const startingCapital = parseFloat(journal.startingCapital);
+        
+        // Calculer le capital actuel en additionnant tous les gains/pertes
+        const currentCapital = startingCapital + (Number(totalPnLPercentage) / 100) * startingCapital;
+        
+        // Le gain total en euros est la différence entre le capital actuel et le capital de départ
+        totalAmountPnL = currentCapital - startingCapital;
+        
+        // Le pourcentage total doit être calculé par rapport au capital de départ
+        totalPnLPercentage = (totalAmountPnL / startingCapital) * 100;
+        
+        console.log("Calcul euros:", {
+          startingCapital,
+          currentCapital,
+          totalPnLPercentage,
+          calculatedAmount: totalAmountPnL,
+          journal: journal
+        });
+      } else if (totalAmountPnL && journal?.usePercentageCalculation && journal?.startingCapital) {
+        // Si on a déjà le montant total, calculer le pourcentage par rapport au capital de départ
+        const startingCapital = parseFloat(journal.startingCapital);
+        totalPnLPercentage = (Number(totalAmountPnL) / startingCapital) * 100;
+        
+        console.log("Calcul pourcentage depuis montant:", {
+          startingCapital,
+          totalAmountPnL,
+          calculatedPercentage: totalPnLPercentage
+        });
+      }
+
       return {
         totalTrades: totalTrades.count,
         closedTrades: closedTrades.count,
-        totalPnL: pnlStats.totalPnL || 0,
+        totalPnL: totalPnLPercentage,
         avgPnL: pnlStats.avgPnL || 0,
+        totalAmountPnL: totalAmountPnL,
         winningTrades: winningTrades.count,
         losingTrades: losingTrades.count,
         winRate: closedTrades.count > 0 ? (winningTrades.count / closedTrades.count) * 100 : 0,
@@ -399,6 +451,7 @@ export const tradingQueriesRouter = createTRPCRouter({
         tpTrades: tpTrades.count,
         beTrades: beTrades.count,
         slTrades: slTrades.count,
+        journal: journal, // Inclure les infos du journal pour l'affichage
       };
     }),
 

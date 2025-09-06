@@ -78,6 +78,13 @@
       "when": 1754471191546,
       "tag": "0010_abnormal_agent_zero",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1757149132036,
+      "tag": "0011_harsh_vermin",
+      "breakpoints": true
     }
   ]
 }

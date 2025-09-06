@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -19,6 +19,7 @@ const createTradeSchema = z.object({
   sessionId: z.string().optional(),
   setupId: z.string().optional(),
   riskInput: z.string().optional(),
+  profitLossAmount: z.string().optional(),
   profitLossPercentage: z.string().optional(),
   exitReason: z.enum(["TP", "BE", "SL", "Manual"]).optional(),
   tradingviewLink: z.string().optional(),
@@ -52,6 +53,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
       tradeDate: new Date().toISOString().split('T')[0],
       symbol: "",
       riskInput: "",
+      profitLossAmount: "",
       profitLossPercentage: "",
       tradingviewLink: "",
       notes: "",
@@ -63,6 +65,40 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
   const { data: assets, refetch: refetchAssets } = api.trading.getAssets.useQuery({ journalId: "" });
   const { data: sessions, refetch: refetchSessions } = api.trading.getSessions.useQuery({ journalId: "" });
   const { data: setups, refetch: refetchSetups } = api.trading.getSetups.useQuery({ journalId: "" });
+  
+  // Get journal info to access starting capital
+  const { data: journal } = api.trading.getJournalById.useQuery(
+    { id: journalId! }, 
+    { enabled: !!journalId }
+  );
+
+  // Calculate real-time conversions between amount and percentage
+  const calculations = useMemo(() => {
+    const profitLossAmount = form.watch("profitLossAmount");
+    const profitLossPercentage = form.watch("profitLossPercentage");
+    
+    if (!journal?.usePercentageCalculation || !journal?.startingCapital) {
+      return { calculatedAmount: null, calculatedPercentage: null };
+    }
+
+    const startingCapital = parseFloat(journal.startingCapital);
+    
+    if (profitLossPercentage && !profitLossAmount) {
+      // Calculate amount from percentage
+      const percentage = parseFloat(profitLossPercentage);
+      const amount = (percentage / 100) * startingCapital;
+      return { calculatedAmount: amount.toFixed(2), calculatedPercentage: null };
+    }
+    
+    if (profitLossAmount && !profitLossPercentage) {
+      // Calculate percentage from amount
+      const amount = parseFloat(profitLossAmount);
+      const percentage = (amount / startingCapital) * 100;
+      return { calculatedAmount: null, calculatedPercentage: percentage.toFixed(2) };
+    }
+    
+    return { calculatedAmount: null, calculatedPercentage: null };
+  }, [form.watch("profitLossAmount"), form.watch("profitLossPercentage"), journal]);
 
   // Mutations
   const createTradeMutation = api.trading.createTrade.useMutation({
@@ -127,14 +163,16 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
   };
 
   const handleCreateAsset = async () => {
-    if (newAsset.name && newAsset.symbol) {
+    if (newAsset.name && newAsset.symbol && journal?.id) {
       try {
         await createAssetMutation.mutateAsync({
-          journalId: "", // Create for all user's journals
+          journalId: journal.id,
           name: newAsset.name,
           symbol: newAsset.symbol,
           type: newAsset.type,
         });
+        setNewAsset({ name: "", symbol: "", type: "Forex" });
+        setShowNewAsset(false);
       } catch (error) {
         console.error("Error creating asset:", error);
       }
@@ -142,13 +180,15 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
   };
 
   const handleCreateSession = async () => {
-    if (newSession.name) {
+    if (newSession.name && journal?.id) {
       try {
         await createSessionMutation.mutateAsync({
-          journalId: "", // Create for all user's journals
+          journalId: journal.id,
           name: newSession.name,
           description: newSession.description,
         });
+        setNewSession({ name: "", description: "" });
+        setShowNewSession(false);
       } catch (error) {
         console.error("Error creating session:", error);
       }
@@ -156,14 +196,16 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
   };
 
   const handleCreateSetup = async () => {
-    if (newSetup.name) {
+    if (newSetup.name && journal?.id) {
       try {
         await createSetupMutation.mutateAsync({
-          journalId: "", // Create for all user's journals
+          journalId: journal.id,
           name: newSetup.name,
           description: newSetup.description,
           strategy: newSetup.strategy,
         });
+        setNewSetup({ name: "", description: "", strategy: "" });
+        setShowNewSetup(false);
       } catch (error) {
         console.error("Error creating setup:", error);
       }
@@ -174,16 +216,16 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-white/10 bg-black/20">
+      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-white/20 bg-black">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="font-argesta text-white">New Trade</CardTitle>
-              <CardDescription className="text-white/60">
+              <CardDescription className="text-white/70">
                 Add a new trade to your journal
               </CardDescription>
             </div>
-            <Button variant="ghost" size="sm" onClick={onClose} className="text-white/60 hover:text-white hover:bg-white/10">
+            <Button variant="ghost" size="sm" onClick={onClose} className="text-white/70 hover:text-white hover:bg-white/10">
               <X className="h-4 w-4" />
             </Button>
           </div>
@@ -193,12 +235,12 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
             {/* Date */}
             <div>
               <Label htmlFor="tradeDate" className="text-white/80">Date</Label>
-              <Input
-                id="tradeDate"
-                type="date"
-                {...form.register("tradeDate")}
-                className="bg-black/30 border-white/20 text-white placeholder:text-white/40 focus:border-white/40"
-              />
+                <Input
+                  id="tradeDate"
+                  type="date"
+                  {...form.register("tradeDate")}
+                  className="bg-black border-white/30 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
+                />
               {form.formState.errors.tradeDate && (
                 <p className="text-red-500 text-sm mt-1">
                   {form.formState.errors.tradeDate.message}
@@ -214,9 +256,9 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                    value={form.watch("symbol")}
                    onValueChange={(value) => form.setValue("symbol", value)}
                  >
-                   <SelectTrigger className="flex-1 bg-black/30 border-white/20 text-white">
-                     <SelectValue placeholder="Select an asset" />
-                   </SelectTrigger>
+                 <SelectTrigger className="flex-1 bg-black border-white/30 text-white focus:border-white focus:ring-1 focus:ring-white">
+                   <SelectValue placeholder="Select an asset" />
+                 </SelectTrigger>
                    <SelectContent>
                      {assets?.map((asset) => (
                        <SelectItem key={asset.id} value={asset.symbol}>
@@ -231,7 +273,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                    variant="outline"
                    size="sm"
                    onClick={() => setShowNewAssetForm(!showNewAssetForm)}
-                   className="border-white/20 text-white/80 hover:bg-white/10"
+                   className="border-white/30 text-white hover:bg-white hover:text-black transition-colors"
                  >
                    <Plus className="h-4 w-4" />
                  </Button>
@@ -391,61 +433,103 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
               )}
             </div>
 
-                         {/* Risk, Result and Exit reason */}
-             <div className="grid grid-cols-3 gap-4">
-               <div>
-                 <Label htmlFor="riskInput" className="text-white/80">Risk (%)</Label>
-                 <Input
-                   id="riskInput"
-                   {...form.register("riskInput")}
-                   placeholder="2.0"
-                   className="bg-black/30 border-white/20 text-white placeholder:text-white/40"
-                 />
-                 {form.formState.errors.riskInput && (
-                   <p className="text-red-500 text-sm mt-1">
-                     {form.formState.errors.riskInput.message}
-                   </p>
-                 )}
-               </div>
+            {/* Risk */}
+            <div>
+              <Label htmlFor="riskInput" className="text-white/80">Risk (%)</Label>
+              <Input
+                id="riskInput"
+                {...form.register("riskInput")}
+                placeholder="2.0"
+                className="bg-black border-white/30 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
+              />
+              {form.formState.errors.riskInput && (
+                <p className="text-red-500 text-sm mt-1">
+                  {form.formState.errors.riskInput.message}
+                </p>
+              )}
+            </div>
 
-               <div>
-                 <Label htmlFor="profitLossPercentage" className="text-white/80">Result (%)</Label>
-                 <Input
-                   id="profitLossPercentage"
-                   {...form.register("profitLossPercentage")}
-                   placeholder="2.5"
-                   className="bg-black/30 border-white/20 text-white placeholder:text-white/40"
-                 />
-                 {form.formState.errors.profitLossPercentage && (
-                   <p className="text-red-500 text-sm mt-1">
-                     {form.formState.errors.profitLossPercentage.message}
-                   </p>
-                 )}
-               </div>
+            {/* Result - Amount or Percentage */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="profitLossAmount" className="text-white/80">
+                  Résultat (€)
+                  {calculations.calculatedAmount && (
+                    <span className="text-white/60 font-normal ml-2">
+                      = {calculations.calculatedAmount}€
+                    </span>
+                  )}
+                </Label>
+                <Input
+                  id="profitLossAmount"
+                  {...form.register("profitLossAmount")}
+                  placeholder="250.00"
+                  type="number"
+                  step="0.01"
+                  className="bg-black border-white/30 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
+                />
+                {form.formState.errors.profitLossAmount && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {form.formState.errors.profitLossAmount.message}
+                  </p>
+                )}
+              </div>
 
-               <div>
-                 <Label htmlFor="exitReason" className="text-white/80">Exit reason</Label>
-                 <Select
-                   value={form.watch("exitReason") || ""}
-                   onValueChange={(value) => form.setValue("exitReason", value as "TP" | "BE" | "SL" | "Manual")}
-                 >
-                   <SelectTrigger className="bg-black/30 border-white/20 text-white">
-                     <SelectValue placeholder="Select" />
-                   </SelectTrigger>
-                   <SelectContent>
-                     <SelectItem value="TP">TP (Take Profit)</SelectItem>
-                     <SelectItem value="BE">BE (Break Even)</SelectItem>
-                     <SelectItem value="SL">SL (Stop Loss)</SelectItem>
-                     <SelectItem value="Manual">Manual</SelectItem>
-                   </SelectContent>
-                 </Select>
-                 {form.formState.errors.exitReason && (
-                   <p className="text-red-500 text-sm mt-1">
-                     {form.formState.errors.exitReason.message}
-                   </p>
-                 )}
-               </div>
-             </div>
+              <div>
+                <Label htmlFor="profitLossPercentage" className="text-white/80">
+                  Résultat (%)
+                  {calculations.calculatedPercentage && (
+                    <span className="text-white/60 font-normal ml-2">
+                      = {calculations.calculatedPercentage}%
+                    </span>
+                  )}
+                </Label>
+                <Input
+                  id="profitLossPercentage"
+                  {...form.register("profitLossPercentage")}
+                  placeholder="2.5"
+                  type="number"
+                  step="0.01"
+                  className="bg-black border-white/30 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
+                />
+                {form.formState.errors.profitLossPercentage && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {form.formState.errors.profitLossPercentage.message}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Capital info */}
+            {journal?.usePercentageCalculation && journal?.startingCapital && (
+              <div className="text-xs text-white/50 bg-black/20 p-2 rounded border border-white/10">
+                💰 Capital de départ: {journal.startingCapital}€
+              </div>
+            )}
+
+            {/* Exit reason */}
+            <div>
+              <Label htmlFor="exitReason" className="text-white/80">Exit reason</Label>
+              <Select
+                value={form.watch("exitReason") || ""}
+                onValueChange={(value) => form.setValue("exitReason", value as "TP" | "BE" | "SL" | "Manual")}
+              >
+                <SelectTrigger className="bg-black border-white/30 text-white focus:border-white focus:ring-1 focus:ring-white">
+                  <SelectValue placeholder="Select exit reason" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="TP">🎯 TP (Take Profit)</SelectItem>
+                  <SelectItem value="BE">⚖️ BE (Break Even)</SelectItem>
+                  <SelectItem value="SL">🛑 SL (Stop Loss)</SelectItem>
+                  <SelectItem value="Manual">✋ Manual</SelectItem>
+                </SelectContent>
+              </Select>
+              {form.formState.errors.exitReason && (
+                <p className="text-red-500 text-sm mt-1">
+                  {form.formState.errors.exitReason.message}
+                </p>
+              )}
+            </div>
 
             {/* TradingView link */}
             <div>

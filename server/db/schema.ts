@@ -257,6 +257,10 @@ export const tradingJournals = createTable(
     isDefault: boolean("is_default").default(false).notNull(),
     isActive: boolean("is_active").default(true).notNull(),
     
+    // Gestion du capital pour calculs en pourcentage
+    startingCapital: varchar("starting_capital", { length: 50 }), // Montant initial pour calculs en %
+    usePercentageCalculation: boolean("use_percentage_calculation").default(false).notNull(),
+    
     // Timestamps
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
@@ -403,9 +407,13 @@ export const advancedTrades = createTable(
     // Gestion du risque
     riskInput: varchar("risk_input", { length: 50 }), // 1%, 2R, etc.
     
-    // Résultats
-    profitLossPercentage: varchar("profit_loss_percentage", { length: 50 }),
+    // Résultats - calcul automatique basé sur le capital de départ
+    profitLossAmount: varchar("profit_loss_amount", { length: 50 }), // Montant brut du P&L
+    profitLossPercentage: varchar("profit_loss_percentage", { length: 50 }), // % calculé automatiquement
     exitReason: varchar("exit_reason", { length: 20 }), // TP, BE, SL, Manual
+    
+    // Détection automatique des BE avec seuil personnalisable
+    breakEvenThreshold: varchar("break_even_threshold", { length: 10 }).default("0.1"), // Seuil en % pour BE (0.1% par défaut)
     
     // Liens et notes
     tradingviewLink: varchar("tradingview_link", { length: 1024 }),

@@ -20,7 +20,8 @@ import {
   createAdvancedTradeSchema,
   updateAdvancedTradeSchema,
 } from "../validators";
-import { eq, and } from "drizzle-orm";
+import { calculateTradeResults } from "@/server/services/trade-calculation";
+import { eq, and, sum, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
 export const tradingMutationsRouter = createTRPCRouter({
@@ -50,6 +51,8 @@ export const tradingMutationsRouter = createTRPCRouter({
           name: input.name,
           description: input.description,
           isDefault: input.isDefault,
+          startingCapital: input.startingCapital,
+          usePercentageCalculation: input.usePercentageCalculation ?? false,
           createdAt: new Date(),
           updatedAt: new Date(),
         })
@@ -507,10 +510,46 @@ export const tradingMutationsRouter = createTRPCRouter({
       
       // Nettoyer les valeurs numériques
       const cleanRiskInput = input.riskInput ? String(input.riskInput).replace(/[%,]/g, '').trim() : null;
-      const cleanProfitLossPercentage = input.profitLossPercentage ? String(input.profitLossPercentage).replace(/[%,]/g, '').trim() : null;
       
-      // Si profitLossPercentage est vide ou null, le définir comme '0' pour les BE
-      const finalProfitLossPercentage = cleanProfitLossPercentage || '0';
+      // Calculer le capital actuel si le journal utilise le calcul en pourcentage
+      let currentCapital: number | undefined;
+      if (journal[0].usePercentageCalculation && journal[0].startingCapital) {
+        const startingCapital = parseFloat(journal[0].startingCapital);
+        
+        // Récupérer la somme de tous les trades fermés pour ce journal
+        const [totalPnLResult] = await db
+          .select({
+            totalAmountPnL: sum(sql`CAST(${advancedTrades.profitLossAmount} AS DECIMAL)`),
+          })
+          .from(advancedTrades)
+          .where(and(
+            eq(advancedTrades.journalId, input.journalId),
+            eq(advancedTrades.userId, userId),
+            eq(advancedTrades.isClosed, true)
+          ));
+        
+        const totalPnLAmount = totalPnLResult?.totalAmountPnL || 0;
+        currentCapital = startingCapital + Number(totalPnLAmount);
+        
+        console.log("Capital actuel calculé:", {
+          startingCapital,
+          totalPnLAmount,
+          currentCapital
+        });
+      }
+      
+      // Calculer les résultats du trade (montant <-> pourcentage)
+      const calculatedResults = calculateTradeResults(
+        {
+          profitLossAmount: input.profitLossAmount,
+          profitLossPercentage: input.profitLossPercentage,
+          exitReason: input.exitReason,
+        },
+        journal[0],
+        currentCapital
+      );
+      
+      console.log("Résultats calculés:", calculatedResults);
       
       const tradeValues = {
         id: crypto.randomUUID(),
@@ -522,8 +561,10 @@ export const tradingMutationsRouter = createTRPCRouter({
         tradeDate: input.tradeDate,
         symbol: input.symbol || '',
         riskInput: cleanRiskInput,
-        profitLossPercentage: finalProfitLossPercentage,
-        exitReason: input.exitReason || null,
+        profitLossAmount: calculatedResults.profitLossAmount || null,
+        profitLossPercentage: calculatedResults.profitLossPercentage,
+        exitReason: calculatedResults.exitReason,
+        breakEvenThreshold: "0.1", // Valeur par défaut, non utilisée
         tradingviewLink: input.tradingviewLink || null,
         notes: input.notes || null,
         isClosed: input.isClosed ?? true,

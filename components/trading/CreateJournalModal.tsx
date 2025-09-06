@@ -26,6 +26,8 @@ export function CreateJournalModal({ isOpen, onClose, onSuccess }: CreateJournal
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [isDefault, setIsDefault] = useState(false);
+  const [startingCapital, setStartingCapital] = useState("");
+  const [usePercentageCalculation, setUsePercentageCalculation] = useState(false);
 
   const createJournalMutation = api.trading.createJournal.useMutation({
     onSuccess: () => {
@@ -33,6 +35,8 @@ export function CreateJournalModal({ isOpen, onClose, onSuccess }: CreateJournal
       setName("");
       setDescription("");
       setIsDefault(false);
+      setStartingCapital("");
+      setUsePercentageCalculation(false);
       onSuccess?.();
     },
   });
@@ -50,6 +54,8 @@ export function CreateJournalModal({ isOpen, onClose, onSuccess }: CreateJournal
         name: name.trim(),
         description: description.trim(),
         isDefault,
+        startingCapital: startingCapital.trim() || undefined,
+        usePercentageCalculation,
       });
     } catch (error) {
       console.error("Error creating journal:", error);
@@ -61,33 +67,37 @@ export function CreateJournalModal({ isOpen, onClose, onSuccess }: CreateJournal
       setName("");
       setDescription("");
       setIsDefault(false);
+      setStartingCapital("");
+      setUsePercentageCalculation(false);
       onClose();
     }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] bg-black border-white/20 text-white">
         <DialogHeader>
-          <DialogTitle>Create a new journal</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-white">Create a new journal</DialogTitle>
+          <DialogDescription className="text-white/70">
             Create a new trading journal to organize your trades and track your performance.
+            Enable percentage calculation for automatic BE/TP/SL detection.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="name">Journal name *</Label>
+              <Label htmlFor="name" className="text-white/80">Journal name *</Label>
               <Input
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Ex: Main Journal"
                 disabled={createJournalMutation.isPending}
+                className="bg-black border-white/30 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description" className="text-white/80">Description</Label>
               <Textarea
                 id="description"
                 value={description}
@@ -95,8 +105,38 @@ export function CreateJournalModal({ isOpen, onClose, onSuccess }: CreateJournal
                 placeholder="Optional journal description"
                 rows={3}
                 disabled={createJournalMutation.isPending}
+                className="bg-black border-white/30 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
               />
             </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="usePercentageCalculation"
+                checked={usePercentageCalculation}
+                onCheckedChange={(checked) => setUsePercentageCalculation(checked as boolean)}
+                disabled={createJournalMutation.isPending}
+              />
+              <Label htmlFor="usePercentageCalculation" className="text-sm text-white/80">
+                Use percentage calculation
+              </Label>
+            </div>
+            {usePercentageCalculation && (
+              <div className="grid gap-2">
+                <Label htmlFor="startingCapital" className="text-white/80">Starting capital</Label>
+                <Input
+                  id="startingCapital"
+                  value={startingCapital}
+                  onChange={(e) => setStartingCapital(e.target.value)}
+                  placeholder="Ex: 10000"
+                  type="number"
+                  step="0.01"
+                  disabled={createJournalMutation.isPending}
+                  className="bg-black border-white/30 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
+                />
+                <p className="text-xs text-white/50">
+                  The starting capital allows to calculate percentages automatically when creating trades
+                </p>
+              </div>
+            )}
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="isDefault"
@@ -104,7 +144,7 @@ export function CreateJournalModal({ isOpen, onClose, onSuccess }: CreateJournal
                 onCheckedChange={(checked) => setIsDefault(checked as boolean)}
                 disabled={createJournalMutation.isPending}
               />
-              <Label htmlFor="isDefault" className="text-sm">
+              <Label htmlFor="isDefault" className="text-sm text-white/80">
                 Set as default journal
               </Label>
             </div>
@@ -115,13 +155,14 @@ export function CreateJournalModal({ isOpen, onClose, onSuccess }: CreateJournal
               variant="outline"
               onClick={handleClose}
               disabled={createJournalMutation.isPending}
+              className="border-white/30 text-white hover:bg-white hover:text-black transition-colors"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={createJournalMutation.isPending || !name.trim()}
-              className="bg-black text-white hover:bg-gray-800"
+              className="bg-white text-black hover:bg-white/90 transition-colors"
             >
               {createJournalMutation.isPending ? "Creating..." : "Create journal"}
             </Button>

@@ -284,9 +284,16 @@ export default function TradingPage() {
                         1.00%
                       </td>
                       <td className="py-3 px-4 text-sm">
-                        <span className={`${Number(trade.profitLossPercentage || 0) > 0 ? 'text-green-400' : Number(trade.profitLossPercentage || 0) < 0 ? 'text-red-400' : 'text-blue-400'}`}>
-                          {Number(trade.profitLossPercentage || 0) >= 0 ? '+' : ''}{trade.profitLossPercentage || 0}%
-                        </span>
+                        <div className="space-y-1">
+                          <span className={`${Number(trade.profitLossPercentage || 0) > 0 ? 'text-green-400' : Number(trade.profitLossPercentage || 0) < 0 ? 'text-red-400' : 'text-blue-400'}`}>
+                            {Number(trade.profitLossPercentage || 0) >= 0 ? '+' : ''}{trade.profitLossPercentage || 0}%
+                          </span>
+                          {trade.profitLossAmount && (
+                            <div className={`text-xs ${Number(trade.profitLossAmount || 0) > 0 ? 'text-green-400' : Number(trade.profitLossAmount || 0) < 0 ? 'text-red-400' : 'text-blue-400'}`}>
+                              {Number(trade.profitLossAmount || 0) >= 0 ? '+' : ''}{trade.profitLossAmount}€
+                            </div>
+                          )}
+                        </div>
                       </td>
                       <td className="py-3 px-4 text-sm text-white">
                         {trade.notes || '-'}
