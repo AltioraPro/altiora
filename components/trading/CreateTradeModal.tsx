@@ -73,10 +73,10 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
   );
 
   // Calculate real-time conversions between amount and percentage
+  const profitLossAmount = form.watch("profitLossAmount");
+  const profitLossPercentage = form.watch("profitLossPercentage");
+  
   const calculations = useMemo(() => {
-    const profitLossAmount = form.watch("profitLossAmount");
-    const profitLossPercentage = form.watch("profitLossPercentage");
-    
     if (!journal?.usePercentageCalculation || !journal?.startingCapital) {
       return { calculatedAmount: null, calculatedPercentage: null };
     }
@@ -98,7 +98,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
     }
     
     return { calculatedAmount: null, calculatedPercentage: null };
-  }, [form.watch("profitLossAmount"), form.watch("profitLossPercentage"), journal]);
+  }, [profitLossAmount, profitLossPercentage, journal?.usePercentageCalculation, journal?.startingCapital]);
 
   // Mutations
   const createTradeMutation = api.trading.createTrade.useMutation({
@@ -171,8 +171,8 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
           symbol: newAsset.symbol,
           type: newAsset.type,
         });
-        setNewAsset({ name: "", symbol: "", type: "Forex" });
-        setShowNewAsset(false);
+        setNewAsset({ name: "", symbol: "", type: "forex" });
+        setShowNewAssetForm(false);
       } catch (error) {
         console.error("Error creating asset:", error);
       }
@@ -188,7 +188,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
           description: newSession.description,
         });
         setNewSession({ name: "", description: "" });
-        setShowNewSession(false);
+        setShowNewSessionForm(false);
       } catch (error) {
         console.error("Error creating session:", error);
       }
@@ -205,7 +205,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
           strategy: newSetup.strategy,
         });
         setNewSetup({ name: "", description: "", strategy: "" });
-        setShowNewSetup(false);
+        setShowNewSetupForm(false);
       } catch (error) {
         console.error("Error creating setup:", error);
       }

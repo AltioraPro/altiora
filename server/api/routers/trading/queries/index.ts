@@ -442,7 +442,7 @@ export const tradingQueriesRouter = createTRPCRouter({
         closedTrades: closedTrades.count,
         totalPnL: totalPnLPercentage,
         avgPnL: pnlStats.avgPnL || 0,
-        totalAmountPnL: totalAmountPnL,
+        totalAmountPnL: Number(totalAmountPnL) || undefined,
         winningTrades: winningTrades.count,
         losingTrades: losingTrades.count,
         winRate: closedTrades.count > 0 ? (winningTrades.count / closedTrades.count) * 100 : 0,
@@ -451,7 +451,10 @@ export const tradingQueriesRouter = createTRPCRouter({
         tpTrades: tpTrades.count,
         beTrades: beTrades.count,
         slTrades: slTrades.count,
-        journal: journal, // Inclure les infos du journal pour l'affichage
+        journal: journal ? {
+          usePercentageCalculation: journal.usePercentageCalculation,
+          startingCapital: journal.startingCapital || undefined
+        } : undefined, // Inclure les infos du journal pour l'affichage
       };
     }),
 
