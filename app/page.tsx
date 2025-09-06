@@ -3,7 +3,6 @@ import ShinyText from "@/components/landing/ShinyText";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
 import { ArrowRight, TrendingUp, Target, Zap, BarChart3, Clock, Star, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import Silk from "@/components/Silk/Silk";
@@ -144,7 +143,6 @@ export default function HomePage() {
       </section>
 
       <FeaturesSection />
-      <Footer />
     </>
   );
 }  

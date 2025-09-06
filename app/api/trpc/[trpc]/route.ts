@@ -5,7 +5,10 @@ import { appRouter } from "@/server/api/root";
 import { createTRPCContext } from "@/server/api/trpc";
 
 /**
- * Configure le Request handler pour tRPC
+ * Configure le Request handler pour tRPC 
+ * 
+ * 
+ * a l'aide !e
  */
 const handler = (req: NextRequest) =>
   fetchRequestHandler({
