@@ -11,15 +11,13 @@ interface DraggableJournalCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onSetDefault: () => void;
-  isDragging?: boolean;
 }
 
 export function DraggableJournalCard({ 
   journal, 
   onEdit, 
   onDelete, 
-  onSetDefault,
-  isDragging = false
+  onSetDefault
 }: DraggableJournalCardProps) {
   const {
     attributes,
