@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useCallback } from "react";
 import { useSession } from "@/lib/auth-client";
 import { api } from "@/trpc/client";
 import { useSearchParams } from "next/navigation";
@@ -82,7 +82,12 @@ export default function TradingPage() {
     },
   });
 
-  // Set default journal when loaded (independent of search params)
+  // Handle journal selection from URL params or default
+  const handleJournalFound = useCallback((journalId: string) => {
+    setSelectedJournalId(journalId);
+  }, []);
+
+  // Set default journal when loaded only if no journal is selected
   useEffect(() => {
     if (!selectedJournalId && defaultJournal) {
       setSelectedJournalId(defaultJournal.id);
@@ -172,7 +177,7 @@ export default function TradingPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <Suspense fallback={null}>
-        <JournalParamSync onFound={setSelectedJournalId} />
+        <JournalParamSync onFound={handleJournalFound} />
       </Suspense>
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
