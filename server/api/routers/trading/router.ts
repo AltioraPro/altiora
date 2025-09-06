@@ -8,6 +8,7 @@ export const tradingRouter = createTRPCRouter({
   updateJournal: tradingMutationsRouter.updateTradingJournal,
   deleteJournal: tradingMutationsRouter.deleteTradingJournal,
   setDefaultJournal: tradingMutationsRouter.setDefaultTradingJournal,
+  reorderJournals: tradingMutationsRouter.reorderJournals,
 
   createAsset: tradingMutationsRouter.createTradingAsset,
   updateAsset: tradingMutationsRouter.updateTradingAsset,

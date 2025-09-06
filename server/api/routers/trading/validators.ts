@@ -148,4 +148,9 @@ export const tradingStatsSchema = z.object({
   journalId: z.string().optional(),
   startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Format de date invalide (YYYY-MM-DD)").optional(),
   endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Format de date invalide (YYYY-MM-DD)").optional(),
+});
+
+// Validateur pour réorganiser les journaux
+export const reorderJournalsSchema = z.object({
+  journalIds: z.array(z.string()).min(1, "Au moins un journal requis"),
 }); 

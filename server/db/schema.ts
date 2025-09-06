@@ -256,6 +256,7 @@ export const tradingJournals = createTable(
     description: text("description"),
     isDefault: boolean("is_default").default(false).notNull(),
     isActive: boolean("is_active").default(true).notNull(),
+    order: integer("order").default(0).notNull(),
     
     // Gestion du capital pour calculs en pourcentage
     startingCapital: varchar("starting_capital", { length: 50 }), // Montant initial pour calculs en %

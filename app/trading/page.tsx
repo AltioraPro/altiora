@@ -35,7 +35,6 @@ export default function TradingPage() {
 
   // Queries
   const { data: journals, isLoading: journalsLoading } = api.trading.getJournals.useQuery();
-  const { data: defaultJournal } = api.trading.getDefaultJournal.useQuery();
   const { data: stats } = api.trading.getStats.useQuery(
     { journalId: selectedJournalId || undefined },
     { enabled: !!selectedJournalId }
@@ -87,12 +86,12 @@ export default function TradingPage() {
     setSelectedJournalId(journalId);
   }, []);
 
-  // Set default journal when loaded only if no journal is selected
+  // Set first journal when loaded only if no journal is selected
   useEffect(() => {
-    if (!selectedJournalId && defaultJournal) {
-      setSelectedJournalId(defaultJournal.id);
+    if (!selectedJournalId && journals && journals.length > 0) {
+      setSelectedJournalId(journals[0].id);
     }
-  }, [defaultJournal, selectedJournalId]);
+  }, [journals, selectedJournalId]);
 
   const handleCreateDefaultJournal = async () => {
     if (!session?.user?.id) return;

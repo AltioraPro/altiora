@@ -29,7 +29,7 @@ export const tradingQueriesRouter = createTRPCRouter({
           eq(tradingJournals.userId, userId),
           eq(tradingJournals.isActive, true)
         ))
-        .orderBy(desc(tradingJournals.isDefault), desc(tradingJournals.createdAt));
+        .orderBy(tradingJournals.order, desc(tradingJournals.createdAt));
 
       return journals;
     }),

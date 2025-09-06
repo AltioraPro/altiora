@@ -5,7 +5,7 @@ import { api } from "@/trpc/client";
 import { Plus, BarChart3, BookOpen } from "lucide-react";
 import { CreateJournalModal } from "@/components/trading/CreateJournalModal";
 import { EditJournalModal } from "@/components/trading/EditJournalModal";
-import { JournalPerformanceCard } from "@/components/trading/JournalPerformanceCard";
+import { DraggableJournalList } from "@/components/trading/DraggableJournalList";
 import type { TradingJournal } from "@/server/db/schema";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,6 +32,11 @@ export default function JournalsPage() {
     },
   });
 
+  const reorderJournalsMutation = api.trading.reorderJournals.useMutation({
+    // Pas de refetch automatique pour éviter que les journaux reviennent à leur place
+    // L'ordre est déjà mis à jour de manière optimiste dans le composant DraggableJournalList
+  });
+
   const handleDeleteJournal = async (journalId: string) => {
     if (confirm("Are you sure you want to delete this journal? This action is irreversible.")) {
       try {
@@ -47,6 +52,14 @@ export default function JournalsPage() {
       await setDefaultJournalMutation.mutateAsync({ id: journalId });
     } catch (error) {
       console.error("Error setting default journal:", error);
+    }
+  };
+
+  const handleReorderJournals = async (journalIds: string[]) => {
+    try {
+      await reorderJournalsMutation.mutateAsync({ journalIds });
+    } catch (error) {
+      console.error("Error reordering journals:", error);
     }
   };
 
@@ -136,17 +149,13 @@ export default function JournalsPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {journals.map((journal) => (
-                  <JournalPerformanceCard
-                    key={journal.id}
-                    journal={journal}
-                    onEdit={() => setEditingJournal(journal)}
-                    onDelete={() => handleDeleteJournal(journal.id)}
-                    onSetDefault={() => handleSetDefaultJournal(journal.id)}
-                  />
-                ))}
-              </div>
+              <DraggableJournalList
+                journals={journals}
+                onReorder={handleReorderJournals}
+                onEdit={(journal) => setEditingJournal(journal)}
+                onDelete={(journal) => handleDeleteJournal(journal.id)}
+                onSetDefault={(journal) => handleSetDefaultJournal(journal.id)}
+              />
             </CardContent>
           </Card>
 

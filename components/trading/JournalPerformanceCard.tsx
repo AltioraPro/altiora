@@ -12,13 +12,14 @@ interface JournalPerformanceCardProps {
     name: string;
     description: string | null;
     isDefault: boolean;
+    order: number;
   };
   onEdit: () => void;
   onDelete: () => void;
   onSetDefault: () => void;
 }
 
-export function JournalPerformanceCard({ journal, onEdit, onDelete, onSetDefault }: JournalPerformanceCardProps) {
+export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPerformanceCardProps) {
   const { data: stats } = api.trading.getStats.useQuery(
     { journalId: journal.id },
     { enabled: !!journal.id }
@@ -110,17 +111,10 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete, onSetDefault
         {/* Actions */}
         <div className="flex items-center justify-between pt-3 border-t border-white/10">
           <div className="flex items-center space-x-1">
-            {!journal.isDefault && (
-              <Button
-                onClick={onSetDefault}
-                variant="outline"
-                size="sm"
-                className="text-xs"
-              >
-                <Star className="w-3 h-3 mr-1" />
-                Default
-              </Button>
-            )}
+            {/* Order indicator */}
+            <span className="text-xs text-white/40">
+              #{journal.order + 1}
+            </span>
           </div>
           
           <div className="flex items-center space-x-1">

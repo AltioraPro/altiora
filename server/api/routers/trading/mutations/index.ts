@@ -19,6 +19,7 @@ import {
   updateTradingSetupSchema,
   createAdvancedTradeSchema,
   updateAdvancedTradeSchema,
+  reorderJournalsSchema,
 } from "../validators";
 import { calculateTradeResults } from "@/server/services/trade-calculation";
 import { eq, and, sum, sql } from "drizzle-orm";
@@ -625,6 +626,49 @@ export const tradingMutationsRouter = createTRPCRouter({
           eq(advancedTrades.id, input.id),
           eq(advancedTrades.userId, userId)
         ));
+
+      return { success: true };
+    }),
+
+  // Mutation pour réorganiser les journaux
+  reorderJournals: protectedProcedure
+    .input(reorderJournalsSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { session } = ctx;
+      const userId = session.userId;
+
+      // Vérifier que tous les journaux appartiennent à l'utilisateur
+      const journals = await db
+        .select()
+        .from(tradingJournals)
+        .where(and(
+          eq(tradingJournals.userId, userId),
+          eq(tradingJournals.isActive, true)
+        ));
+
+      const journalIds = journals.map(j => j.id);
+      const invalidIds = input.journalIds.filter(id => !journalIds.includes(id));
+      
+      if (invalidIds.length > 0) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Certains journaux n'appartiennent pas à l'utilisateur",
+        });
+      }
+
+      // Mettre à jour l'ordre des journaux
+      for (let i = 0; i < input.journalIds.length; i++) {
+        await db
+          .update(tradingJournals)
+          .set({ 
+            order: i,
+            updatedAt: new Date(),
+          })
+          .where(and(
+            eq(tradingJournals.id, input.journalIds[i]),
+            eq(tradingJournals.userId, userId)
+          ));
+      }
 
       return { success: true };
     }),
