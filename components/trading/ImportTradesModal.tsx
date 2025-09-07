@@ -85,7 +85,7 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
         const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as ExcelRow[];
         
         // Debug: Afficher la structure du fichier Excel
-        console.log('📊 Structure du fichier Excel:');
+        console.log('Structure du fichier Excel:');
         console.log('Nombre de lignes:', rawData.length);
         if (rawData.length > 0) {
           console.log('Première ligne (en-têtes):', rawData[0]);
@@ -149,7 +149,7 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
     // Check if asset already exists in local cache
     const cachedAssetId = localCacheRef.current.assets.get(assetToUse.toLowerCase());
     if (cachedAssetId) {
-      console.log('✅ Found in cache:', assetToUse, '->', cachedAssetId);
+      console.log('Found in cache:', assetToUse, '->', cachedAssetId);
       return cachedAssetId;
     }
     
@@ -160,7 +160,7 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
     );
     
     if (existingAsset) {
-      console.log('✅ Found existing asset:', assetToUse, '->', existingAsset.id);
+      console.log('Found existing asset:', assetToUse, '->', existingAsset.id);
       // Add to local cache
       localCacheRef.current.assets.set(assetToUse.toLowerCase(), existingAsset.id);
       return existingAsset.id;

@@ -543,7 +543,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
             {/* Capital info */}
             {journal?.usePercentageCalculation && capitalData && (
               <div className="text-xs text-white/50 bg-black/20 p-2 rounded border border-white/10">
-                💰 Current capital: {capitalData.currentCapital}€
+                Current capital: {capitalData.currentCapital}€
                 {capitalData.startingCapital && (
                   <span className="text-white/40 ml-2">
                     (Started with: {capitalData.startingCapital}€)
@@ -563,10 +563,9 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                   <SelectValue placeholder="Select exit reason" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="TP">🎯 TP (Take Profit)</SelectItem>
-                  <SelectItem value="BE">⚖️ BE (Break Even)</SelectItem>
-                  <SelectItem value="SL">🛑 SL (Stop Loss)</SelectItem>
-                  <SelectItem value="Manual">✋ Manual</SelectItem>
+                  <SelectItem value="TP">TP (Take Profit)</SelectItem>
+                  <SelectItem value="BE">BE (Break Even)</SelectItem>
+                  <SelectItem value="SL">SL (Stop Loss)</SelectItem>
                 </SelectContent>
               </Select>
               {form.formState.errors.exitReason && (
