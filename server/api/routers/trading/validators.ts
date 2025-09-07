@@ -101,6 +101,12 @@ export const createAdvancedTradeSchema = z.object({
   
   // Métadonnées
   isClosed: z.boolean().default(false),
+}).refine((data) => {
+  // Au moins un des deux champs de résultat doit être rempli
+  return data.profitLossAmount || data.profitLossPercentage;
+}, {
+  message: "Either profit/loss amount or percentage is required",
+  path: ["profitLossAmount"]
 });
 
 // Validateur pour mettre à jour un trade avancé

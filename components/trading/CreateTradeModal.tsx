@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -59,12 +59,21 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
       notes: "",
       journalId: journalId || "",
     },
+    mode: "onChange", // Pour déclencher la validation en temps réel
   });
+
+  // Mettre à jour journalId quand il change
+  React.useEffect(() => {
+    if (journalId) {
+      form.setValue("journalId", journalId);
+    }
+  }, [journalId, form]);
 
   // Data queries - Get assets, sessions, and setups for all user's journals
   const { data: assets, refetch: refetchAssets } = api.trading.getAssets.useQuery({ journalId: "" });
   const { data: sessions, refetch: refetchSessions } = api.trading.getSessions.useQuery({ journalId: "" });
   const { data: setups, refetch: refetchSetups } = api.trading.getSetups.useQuery({ journalId: "" });
+  
   
   // Get journal info to access starting capital
   const { data: journal } = api.trading.getJournalById.useQuery(
@@ -137,28 +146,26 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
 
   const handleSubmit = async (data: CreateTradeForm) => {
     try {
-      console.log("=== TRADE CREATION START ===");
-      console.log("Form data:", data);
-      console.log("JournalId:", journalId);
-      console.log("Form valid:", form.formState.isValid);
-      console.log("Form errors:", form.formState.errors);
+      // Validation côté client pour s'assurer qu'au moins un champ de résultat est rempli
+      if (!data.profitLossAmount && !data.profitLossPercentage) {
+        alert("Please provide either amount or percentage");
+        return;
+      }
       
-             const tradeData = {
-         ...data,
-         tradeDate: data.tradeDate,
-         journalId: journalId!,
-         isClosed: true,
-       };
-      
-      console.log("Data sent to mutation:", tradeData);
+      const tradeData = {
+        ...data,
+        tradeDate: data.tradeDate,
+        journalId: journalId!,
+        isClosed: true,
+      };
       
       const result = await createTradeMutation.mutateAsync(tradeData);
-      console.log("Trade created successfully:", result);
+      
+      // Fermer la modal et réinitialiser le formulaire
+      onClose();
+      form.reset();
     } catch (error) {
-      console.error("=== TRADE CREATION ERROR ===");
-      console.error("Complete error:", error);
-      console.error("Error message:", error instanceof Error ? error.message : "Unknown error");
-      console.error("Stack trace:", error instanceof Error ? error.stack : "No stack trace");
+      console.error("Error creating trade:", error);
     }
   };
 
