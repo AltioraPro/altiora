@@ -159,7 +159,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
         isClosed: true,
       };
       
-      const result = await createTradeMutation.mutateAsync(tradeData);
+      await createTradeMutation.mutateAsync(tradeData);
       
       // Fermer la modal et réinitialiser le formulaire
       onClose();
