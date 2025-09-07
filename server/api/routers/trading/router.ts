@@ -44,5 +44,6 @@ export const tradingRouter = createTRPCRouter({
   getTrades: tradingQueriesRouter.getAdvancedTrades,
   getTradeById: tradingQueriesRouter.getAdvancedTradeById,
   getStats: tradingQueriesRouter.getTradingStats,
+  getCurrentCapital: tradingQueriesRouter.getCurrentCapital,
   getJournalOverview: tradingQueriesRouter.getJournalOverview,
 }); 

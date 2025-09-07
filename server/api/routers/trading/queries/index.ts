@@ -342,14 +342,14 @@ export const tradingQueriesRouter = createTRPCRouter({
         .from(advancedTrades)
         .where(and(...whereConditions, eq(advancedTrades.isClosed, true)));
 
-      // Trades gagnants vs perdants
+      // Trades gagnants vs perdants basés sur exitReason
       const [winningTrades] = await db
         .select({ count: count() })
         .from(advancedTrades)
         .where(and(
           ...whereConditions,
           eq(advancedTrades.isClosed, true),
-          sql`CAST(${advancedTrades.profitLossPercentage} AS DECIMAL) > 0`
+          eq(advancedTrades.exitReason, "TP")
         ));
 
       const [losingTrades] = await db
@@ -358,7 +358,7 @@ export const tradingQueriesRouter = createTRPCRouter({
         .where(and(
           ...whereConditions,
           eq(advancedTrades.isClosed, true),
-          sql`CAST(${advancedTrades.profitLossPercentage} AS DECIMAL) < 0`
+          eq(advancedTrades.exitReason, "SL")
         ));
 
       // Trades par symbole
@@ -437,6 +437,9 @@ export const tradingQueriesRouter = createTRPCRouter({
         });
       }
 
+      // Calculer le winrate : total des TP / nombre total de trades fermés * 100
+      const winRate = closedTrades.count > 0 ? (winningTrades.count / closedTrades.count) * 100 : 0;
+
       return {
         totalTrades: totalTrades.count,
         closedTrades: closedTrades.count,
@@ -445,7 +448,7 @@ export const tradingQueriesRouter = createTRPCRouter({
         totalAmountPnL: Number(totalAmountPnL) || undefined,
         winningTrades: winningTrades.count,
         losingTrades: losingTrades.count,
-        winRate: closedTrades.count > 0 ? (winningTrades.count / closedTrades.count) * 100 : 0,
+        winRate: winRate,
         tradesBySymbol,
         tradesBySetup,
         tpTrades: tpTrades.count,
@@ -455,6 +458,57 @@ export const tradingQueriesRouter = createTRPCRouter({
           usePercentageCalculation: journal.usePercentageCalculation,
           startingCapital: journal.startingCapital || undefined
         } : undefined, // Inclure les infos du journal pour l'affichage
+      };
+    }),
+
+  // Query pour obtenir le capital actuel d'un journal
+  getCurrentCapital: protectedProcedure
+    .input(z.object({ journalId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { session } = ctx;
+      const userId = session.userId;
+
+      // Vérifier que le journal appartient à l'utilisateur
+      const [journal] = await db
+        .select()
+        .from(tradingJournals)
+        .where(and(
+          eq(tradingJournals.id, input.journalId),
+          eq(tradingJournals.userId, userId)
+        ))
+        .limit(1);
+
+      if (!journal) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Trading journal not found",
+        });
+      }
+
+      if (!journal.usePercentageCalculation || !journal.startingCapital) {
+        return { currentCapital: null, startingCapital: null };
+      }
+
+      const startingCapital = parseFloat(journal.startingCapital);
+      
+      // Récupérer la somme de tous les trades fermés pour ce journal
+      const [totalPnLResult] = await db
+        .select({
+          totalAmountPnL: sum(sql`CAST(${advancedTrades.profitLossAmount} AS DECIMAL)`),
+        })
+        .from(advancedTrades)
+        .where(and(
+          eq(advancedTrades.journalId, input.journalId),
+          eq(advancedTrades.userId, userId),
+          eq(advancedTrades.isClosed, true)
+        ));
+      
+      const totalPnLAmount = totalPnLResult?.totalAmountPnL || 0;
+      const currentCapital = startingCapital + Number(totalPnLAmount);
+
+      return { 
+        currentCapital: currentCapital.toFixed(2), 
+        startingCapital: startingCapital.toFixed(2) 
       };
     }),
 

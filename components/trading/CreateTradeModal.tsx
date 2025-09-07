@@ -81,33 +81,39 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
     { enabled: !!journalId }
   );
 
+  // Get current capital for percentage calculations
+  const { data: capitalData } = api.trading.getCurrentCapital.useQuery(
+    { journalId: journalId! }, 
+    { enabled: !!journalId && !!journal?.usePercentageCalculation }
+  );
+
   // Calculate real-time conversions between amount and percentage
   const profitLossAmount = form.watch("profitLossAmount");
   const profitLossPercentage = form.watch("profitLossPercentage");
   
   const calculations = useMemo(() => {
-    if (!journal?.usePercentageCalculation || !journal?.startingCapital) {
+    if (!journal?.usePercentageCalculation || !capitalData?.currentCapital) {
       return { calculatedAmount: null, calculatedPercentage: null };
     }
 
-    const startingCapital = parseFloat(journal.startingCapital);
+    const currentCapital = parseFloat(capitalData.currentCapital);
     
     if (profitLossPercentage && !profitLossAmount) {
-      // Calculate amount from percentage
+      // Calculate amount from percentage based on current capital
       const percentage = parseFloat(profitLossPercentage);
-      const amount = (percentage / 100) * startingCapital;
+      const amount = (percentage / 100) * currentCapital;
       return { calculatedAmount: amount.toFixed(2), calculatedPercentage: null };
     }
     
     if (profitLossAmount && !profitLossPercentage) {
-      // Calculate percentage from amount
+      // Calculate percentage from amount based on current capital
       const amount = parseFloat(profitLossAmount);
-      const percentage = (amount / startingCapital) * 100;
+      const percentage = (amount / currentCapital) * 100;
       return { calculatedAmount: null, calculatedPercentage: percentage.toFixed(2) };
     }
     
     return { calculatedAmount: null, calculatedPercentage: null };
-  }, [profitLossAmount, profitLossPercentage, journal?.usePercentageCalculation, journal?.startingCapital]);
+  }, [profitLossAmount, profitLossPercentage, journal?.usePercentageCalculation, capitalData?.currentCapital]);
 
   // Mutations
   const createTradeMutation = api.trading.createTrade.useMutation({
@@ -535,9 +541,14 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
             )}
 
             {/* Capital info */}
-            {journal?.usePercentageCalculation && journal?.startingCapital && (
+            {journal?.usePercentageCalculation && capitalData && (
               <div className="text-xs text-white/50 bg-black/20 p-2 rounded border border-white/10">
-                💰 Starting capital: {journal.startingCapital}€
+                💰 Current capital: {capitalData.currentCapital}€
+                {capitalData.startingCapital && (
+                  <span className="text-white/40 ml-2">
+                    (Started with: {capitalData.startingCapital}€)
+                  </span>
+                )}
               </div>
             )}
 
