@@ -120,7 +120,7 @@ export default function JournalsPage() {
               </Button>
               
               <Link href="/dashboard">
-                                  <Button variant="outline">
+                <Button variant="outline" className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white">
                   <BarChart3 className="w-4 h-4 mr-2" />
                   View Dashboard
                 </Button>

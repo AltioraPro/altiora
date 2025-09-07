@@ -52,7 +52,7 @@ export const tradingQueriesRouter = createTRPCRouter({
       if (!journal) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Journal de trading non trouvé",
+          message: "Trading journal not found",
         });
       }
 
@@ -117,7 +117,7 @@ export const tradingQueriesRouter = createTRPCRouter({
       if (!asset) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Asset non trouvé",
+          message: "Asset not found",
         });
       }
 
@@ -164,7 +164,7 @@ export const tradingQueriesRouter = createTRPCRouter({
       if (!tradingSession) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Session non trouvée",
+          message: "Session not found",
         });
       }
 
@@ -211,7 +211,7 @@ export const tradingQueriesRouter = createTRPCRouter({
       if (!setup) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Setup non trouvé",
+          message: "Setup not found",
         });
       }
 
@@ -282,7 +282,7 @@ export const tradingQueriesRouter = createTRPCRouter({
       if (!trade) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Trade non trouvé",
+          message: "Trade not found",
         });
       }
 
@@ -478,7 +478,7 @@ export const tradingQueriesRouter = createTRPCRouter({
       if (!journal) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Journal de trading non trouvé",
+          message: "Trading journal not found",
         });
       }
 

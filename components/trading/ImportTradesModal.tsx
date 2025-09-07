@@ -547,7 +547,7 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
 
             {/* Actions */}
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={onClose} className="border-white/20 text-white/80 hover:bg-white/10">
+              <Button type="button" variant="outline" onClick={onClose} className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white">
                 Cancel
               </Button>
               <Button

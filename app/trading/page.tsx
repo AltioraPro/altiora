@@ -199,7 +199,7 @@ export default function TradingPage() {
           <Button 
             onClick={() => setIsImportModalOpen(true)}
             variant="outline"
-            className="border-white/20 text-black hover:bg-white/10"
+            className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white"
           >
             <Upload className="w-4 h-4 mr-2" />
             Import Excel

@@ -273,7 +273,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                    variant="outline"
                    size="sm"
                    onClick={() => setShowNewAssetForm(!showNewAssetForm)}
-                   className="border-white/30 text-white hover:bg-white hover:text-black transition-colors"
+                   className="border-white/30 bg-transparent text-white hover:bg-white hover:text-black transition-colors"
                  >
                    <Plus className="h-4 w-4" />
                  </Button>
@@ -337,7 +337,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                   variant="outline"
                   size="sm"
                   onClick={() => setShowNewSessionForm(!showNewSessionForm)}
-                  className="border-white/20 text-white/80 hover:bg-white/10"
+                  className="border-white/30 bg-transparent text-white hover:bg-white hover:text-black transition-colors"
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
@@ -394,7 +394,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                   variant="outline"
                   size="sm"
                   onClick={() => setShowNewSetupForm(!showNewSetupForm)}
-                  className="border-white/20 text-white/80 hover:bg-white/10"
+                  className="border-white/30 bg-transparent text-white hover:bg-white hover:text-black transition-colors"
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
@@ -449,40 +449,64 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
               )}
             </div>
 
-            {/* Result - Amount or Percentage */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="profitLossAmount" className="text-white/80">
-                  Résultat (€)
-                  {calculations.calculatedAmount && (
-                    <span className="text-white/60 font-normal ml-2">
-                      = {calculations.calculatedAmount}€
-                    </span>
+            {/* Result - Conditional display based on journal type */}
+            {journal?.usePercentageCalculation && journal?.startingCapital ? (
+              // Journal avec capital : afficher les deux champs avec conversion
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="profitLossAmount" className="text-white/80">
+                    Result (€)
+                    {calculations.calculatedAmount && (
+                      <span className="text-white/60 font-normal ml-2">
+                        = {calculations.calculatedAmount}€
+                      </span>
+                    )}
+                  </Label>
+                  <Input
+                    id="profitLossAmount"
+                    {...form.register("profitLossAmount")}
+                    placeholder="250.00"
+                    type="number"
+                    step="0.01"
+                    className="bg-black border-white/30 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
+                  />
+                  {form.formState.errors.profitLossAmount && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {form.formState.errors.profitLossAmount.message}
+                    </p>
                   )}
-                </Label>
-                <Input
-                  id="profitLossAmount"
-                  {...form.register("profitLossAmount")}
-                  placeholder="250.00"
-                  type="number"
-                  step="0.01"
-                  className="bg-black border-white/30 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
-                />
-                {form.formState.errors.profitLossAmount && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {form.formState.errors.profitLossAmount.message}
-                  </p>
-                )}
-              </div>
+                </div>
 
+                <div>
+                  <Label htmlFor="profitLossPercentage" className="text-white/80">
+                    Result (%)
+                    {calculations.calculatedPercentage && (
+                      <span className="text-white/60 font-normal ml-2">
+                        = {calculations.calculatedPercentage}%
+                      </span>
+                    )}
+                  </Label>
+                  <Input
+                    id="profitLossPercentage"
+                    {...form.register("profitLossPercentage")}
+                    placeholder="2.5"
+                    type="number"
+                    step="0.01"
+                    className="bg-black border-white/30 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
+                  />
+                  {form.formState.errors.profitLossPercentage && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {form.formState.errors.profitLossPercentage.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ) : (
+              // Journal backtest : seulement le pourcentage
               <div>
                 <Label htmlFor="profitLossPercentage" className="text-white/80">
-                  Résultat (%)
-                  {calculations.calculatedPercentage && (
-                    <span className="text-white/60 font-normal ml-2">
-                      = {calculations.calculatedPercentage}%
-                    </span>
-                  )}
+                  Result (%)
+                  <span className="text-white/40 text-sm ml-2">• Backtest mode</span>
                 </Label>
                 <Input
                   id="profitLossPercentage"
@@ -497,13 +521,16 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                     {form.formState.errors.profitLossPercentage.message}
                   </p>
                 )}
+                <p className="text-xs text-white/50 mt-1">
+                  No need for euro amounts in this journal
+                </p>
               </div>
-            </div>
+            )}
 
             {/* Capital info */}
             {journal?.usePercentageCalculation && journal?.startingCapital && (
               <div className="text-xs text-white/50 bg-black/20 p-2 rounded border border-white/10">
-                💰 Capital de départ: {journal.startingCapital}€
+                💰 Starting capital: {journal.startingCapital}€
               </div>
             )}
 
@@ -556,7 +583,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
 
             {/* Actions */}
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={onClose} className="border-white/20 text-white/80 hover:bg-white/10">
+              <Button type="button" variant="outline" onClick={onClose} className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white">
                 Cancel
               </Button>
               <Button
