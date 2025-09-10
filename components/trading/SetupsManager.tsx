@@ -6,16 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import { 
   Plus, 
   Trash2, 
   Search,
-  AlertTriangle,
-  CheckCircle,
-  Target,
-  TrendingUp
+  AlertTriangle
 } from "lucide-react";
 
 interface SetupsManagerProps {
@@ -83,12 +78,6 @@ export function SetupsManager({ journalId }: SetupsManagerProps) {
     (setup.strategy && setup.strategy.toLowerCase().includes(searchTerm.toLowerCase()))
   ) || [];
 
-  const getSuccessRateColor = (rate: number | null) => {
-    if (!rate) return "text-gray-400";
-    if (rate >= 70) return "text-green-400";
-    if (rate >= 50) return "text-yellow-400";
-    return "text-red-400";
-  };
 
   if (isLoading) {
     return (
@@ -142,126 +131,52 @@ export function SetupsManager({ journalId }: SetupsManagerProps) {
           <div className="p-4 bg-black/20 rounded-lg border border-white/10">
             <h3 className="text-white font-medium mb-4">Create New Setup</h3>
             <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-white/80">Name *</Label>
-                  <Input
-                    value={newSetup.name}
-                    onChange={(e) => setNewSetup(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="Breakout Strategy"
-                    className="bg-black border-white/30 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
-                  />
-                </div>
-                <div>
-                  <Label className="text-white/80">Success Rate (%)</Label>
-                  <Input
-                    type="number"
-                    min="0"
-                    max="100"
-                    step="0.1"
-                    value={newSetup.successRate}
-                    onChange={(e) => setNewSetup(prev => ({ ...prev, successRate: e.target.value }))}
-                    placeholder="65.5"
-                    className="bg-black border-white/30 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
-                  />
-                </div>
-              </div>
               <div>
-                <Label className="text-white/80">Strategy</Label>
+                <Label className="text-white/80">Name *</Label>
                 <Input
-                  value={newSetup.strategy}
-                  onChange={(e) => setNewSetup(prev => ({ ...prev, strategy: e.target.value }))}
-                  placeholder="Brief description of the strategy..."
+                  value={newSetup.name}
+                  onChange={(e) => setNewSetup(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Breakout Strategy"
                   className="bg-black border-white/30 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
                 />
               </div>
-              <div>
-                <Label className="text-white/80">Description</Label>
-                <Textarea
-                  value={newSetup.description}
-                  onChange={(e) => setNewSetup(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Detailed description of this trading setup..."
-                  className="bg-black border-white/30 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
-                  rows={3}
-                />
+              <div className="flex items-center justify-end space-x-2">
+                <Button
+                  onClick={() => setIsCreating(false)}
+                  variant="outline"
+                  className="border-white/20 bg-transparent text-white hover:bg-white/10"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleCreateSetup}
+                  disabled={!newSetup.name.trim() || createSetupMutation.isPending}
+                  className="bg-white text-black hover:bg-gray-200"
+                >
+                  {createSetupMutation.isPending ? "Creating..." : "Create Setup"}
+                </Button>
               </div>
-            </div>
-            <div className="flex items-center justify-end space-x-2 mt-4">
-              <Button
-                onClick={() => setIsCreating(false)}
-                variant="outline"
-                className="border-white/20 bg-transparent text-white hover:bg-white/10"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleCreateSetup}
-                disabled={!newSetup.name.trim() || createSetupMutation.isPending}
-                className="bg-white text-black hover:bg-gray-200"
-              >
-                {createSetupMutation.isPending ? "Creating..." : "Create Setup"}
-              </Button>
             </div>
           </div>
         )}
 
         {/* Setups list */}
         {filteredSetups.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="space-y-2">
             {filteredSetups.map((setup) => (
               <div
                 key={setup.id}
-                className="p-4 bg-black/20 rounded-lg border border-white/10 hover:border-white/20 transition-colors"
+                className="flex items-center justify-between p-3 bg-black/20 rounded-lg border border-white/10 hover:border-white/20 transition-colors"
               >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-white font-medium truncate">{setup.name}</h3>
-                    {setup.strategy && (
-                      <p className="text-white/60 text-sm mt-1 truncate">{setup.strategy}</p>
-                    )}
-                  </div>
-                  <Button
-                    onClick={() => handleDeleteSetup(setup.id)}
-                    variant="ghost"
-                    size="sm"
-                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-1 h-8 w-8"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-                
-                {setup.description && (
-                  <p className="text-white/60 text-sm mb-3 line-clamp-2">{setup.description}</p>
-                )}
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    {setup.successRate && (
-                      <div className="flex items-center">
-                        <TrendingUp className="w-3 h-3 mr-1 text-white/60" />
-                        <span className={`text-sm font-medium ${getSuccessRateColor(setup.successRate)}`}>
-                          {setup.successRate}%
-                        </span>
-                      </div>
-                    )}
-                    <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">
-                      <Target className="w-3 h-3 mr-1" />
-                      Strategy
-                    </Badge>
-                  </div>
-                  
-                  {setup.isActive ? (
-                    <div className="flex items-center text-green-400 text-xs">
-                      <CheckCircle className="w-3 h-3 mr-1" />
-                      Active
-                    </div>
-                  ) : (
-                    <div className="flex items-center text-gray-400 text-xs">
-                      <AlertTriangle className="w-3 h-3 mr-1" />
-                      Inactive
-                    </div>
-                  )}
-                </div>
+                <span className="text-white font-medium">{setup.name}</span>
+                <Button
+                  onClick={() => handleDeleteSetup(setup.id)}
+                  variant="ghost"
+                  size="sm"
+                  className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-1 h-8 w-8"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
               </div>
             ))}
           </div>

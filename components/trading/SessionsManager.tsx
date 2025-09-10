@@ -6,14 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { 
   Plus, 
   Trash2, 
   Search,
-  AlertTriangle,
-  CheckCircle,
-  Clock
+  AlertTriangle
 } from "lucide-react";
 
 interface SessionsManagerProps {
@@ -134,130 +131,52 @@ export function SessionsManager({ journalId }: SessionsManagerProps) {
           <div className="p-4 bg-black/20 rounded-lg border border-white/10">
             <h3 className="text-white font-medium mb-4">Create New Session</h3>
             <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-white/80">Name *</Label>
-                  <Input
-                    value={newSession.name}
-                    onChange={(e) => setNewSession(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="London Session"
-                    className="bg-black border-white/30 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
-                  />
-                </div>
-                <div>
-                  <Label className="text-white/80">Timezone</Label>
-                  <Input
-                    value={newSession.timezone}
-                    onChange={(e) => setNewSession(prev => ({ ...prev, timezone: e.target.value }))}
-                    placeholder="UTC"
-                    className="bg-black border-white/30 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-white/80">Start Time</Label>
-                  <Input
-                    type="time"
-                    value={newSession.startTime}
-                    onChange={(e) => setNewSession(prev => ({ ...prev, startTime: e.target.value }))}
-                    className="bg-black border-white/30 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
-                  />
-                </div>
-                <div>
-                  <Label className="text-white/80">End Time</Label>
-                  <Input
-                    type="time"
-                    value={newSession.endTime}
-                    onChange={(e) => setNewSession(prev => ({ ...prev, endTime: e.target.value }))}
-                    className="bg-black border-white/30 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
-                  />
-                </div>
-              </div>
               <div>
-                <Label className="text-white/80">Description</Label>
-                <Textarea
-                  value={newSession.description}
-                  onChange={(e) => setNewSession(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Description of this trading session..."
+                <Label className="text-white/80">Name *</Label>
+                <Input
+                  value={newSession.name}
+                  onChange={(e) => setNewSession(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="London Session"
                   className="bg-black border-white/30 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
-                  rows={3}
                 />
               </div>
-            </div>
-            <div className="flex items-center justify-end space-x-2 mt-4">
-              <Button
-                onClick={() => setIsCreating(false)}
-                variant="outline"
-                className="border-white/20 bg-transparent text-white hover:bg-white/10"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleCreateSession}
-                disabled={!newSession.name.trim() || createSessionMutation.isPending}
-                className="bg-white text-black hover:bg-gray-200"
-              >
-                {createSessionMutation.isPending ? "Creating..." : "Create Session"}
-              </Button>
+              <div className="flex items-center justify-end space-x-2">
+                <Button
+                  onClick={() => setIsCreating(false)}
+                  variant="outline"
+                  className="border-white/20 bg-transparent text-white hover:bg-white/10"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleCreateSession}
+                  disabled={!newSession.name.trim() || createSessionMutation.isPending}
+                  className="bg-white text-black hover:bg-gray-200"
+                >
+                  {createSessionMutation.isPending ? "Creating..." : "Create Session"}
+                </Button>
+              </div>
             </div>
           </div>
         )}
 
         {/* Sessions list */}
         {filteredSessions.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="space-y-2">
             {filteredSessions.map((session) => (
               <div
                 key={session.id}
-                className="p-4 bg-black/20 rounded-lg border border-white/10 hover:border-white/20 transition-colors"
+                className="flex items-center justify-between p-3 bg-black/20 rounded-lg border border-white/10 hover:border-white/20 transition-colors"
               >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-white font-medium truncate">{session.name}</h3>
-                    {session.description && (
-                      <p className="text-white/60 text-sm mt-1 line-clamp-2">{session.description}</p>
-                    )}
-                  </div>
-                  <Button
-                    onClick={() => handleDeleteSession(session.id)}
-                    variant="ghost"
-                    size="sm"
-                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-1 h-8 w-8"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-                
-                <div className="space-y-2">
-                  {(session.startTime || session.endTime) && (
-                    <div className="flex items-center text-white/60 text-sm">
-                      <Clock className="w-3 h-3 mr-2" />
-                      {session.startTime && session.endTime ? (
-                        `${session.startTime} - ${session.endTime}`
-                      ) : session.startTime ? (
-                        `From ${session.startTime}`
-                      ) : (
-                        `Until ${session.endTime}`
-                      )}
-                    </div>
-                  )}
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-white/40 text-xs">{session.timezone}</span>
-                    {session.isActive ? (
-                      <div className="flex items-center text-green-400 text-xs">
-                        <CheckCircle className="w-3 h-3 mr-1" />
-                        Active
-                      </div>
-                    ) : (
-                      <div className="flex items-center text-gray-400 text-xs">
-                        <AlertTriangle className="w-3 h-3 mr-1" />
-                        Inactive
-                      </div>
-                    )}
-                  </div>
-                </div>
+                <span className="text-white font-medium">{session.name}</span>
+                <Button
+                  onClick={() => handleDeleteSession(session.id)}
+                  variant="ghost"
+                  size="sm"
+                  className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-1 h-8 w-8"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
               </div>
             ))}
           </div>
