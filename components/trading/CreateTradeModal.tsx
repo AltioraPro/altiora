@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { X, Plus } from "lucide-react";
+import { X } from "lucide-react";
 
 const createTradeSchema = z.object({
   tradeDate: z.string().min(1, "Date is required"),
@@ -36,16 +36,7 @@ interface CreateTradeModalProps {
 }
 
 export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModalProps) {
-  const [showNewAssetForm, setShowNewAssetForm] = useState(false);
-  const [showNewSessionForm, setShowNewSessionForm] = useState(false);
-  const [showNewSetupForm, setShowNewSetupForm] = useState(false);
-  
   const utils = api.useUtils();
-  
-  // Forms for new elements
-  const [newAsset, setNewAsset] = useState({ name: "", symbol: "", type: "forex" as const });
-  const [newSession, setNewSession] = useState({ name: "", description: "" });
-  const [newSetup, setNewSetup] = useState({ name: "", description: "", strategy: "" });
 
   const form = useForm<CreateTradeForm>({
     resolver: zodResolver(createTradeSchema),
@@ -70,9 +61,9 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
   }, [journalId, form]);
 
   // Data queries - Get assets, sessions, and setups for all user's journals
-  const { data: assets, refetch: refetchAssets } = api.trading.getAssets.useQuery({ journalId: "" });
-  const { data: sessions, refetch: refetchSessions } = api.trading.getSessions.useQuery({ journalId: "" });
-  const { data: setups, refetch: refetchSetups } = api.trading.getSetups.useQuery({ journalId: "" });
+  const { data: assets } = api.trading.getAssets.useQuery({ journalId: "" });
+  const { data: sessions } = api.trading.getSessions.useQuery({ journalId: "" });
+  const { data: setups } = api.trading.getSetups.useQuery({ journalId: "" });
   
   
   // Get journal info to access starting capital
@@ -126,29 +117,6 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
     },
   });
 
-  const createAssetMutation = api.trading.createAsset.useMutation({
-    onSuccess: () => {
-      setNewAsset({ name: "", symbol: "", type: "forex" });
-      setShowNewAssetForm(false);
-      refetchAssets();
-    },
-  });
-
-  const createSessionMutation = api.trading.createSession.useMutation({
-    onSuccess: () => {
-      setNewSession({ name: "", description: "" });
-      setShowNewSessionForm(false);
-      refetchSessions();
-    },
-  });
-
-  const createSetupMutation = api.trading.createSetup.useMutation({
-    onSuccess: () => {
-      setNewSetup({ name: "", description: "", strategy: "" });
-      setShowNewSetupForm(false);
-      refetchSetups();
-    },
-  });
 
   const handleSubmit = async (data: CreateTradeForm) => {
     try {
@@ -175,55 +143,6 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
     }
   };
 
-  const handleCreateAsset = async () => {
-    if (newAsset.name && newAsset.symbol && journal?.id) {
-      try {
-        await createAssetMutation.mutateAsync({
-          journalId: journal.id,
-          name: newAsset.name,
-          symbol: newAsset.symbol,
-          type: newAsset.type,
-        });
-        setNewAsset({ name: "", symbol: "", type: "forex" });
-        setShowNewAssetForm(false);
-      } catch (error) {
-        console.error("Error creating asset:", error);
-      }
-    }
-  };
-
-  const handleCreateSession = async () => {
-    if (newSession.name && journal?.id) {
-      try {
-        await createSessionMutation.mutateAsync({
-          journalId: journal.id,
-          name: newSession.name,
-          description: newSession.description,
-        });
-        setNewSession({ name: "", description: "" });
-        setShowNewSessionForm(false);
-      } catch (error) {
-        console.error("Error creating session:", error);
-      }
-    }
-  };
-
-  const handleCreateSetup = async () => {
-    if (newSetup.name && journal?.id) {
-      try {
-        await createSetupMutation.mutateAsync({
-          journalId: journal.id,
-          name: newSetup.name,
-          description: newSetup.description,
-          strategy: newSetup.strategy,
-        });
-        setNewSetup({ name: "", description: "", strategy: "" });
-        setShowNewSetupForm(false);
-      } catch (error) {
-        console.error("Error creating setup:", error);
-      }
-    }
-  };
 
   if (!isOpen) return null;
 
@@ -264,186 +183,66 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                          {/* Asset */}
              <div>
                <Label htmlFor="symbol" className="text-white/80">Asset</Label>
-               <div className="flex gap-2">
-                 <Select
-                   value={form.watch("symbol")}
-                   onValueChange={(value) => form.setValue("symbol", value)}
-                 >
-                 <SelectTrigger className="flex-1 bg-black border-white/30 text-white focus:border-white focus:ring-1 focus:ring-white">
+               <Select
+                 value={form.watch("symbol")}
+                 onValueChange={(value) => form.setValue("symbol", value)}
+               >
+                 <SelectTrigger className="bg-black border-white/30 text-white focus:border-white focus:ring-1 focus:ring-white">
                    <SelectValue placeholder="Select an asset" />
                  </SelectTrigger>
-                   <SelectContent>
-                     {assets?.map((asset) => (
-                       <SelectItem key={asset.id} value={asset.symbol}>
-                         {asset.name} ({asset.symbol})
-                       </SelectItem>
-                     ))}
-                   </SelectContent>
-                 </Select>
-                 
-                 <Button
-                   type="button"
-                   variant="outline"
-                   size="sm"
-                   onClick={() => setShowNewAssetForm(!showNewAssetForm)}
-                   className="border-white/30 bg-transparent text-white hover:bg-white hover:text-black transition-colors"
-                 >
-                   <Plus className="h-4 w-4" />
-                 </Button>
-               </div>
-               
-               {showNewAssetForm && (
-                <div className="mt-2 p-3 border border-white/20 rounded-lg bg-black/30">
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input
-                      placeholder="Asset name"
-                      value={newAsset.name}
-                      onChange={(e) => setNewAsset({ ...newAsset, name: e.target.value })}
-                      className="bg-black/30 border-white/20 text-white placeholder:text-white/40"
-                    />
-                    <Input
-                      placeholder="Symbol"
-                      value={newAsset.symbol}
-                      onChange={(e) => setNewAsset({ ...newAsset, symbol: e.target.value })}
-                      className="bg-black/30 border-white/20 text-white placeholder:text-white/40"
-                    />
-                  </div>
-                  <Button
-                    type="button"
-                    size="sm"
-                    className="mt-2 bg-white text-black hover:bg-gray-200"
-                    onClick={handleCreateAsset}
-                    disabled={createAssetMutation.isPending}
-                  >
-                    {createAssetMutation.isPending ? "Creating..." : "Create asset"}
-                  </Button>
-                </div>
-              )}
-              {form.formState.errors.symbol && (
-                <p className="text-red-500 text-sm mt-1">
-                  {form.formState.errors.symbol.message}
-                </p>
-              )}
+                 <SelectContent>
+                   {assets?.map((asset) => (
+                     <SelectItem key={asset.id} value={asset.symbol}>
+                       {asset.name} ({asset.symbol})
+                     </SelectItem>
+                   ))}
+                 </SelectContent>
+               </Select>
+               {form.formState.errors.symbol && (
+                 <p className="text-red-500 text-sm mt-1">
+                   {form.formState.errors.symbol.message}
+                 </p>
+               )}
             </div>
 
             {/* Session */}
             <div>
               <Label htmlFor="sessionId" className="text-white/80">Session</Label>
-              <div className="flex gap-2">
-                <Select
-                  value={form.watch("sessionId") || ""}
-                  onValueChange={(value) => form.setValue("sessionId", value)}
-                >
-                  <SelectTrigger className="flex-1 bg-black/30 border-white/20 text-white">
-                                         <SelectValue placeholder="Select a session" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {sessions?.map((session) => (
-                      <SelectItem key={session.id} value={session.id}>
-                        {session.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowNewSessionForm(!showNewSessionForm)}
-                  className="border-white/30 bg-transparent text-white hover:bg-white hover:text-black transition-colors"
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              {showNewSessionForm && (
-                <div className="mt-2 p-3 border border-white/20 rounded-lg bg-black/30">
-                  <Input
-                    placeholder="Session name"
-                    value={newSession.name}
-                    onChange={(e) => setNewSession({ ...newSession, name: e.target.value })}
-                    className="mb-2 bg-black/30 border-white/20 text-white placeholder:text-white/40"
-                  />
-                  <Textarea
-                    placeholder="Description"
-                    value={newSession.description}
-                    onChange={(e) => setNewSession({ ...newSession, description: e.target.value })}
-                    rows={2}
-                    className="bg-black/30 border-white/20 text-white placeholder:text-white/40"
-                  />
-                  <Button
-                    type="button"
-                    size="sm"
-                    className="mt-2 bg-white text-black hover:bg-gray-200"
-                    onClick={handleCreateSession}
-                    disabled={createSessionMutation.isPending}
-                  >
-                    {createSessionMutation.isPending ? "Creating..." : "Create session"}
-                  </Button>
-                </div>
-              )}
+              <Select
+                value={form.watch("sessionId") || ""}
+                onValueChange={(value) => form.setValue("sessionId", value)}
+              >
+                <SelectTrigger className="bg-black/30 border-white/20 text-white">
+                  <SelectValue placeholder="Select a session" />
+                </SelectTrigger>
+                <SelectContent>
+                  {sessions?.map((session) => (
+                    <SelectItem key={session.id} value={session.id}>
+                      {session.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Setup */}
             <div>
               <Label htmlFor="setupId" className="text-white/80">Setup</Label>
-              <div className="flex gap-2">
-                <Select
-                  value={form.watch("setupId") || ""}
-                  onValueChange={(value) => form.setValue("setupId", value)}
-                >
-                  <SelectTrigger className="flex-1 bg-black/30 border-white/20 text-white">
-                                         <SelectValue placeholder="Select a setup" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {setups?.map((setup) => (
-                      <SelectItem key={setup.id} value={setup.id}>
-                        {setup.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowNewSetupForm(!showNewSetupForm)}
-                  className="border-white/30 bg-transparent text-white hover:bg-white hover:text-black transition-colors"
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              {showNewSetupForm && (
-                <div className="mt-2 p-3 border border-white/20 rounded-lg bg-black/30">
-                  <Input
-                    placeholder="Setup name"
-                    value={newSetup.name}
-                    onChange={(e) => setNewSetup({ ...newSetup, name: e.target.value })}
-                    className="mb-2 bg-black/30 border-white/20 text-white placeholder:text-white/40"
-                  />
-                  <Textarea
-                    placeholder="Description"
-                    value={newSetup.description}
-                    onChange={(e) => setNewSetup({ ...newSetup, description: e.target.value })}
-                    rows={2}
-                    className="mb-2 bg-black/30 border-white/20 text-white placeholder:text-white/40"
-                  />
-                  <Input
-                    placeholder="Strategy"
-                    value={newSetup.strategy}
-                    onChange={(e) => setNewSetup({ ...newSetup, strategy: e.target.value })}
-                    className="bg-black/30 border-white/20 text-white placeholder:text-white/40"
-                  />
-                  <Button
-                    type="button"
-                    size="sm"
-                    className="mt-2 bg-white text-black hover:bg-gray-200"
-                    onClick={handleCreateSetup}
-                    disabled={createSetupMutation.isPending}
-                  >
-                    {createSetupMutation.isPending ? "Creating..." : "Create setup"}
-                  </Button>
-                </div>
-              )}
+              <Select
+                value={form.watch("setupId") || ""}
+                onValueChange={(value) => form.setValue("setupId", value)}
+              >
+                <SelectTrigger className="bg-black/30 border-white/20 text-white">
+                  <SelectValue placeholder="Select a setup" />
+                </SelectTrigger>
+                <SelectContent>
+                  {setups?.map((setup) => (
+                    <SelectItem key={setup.id} value={setup.id}>
+                      {setup.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Risk */}
