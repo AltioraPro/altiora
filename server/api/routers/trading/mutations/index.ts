@@ -22,7 +22,7 @@ import {
   reorderJournalsSchema,
 } from "../validators";
 import { calculateTradeResults } from "@/server/services/trade-calculation";
-import { eq, and, sum, sql } from "drizzle-orm";
+import { eq, and, sum, sql, inArray } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
 export const tradingMutationsRouter = createTRPCRouter({
@@ -628,6 +628,30 @@ export const tradingMutationsRouter = createTRPCRouter({
         ));
 
       return { success: true };
+    }),
+
+  deleteMultipleTrades: protectedProcedure
+    .input(z.object({ tradeIds: z.array(z.string()) }))
+    .mutation(async ({ ctx, input }) => {
+      const { session } = ctx;
+      const userId = session.userId;
+
+      if (input.tradeIds.length === 0) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "No trade IDs provided",
+        });
+      }
+
+      // Supprimer tous les trades sélectionnés qui appartiennent à l'utilisateur
+      await db
+        .delete(advancedTrades)
+        .where(and(
+          inArray(advancedTrades.id, input.tradeIds),
+          eq(advancedTrades.userId, userId)
+        ));
+
+      return { success: true, deletedCount: input.tradeIds.length };
     }),
 
   // Mutation pour réorganiser les journaux

@@ -4,13 +4,12 @@ import { useState, useEffect, Suspense, useCallback } from "react";
 import { useSession } from "@/lib/auth-client";
 import { api } from "@/trpc/client";
 import { useSearchParams } from "next/navigation";
-import { Plus, ArrowLeft, Edit, BarChart3, Trash2, Upload } from "lucide-react";
-import { format } from "date-fns";
-import { enUS } from "date-fns/locale";
+import { Plus, ArrowLeft, BarChart3, Upload } from "lucide-react";
 import { CreateTradeModal } from "@/components/trading/CreateTradeModal";
 import { ImportTradesModal } from "@/components/trading/ImportTradesModal";
 import { TradingStats } from "@/components/trading/TradingStats";
 import { TradingCharts } from "@/components/trading/TradingCharts";
+import { TradesTable } from "@/components/trading/TradesTable";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,14 +38,6 @@ export default function TradingPage() {
     { journalId: selectedJournalId || undefined },
     { enabled: !!selectedJournalId }
   );
-  const { data: recentTrades } = api.trading.getTrades.useQuery(
-    { 
-      journalId: selectedJournalId || undefined,
-      limit: 5,
-      offset: 0
-    },
-    { enabled: !!selectedJournalId }
-  );
   const { data: allTrades } = api.trading.getTrades.useQuery(
     { 
       journalId: selectedJournalId || undefined,
@@ -63,10 +54,6 @@ export default function TradingPage() {
     { journalId: selectedJournalId || undefined },
     { enabled: !!selectedJournalId }
   );
-  const { data: assets } = api.trading.getAssets.useQuery(
-    { journalId: selectedJournalId || undefined },
-    { enabled: !!selectedJournalId }
-  );
 
   // Mutations
   const createJournalMutation = api.trading.createJournal.useMutation({
@@ -75,15 +62,7 @@ export default function TradingPage() {
     },
   });
 
-  const utils = api.useUtils();
   
-  const deleteTradeMutation = api.trading.deleteTrade.useMutation({
-    onSuccess: () => {
-      // Invalider les queries pour mettre à jour l'interface
-      utils.trading.getTrades.invalidate();
-      utils.trading.getStats.invalidate();
-    },
-  });
 
   // Handle journal selection from URL params or default
   const handleJournalFound = useCallback((journalId: string) => {
@@ -113,20 +92,6 @@ export default function TradingPage() {
 
 
 
-  const handleDeleteTrade = async (tradeId: string) => {
-    if (confirm("Are you sure you want to delete this trade? This action is irreversible.")) {
-      try {
-        await deleteTradeMutation.mutateAsync({ id: tradeId });
-      } catch (error) {
-        console.error("Error deleting trade:", error);
-      }
-    }
-  };
-
-  const handleEditTrade = (tradeId: string) => {
-    // TODO: Implement edit trade functionality
-    console.log("Edit trade:", tradeId);
-  };
 
   if (journalsLoading) {
     return (
@@ -248,130 +213,16 @@ export default function TradingPage() {
         </div>
       )}
 
-      {/* Recent trades */}
-      <Card className="border border-white/10 bg-black/20">
-        <CardHeader>
-          <CardTitle className="font-argesta text-white">Recent Trades</CardTitle>
-          <CardDescription className="text-white/60">
-            Your latest trading activity
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {recentTrades && recentTrades.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-white/10">
-                    <th className="text-left py-3 px-4 text-sm text-white/80">DATE</th>
-                    <th className="text-left py-3 px-4 text-sm text-white/80">ASSET</th>
-                    <th className="text-left py-3 px-4 text-sm text-white/80">SESSION</th>
-                    <th className="text-left py-3 px-4 text-sm text-white/80">SETUP</th>
-                    <th className="text-left py-3 px-4 text-sm text-white/80">RISK</th>
-                    <th className="text-left py-3 px-4 text-sm text-white/80">PERFORMANCE</th>
-                    <th className="text-left py-3 px-4 text-sm text-white/80">NOTES</th>
-                    <th className="text-left py-3 px-4 text-sm text-white/80">CHART</th>
-                    <th className="text-left py-3 px-4 text-sm text-white/80">ACTIONS</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {recentTrades.map((trade) => (
-                    <tr key={trade.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                      <td className="py-3 px-4 text-sm text-white">
-                        {format(new Date(trade.tradeDate), 'dd MMM', { locale: enUS })}
-                      </td>
-                                            <td className="py-3 px-4 text-sm text-white">
-                        {assets?.find(a => a.id === trade.assetId)?.name || trade.symbol || '-'}
-                      </td>
-                      <td className="py-3 px-4 text-sm text-white">
-                        {sessions?.find(s => s.id === trade.sessionId)?.name || '-'}
-                      </td>
-                      <td className="py-3 px-4 text-sm text-white">
-                        {setups?.find(s => s.id === trade.setupId)?.name || '-'}
-                      </td>
-                      <td className="py-3 px-4 text-sm text-white">
-                        1.00%
-                      </td>
-                      <td className="py-3 px-4 text-sm">
-                        <div className="space-y-1">
-                          <span className={`${Number(trade.profitLossPercentage || 0) > 0 ? 'text-green-400' : Number(trade.profitLossPercentage || 0) < 0 ? 'text-red-400' : 'text-blue-400'}`}>
-                            {Number(trade.profitLossPercentage || 0) >= 0 ? '+' : ''}{trade.profitLossPercentage || 0}%
-                          </span>
-                          {trade.profitLossAmount && (
-                            <div className={`text-xs ${Number(trade.profitLossAmount || 0) > 0 ? 'text-green-400' : Number(trade.profitLossAmount || 0) < 0 ? 'text-red-400' : 'text-blue-400'}`}>
-                              {Number(trade.profitLossAmount || 0) >= 0 ? '+' : ''}{trade.profitLossAmount}€
-                            </div>
-                          )}
-                        </div>
-                      </td>
-                      <td className="py-3 px-4 text-sm text-white">
-                        {trade.notes || '-'}
-                      </td>
-                                            <td className="py-3 px-4 text-sm">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-white/60 hover:text-white hover:bg-white/10 p-1"
-                          onClick={() => {
-                            // Utiliser le lien TradingView spécifique importé depuis l'Excel
-                            if (trade.tradingviewLink) {
-                              window.open(trade.tradingviewLink, '_blank');
-                            } else {
-                              // Fallback vers l'URL générique si aucun lien spécifique
-                              const symbol = assets?.find(a => a.id === trade.assetId)?.name || trade.symbol || 'EURUSD';
-                              const tradingViewUrl = `https://www.tradingview.com/symbols/${symbol.replace('/', '')}`;
-                              window.open(tradingViewUrl, '_blank');
-                            }
-                          }}
-                        >
-                          Chart
-                        </Button>
-                      </td>
-                                            <td className="py-3 px-4 text-sm">
-                        <div className="flex items-center space-x-2">
-                          <Button
-                            onClick={() => handleEditTrade(trade.id)}
-                            variant="ghost"
-                            size="sm"
-                            className="text-white/60 hover:text-white hover:bg-white/10 p-1"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            onClick={() => handleDeleteTrade(trade.id)}
-                            variant="ghost"
-                            size="sm"
-                            className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-1"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <BarChart3 className="w-8 h-8 text-white/40" />
-              </div>
-              <h3 className="text-lg font-argesta text-white mb-2">No Trades Found</h3>
-              <p className="text-white/60 mb-6">
-                Start your trading journey by adding your first trade
-              </p>
-              
-              <Button 
-                onClick={() => setIsCreateModalOpen(true)}
-                className="bg-white text-black hover:bg-gray-200"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Add First Trade
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {/* All trades with pagination and selection */}
+      {selectedJournalId && (
+        <TradesTable 
+          journalId={selectedJournalId}
+          onEditTrade={(tradeId) => {
+            // TODO: Implement edit trade functionality
+            console.log('Edit trade:', tradeId);
+          }}
+        />
+      )}
 
       {/* Modals */}
       <CreateTradeModal
