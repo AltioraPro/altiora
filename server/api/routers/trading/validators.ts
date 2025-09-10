@@ -103,7 +103,9 @@ export const createAdvancedTradeSchema = z.object({
   isClosed: z.boolean().default(false),
 }).refine((data) => {
   // Au moins un des deux champs de résultat doit être rempli
-  return data.profitLossAmount || data.profitLossPercentage;
+  // Accepter explicitement "0" comme valeur valide
+  return (data.profitLossAmount && data.profitLossAmount !== '') || 
+         (data.profitLossPercentage && data.profitLossPercentage !== '');
 }, {
   message: "Either profit/loss amount or percentage is required",
   path: ["profitLossAmount"]

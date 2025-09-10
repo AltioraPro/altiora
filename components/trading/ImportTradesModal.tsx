@@ -364,7 +364,9 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
         const cleanProfitValue = trade.Result ? String(trade.Result).replace(/[%,]/g, '').trim() : '';
         
         const riskInput = cleanRiskValue || '';
-        const profitLossPercentage = cleanProfitValue || '';
+        // Permettre explicitement la valeur "0" comme profit valide
+        // Si pas de valeur de profit, utiliser "0" par défaut pour Break Even
+        const profitLossPercentage = cleanProfitValue || '0';
         
         // Debug logging
         console.log('Trade data:', {
@@ -372,14 +374,17 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
           parsedTradeDate: tradeDate,
           originalResult: trade.Result,
           cleanProfitValue,
-          profitLossPercentage
+          profitLossPercentage,
+          isCleanProfitEmpty: cleanProfitValue === '',
+          isCleanProfitZero: cleanProfitValue === '0'
         });
 
         // Map exit reason based on profit/loss
-        let exitReason: 'TP' | 'BE' | 'SL' | 'Manual' | undefined = undefined;
+        let exitReason: 'TP' | 'BE' | 'SL' | undefined = undefined;
         
-        // Si profitLossPercentage est vide, null, ou 0, c'est un BE
-        if (!profitLossPercentage || profitLossPercentage === '' || profitLossPercentage === '0' || profitLossPercentage === '0.00') {
+        // Déterminer l'exit reason basé sur le profit/loss
+        if (!profitLossPercentage || profitLossPercentage === '') {
+          // Si pas de valeur de profit, c'est un BE
           exitReason = 'BE';
         } else {
           const profitValue = parseFloat(profitLossPercentage);
@@ -387,6 +392,8 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
             if (profitValue > 0) exitReason = 'TP';
             else if (profitValue === 0) exitReason = 'BE';
             else if (profitValue < 0) exitReason = 'SL';
+          } else {
+            exitReason = 'BE';
           }
         }
         
@@ -409,6 +416,7 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
           sessionId: sessionId || undefined,
           setupId: setupId || undefined,
           riskInput,
+          profitLossAmount: profitLossPercentage, // Utiliser la même valeur pour les deux champs
           profitLossPercentage,
           exitReason,
           tradingviewLink: trade.TradingViewLink || undefined,
