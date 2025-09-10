@@ -25,16 +25,16 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
     { enabled: !!journal.id }
   );
 
-  const { data: recentTrades } = api.trading.getTrades.useQuery(
+  const { data: allTrades } = api.trading.getTrades.useQuery(
     { 
       journalId: journal.id,
-      limit: 5,
+      limit: 100, // Récupérer plus de trades pour trouver le meilleur
       offset: 0
     },
     { enabled: !!journal.id }
   );
 
-  const winningTrades = recentTrades?.filter(trade => 
+  const winningTrades = allTrades?.filter(trade => 
     Number(trade.profitLossPercentage || 0) > 0
   ) || [];
 

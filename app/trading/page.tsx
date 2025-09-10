@@ -10,6 +10,9 @@ import { ImportTradesModal } from "@/components/trading/ImportTradesModal";
 import { TradingStats } from "@/components/trading/TradingStats";
 import { TradingCharts } from "@/components/trading/TradingCharts";
 import { TradesTable } from "@/components/trading/TradesTable";
+import { AssetsManager } from "@/components/trading/AssetsManager";
+import { SessionsManager } from "@/components/trading/SessionsManager";
+import { SetupsManager } from "@/components/trading/SetupsManager";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,6 +34,7 @@ export default function TradingPage() {
   const [selectedJournalId, setSelectedJournalId] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'trades' | 'assets' | 'sessions' | 'setups'>('trades');
 
   // Queries
   const { data: journals, isLoading: journalsLoading } = api.trading.getJournals.useQuery();
@@ -192,8 +196,35 @@ export default function TradingPage() {
         </div>
       )}
 
+      {/* Tabs Navigation */}
+      {selectedJournalId && (
+        <div className="mb-6">
+          <div className="flex space-x-1 bg-black/20 p-1 rounded-lg border border-white/10">
+            {[
+              { id: 'trades', label: 'Trades', icon: BarChart3 },
+              { id: 'assets', label: 'Assets', icon: Plus },
+              { id: 'sessions', label: 'Sessions', icon: Plus },
+              { id: 'setups', label: 'Setups', icon: Plus }
+            ].map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                onClick={() => setActiveTab(id as 'trades' | 'assets' | 'sessions' | 'setups')}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === id
+                    ? 'bg-white text-black'
+                    : 'text-white/60 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span>{label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Charts */}
-      {stats && sessions && allTrades && setups && (
+      {stats && sessions && allTrades && setups && activeTab === 'trades' && (
         <div className="mb-8">
           <Card className="border border-white/10 bg-black/20">
             <CardHeader>
@@ -213,15 +244,31 @@ export default function TradingPage() {
         </div>
       )}
 
-      {/* All trades with pagination and selection */}
+      {/* Content based on active tab */}
       {selectedJournalId && (
-        <TradesTable 
-          journalId={selectedJournalId}
-          onEditTrade={(tradeId) => {
-            // TODO: Implement edit trade functionality
-            console.log('Edit trade:', tradeId);
-          }}
-        />
+        <>
+          {activeTab === 'trades' && (
+            <TradesTable 
+              journalId={selectedJournalId}
+              onEditTrade={(tradeId) => {
+                // TODO: Implement edit trade functionality
+                console.log('Edit trade:', tradeId);
+              }}
+            />
+          )}
+          
+          {activeTab === 'assets' && (
+            <AssetsManager journalId={selectedJournalId} />
+          )}
+          
+          {activeTab === 'sessions' && (
+            <SessionsManager journalId={selectedJournalId} />
+          )}
+          
+          {activeTab === 'setups' && (
+            <SetupsManager journalId={selectedJournalId} />
+          )}
+        </>
       )}
 
       {/* Modals */}
