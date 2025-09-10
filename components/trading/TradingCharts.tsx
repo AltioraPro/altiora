@@ -232,15 +232,15 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={250}>
-            <AreaChart data={cumulativeData}>
+          <ResponsiveContainer width="100%" height={255}>
+            <AreaChart data={cumulativeData} >
               <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" strokeOpacity={0.1} />
               <XAxis 
                 dataKey="tradeNumber" 
                 stroke="#ffffff"
                 strokeOpacity={0.6}
                 fontSize={10}
-                label={{ value: 'Trade number', position: 'insideBottom', offset: -10, fill: '#ffffff', fontSize: 12 }}
+                label={{ value: 'Trade number', position: 'insideBottom', offset: -2, fill: '#ffffff', fontSize: 12 }}
               />
               <YAxis 
                 stroke="#ffffff"
