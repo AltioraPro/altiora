@@ -70,6 +70,12 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
         {stats && (
           <div className="grid grid-cols-3 gap-3 mb-4">
             <div className="text-center p-3 bg-black/20 rounded-lg border border-white/10">
+              <div className={`text-xl font-bold ${Number(stats.totalPnL) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                {Number(stats.totalPnL) >= 0 ? '+' : ''}{Number(stats.totalPnL).toFixed(2)}%
+              </div>
+              <div className="text-xs text-white/60">Performance</div>
+            </div>
+            <div className="text-center p-3 bg-black/20 rounded-lg border border-white/10">
               <div className="text-xl text-green-400">
                 {stats.winRate.toFixed(1)}%
               </div>
@@ -80,12 +86,6 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
                 {stats.totalTrades}
               </div>
               <div className="text-xs text-white/60">Total</div>
-            </div>
-            <div className="text-center p-3 bg-black/20 rounded-lg border border-white/10">
-              <div className="text-xl text-blue-400">
-                {stats.winningTrades}
-              </div>
-              <div className="text-xs text-white/60">Wins</div>
             </div>
           </div>
         )}

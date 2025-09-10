@@ -155,7 +155,7 @@ export function CreateJournalModal({ isOpen, onClose, onSuccess }: CreateJournal
               variant="outline"
               onClick={handleClose}
               disabled={createJournalMutation.isPending}
-              className="border-white/30 text-white hover:bg-white hover:text-black transition-colors"
+              className="border-white/30 text-black hover:bg-white hover:text-black transition-colors"
             >
               Cancel
             </Button>

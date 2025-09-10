@@ -89,13 +89,21 @@ export default function JournalsPage() {
           </p>
         </div>
         
-        <Button 
-          onClick={() => setIsCreateModalOpen(true)}
-          className="bg-white text-black hover:bg-gray-200"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          New Journal
-        </Button>
+        <div className="flex items-center space-x-2">
+          <Link href="/dashboard">
+            <Button variant="outline" className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white">
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Dashboard
+            </Button>
+          </Link>
+          <Button 
+            onClick={() => setIsCreateModalOpen(true)}
+            className="bg-white text-black hover:bg-gray-200"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            New Journal
+          </Button>
+        </div>
       </div>
 
       {!journals || journals.length === 0 ? (
@@ -159,30 +167,6 @@ export default function JournalsPage() {
             </CardContent>
           </Card>
 
-          {/* Quick Actions */}
-          <Card className="border border-white/10 bg-black/20">
-            <CardHeader>
-              <CardTitle className="font-argesta text-white">Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-4">
-                <Button 
-                  onClick={() => setIsCreateModalOpen(true)}
-                  variant="outline"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create New Journal
-                </Button>
-                
-                <Link href="/dashboard">
-                  <Button variant="outline">
-                    <BarChart3 className="w-4 h-4 mr-2" />
-                    View Dashboard
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       )}
 
