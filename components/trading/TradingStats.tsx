@@ -65,7 +65,7 @@ export function TradingStats({ stats }: TradingStatsProps) {
             <div className={`text-2xl font-bold ${totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
               {totalPnL >= 0 ? '+' : ''}{totalPnL.toFixed(2)}%
             </div>
-            {stats.totalAmountPnL !== undefined && (
+            {stats.totalAmountPnL !== undefined && stats.journal?.usePercentageCalculation && (
               <div className={`text-lg font-semibold ${Number(stats.totalAmountPnL) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                 {Number(stats.totalAmountPnL) >= 0 ? '+' : ''}{Number(stats.totalAmountPnL).toFixed(2)}€
               </div>
