@@ -11,7 +11,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { 
   Plus, 
   Trash2, 
-  Edit, 
   Search,
   AlertTriangle,
   CheckCircle
@@ -79,7 +78,7 @@ export function AssetsManager({ journalId }: AssetsManagerProps) {
     (asset.symbol && asset.symbol.toLowerCase().includes(searchTerm.toLowerCase()))
   ) || [];
 
-  const getTypeColor = (type: string) => {
+  const getTypeColor = (type: string | null) => {
     switch (type) {
       case "forex":
         return "bg-blue-500/20 text-blue-400 border-blue-500/30";
@@ -229,7 +228,7 @@ export function AssetsManager({ journalId }: AssetsManagerProps) {
                 </div>
                 <div className="flex items-center justify-between">
                   <Badge className={getTypeColor(asset.type)}>
-                    {asset.type.toUpperCase()}
+                    {(asset.type || 'unknown').toUpperCase()}
                   </Badge>
                   {asset.isActive ? (
                     <div className="flex items-center text-green-400 text-xs">
