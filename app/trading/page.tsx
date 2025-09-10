@@ -75,9 +75,13 @@ export default function TradingPage() {
     },
   });
 
+  const utils = api.useUtils();
+  
   const deleteTradeMutation = api.trading.deleteTrade.useMutation({
     onSuccess: () => {
-      // Refetch trades
+      // Invalider les queries pour mettre à jour l'interface
+      utils.trading.getTrades.invalidate();
+      utils.trading.getStats.invalidate();
     },
   });
 
