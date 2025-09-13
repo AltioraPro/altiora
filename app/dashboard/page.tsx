@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { api } from "@/trpc/client";
 import { useSession } from "@/lib/auth-client";
 import Link from "next/link";
-import { BarChart3, ArrowLeft, ChevronDown, Check } from "lucide-react";
+import { BarChart3, ArrowLeft, ChevronDown } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
