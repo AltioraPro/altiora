@@ -637,6 +637,106 @@ export const tradingMutationsRouter = createTRPCRouter({
       return { success: true };
     }),
 
+  // Mutation pour mettre à jour un trade
+  updateAdvancedTrade: protectedProcedure
+    .input(updateAdvancedTradeSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { session } = ctx;
+      const userId = session.userId;
+      const { id, ...updateData } = input;
+
+      // Vérifier que le trade appartient à l'utilisateur
+      const existingTrade = await db
+        .select()
+        .from(advancedTrades)
+        .where(and(
+          eq(advancedTrades.id, id),
+          eq(advancedTrades.userId, userId)
+        ))
+        .limit(1);
+
+      if (!existingTrade.length) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Trade not found",
+        });
+      }
+
+      // Récupérer le journal pour les calculs
+      const journal = await db
+        .select()
+        .from(tradingJournals)
+        .where(and(
+          eq(tradingJournals.id, existingTrade[0].journalId),
+          eq(tradingJournals.userId, userId)
+        ))
+        .limit(1);
+
+      if (!journal.length) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Trading journal not found",
+        });
+      }
+
+      // Calculer le capital actuel si nécessaire
+      let currentCapital: number | undefined;
+      if (journal[0].usePercentageCalculation && journal[0].startingCapital) {
+        const startingCapital = parseFloat(journal[0].startingCapital);
+        
+        // Récupérer tous les trades fermés pour calculer la composition des rendements
+        const closedTradesData = await db
+          .select({
+            profitLossPercentage: advancedTrades.profitLossPercentage,
+          })
+          .from(advancedTrades)
+          .where(and(
+            eq(advancedTrades.journalId, existingTrade[0].journalId),
+            eq(advancedTrades.userId, userId),
+            eq(advancedTrades.isClosed, true)
+          ))
+          .orderBy(asc(advancedTrades.tradeDate));
+        
+        // Calculer le capital actuel avec addition simple des pourcentages
+        const totalPnLPercentage = closedTradesData.reduce((sum, trade) => {
+          const pnlPercentage = trade.profitLossPercentage ? parseFloat(trade.profitLossPercentage) || 0 : 0;
+          return sum + pnlPercentage;
+        }, 0);
+        
+        currentCapital = startingCapital + (totalPnLPercentage / 100) * startingCapital;
+      }
+
+      // Calculer les résultats du trade si des valeurs sont fournies
+      let calculatedResults = {};
+      if (updateData.profitLossAmount !== undefined || updateData.profitLossPercentage !== undefined) {
+        calculatedResults = calculateTradeResults(
+          {
+            profitLossAmount: updateData.profitLossAmount,
+            profitLossPercentage: updateData.profitLossPercentage,
+            exitReason: updateData.exitReason,
+          },
+          journal[0],
+          currentCapital
+        );
+      }
+
+      // Mettre à jour le trade
+      const [updatedTrade] = await db
+        .update(advancedTrades)
+        .set({
+          ...updateData,
+          ...calculatedResults,
+          updatedAt: new Date(),
+        })
+        .where(and(
+          eq(advancedTrades.id, id),
+          eq(advancedTrades.userId, userId)
+        ))
+        .returning();
+
+      return updatedTrade;
+    }),
+
   deleteMultipleTrades: protectedProcedure
     .input(z.object({ tradeIds: z.array(z.string()) }))
     .mutation(async ({ ctx, input }) => {

@@ -615,4 +615,30 @@ export const tradingQueriesRouter = createTRPCRouter({
         recentTrades: trades,
       };
     }),
+
+  // Query pour récupérer un trade par ID
+  getTradeById: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { session } = ctx;
+      const userId = session.userId;
+
+      const [trade] = await db
+        .select()
+        .from(advancedTrades)
+        .where(and(
+          eq(advancedTrades.id, input.id),
+          eq(advancedTrades.userId, userId)
+        ))
+        .limit(1);
+
+      if (!trade) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Trade not found",
+        });
+      }
+
+      return trade;
+    }),
 }); 

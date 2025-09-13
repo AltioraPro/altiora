@@ -14,19 +14,35 @@ import {
   ExternalLink,
   AlertTriangle
 } from "lucide-react";
+import { EditTradeModal } from "./EditTradeModal";
 import { format } from "date-fns";
 import { enUS } from "date-fns/locale";
 
 interface TradesTableProps {
   journalId: string;
   onEditTrade?: (tradeId: string) => void;
-  trades?: any[];
+  trades?: {
+    id: string;
+    symbol: string | null;
+    side: string | null;
+    entryPrice: number | null;
+    exitPrice: number | null;
+    quantity: number | null;
+    tradeDate: string | Date;
+    exitDate: string | Date | null;
+    profitLossPercentage: string | null;
+    profitLossAmount: string | null;
+    exitReason: string | null;
+    reasoning: string | null;
+    notes: string | null;
+  }[];
 }
 
 export function TradesTable({ journalId, onEditTrade, trades: propTrades }: TradesTableProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedTrades, setSelectedTrades] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
+  const [editingTradeId, setEditingTradeId] = useState<string | null>(null);
   
   const itemsPerPage = 10;
   const offset = currentPage * itemsPerPage;
@@ -108,6 +124,10 @@ export function TradesTable({ journalId, onEditTrade, trades: propTrades }: Trad
     }
   };
 
+  const handleEditTrade = (tradeId: string) => {
+    setEditingTradeId(tradeId);
+  };
+
   const getExitReasonBadge = (exitReason: string | null) => {
     switch (exitReason) {
       case "TP":
@@ -140,6 +160,7 @@ export function TradesTable({ journalId, onEditTrade, trades: propTrades }: Trad
   }
 
   return (
+    <>
     <Card className="border border-white/10 bg-black/20">
       <CardHeader>
         <div className="flex items-center justify-between">
@@ -235,16 +256,14 @@ export function TradesTable({ journalId, onEditTrade, trades: propTrades }: Trad
                       </td>
                       <td className="py-3 px-4 text-sm">
                         <div className="flex items-center space-x-1">
-                          {onEditTrade && (
-                            <Button
-                              onClick={() => onEditTrade(trade.id)}
-                              variant="ghost"
-                              size="sm"
-                              className="text-white/60 hover:text-white hover:bg-white/10 p-1 h-8 w-8"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                          )}
+                          <Button
+                            onClick={() => handleEditTrade(trade.id)}
+                            variant="ghost"
+                            size="sm"
+                            className="text-white/60 hover:text-white hover:bg-white/10 p-1 h-8 w-8"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
                           <Button
                             onClick={() => handleDeleteSingle(trade.id)}
                             variant="ghost"
@@ -332,5 +351,21 @@ export function TradesTable({ journalId, onEditTrade, trades: propTrades }: Trad
         )}
       </CardContent>
     </Card>
+
+    {/* Edit Trade Modal */}
+    {editingTradeId && (
+      <EditTradeModal
+        isOpen={!!editingTradeId}
+        onClose={() => setEditingTradeId(null)}
+        tradeId={editingTradeId}
+        onSuccess={() => {
+          setEditingTradeId(null);
+          // Refetch trades
+          utils.trading.getTrades.invalidate();
+          utils.trading.getStats.invalidate();
+        }}
+      />
+    )}
+  </>
   );
 }
