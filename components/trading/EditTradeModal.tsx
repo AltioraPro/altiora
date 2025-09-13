@@ -104,7 +104,7 @@ export function EditTradeModal({ isOpen, onClose, tradeId, onSuccess }: EditTrad
         riskInput: formData.riskPercentage || "",
         profitLossPercentage: formData.resultPercentage || "",
         exitReason: (formData.exitReason as "TP" | "BE" | "SL" | "Manual") || "Manual",
-        tradingViewLink: formData.tradingViewLink || "",
+        tradingviewLink: formData.tradingViewLink || "",
         notes: formData.notes || "",
       });
     } catch (error) {
