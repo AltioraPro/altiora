@@ -5,19 +5,26 @@ import { CSS } from "@dnd-kit/utilities";
 import { JournalPerformanceCard } from "./JournalPerformanceCard";
 import type { TradingJournal } from "@/server/db/schema";
 import { GripVertical } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface DraggableJournalCardProps {
   journal: TradingJournal;
   onEdit: () => void;
   onDelete: () => void;
   onSetDefault: () => void;
+  isSelected?: boolean;
+  onSelect?: (journalId: string, selected: boolean) => void;
+  showSelection?: boolean;
 }
 
 export function DraggableJournalCard({ 
   journal, 
   onEdit, 
   onDelete, 
-  onSetDefault
+  onSetDefault,
+  isSelected = false,
+  onSelect,
+  showSelection = false
 }: DraggableJournalCardProps) {
   const {
     attributes,
@@ -38,8 +45,19 @@ export function DraggableJournalCard({
     <div 
       ref={setNodeRef} 
       style={style} 
-      className={`relative group ${sortableIsDragging ? 'z-50' : ''}`}
+      className={`relative group ${sortableIsDragging ? 'z-50' : ''} ${isSelected ? 'ring-2 ring-white/50' : ''}`}
     >
+      {/* Selection Checkbox */}
+      {showSelection && onSelect && (
+        <div className="absolute top-2 right-2 z-20">
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={(checked) => onSelect(journal.id, checked as boolean)}
+            className="bg-black/50 border-white/30 data-[state=checked]:bg-white data-[state=checked]:text-black"
+          />
+        </div>
+      )}
+
       {/* Drag Handle */}
       <div
         {...attributes}

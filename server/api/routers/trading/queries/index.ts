@@ -12,7 +12,7 @@ import {
   filterTradesSchema,
   tradingStatsSchema,
 } from "../validators";
-import { eq, and, desc, gte, lte, like, sql, count, sum, avg } from "drizzle-orm";
+import { eq, and, desc, gte, lte, like, sql, count, sum, avg, inArray } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
 export const tradingQueriesRouter = createTRPCRouter({
@@ -126,7 +126,10 @@ export const tradingQueriesRouter = createTRPCRouter({
 
   // Queries pour les sessions
   getTradingSessions: protectedProcedure
-    .input(z.object({ journalId: z.string().optional() }))
+    .input(z.object({ 
+      journalId: z.string().optional(),
+      journalIds: z.array(z.string()).optional()
+    }))
     .query(async ({ ctx, input }) => {
       const { session } = ctx;
       const userId = session.userId;
@@ -135,6 +138,8 @@ export const tradingQueriesRouter = createTRPCRouter({
       
       if (input.journalId) {
         whereConditions.push(eq(tradingSessions.journalId, input.journalId));
+      } else if (input.journalIds && input.journalIds.length > 0) {
+        whereConditions.push(inArray(tradingSessions.journalId, input.journalIds));
       }
 
       const sessions = await db
@@ -173,7 +178,10 @@ export const tradingQueriesRouter = createTRPCRouter({
 
   // Queries pour les setups
   getTradingSetups: protectedProcedure
-    .input(z.object({ journalId: z.string().optional() }))
+    .input(z.object({ 
+      journalId: z.string().optional(),
+      journalIds: z.array(z.string()).optional()
+    }))
     .query(async ({ ctx, input }) => {
       const { session } = ctx;
       const userId = session.userId;
@@ -182,6 +190,8 @@ export const tradingQueriesRouter = createTRPCRouter({
       
       if (input.journalId) {
         whereConditions.push(eq(tradingSetups.journalId, input.journalId));
+      } else if (input.journalIds && input.journalIds.length > 0) {
+        whereConditions.push(inArray(tradingSetups.journalId, input.journalIds));
       }
 
       const setups = await db
@@ -229,6 +239,8 @@ export const tradingQueriesRouter = createTRPCRouter({
       
       if (input.journalId) {
         whereConditions.push(eq(advancedTrades.journalId, input.journalId));
+      } else if (input.journalIds && input.journalIds.length > 0) {
+        whereConditions.push(inArray(advancedTrades.journalId, input.journalIds));
       }
       if (input.assetId) {
         whereConditions.push(eq(advancedTrades.assetId, input.assetId));
@@ -299,6 +311,8 @@ export const tradingQueriesRouter = createTRPCRouter({
       
       if (input.journalId) {
         whereConditions.push(eq(advancedTrades.journalId, input.journalId));
+      } else if (input.journalIds && input.journalIds.length > 0) {
+        whereConditions.push(inArray(advancedTrades.journalId, input.journalIds));
       }
       if (input.startDate) {
         whereConditions.push(gte(advancedTrades.tradeDate, input.startDate));

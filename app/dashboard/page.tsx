@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { api } from "@/trpc/client";
 import { useSession } from "@/lib/auth-client";
 import Link from "next/link";
-import { BarChart3, ArrowLeft } from "lucide-react";
+import { BarChart3, ArrowLeft, ChevronDown, Check } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 
 import { GlobalTradingStats } from "@/components/trading/GlobalTradingStats";
 import { GlobalTradingCharts } from "@/components/trading/GlobalTradingCharts";
@@ -16,19 +16,59 @@ import { GlobalTradingCharts } from "@/components/trading/GlobalTradingCharts";
 
 export default function GlobalDashboardPage() {
   useSession();
-  const [selectedJournalId, setSelectedJournalId] = useState<string>("all");
+  const [selectedJournalIds, setSelectedJournalIds] = useState<string[]>([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   // Removed create/import modal state for global dashboard
 
   const { data: journals, isLoading: journalsLoading } = api.trading.getJournals.useQuery();
 
-  // Map the special value "all" to undefined so the backend aggregates across all journals
-  const effectiveJournalId = selectedJournalId === "all" ? undefined : selectedJournalId;
+  // Use selectedJournalIds for queries, or all journals if none selected
+  const effectiveJournalIds = selectedJournalIds.length > 0 ? selectedJournalIds : undefined;
 
-  const { data: stats } = api.trading.getStats.useQuery({ journalId: effectiveJournalId });
-  const { data: allTrades } = api.trading.getTrades.useQuery({ journalId: effectiveJournalId, limit: 100, offset: 0 });
+  const { data: stats } = api.trading.getStats.useQuery({ 
+    journalIds: effectiveJournalIds 
+  });
+  const { data: allTrades } = api.trading.getTrades.useQuery({ 
+    journalIds: effectiveJournalIds, 
+    limit: 100, 
+    offset: 0 
+  });
 
-  const { data: sessions } = api.trading.getSessions.useQuery({ journalId: effectiveJournalId });
+  const { data: sessions } = api.trading.getSessions.useQuery({ 
+    journalIds: effectiveJournalIds 
+  });
   // For global dashboard, we don't display setups/assets in the table; keep minimal queries
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleJournalToggle = (journalId: string) => {
+    if (selectedJournalIds.includes(journalId)) {
+      setSelectedJournalIds(selectedJournalIds.filter(id => id !== journalId));
+    } else {
+      setSelectedJournalIds([...selectedJournalIds, journalId]);
+    }
+  };
+
+  const handleSelectAll = () => {
+    if (selectedJournalIds.length === 0) {
+      setSelectedJournalIds(journals?.map(j => j.id) || []);
+    } else {
+      setSelectedJournalIds([]);
+    }
+  };
 
   if (journalsLoading) {
     return (
@@ -90,22 +130,59 @@ export default function GlobalDashboardPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="w-64">
-            <Select value={selectedJournalId} onValueChange={setSelectedJournalId}>
-              <SelectTrigger className="border-white/20 bg-black/20 text-white">
-                <SelectValue placeholder="All journals" />
-              </SelectTrigger>
-              <SelectContent className="bg-black/90 border-white/20 text-white">
-                <SelectItem value="all">All journals</SelectItem>
-                {journals?.map((j: { id: string; name: string }) => (
-                  <SelectItem key={j.id} value={j.id}>{j.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="w-64 relative" ref={dropdownRef}>
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="w-full flex items-center justify-between px-3 py-2 border border-white/20 bg-black/20 text-white rounded-md hover:bg-black/30 transition-colors"
+            >
+              <span>
+                {selectedJournalIds.length === 0 && "All journals"}
+                {selectedJournalIds.length === 1 && journals?.find(j => j.id === selectedJournalIds[0])?.name}
+                {selectedJournalIds.length > 1 && `${selectedJournalIds.length} journals selected`}
+              </span>
+              <ChevronDown className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+            
+            {isDropdownOpen && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-black/90 border border-white/20 rounded-md shadow-lg z-50 max-h-60 overflow-y-auto">
+                <div className="p-2">
+                  <div
+                    onClick={handleSelectAll}
+                    className="flex items-center space-x-2 p-2 hover:bg-white/10 rounded cursor-pointer"
+                  >
+                    <Checkbox
+                      checked={selectedJournalIds.length === journals?.length}
+                      className="bg-black/50 border-white/30 data-[state=checked]:bg-white data-[state=checked]:text-black"
+                    />
+                    <span className="text-white">All journals</span>
+                  </div>
+                  
+                  {journals?.map((journal) => (
+                    <div
+                      key={journal.id}
+                      onClick={() => handleJournalToggle(journal.id)}
+                      className="flex items-center space-x-2 p-2 hover:bg-white/10 rounded cursor-pointer"
+                    >
+                      <Checkbox
+                        checked={selectedJournalIds.includes(journal.id)}
+                        className="bg-black/50 border-white/30 data-[state=checked]:bg-white data-[state=checked]:text-black"
+                      />
+                      <span className="text-white">{journal.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-          {/* Import Excel and New Trade buttons removed on global dashboard */}
+          
+          {selectedJournalIds.length > 0 && (
+            <div className="text-white/60 text-sm">
+              {selectedJournalIds.length} journal{selectedJournalIds.length > 1 ? 's' : ''} selected
+            </div>
+          )}
         </div>
       </div>
+
 
       {/* Stats */}
       {stats && (

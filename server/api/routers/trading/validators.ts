@@ -140,6 +140,7 @@ export const updateAdvancedTradeSchema = z.object({
 // Validateur pour filtrer les trades
 export const filterTradesSchema = z.object({
   journalId: z.string().optional(),
+  journalIds: z.array(z.string()).optional(),
   assetId: z.string().optional(),
   sessionId: z.string().optional(),
   setupId: z.string().optional(),
@@ -154,6 +155,7 @@ export const filterTradesSchema = z.object({
 // Validateur pour les statistiques de trading
 export const tradingStatsSchema = z.object({
   journalId: z.string().optional(),
+  journalIds: z.array(z.string()).optional(),
   startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)").optional(),
   endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)").optional(),
 });

@@ -26,6 +26,9 @@ interface DraggableJournalListProps {
   onEdit: (journal: TradingJournal) => void;
   onDelete: (journal: TradingJournal) => void;
   onSetDefault: (journal: TradingJournal) => void;
+  selectedJournalIds?: string[];
+  onSelectionChange?: (selectedIds: string[]) => void;
+  showSelection?: boolean;
 }
 
 export function DraggableJournalList({
@@ -34,6 +37,9 @@ export function DraggableJournalList({
   onEdit,
   onDelete,
   onSetDefault,
+  selectedJournalIds = [],
+  onSelectionChange,
+  showSelection = false,
 }: DraggableJournalListProps) {
   const [items, setItems] = useState(journals);
   
@@ -52,6 +58,16 @@ export function DraggableJournalList({
   useEffect(() => {
     setItems(journals);
   }, [journals]);
+
+  const handleJournalSelect = (journalId: string, selected: boolean) => {
+    if (!onSelectionChange) return;
+    
+    if (selected) {
+      onSelectionChange([...selectedJournalIds, journalId]);
+    } else {
+      onSelectionChange(selectedJournalIds.filter(id => id !== journalId));
+    }
+  };
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
@@ -84,6 +100,9 @@ export function DraggableJournalList({
               onEdit={() => onEdit(journal)}
               onDelete={() => onDelete(journal)}
               onSetDefault={() => onSetDefault(journal)}
+              isSelected={selectedJournalIds.includes(journal.id)}
+              onSelect={handleJournalSelect}
+              showSelection={showSelection}
             />
           ))}
         </div>
