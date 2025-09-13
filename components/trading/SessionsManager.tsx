@@ -183,12 +183,12 @@ export function SessionsManager({ journalId }: SessionsManagerProps) {
               <div
                 key={session.id}
                 className="group relative flex items-center justify-between p-3 bg-black/20 rounded-lg border border-white/10 hover:border-white/20 transition-colors"
-                title={`Performance: ${session.totalPnL >= 0 ? '+' : ''}${session.totalPnL.toFixed(2)}% • ${session.tradesCount} trades`}
+                title={`Performance: ${session.totalPnL >= 0 ? '+' : ''}${session.totalPnL.toFixed(1)}% • ${session.tradesCount} trades`}
               >
                 <div className="flex flex-col">
                   <span className="text-white font-medium">{session.name}</span>
                   <span className={`text-xs ${session.totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                    {session.totalPnL >= 0 ? '+' : ''}{session.totalPnL.toFixed(2)}%
+                    {session.totalPnL >= 0 ? '+' : ''}{session.totalPnL.toFixed(1)}%
                   </span>
                 </div>
                 <Button
@@ -205,7 +205,7 @@ export function SessionsManager({ journalId }: SessionsManagerProps) {
                   <div className="text-center">
                     <div className="font-medium text-black">{session.name}</div>
                     <div className={`${session.totalPnL >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      {session.totalPnL >= 0 ? '+' : ''}{session.totalPnL.toFixed(2)}%
+                      {session.totalPnL >= 0 ? '+' : ''}{session.totalPnL.toFixed(1)}%
                     </div>
                     <div className="text-gray-600 text-xs">
                       {session.tradesCount} trade{session.tradesCount !== 1 ? 's' : ''}

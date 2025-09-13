@@ -76,11 +76,13 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
               <AreaChart data={cumulativeData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" strokeOpacity={0.1} />
                 <XAxis dataKey="tradeNumber" stroke="#ffffff" strokeOpacity={0.6} fontSize={10} />
-                <YAxis stroke="#ffffff" strokeOpacity={0.6} fontSize={10} tickFormatter={(value) => `${value.toFixed(2)}%`} />
+                <YAxis stroke="#ffffff" strokeOpacity={0.6} fontSize={10} tickFormatter={(value) => `${value.toFixed(1)}%`} />
                 <Tooltip 
-                  formatter={(value: number, name: string) => [ `${value.toFixed(2)}%`, name === 'cumulative' ? 'Cumulative PnL' : 'Trade PnL' ]}
+                  formatter={(value: number, name: string) => [ `${value.toFixed(1)}%`, 'Cumulative PnL' ]}
                   labelFormatter={(label: string) => `Trade #${label}`}
                   contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', color: '#000000', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                  itemStyle={{ color: '#000000' }}
+                  labelStyle={{ color: '#000000' }}
                 />
                 <Area type="monotone" dataKey="cumulative" stroke="#ffffff" fill="#ffffff" fillOpacity={0.2} strokeWidth={2} />
               </AreaChart>
@@ -99,11 +101,13 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
               <BarChart data={monthlyPerformanceData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" strokeOpacity={0.1} />
                 <XAxis dataKey="name" stroke="#ffffff" strokeOpacity={0.6} fontSize={10} height={30} />
-                <YAxis stroke="#ffffff" strokeOpacity={0.6} fontSize={10} tickFormatter={(value) => `${value}%`} domain={['dataMin - 5', 'dataMax + 5']} />
+                <YAxis stroke="#ffffff" strokeOpacity={0.6} fontSize={10} tickFormatter={(value) => `${value.toFixed(1)}%`} domain={['dataMin - 5', 'dataMax + 5']} />
                 <Tooltip 
-                  formatter={(value: number) => [ `${value}%`, 'Total PnL' ]}
+                  formatter={(value: number) => [ `${value.toFixed(1)}%`, 'Total PnL' ]}
                   labelFormatter={(label: string) => label}
                   contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', color: '#000000', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                  itemStyle={{ color: '#000000' }}
+                  labelStyle={{ color: '#000000' }}
                 />
                 <Bar dataKey="pnl" radius={[6, 6, 0, 0]} fill="#ffffff" />
               </BarChart>

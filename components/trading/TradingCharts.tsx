@@ -196,15 +196,15 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                   height={60}
                 />
                 <YAxis 
-                  stroke="#ffffff"
-                  strokeOpacity={0.6}
+                  stroke="#ffffff" 
+                  strokeOpacity={0.6} 
                   fontSize={10}
-                  tickFormatter={(value) => `${value}%`}
+                  tickFormatter={(value) => `${value.toFixed(1)}%`}
                   domain={['dataMin - 5', 'dataMax + 5']}
                 />
                 <Tooltip 
                   formatter={(value: number) => [
-                    `${value}%`, 
+                    `${value.toFixed(1)}%`, 
                     'PnL Total'
                   ]}
                   labelFormatter={(label: string) => label}
@@ -246,17 +246,17 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                 fontSize={10}
                 label={{ value: 'Trade number', position: 'insideBottom', offset: -2, fill: '#ffffff', fontSize: 12 }}
               />
-              <YAxis 
-                stroke="#ffffff"
-                strokeOpacity={0.6}
-                fontSize={10}
-                tickFormatter={(value) => `${value.toFixed(2)}%`}
-                label={{ value: 'Performance (%)', angle: -90, position: 'insideLeft', fill: '#ffffff', fontSize: 12 }}
-              />
+                <YAxis 
+                  stroke="#ffffff" 
+                  strokeOpacity={0.6} 
+                  fontSize={10}
+                  tickFormatter={(value) => `${value.toFixed(1)}%`}
+                  label={{ value: 'Performance (%)', angle: -90, position: 'insideLeft', fill: '#ffffff', fontSize: 12 }}
+                />
               <Tooltip 
                 formatter={(value: number, name: string) => [
-                  `${value.toFixed(2)}%`, 
-                  name === 'cumulative' ? 'Cumulative PnL' : 'Trade PnL'
+                  `${value.toFixed(1)}%`, 
+                  'Cumulative PnL'
                 ]}
                 labelFormatter={(label: string) => `Trade #${label}`}
                 contentStyle={{
@@ -265,6 +265,12 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                   borderRadius: '8px',
                   color: '#000000',
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                }}
+                itemStyle={{
+                  color: '#000000'
+                }}
+                labelStyle={{
+                  color: '#000000'
                 }}
               />
               <Area 
