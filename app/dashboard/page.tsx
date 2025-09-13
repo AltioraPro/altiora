@@ -190,6 +190,42 @@ export default function GlobalDashboardPage() {
         </div>
       )}
 
+      {/* Journals List */}
+      <div className="mb-8">
+        <Card className="border border-white/10 bg-black/20">
+          <CardHeader>
+            <CardTitle className="font-argesta text-white">Your Journals</CardTitle>
+            <CardDescription className="text-white/60">Click on a journal to view detailed statistics</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {journals?.map((journal) => (
+                <Link key={journal.id} href={`/trading?journalId=${journal.id}`}>
+                  <Card className="border border-white/10 bg-black/20 hover:bg-black/30 transition-colors cursor-pointer">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="font-medium text-white">{journal.name}</h3>
+                          <p className="text-sm text-white/60">
+                            {journal.description || "No description"}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm text-white/60">Trades</div>
+                          <div className="text-lg font-semibold text-white">
+                            {allTrades?.filter(trade => trade.journalId === journal.id).length || 0}
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Charts */}
       {stats && sessions && allTrades && (
         <div className="mb-8">

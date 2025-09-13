@@ -134,7 +134,7 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
             >
               <Trash2 className="w-4 h-4" />
             </Button>
-            <a href={`/trading?journal=${journal.id}`}>
+            <a href={`/trading?journalId=${journal.id}`}>
               <Button 
                 size="sm"
                 className="bg-white text-black hover:bg-gray-200"

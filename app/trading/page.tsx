@@ -21,7 +21,7 @@ import Link from "next/link";
 function JournalParamSync({ onFound }: { onFound: (journalId: string) => void }) {
   const searchParams = useSearchParams();
   useEffect(() => {
-    const journalFromUrl = searchParams.get("journal");
+    const journalFromUrl = searchParams.get("journalId") || searchParams.get("journal");
     if (journalFromUrl) {
       onFound(journalFromUrl);
     }
