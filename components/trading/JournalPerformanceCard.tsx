@@ -27,21 +27,19 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
 
   const { data: allTrades } = api.trading.getTrades.useQuery(
     { 
-      journalId: journal.id,
-      limit: 100, // Récupérer plus de trades pour trouver le meilleur
-      offset: 0
+      journalId: journal.id
+      // Récupérer tous les trades pour trouver le vrai meilleur
     },
     { enabled: !!journal.id }
   );
 
-  const winningTrades = allTrades?.filter(trade => 
-    Number(trade.profitLossPercentage || 0) > 0
-  ) || [];
-
-  const bestTrade = winningTrades.length > 0 
-    ? winningTrades.reduce((best, current) => 
-        Number(current.profitLossPercentage || 0) > Number(best.profitLossPercentage || 0) ? current : best
-      )
+  // Trouver le meilleur trade (le plus haut pourcentage, positif ou négatif)
+  const bestTrade = allTrades && allTrades.length > 0 
+    ? allTrades.reduce((best, current) => {
+        const currentPnl = Number(current.profitLossPercentage || 0);
+        const bestPnl = Number(best.profitLossPercentage || 0);
+        return currentPnl > bestPnl ? current : best;
+      })
     : null;
 
   return (
@@ -92,14 +90,32 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
 
         {/* Best trade */}
         {bestTrade && (
-          <div className="mb-4 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+          <div className={`mb-4 p-3 rounded-lg border ${
+            Number(bestTrade.profitLossPercentage || 0) >= 0 
+              ? 'bg-green-500/10 border-green-500/20' 
+              : 'bg-red-500/10 border-red-500/20'
+          }`}>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <TrendingUp className="w-4 h-4 text-green-400" />
-                <span className="text-sm text-green-400">Best trade</span>
+                <TrendingUp className={`w-4 h-4 ${
+                  Number(bestTrade.profitLossPercentage || 0) >= 0 
+                    ? 'text-green-400' 
+                    : 'text-red-400'
+                }`} />
+                <span className={`text-sm ${
+                  Number(bestTrade.profitLossPercentage || 0) >= 0 
+                    ? 'text-green-400' 
+                    : 'text-red-400'
+                }`}>
+                  Best trade
+                </span>
               </div>
-              <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-                +{bestTrade.profitLossPercentage}%
+              <Badge className={`${
+                Number(bestTrade.profitLossPercentage || 0) >= 0 
+                  ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                  : 'bg-red-500/20 text-red-400 border-red-500/30'
+              }`}>
+                {Number(bestTrade.profitLossPercentage || 0) >= 0 ? '+' : ''}{bestTrade.profitLossPercentage}%
               </Badge>
             </div>
             <div className="mt-1 text-sm text-white/80">

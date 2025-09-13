@@ -41,10 +41,9 @@ interface Trade {
 
 interface TradesTableProps {
   journalId: string;
-  trades?: Trade[];
 }
 
-export function TradesTable({ journalId, trades: propTrades }: TradesTableProps) {
+export function TradesTable({ journalId }: TradesTableProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedTrades, setSelectedTrades] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
@@ -54,14 +53,11 @@ export function TradesTable({ journalId, trades: propTrades }: TradesTableProps)
   const offset = currentPage * itemsPerPage;
 
   // Queries
-  const { data: allTrades, isLoading } = api.trading.getTrades.useQuery({
+  const { data: trades, isLoading } = api.trading.getTrades.useQuery({
     journalId,
     limit: itemsPerPage,
     offset
   });
-
-  // Use prop trades if provided, otherwise use queried trades
-  const trades = propTrades || allTrades;
 
   const { data: stats } = api.trading.getStats.useQuery({ journalId });
   const { data: assets } = api.trading.getAssets.useQuery({ journalId });

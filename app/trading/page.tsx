@@ -79,10 +79,11 @@ export default function TradingPage() {
   
   // Récupérer le journal sélectionné
   const selectedJournal = journals?.find(j => j.id === selectedJournalId);
+  
+  // Récupérer tous les trades pour les statistiques (sans pagination)
   const { data: allTrades } = api.trading.getTrades.useQuery(
     { 
       journalId: selectedJournalId || undefined
-      // Pas de limite = récupérer tous les trades
     },
     { enabled: !!selectedJournalId }
   );
@@ -320,7 +321,6 @@ export default function TradingPage() {
           {activeTab === 'trades' && (
             <TradesTable 
               journalId={selectedJournalId}
-              trades={filteredTrades || []}
             />
           )}
           
