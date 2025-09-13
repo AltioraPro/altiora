@@ -51,7 +51,7 @@ export function DateFilter({ onFilterChange, className = "" }: DateFilterProps) 
   };
 
   const clearFilter = () => {
-    const newFilter = { type: 'all' };
+    const newFilter: DateFilterState = { type: 'all' };
     setFilter(newFilter);
     onFilterChange(newFilter);
   };
