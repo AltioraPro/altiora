@@ -44,9 +44,8 @@ export default function TradingPage() {
   );
   const { data: allTrades } = api.trading.getTrades.useQuery(
     { 
-      journalId: selectedJournalId || undefined,
-      limit: 100,
-      offset: 0
+      journalId: selectedJournalId || undefined
+      // Pas de limite = récupérer tous les trades
     },
     { enabled: !!selectedJournalId }
   );

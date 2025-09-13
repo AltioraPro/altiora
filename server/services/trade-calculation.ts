@@ -32,21 +32,19 @@ export function calculateTradeResults(
   }
 
   const startingCapital = parseFloat(journal.startingCapital);
-  // Utiliser le capital actuel si fourni, sinon utiliser le capital de départ
-  const capitalForCalculation = currentCapital || startingCapital;
   
   let profitLossPercentage: number = 0;
   let profitLossAmount: number = 0;
 
-  // Si on a un montant P&L, calculer le pourcentage basé sur le capital actuel
+  // Si on a un montant P&L, calculer le pourcentage basé sur le capital de départ
   if (input.profitLossAmount) {
     profitLossAmount = parseFloat(input.profitLossAmount);
-    profitLossPercentage = (profitLossAmount / capitalForCalculation) * 100;
+    profitLossPercentage = (profitLossAmount / startingCapital) * 100;
   }
-  // Si on a un pourcentage P&L, calculer le montant basé sur le capital actuel
+  // Si on a un pourcentage P&L, calculer le montant basé sur le capital de départ
   else if (input.profitLossPercentage) {
     profitLossPercentage = parseFloat(input.profitLossPercentage);
-    profitLossAmount = (profitLossPercentage / 100) * capitalForCalculation;
+    profitLossAmount = (profitLossPercentage / 100) * startingCapital;
   }
 
   return {

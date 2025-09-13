@@ -49,7 +49,10 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
     .reduce((acc, trade, index) => {
       const pnl = trade.profitLossPercentage ? parseFloat(trade.profitLossPercentage) || 0 : 0;
       const previousCumulative = acc.length > 0 ? acc[acc.length - 1].cumulative : 0;
+      
+      // Calcul simple : addition des pourcentages PnL
       const cumulative = previousCumulative + pnl;
+      
       acc.push({
         date: new Date(trade.tradeDate).toLocaleDateString('en-US'),
         pnl: pnl,
@@ -77,7 +80,7 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
                 <Tooltip 
                   formatter={(value: number, name: string) => [ `${value.toFixed(2)}%`, name === 'cumulative' ? 'Cumulative PnL' : 'Trade PnL' ]}
                   labelFormatter={(label: string) => `Trade #${label}`}
-                  contentStyle={{ backgroundColor: '#000000', border: '1px solid #ffffff', borderRadius: '8px', color: '#ffffff' }}
+                  contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', color: '#000000', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
                 />
                 <Area type="monotone" dataKey="cumulative" stroke="#ffffff" fill="#ffffff" fillOpacity={0.2} strokeWidth={2} />
               </AreaChart>
@@ -100,7 +103,7 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
                 <Tooltip 
                   formatter={(value: number) => [ `${value}%`, 'Total PnL' ]}
                   labelFormatter={(label: string) => label}
-                  contentStyle={{ backgroundColor: '#000000', border: '1px solid #ffffff', borderRadius: '8px', color: '#ffffff' }}
+                  contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', color: '#000000', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
                 />
                 <Bar dataKey="pnl" radius={[6, 6, 0, 0]} fill="#ffffff" />
               </BarChart>

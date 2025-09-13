@@ -12,7 +12,7 @@ import {
   filterTradesSchema,
   tradingStatsSchema,
 } from "../validators";
-import { eq, and, desc, gte, lte, like, sql, count, sum, avg, inArray } from "drizzle-orm";
+import { eq, and, desc, asc, gte, lte, like, sql, count, sum, avg, inArray } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
 export const tradingQueriesRouter = createTRPCRouter({
@@ -264,13 +264,20 @@ export const tradingQueriesRouter = createTRPCRouter({
         whereConditions.push(eq(advancedTrades.isClosed, input.isClosed));
       }
 
-      const trades = await db
-        .select()
-        .from(advancedTrades)
-        .where(and(...whereConditions))
-        .orderBy(desc(advancedTrades.tradeDate), desc(advancedTrades.createdAt))
-        .limit(input.limit)
-        .offset(input.offset);
+      // Construire la requête avec ou sans limite
+      const trades = input.limit 
+        ? await db
+            .select()
+            .from(advancedTrades)
+            .where(and(...whereConditions))
+            .orderBy(desc(advancedTrades.tradeDate), desc(advancedTrades.createdAt))
+            .limit(input.limit)
+            .offset(input.offset || 0)
+        : await db
+            .select()
+            .from(advancedTrades)
+            .where(and(...whereConditions))
+            .orderBy(desc(advancedTrades.tradeDate), desc(advancedTrades.createdAt));
 
       // Plus de champ tags dans advancedTrades
       return trades;
@@ -417,38 +424,45 @@ export const tradingQueriesRouter = createTRPCRouter({
 
       // Calculer le gain total en euros et le pourcentage total correct
       let totalAmountPnL = pnlStats.totalAmountPnL || 0;
-      let totalPnLPercentage = pnlStats.totalPnL || 0;
+      let totalPnLPercentage = 0;
       
-      // Si on n'a pas de montant direct mais qu'on a le pourcentage et le capital de départ
-      if ((!totalAmountPnL || totalAmountPnL === 0) && journal?.usePercentageCalculation && journal?.startingCapital) {
-        const startingCapital = parseFloat(journal.startingCapital);
+      // Récupérer tous les trades fermés pour calculer la performance cumulative correcte
+      const closedTradesData = await db
+        .select({
+          profitLossPercentage: advancedTrades.profitLossPercentage,
+          profitLossAmount: advancedTrades.profitLossAmount,
+        })
+        .from(advancedTrades)
+        .where(and(...whereConditions, eq(advancedTrades.isClosed, true)))
+        .orderBy(asc(advancedTrades.tradeDate));
+
+      // Calculer la performance cumulative en utilisant une simple addition des pourcentages
+      if (closedTradesData.length > 0) {
+        // Simple addition des pourcentages PnL
+        totalPnLPercentage = closedTradesData.reduce((sum, trade) => {
+          const pnlPercentage = trade.profitLossPercentage ? parseFloat(trade.profitLossPercentage) || 0 : 0;
+          return sum + pnlPercentage;
+        }, 0);
         
-        // Calculer le capital actuel en additionnant tous les gains/pertes
-        const currentCapital = startingCapital + (Number(totalPnLPercentage) / 100) * startingCapital;
+        // Calculer le montant total si on a le capital de départ
+        if (journal?.usePercentageCalculation && journal?.startingCapital) {
+          const startingCapital = parseFloat(journal.startingCapital);
+          totalAmountPnL = (totalPnLPercentage / 100) * startingCapital;
+        } else {
+          // Utiliser la somme des montants si pas de calcul en pourcentage
+          totalAmountPnL = pnlStats.totalAmountPnL || 0;
+        }
         
-        // Le gain total en euros est la différence entre le capital actuel et le capital de départ
-        totalAmountPnL = currentCapital - startingCapital;
-        
-        // Le pourcentage total doit être calculé par rapport au capital de départ
-        totalPnLPercentage = (totalAmountPnL / startingCapital) * 100;
-        
-        console.log("Calcul euros:", {
-          startingCapital,
-          currentCapital,
+        console.log("Calcul performance cumulative (addition simple):", {
+          tradesCount: closedTradesData.length,
           totalPnLPercentage,
-          calculatedAmount: totalAmountPnL,
-          journal: journal
-        });
-      } else if (totalAmountPnL && journal?.usePercentageCalculation && journal?.startingCapital) {
-        // Si on a déjà le montant total, calculer le pourcentage par rapport au capital de départ
-        const startingCapital = parseFloat(journal.startingCapital);
-        totalPnLPercentage = (Number(totalAmountPnL) / startingCapital) * 100;
-        
-        console.log("Calcul pourcentage depuis montant:", {
-          startingCapital,
           totalAmountPnL,
-          calculatedPercentage: totalPnLPercentage
+          startingCapital: journal?.startingCapital
         });
+      } else {
+        // Pas de trades fermés
+        totalPnLPercentage = 0;
+        totalAmountPnL = 0;
       }
 
       // Calculer le winrate : total des TP / nombre total de trades fermés * 100
@@ -505,20 +519,26 @@ export const tradingQueriesRouter = createTRPCRouter({
 
       const startingCapital = parseFloat(journal.startingCapital);
       
-      // Récupérer la somme de tous les trades fermés pour ce journal
-      const [totalPnLResult] = await db
+      // Récupérer tous les trades fermés pour calculer la composition des rendements
+      const closedTradesData = await db
         .select({
-          totalAmountPnL: sum(sql`CAST(${advancedTrades.profitLossAmount} AS DECIMAL)`),
+          profitLossPercentage: advancedTrades.profitLossPercentage,
         })
         .from(advancedTrades)
         .where(and(
           eq(advancedTrades.journalId, input.journalId),
           eq(advancedTrades.userId, userId),
           eq(advancedTrades.isClosed, true)
-        ));
+        ))
+        .orderBy(asc(advancedTrades.tradeDate));
       
-      const totalPnLAmount = totalPnLResult?.totalAmountPnL || 0;
-      const currentCapital = startingCapital + Number(totalPnLAmount);
+      // Calculer le capital actuel avec addition simple des pourcentages
+      const totalPnLPercentage = closedTradesData.reduce((sum, trade) => {
+        const pnlPercentage = trade.profitLossPercentage ? parseFloat(trade.profitLossPercentage) || 0 : 0;
+        return sum + pnlPercentage;
+      }, 0);
+      
+      const currentCapital = startingCapital + (totalPnLPercentage / 100) * startingCapital;
 
       return { 
         currentCapital: currentCapital.toFixed(2), 

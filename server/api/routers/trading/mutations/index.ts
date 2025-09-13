@@ -22,7 +22,7 @@ import {
   reorderJournalsSchema,
 } from "../validators";
 import { calculateTradeResults } from "@/server/services/trade-calculation";
-import { eq, and, sum, sql, inArray } from "drizzle-orm";
+import { eq, and, sum, sql, inArray, asc } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
 export const tradingMutationsRouter = createTRPCRouter({
@@ -517,24 +517,31 @@ export const tradingMutationsRouter = createTRPCRouter({
       if (journal[0].usePercentageCalculation && journal[0].startingCapital) {
         const startingCapital = parseFloat(journal[0].startingCapital);
         
-        // Récupérer la somme de tous les trades fermés pour ce journal
-        const [totalPnLResult] = await db
+        // Récupérer tous les trades fermés pour calculer la composition des rendements
+        const closedTradesData = await db
           .select({
-            totalAmountPnL: sum(sql`CAST(${advancedTrades.profitLossAmount} AS DECIMAL)`),
+            profitLossPercentage: advancedTrades.profitLossPercentage,
           })
           .from(advancedTrades)
           .where(and(
             eq(advancedTrades.journalId, input.journalId),
             eq(advancedTrades.userId, userId),
             eq(advancedTrades.isClosed, true)
-          ));
+          ))
+          .orderBy(asc(advancedTrades.tradeDate));
         
-        const totalPnLAmount = totalPnLResult?.totalAmountPnL || 0;
-        currentCapital = startingCapital + Number(totalPnLAmount);
+        // Calculer le capital actuel avec addition simple des pourcentages
+        const totalPnLPercentage = closedTradesData.reduce((sum, trade) => {
+          const pnlPercentage = trade.profitLossPercentage ? parseFloat(trade.profitLossPercentage) || 0 : 0;
+          return sum + pnlPercentage;
+        }, 0);
         
-        console.log("Capital actuel calculé:", {
+        currentCapital = startingCapital + (totalPnLPercentage / 100) * startingCapital;
+        
+        console.log("Capital actuel calculé avec addition simple:", {
           startingCapital,
-          totalPnLAmount,
+          tradesCount: closedTradesData.length,
+          totalPnLPercentage,
           currentCapital
         });
       }

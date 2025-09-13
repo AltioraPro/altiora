@@ -105,6 +105,8 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
     .reduce((acc, trade, index) => {
       const pnl = trade.profitLossPercentage ? parseFloat(trade.profitLossPercentage) || 0 : 0;
       const previousCumulative = acc.length > 0 ? acc[acc.length - 1].cumulative : 0;
+      
+      // Calcul simple : addition des pourcentages PnL
       const cumulative = previousCumulative + pnl;
       
       acc.push({
@@ -116,6 +118,7 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
       
       return acc;
     }, [] as Array<{ date: string; pnl: number; cumulative: number; tradeNumber: number }>) || [];
+
 
   return (
     <div className="space-y-6">
@@ -206,10 +209,11 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                   ]}
                   labelFormatter={(label: string) => label}
                   contentStyle={{
-                    backgroundColor: '#000000',
-                    border: '1px solid #ffffff',
+                    backgroundColor: '#ffffff',
+                    border: '1px solid #e5e7eb',
                     borderRadius: '8px',
-                    color: '#ffffff'
+                    color: '#000000',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                   }}
                 />
                 <Bar dataKey="pnl" radius={[4, 4, 0, 0]}>
@@ -256,10 +260,11 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                 ]}
                 labelFormatter={(label: string) => `Trade #${label}`}
                 contentStyle={{
-                  backgroundColor: '#000000',
-                  border: '1px solid #ffffff',
+                  backgroundColor: '#ffffff',
+                  border: '1px solid #e5e7eb',
                   borderRadius: '8px',
-                  color: '#ffffff'
+                  color: '#000000',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                 }}
               />
               <Area 

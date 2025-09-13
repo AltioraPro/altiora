@@ -30,6 +30,7 @@ export function SessionsManager({ journalId }: SessionsManagerProps) {
 
   // Queries
   const { data: sessions, isLoading } = api.trading.getSessions.useQuery({ journalId });
+  const { data: trades } = api.trading.getTrades.useQuery({ journalId });
   const utils = api.useUtils();
 
   // Mutations
@@ -74,10 +75,25 @@ export function SessionsManager({ journalId }: SessionsManagerProps) {
     }
   };
 
-  const filteredSessions = sessions?.filter(session =>
+  // Calculer les performances par session
+  const sessionPerformances = sessions?.map(session => {
+    const sessionTrades = trades?.filter(trade => trade.sessionId === session.id) || [];
+    const totalPnL = sessionTrades.reduce((sum, trade) => {
+      const pnl = trade.profitLossPercentage ? parseFloat(trade.profitLossPercentage) || 0 : 0;
+      return sum + pnl;
+    }, 0);
+    
+    return {
+      ...session,
+      totalPnL,
+      tradesCount: sessionTrades.length
+    };
+  }) || [];
+
+  const filteredSessions = sessionPerformances.filter(session =>
     session.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (session.description && session.description.toLowerCase().includes(searchTerm.toLowerCase()))
-  ) || [];
+  );
 
   if (isLoading) {
     return (
@@ -166,9 +182,15 @@ export function SessionsManager({ journalId }: SessionsManagerProps) {
             {filteredSessions.map((session) => (
               <div
                 key={session.id}
-                className="flex items-center justify-between p-3 bg-black/20 rounded-lg border border-white/10 hover:border-white/20 transition-colors"
+                className="group relative flex items-center justify-between p-3 bg-black/20 rounded-lg border border-white/10 hover:border-white/20 transition-colors"
+                title={`Performance: ${session.totalPnL >= 0 ? '+' : ''}${session.totalPnL.toFixed(2)}% • ${session.tradesCount} trades`}
               >
-                <span className="text-white font-medium">{session.name}</span>
+                <div className="flex flex-col">
+                  <span className="text-white font-medium">{session.name}</span>
+                  <span className={`text-xs ${session.totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                    {session.totalPnL >= 0 ? '+' : ''}{session.totalPnL.toFixed(2)}%
+                  </span>
+                </div>
                 <Button
                   onClick={() => handleDeleteSession(session.id)}
                   variant="ghost"
@@ -177,6 +199,21 @@ export function SessionsManager({ journalId }: SessionsManagerProps) {
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>
+                
+                {/* Tooltip détaillé au hover */}
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2 bg-white border border-gray-300 rounded-lg text-black text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 whitespace-nowrap shadow-lg">
+                  <div className="text-center">
+                    <div className="font-medium text-black">{session.name}</div>
+                    <div className={`${session.totalPnL >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {session.totalPnL >= 0 ? '+' : ''}{session.totalPnL.toFixed(2)}%
+                    </div>
+                    <div className="text-gray-600 text-xs">
+                      {session.tradesCount} trade{session.tradesCount !== 1 ? 's' : ''}
+                    </div>
+                  </div>
+                  {/* Flèche du tooltip */}
+                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-white"></div>
+                </div>
               </div>
             ))}
           </div>

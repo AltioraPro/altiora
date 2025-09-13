@@ -30,9 +30,8 @@ export default function GlobalDashboardPage() {
     journalIds: effectiveJournalIds 
   });
   const { data: allTrades } = api.trading.getTrades.useQuery({ 
-    journalIds: effectiveJournalIds, 
-    limit: 100, 
-    offset: 0 
+    journalIds: effectiveJournalIds
+    // Pas de limite = récupérer tous les trades
   });
 
   const { data: sessions } = api.trading.getSessions.useQuery({ 
