@@ -104,9 +104,9 @@ export default function TradingPage() {
     totalAmountPnL: filteredTrades ? filteredTrades.reduce((sum, t) => sum + Number(t.profitLossAmount || 0), 0) : 0,
     tradesBySymbol: [],
     tradesBySetup: [],
-    tpTrades: 0,
-    beTrades: 0,
-    slTrades: 0,
+    tpTrades: filteredTrades.filter(t => t.exitReason === 'TP').length,
+    beTrades: filteredTrades.filter(t => t.exitReason === 'BE').length,
+    slTrades: filteredTrades.filter(t => t.exitReason === 'SL').length,
     journal: undefined
   } : null;
   const { data: sessions } = api.trading.getSessions.useQuery(
@@ -252,7 +252,8 @@ export default function TradingPage() {
         </div>
       </div>
 
-      
+      {/* Journal URL Sync */}
+      <JournalParamSync onFound={setSelectedJournalId} />
 
       {/* Statistics */}
       {stats && (
