@@ -132,9 +132,12 @@ export default function TradingPage() {
     setSelectedJournalId(journalId);
   }, []);
 
-  // Set first journal when loaded only if no journal is selected
+  // Set first journal when loaded only if no journal is selected and no URL param
   useEffect(() => {
-    if (!selectedJournalId && journals && journals.length > 0) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const journalFromUrl = urlParams.get('journalId') || urlParams.get('journal');
+    
+    if (!selectedJournalId && !journalFromUrl && journals && journals.length > 0) {
       setSelectedJournalId(journals[0].id);
     }
   }, [journals, selectedJournalId]);
@@ -253,7 +256,7 @@ export default function TradingPage() {
       </div>
 
       {/* Journal URL Sync */}
-      <JournalParamSync onFound={setSelectedJournalId} />
+      <JournalParamSync onFound={handleJournalFound} />
 
       {/* Statistics */}
       {stats && (
