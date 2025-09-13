@@ -13,6 +13,7 @@ import { TradesTable } from "@/components/trading/TradesTable";
 import { AssetsManager } from "@/components/trading/AssetsManager";
 import { SessionsManager } from "@/components/trading/SessionsManager";
 import { SetupsManager } from "@/components/trading/SetupsManager";
+import { DateFilter, type DateFilterState } from "@/components/trading/DateFilter";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,13 +36,45 @@ export default function TradingPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'trades' | 'assets' | 'sessions' | 'setups'>('trades');
+  const [dateFilter, setDateFilter] = useState<DateFilterState>({ type: 'all' });
+
+  // Fonction pour filtrer les trades par date
+  const filterTradesByDate = (trades: any[] | undefined) => {
+    if (!trades || dateFilter.type === 'all') return trades;
+    
+    return trades.filter(trade => {
+      const tradeDate = new Date(trade.tradeDate);
+      
+      switch (dateFilter.type) {
+        case 'day':
+          if (!dateFilter.value) return true;
+          const filterDate = new Date(dateFilter.value);
+          return tradeDate.toDateString() === filterDate.toDateString();
+          
+        case 'month':
+          if (!dateFilter.value) return true;
+          const [year, month] = dateFilter.value.split('-');
+          return tradeDate.getFullYear() === parseInt(year) && 
+                 tradeDate.getMonth() === parseInt(month) - 1;
+                 
+        case 'year':
+          if (!dateFilter.value) return true;
+          return tradeDate.getFullYear() === parseInt(dateFilter.value);
+          
+        case 'custom':
+          if (!dateFilter.startDate || !dateFilter.endDate) return true;
+          const startDate = new Date(dateFilter.startDate);
+          const endDate = new Date(dateFilter.endDate);
+          return tradeDate >= startDate && tradeDate <= endDate;
+          
+        default:
+          return true;
+      }
+    });
+  };
 
   // Queries
   const { data: journals, isLoading: journalsLoading } = api.trading.getJournals.useQuery();
-  const { data: stats } = api.trading.getStats.useQuery(
-    { journalId: selectedJournalId || undefined },
-    { enabled: !!selectedJournalId }
-  );
   const { data: allTrades } = api.trading.getTrades.useQuery(
     { 
       journalId: selectedJournalId || undefined
@@ -49,6 +82,29 @@ export default function TradingPage() {
     },
     { enabled: !!selectedJournalId }
   );
+  
+  // Filtrer les trades par date
+  const filteredTrades = allTrades ? filterTradesByDate(allTrades) : [];
+  
+  // Calculer les stats basées sur les trades filtrés
+  const stats = filteredTrades.length > 0 ? {
+    totalTrades: filteredTrades.length,
+    closedTrades: filteredTrades.length,
+    winningTrades: filteredTrades.filter(t => Number(t.profitLossPercentage || 0) > 0).length,
+    losingTrades: filteredTrades.filter(t => Number(t.profitLossPercentage || 0) < 0).length,
+    winRate: filteredTrades.length > 0 ? 
+      (filteredTrades.filter(t => Number(t.profitLossPercentage || 0) > 0).length / filteredTrades.length) * 100 : 0,
+    totalPnL: filteredTrades.reduce((sum, t) => sum + Number(t.profitLossPercentage || 0), 0),
+    avgPnL: filteredTrades.length > 0 ? 
+      filteredTrades.reduce((sum, t) => sum + Number(t.profitLossPercentage || 0), 0) / filteredTrades.length : 0,
+    totalAmountPnL: filteredTrades.reduce((sum, t) => sum + Number(t.profitLossAmount || 0), 0),
+    tradesBySymbol: [],
+    tradesBySetup: [],
+    tpTrades: 0,
+    beTrades: 0,
+    slTrades: 0,
+    journal: undefined
+  } : null;
   const { data: sessions } = api.trading.getSessions.useQuery(
     { journalId: selectedJournalId || undefined },
     { enabled: !!selectedJournalId }
@@ -167,6 +223,10 @@ export default function TradingPage() {
           </div>
         </div>
         
+        <div className="flex items-center space-x-4">
+          <DateFilter onFilterChange={setDateFilter} />
+        </div>
+        
                 <div className="flex items-center space-x-2">
           <Button 
             onClick={() => setIsImportModalOpen(true)}
@@ -223,20 +283,21 @@ export default function TradingPage() {
       )}
 
       {/* Charts */}
-      {stats && sessions && allTrades && setups && activeTab === 'trades' && (
+      {stats && sessions && filteredTrades && setups && activeTab === 'trades' && (
         <div className="mb-8">
           <Card className="border border-white/10 bg-black/20">
             <CardHeader>
               <CardTitle className="font-argesta text-white">Performance Charts</CardTitle>
               <CardDescription className="text-white/60">
                 Visual analysis of your trading performance
+                {dateFilter.type !== 'all' && ` (${filteredTrades.length} trades)`}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <TradingCharts 
                 stats={stats} 
                 sessions={sessions} 
-                trades={allTrades}
+                trades={filteredTrades}
               />
             </CardContent>
           </Card>
@@ -249,6 +310,7 @@ export default function TradingPage() {
           {activeTab === 'trades' && (
             <TradesTable 
               journalId={selectedJournalId}
+              trades={filteredTrades}
               onEditTrade={(tradeId) => {
                 // TODO: Implement edit trade functionality
                 console.log('Edit trade:', tradeId);

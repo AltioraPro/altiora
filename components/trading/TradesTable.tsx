@@ -20,9 +20,10 @@ import { enUS } from "date-fns/locale";
 interface TradesTableProps {
   journalId: string;
   onEditTrade?: (tradeId: string) => void;
+  trades?: any[];
 }
 
-export function TradesTable({ journalId, onEditTrade }: TradesTableProps) {
+export function TradesTable({ journalId, onEditTrade, trades: propTrades }: TradesTableProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedTrades, setSelectedTrades] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
@@ -31,11 +32,14 @@ export function TradesTable({ journalId, onEditTrade }: TradesTableProps) {
   const offset = currentPage * itemsPerPage;
 
   // Queries
-  const { data: trades, isLoading } = api.trading.getTrades.useQuery({
+  const { data: allTrades, isLoading } = api.trading.getTrades.useQuery({
     journalId,
     limit: itemsPerPage,
     offset
   });
+
+  // Use prop trades if provided, otherwise use queried trades
+  const trades = propTrades || allTrades;
 
   const { data: stats } = api.trading.getStats.useQuery({ journalId });
   const { data: assets } = api.trading.getAssets.useQuery({ journalId });
