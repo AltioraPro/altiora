@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { X, Calendar, DollarSign, TrendingUp, TrendingDown } from "lucide-react";
+import { X } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 
 interface EditTradeModalProps {
@@ -41,7 +41,7 @@ export function EditTradeModal({ isOpen, onClose, tradeId, onSuccess }: EditTrad
   );
 
   // Fetch related data
-  const { data: journals } = api.trading.getJournals.useQuery();
+  // const { data: journals } = api.trading.getJournals.useQuery();
   const { data: sessions } = api.trading.getSessions.useQuery({ journalId: trade?.journalId });
   const { data: setups } = api.trading.getSetups.useQuery({ journalId: trade?.journalId });
   const { data: assets } = api.trading.getAssets.useQuery({ journalId: trade?.journalId });
@@ -57,7 +57,7 @@ export function EditTradeModal({ isOpen, onClose, tradeId, onSuccess }: EditTrad
         riskPercentage: trade.riskInput?.toString() || "",
         resultPercentage: trade.profitLossPercentage?.toString() || "",
         exitReason: trade.exitReason || "",
-        tradingViewLink: trade.tradingViewLink || "",
+        tradingViewLink: (trade as any).tradingviewLink || "",
         notes: trade.notes || ""
       });
     }
@@ -103,7 +103,7 @@ export function EditTradeModal({ isOpen, onClose, tradeId, onSuccess }: EditTrad
         setupId: formData.setupId || "",
         riskInput: formData.riskPercentage || "",
         profitLossPercentage: formData.resultPercentage || "",
-        exitReason: formData.exitReason || "",
+        exitReason: (formData.exitReason as "TP" | "BE" | "SL" | "Manual") || "Manual",
         tradingViewLink: formData.tradingViewLink || "",
         notes: formData.notes || "",
       });

@@ -39,7 +39,7 @@ export default function TradingPage() {
   const [dateFilter, setDateFilter] = useState<DateFilterState>({ type: 'all' });
 
   // Fonction pour filtrer les trades par date
-  const filterTradesByDate = (trades: { tradeDate: string | Date }[] | undefined) => {
+  const filterTradesByDate = (trades: { tradeDate: string | Date; [key: string]: any }[] | undefined) => {
     if (!trades || dateFilter.type === 'all') return trades;
     
     return trades.filter(trade => {
@@ -75,6 +75,9 @@ export default function TradingPage() {
 
   // Queries
   const { data: journals, isLoading: journalsLoading } = api.trading.getJournals.useQuery();
+  
+  // Récupérer le journal sélectionné
+  const selectedJournal = journals?.find(j => j.id === selectedJournalId);
   const { data: allTrades } = api.trading.getTrades.useQuery(
     { 
       journalId: selectedJournalId || undefined
@@ -84,20 +87,20 @@ export default function TradingPage() {
   );
   
   // Filtrer les trades par date
-  const filteredTrades = allTrades ? filterTradesByDate(allTrades) : [];
+  const filteredTrades = allTrades ? filterTradesByDate(allTrades) : undefined;
   
   // Calculer les stats basées sur les trades filtrés
-  const stats = filteredTrades.length > 0 ? {
+  const stats = filteredTrades && filteredTrades.length > 0 ? {
     totalTrades: filteredTrades.length,
     closedTrades: filteredTrades.length,
     winningTrades: filteredTrades.filter(t => Number(t.profitLossPercentage || 0) > 0).length,
     losingTrades: filteredTrades.filter(t => Number(t.profitLossPercentage || 0) < 0).length,
-    winRate: filteredTrades.length > 0 ? 
+    winRate: filteredTrades && filteredTrades.length > 0 ? 
       (filteredTrades.filter(t => Number(t.profitLossPercentage || 0) > 0).length / filteredTrades.length) * 100 : 0,
-    totalPnL: filteredTrades.reduce((sum, t) => sum + Number(t.profitLossPercentage || 0), 0),
-    avgPnL: filteredTrades.length > 0 ? 
+    totalPnL: filteredTrades ? filteredTrades.reduce((sum, t) => sum + Number(t.profitLossPercentage || 0), 0) : 0,
+    avgPnL: filteredTrades && filteredTrades.length > 0 ? 
       filteredTrades.reduce((sum, t) => sum + Number(t.profitLossPercentage || 0), 0) / filteredTrades.length : 0,
-    totalAmountPnL: filteredTrades.reduce((sum, t) => sum + Number(t.profitLossAmount || 0), 0),
+    totalAmountPnL: filteredTrades ? filteredTrades.reduce((sum, t) => sum + Number(t.profitLossAmount || 0), 0) : 0,
     tradesBySymbol: [],
     tradesBySetup: [],
     tpTrades: 0,
@@ -216,9 +219,11 @@ export default function TradingPage() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-argesta text-white">Trading Dashboard</h1>
+            <h1 className="text-3xl font-argesta text-white">
+              {selectedJournal ? selectedJournal.name : "Trading Dashboard"}
+            </h1>
             <p className="text-white/60">
-              Performance analytics & trade management
+              {selectedJournal ? selectedJournal.description || "Performance analytics & trade management" : "Performance analytics & trade management"}
             </p>
           </div>
         </div>
@@ -290,14 +295,14 @@ export default function TradingPage() {
               <CardTitle className="font-argesta text-white">Performance Charts</CardTitle>
               <CardDescription className="text-white/60">
                 Visual analysis of your trading performance
-                {dateFilter.type !== 'all' && ` (${filteredTrades.length} trades)`}
+                {dateFilter.type !== 'all' && filteredTrades && ` (${filteredTrades.length} trades)`}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <TradingCharts 
                 stats={stats} 
                 sessions={sessions} 
-                trades={filteredTrades}
+                trades={filteredTrades || []}
               />
             </CardContent>
           </Card>
@@ -310,7 +315,7 @@ export default function TradingPage() {
           {activeTab === 'trades' && (
             <TradesTable 
               journalId={selectedJournalId}
-              trades={filteredTrades}
+              trades={filteredTrades || []}
             />
           )}
           

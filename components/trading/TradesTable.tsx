@@ -18,27 +18,33 @@ import { EditTradeModal } from "./EditTradeModal";
 import { format } from "date-fns";
 import { enUS } from "date-fns/locale";
 
-interface TradesTableProps {
-  journalId: string;
-  onEditTrade?: (tradeId: string) => void;
-  trades?: {
-    id: string;
-    symbol: string | null;
-    side: string | null;
-    entryPrice: number | null;
-    exitPrice: number | null;
-    quantity: number | null;
-    tradeDate: string | Date;
-    exitDate: string | Date | null;
-    profitLossPercentage: string | null;
-    profitLossAmount: string | null;
-    exitReason: string | null;
-    reasoning: string | null;
-    notes: string | null;
-  }[];
+interface Trade {
+  id: string;
+  symbol: string | null;
+  side: string | null;
+  entryPrice: number | null;
+  exitPrice: number | null;
+  quantity: number | null;
+  tradeDate: string | Date;
+  exitDate: string | Date | null;
+  profitLossPercentage: string | null;
+  profitLossAmount: string | null;
+  exitReason: string | null;
+  reasoning: string | null;
+  notes: string | null;
+  assetId?: string | null;
+  sessionId?: string | null;
+  setupId?: string | null;
+  riskInput?: string | null;
+  tradingviewLink?: string | null;
 }
 
-export function TradesTable({ journalId, onEditTrade, trades: propTrades }: TradesTableProps) {
+interface TradesTableProps {
+  journalId: string;
+  trades?: Trade[];
+}
+
+export function TradesTable({ journalId, trades: propTrades }: TradesTableProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedTrades, setSelectedTrades] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
