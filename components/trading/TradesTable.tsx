@@ -18,27 +18,6 @@ import { EditTradeModal } from "./EditTradeModal";
 import { format } from "date-fns";
 import { enUS } from "date-fns/locale";
 
-interface Trade {
-  id: string;
-  symbol: string | null;
-  side: string | null;
-  entryPrice: number | null;
-  exitPrice: number | null;
-  quantity: number | null;
-  tradeDate: string | Date;
-  exitDate: string | Date | null;
-  profitLossPercentage: string | null;
-  profitLossAmount: string | null;
-  exitReason: string | null;
-  reasoning: string | null;
-  notes: string | null;
-  assetId?: string | null;
-  sessionId?: string | null;
-  setupId?: string | null;
-  riskInput?: string | null;
-  tradingviewLink?: string | null;
-}
-
 interface TradesTableProps {
   journalId: string;
 }
