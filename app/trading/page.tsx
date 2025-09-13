@@ -39,7 +39,8 @@ export default function TradingPage() {
   const [dateFilter, setDateFilter] = useState<DateFilterState>({ type: 'all' });
 
   // Fonction pour filtrer les trades par date
-  const filterTradesByDate = (trades: { tradeDate: string | Date; [key: string]: unknown }[] | undefined) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const filterTradesByDate = (trades: any[] | undefined) => {
     if (!trades || dateFilter.type === 'all') return trades;
     
     return trades.filter(trade => {
