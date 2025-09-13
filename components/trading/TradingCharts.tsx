@@ -254,7 +254,7 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                   label={{ value: 'Performance (%)', angle: -90, position: 'insideLeft', fill: '#ffffff', fontSize: 12 }}
                 />
               <Tooltip 
-                formatter={(value: number, name: string) => [
+                formatter={(value: number) => [
                   `${value.toFixed(1)}%`, 
                   'Cumulative PnL'
                 ]}
