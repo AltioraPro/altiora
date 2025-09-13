@@ -592,34 +592,6 @@ export const tradingMutationsRouter = createTRPCRouter({
       return trade;
     }),
 
-  updateAdvancedTrade: protectedProcedure
-    .input(updateAdvancedTradeSchema)
-    .mutation(async ({ ctx, input }) => {
-      const { session } = ctx;
-      const userId = session.userId;
-      const { id, ...updateData } = input;
-
-      const [trade] = await db
-        .update(advancedTrades)
-        .set({
-          ...updateData,
-          updatedAt: new Date(),
-        })
-        .where(and(
-          eq(advancedTrades.id, id),
-          eq(advancedTrades.userId, userId)
-        ))
-        .returning();
-
-      if (!trade) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Trade not found",
-        });
-      }
-
-      return trade;
-    }),
 
   deleteAdvancedTrade: protectedProcedure
     .input(z.object({ id: z.string() }))
