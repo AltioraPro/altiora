@@ -57,7 +57,7 @@ export function EditTradeModal({ isOpen, onClose, tradeId, onSuccess }: EditTrad
         riskPercentage: trade.riskInput?.toString() || "",
         resultPercentage: trade.profitLossPercentage?.toString() || "",
         exitReason: trade.exitReason || "",
-        tradingViewLink: (trade as any).tradingviewLink || "",
+        tradingViewLink: (trade as { tradingviewLink?: string }).tradingviewLink || "",
         notes: trade.notes || ""
       });
     }
