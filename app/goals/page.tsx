@@ -46,10 +46,10 @@ export default function GoalsPage() {
     if (!goalStats) return;
 
     const finalStats = {
-      active: goalStats.active,
-      completed: goalStats.completed,
-      overdue: goalStats.overdue,
-      successRate: goalStats.completionRate,
+      active: goalStats.active || 0,
+      completed: goalStats.completed || 0,
+      overdue: goalStats.overdue || 0,
+      successRate: goalStats.completionRate || 0,
     };
 
     const duration = 2000;
