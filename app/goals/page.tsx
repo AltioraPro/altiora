@@ -25,7 +25,7 @@ export default function GoalsPage() {
       refetchOnWindowFocus: false,
       staleTime: 30000, // 30 secondes
     }
-  );
+  ) as { data: { active: number; completed: number; overdue: number; completionRate: number } | undefined };
 
   // Vérifier toutes les restrictions en une seule requête optimisée
   const { data: goalLimits, isLoading: limitsLoading } = api.goals.getAllGoalLimits.useQuery(
@@ -46,10 +46,10 @@ export default function GoalsPage() {
     if (!goalStats) return;
 
     const finalStats = {
-      active: goalStats.active || 0,
-      completed: goalStats.completed || 0,
-      overdue: goalStats.overdue || 0,
-      successRate: goalStats.completionRate || 0,
+      active: goalStats?.active || 0,
+      completed: goalStats?.completed || 0,
+      overdue: goalStats?.overdue || 0,
+      successRate: goalStats?.completionRate || 0,
     };
 
     const duration = 2000;
