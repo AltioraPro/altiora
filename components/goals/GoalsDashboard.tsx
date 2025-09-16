@@ -166,7 +166,7 @@ export function GoalsDashboard() {
       refetchOnMount: true,
       refetchOnReconnect: true,
     }
-  ) as { data: { total: number; completed: number; overdue: number; active: number; completionRate: number } | undefined };
+  );
 
   // Function to force stats update
   const forceUpdateStats = () => {
@@ -814,7 +814,7 @@ export function GoalsDashboard() {
           {/* Stats */}
           {stats && (
             <div className="relative">
-              <GoalStats stats={stats} />
+              <GoalStats stats={stats as { total: number; completed: number; overdue: number; active: number; completionRate: number }} />
             </div>
           )}
         </div>
