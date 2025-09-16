@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { eq, and, gte, desc, asc, sql } from "drizzle-orm";
 import { z } from "zod";
 
-import { db } from "@/server/db";
+import { db, cacheUtils } from "@/server/db";
 import { habits, habitCompletions } from "@/server/db/schema";
 import { getHabitStatsValidator } from "../validators";
 import type { 
@@ -315,6 +315,13 @@ export const getHabitsDashboard = async (
 ): Promise<HabitsDashboardData> => {
   try {
     const { viewMode = 'today' } = params || {};
+    
+    // Vérifier le cache d'abord
+    const cached = await cacheUtils.getStats<HabitsDashboardData>(userId, 'habits-dashboard', { viewMode });
+    if (cached) {
+      return cached;
+    }
+
     const today = new Date().toISOString().split('T')[0]!;
     
     // Requêtes principales en parallèle
@@ -355,12 +362,17 @@ export const getHabitsDashboard = async (
     }
     // Pour le mode "month", on garde tous les 30 jours
     
-    return {
+    const result = {
       todayStats: adaptedTodayStats,
       habits,
       stats,
       recentActivity: adaptedRecentActivity,
     };
+
+    // Mettre en cache pour 2 minutes (habits changent plus souvent)
+    await cacheUtils.setStats(userId, 'habits-dashboard', result, { viewMode }, 120);
+
+    return result;
   } catch (error) {
     console.error("Error getHabitsDashboard:", error);
     throw new TRPCError({

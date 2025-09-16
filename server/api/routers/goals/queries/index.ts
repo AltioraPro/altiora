@@ -1,4 +1,4 @@
-import { db } from "@/server/db";
+import { db, cacheUtils } from "@/server/db";
 import { goals, subGoals, goalTasks } from "@/server/db/schema";
 import { eq, and, desc, asc, like, gte, lte, sql } from "drizzle-orm";
 import { type Goal } from "@/server/db/schema";
@@ -144,6 +144,12 @@ export async function getGoalWithDetails(goalId: string, userId: string) {
 export async function getGoalStats(
   userId: string
 ) {
+  // Vérifier le cache d'abord
+  const cached = await cacheUtils.getStats(userId, 'goals-stats');
+  if (cached) {
+    return cached;
+  }
+
   const now = new Date();
 
   // Récupérer tous les goals de l'utilisateur pour calculer les stats
@@ -173,13 +179,18 @@ export async function getGoalStats(
   // Calcul du taux de completion
   const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
 
-  return {
+  const stats = {
     total,
     completed,
     overdue,
     active,
     completionRate,
   };
+
+  // Mettre en cache pour 5 minutes
+  await cacheUtils.setStats(userId, 'goals-stats', stats, {}, 300);
+
+  return stats;
 }
 
 export async function getGoalsByType(userId: string, type: "annual" | "quarterly" | "monthly") {

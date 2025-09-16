@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import { db } from "@/server/db";
+import { db, cacheUtils } from "@/server/db";
 import { 
   tradingJournals, 
   tradingAssets, 
@@ -496,6 +496,12 @@ export const tradingQueriesRouter = createTRPCRouter({
       const { session } = ctx;
       const userId = session.userId;
 
+      // Vérifier le cache d'abord
+      const cached = await cacheUtils.getStats(userId, 'trading-capital', { journalId: input.journalId });
+      if (cached) {
+        return cached;
+      }
+
       // Vérifier que le journal appartient à l'utilisateur
       const [journal] = await db
         .select()
@@ -540,10 +546,15 @@ export const tradingQueriesRouter = createTRPCRouter({
       
       const currentCapital = startingCapital + (totalPnLPercentage / 100) * startingCapital;
 
-      return { 
+      const result = { 
         currentCapital: currentCapital.toFixed(2), 
         startingCapital: startingCapital.toFixed(2) 
       };
+
+      // Mettre en cache pour 10 minutes (capital change moins souvent)
+      await cacheUtils.setStats(userId, 'trading-capital', result, { journalId: input.journalId }, 600);
+
+      return result;
     }),
 
   // Query pour obtenir tous les éléments d'un journal

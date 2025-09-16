@@ -17,31 +17,74 @@ export const db = drizzle(client, { schema });
 
 export * from "./schema";
 
-// import { Redis } from "@upstash/redis";
+import { Redis } from "@upstash/redis";
 
-// const redis = new Redis({
-//   url: process.env.UPSTASH_REDIS_REST_URL!,
-//   token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-// });
+// Configuration Redis avec fallback gracieux
+const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+  ? new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    })
+  : null;
 
-// export { redis };
+export { redis };
 
-// Fonction utilitaire pour le cache (version mockée sans Redis)
+// Service de cache intelligent avec fallback
 export const cacheUtils = {
-  async get<T>(): Promise<T | null> {
-    // Mock implementation - retourne null pour simuler l'absence de cache
-    return null;
+  async get<T>(key: string): Promise<T | null> {
+    if (!redis) return null;
+    
+    try {
+      const cached = await redis.get<T>(key);
+      return cached;
+    } catch (error) {
+      console.warn('Redis get error:', error);
+      return null;
+    }
   },
 
-  async set(): Promise<void> {
-    // Mock implementation - ne fait rien
+  async set(key: string, value: any, ttlSeconds: number = 300): Promise<void> {
+    if (!redis) return;
+    
+    try {
+      await redis.setex(key, ttlSeconds, JSON.stringify(value));
+    } catch (error) {
+      console.warn('Redis set error:', error);
+    }
   },
 
-  async invalidate(): Promise<void> {
-    // Mock implementation - ne fait rien
+  async invalidate(pattern: string): Promise<void> {
+    if (!redis) return;
+    
+    try {
+      const keys = await redis.keys(pattern);
+      if (keys.length > 0) {
+        await redis.del(...keys);
+      }
+    } catch (error) {
+      console.warn('Redis invalidate error:', error);
+    }
   },
 
   generateKey(prefix: string, userId: string, ...params: string[]): string {
     return `${prefix}:${userId}:${params.join(":")}`;
+  },
+
+  // Méthodes spécialisées pour les stats
+  async getStats<T>(userId: string, type: string, params: Record<string, any> = {}): Promise<T | null> {
+    const key = this.generateKey('stats', userId, type, JSON.stringify(params));
+    return this.get<T>(key);
+  },
+
+  async setStats<T>(userId: string, type: string, data: T, params: Record<string, any> = {}, ttlSeconds: number = 300): Promise<void> {
+    const key = this.generateKey('stats', userId, type, JSON.stringify(params));
+    await this.set(key, data, ttlSeconds);
+  },
+
+  async invalidateUserStats(userId: string, type?: string): Promise<void> {
+    const pattern = type 
+      ? `stats:${userId}:${type}:*`
+      : `stats:${userId}:*`;
+    await this.invalidate(pattern);
   }
 }; 
