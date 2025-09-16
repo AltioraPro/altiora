@@ -76,7 +76,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
   const { data: capitalData } = api.trading.getCurrentCapital.useQuery(
     { journalId: journalId! }, 
     { enabled: !!journalId && !!journal?.usePercentageCalculation }
-  );
+  ) as { data: { currentCapital: string | null; startingCapital: string | null } | undefined };
 
   // Calculate real-time conversions between amount and percentage
   const profitLossAmount = form.watch("profitLossAmount");
