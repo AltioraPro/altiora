@@ -25,7 +25,6 @@ interface CreateJournalModalProps {
 export function CreateJournalModal({ isOpen, onClose, onSuccess }: CreateJournalModalProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [isDefault, setIsDefault] = useState(false);
   const [startingCapital, setStartingCapital] = useState("");
   const [usePercentageCalculation, setUsePercentageCalculation] = useState(false);
 
@@ -34,7 +33,6 @@ export function CreateJournalModal({ isOpen, onClose, onSuccess }: CreateJournal
       // Reset form
       setName("");
       setDescription("");
-      setIsDefault(false);
       setStartingCapital("");
       setUsePercentageCalculation(false);
       onSuccess?.();
@@ -53,7 +51,6 @@ export function CreateJournalModal({ isOpen, onClose, onSuccess }: CreateJournal
       await createJournalMutation.mutateAsync({
         name: name.trim(),
         description: description.trim(),
-        isDefault,
         startingCapital: startingCapital.trim() || undefined,
         usePercentageCalculation,
       });
@@ -66,7 +63,6 @@ export function CreateJournalModal({ isOpen, onClose, onSuccess }: CreateJournal
     if (!createJournalMutation.isPending) {
       setName("");
       setDescription("");
-      setIsDefault(false);
       setStartingCapital("");
       setUsePercentageCalculation(false);
       onClose();
@@ -137,17 +133,6 @@ export function CreateJournalModal({ isOpen, onClose, onSuccess }: CreateJournal
                 </p>
               </div>
             )}
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="isDefault"
-                checked={isDefault}
-                onCheckedChange={(checked) => setIsDefault(checked as boolean)}
-                disabled={createJournalMutation.isPending}
-              />
-              <Label htmlFor="isDefault" className="text-sm text-white/80">
-                Set as default journal
-              </Label>
-            </div>
           </div>
           <DialogFooter>
             <Button

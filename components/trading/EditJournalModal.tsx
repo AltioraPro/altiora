@@ -20,21 +20,19 @@ import {
 interface EditJournalModalProps {
   isOpen: boolean;
   onClose: () => void;
-  journal: Pick<TradingJournal, "id" | "name" | "description" | "isDefault">;
+  journal: Pick<TradingJournal, "id" | "name" | "description">;
   onSuccess?: () => void;
 }
 
 export function EditJournalModal({ isOpen, onClose, journal, onSuccess }: EditJournalModalProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [isDefault, setIsDefault] = useState(false);
 
   // Initialize form with journal data
   useEffect(() => {
     if (journal) {
       setName(journal.name || "");
       setDescription(journal.description || "");
-      setIsDefault(journal.isDefault || false);
     }
   }, [journal]);
 
@@ -57,7 +55,6 @@ export function EditJournalModal({ isOpen, onClose, journal, onSuccess }: EditJo
         id: journal.id,
         name: name.trim(),
         description: description.trim(),
-        isDefault,
       });
     } catch (error) {
       console.error("Error updating journal:", error);
@@ -105,17 +102,6 @@ export function EditJournalModal({ isOpen, onClose, journal, onSuccess }: EditJo
                 disabled={updateJournalMutation.isPending}
                 className="bg-black border-white/30 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
               />
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="isDefault"
-                checked={isDefault}
-                onCheckedChange={(checked) => setIsDefault(checked as boolean)}
-                disabled={updateJournalMutation.isPending}
-              />
-              <Label htmlFor="isDefault" className="text-sm text-white/80">
-                Set as default journal
-              </Label>
             </div>
           </div>
           <DialogFooter>

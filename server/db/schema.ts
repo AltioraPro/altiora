@@ -254,7 +254,6 @@ export const tradingJournals = createTable(
     
     name: varchar("name", { length: 255 }).notNull(),
     description: text("description"),
-    isDefault: boolean("is_default").default(false).notNull(),
     isActive: boolean("is_active").default(true).notNull(),
     order: integer("order").default(0).notNull(),
     

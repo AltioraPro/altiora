@@ -11,12 +11,10 @@ interface JournalPerformanceCardProps {
     id: string;
     name: string;
     description: string | null;
-    isDefault: boolean;
     order: number;
   };
   onEdit: () => void;
   onDelete: () => void;
-  onSetDefault: () => void;
 }
 
 export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPerformanceCardProps) {
@@ -49,12 +47,6 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
           <div className="flex-1 min-w-0">
             <div className="flex items-center space-x-2 mb-1">
               <CardTitle className="text-lg font-argesta text-white line-clamp-1">{journal.name}</CardTitle>
-              {journal.isDefault && (
-                <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
-                  <Star className="w-3 h-3 mr-1" />
-                  Default
-                </Badge>
-              )}
             </div>
             <CardDescription className="text-white/60 line-clamp-2">
               {journal.description || "No description"}

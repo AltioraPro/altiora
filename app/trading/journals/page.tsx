@@ -13,7 +13,7 @@ import Link from "next/link";
 
 export default function JournalsPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  type EditingJournal = Pick<TradingJournal, "id" | "name" | "description" | "isDefault"> | null;
+  type EditingJournal = Pick<TradingJournal, "id" | "name" | "description"> | null;
   const [editingJournal, setEditingJournal] = useState<EditingJournal>(null);
 
   // Queries
@@ -26,11 +26,6 @@ export default function JournalsPage() {
     },
   });
 
-  const setDefaultJournalMutation = api.trading.setDefaultJournal.useMutation({
-    onSuccess: () => {
-      refetchJournals();
-    },
-  });
 
   const reorderJournalsMutation = api.trading.reorderJournals.useMutation({
     // Pas de refetch automatique pour éviter que les journaux reviennent à leur place
@@ -47,13 +42,6 @@ export default function JournalsPage() {
     }
   };
 
-  const handleSetDefaultJournal = async (journalId: string) => {
-    try {
-      await setDefaultJournalMutation.mutateAsync({ id: journalId });
-    } catch (error) {
-      console.error("Error setting default journal:", error);
-    }
-  };
 
   const handleReorderJournals = async (journalIds: string[]) => {
     try {
@@ -145,7 +133,7 @@ export default function JournalsPage() {
                 <div>
                   <CardTitle className="font-argesta text-white">All Journals</CardTitle>
                   <CardDescription className="text-white/60">
-                    {journals.length} journal{journals.length > 1 ? 's' : ''} • {journals.filter(j => j.isDefault).length} default
+                    {journals.length} journal{journals.length > 1 ? 's' : ''}
                   </CardDescription>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -162,7 +150,6 @@ export default function JournalsPage() {
                 onReorder={handleReorderJournals}
                 onEdit={(journal) => setEditingJournal(journal)}
                 onDelete={(journal) => handleDeleteJournal(journal.id)}
-                onSetDefault={(journal) => handleSetDefaultJournal(journal.id)}
               />
             </CardContent>
           </Card>

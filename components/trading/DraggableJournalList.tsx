@@ -25,7 +25,6 @@ interface DraggableJournalListProps {
   onReorder: (journalIds: string[]) => void;
   onEdit: (journal: TradingJournal) => void;
   onDelete: (journal: TradingJournal) => void;
-  onSetDefault: (journal: TradingJournal) => void;
   selectedJournalIds?: string[];
   onSelectionChange?: (selectedIds: string[]) => void;
   showSelection?: boolean;
@@ -36,7 +35,6 @@ export function DraggableJournalList({
   onReorder,
   onEdit,
   onDelete,
-  onSetDefault,
   selectedJournalIds = [],
   onSelectionChange,
   showSelection = false,
@@ -99,7 +97,6 @@ export function DraggableJournalList({
               journal={journal}
               onEdit={() => onEdit(journal)}
               onDelete={() => onDelete(journal)}
-              onSetDefault={() => onSetDefault(journal)}
               isSelected={selectedJournalIds.includes(journal.id)}
               onSelect={handleJournalSelect}
               showSelection={showSelection}

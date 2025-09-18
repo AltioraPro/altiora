@@ -4,7 +4,6 @@ import { z } from "zod";
 export const createTradingJournalSchema = z.object({
   name: z.string().min(1, "Journal name is required").max(255),
   description: z.string().optional(),
-  isDefault: z.boolean().default(false),
   startingCapital: z.string().optional(),
   usePercentageCalculation: z.boolean().default(false),
 });
@@ -14,7 +13,6 @@ export const updateTradingJournalSchema = z.object({
   id: z.string().min(1, "Journal ID is required"),
   name: z.string().min(1, "Journal name is required").max(255).optional(),
   description: z.string().optional(),
-  isDefault: z.boolean().optional(),
   isActive: z.boolean().optional(),
   startingCapital: z.string().optional(),
   usePercentageCalculation: z.boolean().optional(),

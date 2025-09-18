@@ -59,23 +59,6 @@ export const tradingQueriesRouter = createTRPCRouter({
       return journal;
     }),
 
-  getDefaultTradingJournal: protectedProcedure
-    .query(async ({ ctx }) => {
-      const { session } = ctx;
-      const userId = session.userId;
-
-      const [journal] = await db
-        .select()
-        .from(tradingJournals)
-        .where(and(
-          eq(tradingJournals.userId, userId),
-          eq(tradingJournals.isDefault, true),
-          eq(tradingJournals.isActive, true)
-        ))
-        .limit(1);
-
-      return journal;
-    }),
 
   // Queries pour les assets
   getTradingAssets: protectedProcedure

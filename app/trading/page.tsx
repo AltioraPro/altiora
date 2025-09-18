@@ -150,7 +150,6 @@ export default function TradingPage() {
       await createJournalMutation.mutateAsync({
         name: "Main Journal",
         description: "My main trading journal",
-        isDefault: true,
       });
     } catch (error) {
       console.error("Error creating journal:", error);

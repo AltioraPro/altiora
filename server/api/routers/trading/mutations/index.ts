@@ -32,17 +32,6 @@ export const tradingMutationsRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { session } = ctx;
       const userId = session.userId;
-      
-      // Si c'est le journal par défaut, désactiver les autres
-      if (input.isDefault) {
-        await db
-          .update(tradingJournals)
-          .set({ isDefault: false })
-          .where(and(
-            eq(tradingJournals.userId, userId),
-            eq(tradingJournals.isDefault, true)
-          ));
-      }
 
       const [journal] = await db
         .insert(tradingJournals)
@@ -51,7 +40,6 @@ export const tradingMutationsRouter = createTRPCRouter({
           userId,
           name: input.name,
           description: input.description,
-          isDefault: input.isDefault,
           startingCapital: input.startingCapital,
           usePercentageCalculation: input.usePercentageCalculation ?? false,
           createdAt: new Date(),
@@ -86,17 +74,6 @@ export const tradingMutationsRouter = createTRPCRouter({
         });
       }
 
-      // Si c'est le journal par défaut, désactiver les autres
-      if (updateData.isDefault) {
-        await db
-          .update(tradingJournals)
-          .set({ isDefault: false })
-          .where(and(
-            eq(tradingJournals.userId, userId),
-            eq(tradingJournals.isDefault, true),
-            eq(tradingJournals.id, id)
-          ));
-      }
 
       const [journal] = await db
         .update(tradingJournals)
@@ -147,53 +124,6 @@ export const tradingMutationsRouter = createTRPCRouter({
       return { success: true };
     }),
 
-  setDefaultTradingJournal: protectedProcedure
-    .input(z.object({ id: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      const { session } = ctx;
-      const userId = session.userId;
-
-      // Vérifier que le journal appartient à l'utilisateur
-      const existingJournal = await db
-        .select()
-        .from(tradingJournals)
-        .where(and(
-          eq(tradingJournals.id, input.id),
-          eq(tradingJournals.userId, userId)
-        ))
-        .limit(1);
-
-      if (!existingJournal.length) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Trading journal not found",
-        });
-      }
-
-      // Désactiver tous les autres journaux par défaut
-      await db
-        .update(tradingJournals)
-        .set({ isDefault: false })
-        .where(and(
-          eq(tradingJournals.userId, userId),
-          eq(tradingJournals.isDefault, true)
-        ));
-
-      // Définir le journal sélectionné comme par défaut
-      const [journal] = await db
-        .update(tradingJournals)
-        .set({ 
-          isDefault: true,
-          updatedAt: new Date(),
-        })
-        .where(and(
-          eq(tradingJournals.id, input.id),
-          eq(tradingJournals.userId, userId)
-        ))
-        .returning();
-
-      return journal;
-    }),
 
   // Mutations pour les assets
   createTradingAsset: protectedProcedure

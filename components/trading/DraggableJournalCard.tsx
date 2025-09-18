@@ -11,7 +11,6 @@ interface DraggableJournalCardProps {
   journal: TradingJournal;
   onEdit: () => void;
   onDelete: () => void;
-  onSetDefault: () => void;
   isSelected?: boolean;
   onSelect?: (journalId: string, selected: boolean) => void;
   showSelection?: boolean;
@@ -20,8 +19,7 @@ interface DraggableJournalCardProps {
 export function DraggableJournalCard({ 
   journal, 
   onEdit, 
-  onDelete, 
-  onSetDefault,
+  onDelete,
   isSelected = false,
   onSelect,
   showSelection = false
@@ -75,7 +73,6 @@ export function DraggableJournalCard({
           journal={journal}
           onEdit={onEdit}
           onDelete={onDelete}
-          onSetDefault={onSetDefault}
         />
       </div>
     </div>
