@@ -57,7 +57,7 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
   // Data for win rate donut chart
   const winRateData = [
     { name: 'Winners', value: stats.winningTrades, color: '#ffffff', percentage: stats.winRate },
-    { name: 'Losers', value: stats.losingTrades, color: '#666666', percentage: 100 - stats.winRate }
+    { name: 'Losers', value: stats.losingTrades, color: '#404040', percentage: 100 - stats.winRate }
   ];
 
   // Data for session performance chart
@@ -125,28 +125,47 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Win Rate Donut Chart */}
-        <Card className="border border-white/10 bg-black/20">
+        <Card className="border border-white/20 bg-gradient-to-br from-black/40 to-black/60 backdrop-blur-sm">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg text-white">Win Rate</CardTitle>
-            <CardDescription className="text-white/60">
-              Distribution of winning vs losing trades
+            <CardTitle className="text-lg text-white font-argesta tracking-wide">WIN RATE</CardTitle>
+            <CardDescription className="text-white/70 font-argesta">
+              Performance distribution
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="relative flex items-center justify-center">
-              <ResponsiveContainer width="100%" height={200}>
+              <ResponsiveContainer width="100%" height={220}>
                 <PieChart>
+                  <defs>
+                    <linearGradient id="winnerGradient" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stopColor="#ffffff" stopOpacity={1}/>
+                      <stop offset="100%" stopColor="#ffffff" stopOpacity={0.6}/>
+                    </linearGradient>
+                    <linearGradient id="loserGradient" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stopColor="#404040" stopOpacity={1}/>
+                      <stop offset="100%" stopColor="#404040" stopOpacity={0.6}/>
+                    </linearGradient>
+                  </defs>
                   <Pie
                     data={winRateData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={40}
-                    outerRadius={70}
-                    paddingAngle={5}
+                    innerRadius={55}
+                    outerRadius={75}
+                    paddingAngle={1}
                     dataKey="value"
+                    startAngle={90}
+                    endAngle={450}
+                    animationBegin={0}
+                    animationDuration={1200}
                   >
                     {winRateData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={entry.color === '#ffffff' ? 'url(#winnerGradient)' : 'url(#loserGradient)'}
+                        stroke="rgba(255,255,255,0.2)"
+                        strokeWidth={2}
+                      />
                     ))}
                   </Pie>
                   <Tooltip 
@@ -156,133 +175,224 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                     ]}
                     labelFormatter={(label: string) => label}
                     contentStyle={{
-                      backgroundColor: '#000000',
-                      border: '1px solid #ffffff',
-                      borderRadius: '8px',
-                      color: '#ffffff'
+                      backgroundColor: 'rgba(0,0,0,0.95)',
+                      border: '1px solid rgba(255,255,255,0.3)',
+                      borderRadius: '10px',
+                      color: '#ffffff',
+                      backdropFilter: 'blur(10px)',
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.5)'
                     }}
                   />
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-white">{stats.winRate.toFixed(1)}%</div>
-                  <div className="text-sm text-white/60">Win rate</div>
+                  <div className="text-2xl font-bold text-white font-argesta tracking-wide">
+                    {stats.winRate.toFixed(1)}%
+                  </div>
+                  <div className="text-xs text-white/70 font-argesta tracking-wide">WIN RATE</div>
+                  <div className="text-xs text-white/50 font-argesta mt-1">
+                    {stats.winningTrades}W • {stats.losingTrades}L
+                  </div>
                 </div>
+              </div>
+            </div>
+            
+            {/* Minimalist Legend */}
+            <div className="flex justify-center space-x-8 mt-6">
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 rounded-full bg-white"></div>
+                <span className="text-xs text-white/70 font-argesta tracking-wide">Winners</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 rounded-full bg-gray-600"></div>
+                <span className="text-xs text-white/70 font-argesta tracking-wide">Losers</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Performance by Session */}
-        <Card className="border border-white/10 bg-black/20 lg:col-span-2">
+        <Card className="border border-white/20 bg-gradient-to-br from-black/40 to-black/60 backdrop-blur-sm lg:col-span-2">
           <CardHeader className="pb-3">
-             <CardTitle className="text-lg text-white">Performance by Session (% PnL)</CardTitle>
-             <CardDescription className="text-white/60">
-               Performance by trading session
-             </CardDescription>
+            <CardTitle className="text-lg text-white font-argesta tracking-wide">PERFORMANCE BY SESSION</CardTitle>
+            <CardDescription className="text-white/70 font-argesta">
+              Performance by trading session
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={sessionPerformanceData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" strokeOpacity={0.1} />
-                <XAxis 
-                  dataKey="name" 
-                  stroke="#ffffff"
-                  strokeOpacity={0.6}
-                  fontSize={10}
-                  angle={-45}
-                  textAnchor="end"
-                  height={60}
-                />
-                <YAxis 
-                  stroke="#ffffff" 
-                  strokeOpacity={0.6} 
-                  fontSize={10}
-                  tickFormatter={(value) => `${value.toFixed(1)}%`}
-                  domain={['dataMin - 5', 'dataMax + 5']}
-                />
-                <Tooltip 
-                  formatter={(value: number) => [
-                    `${value.toFixed(1)}%`, 
-                    'PnL Total'
-                  ]}
-                  labelFormatter={(label: string) => label}
-                  contentStyle={{
-                    backgroundColor: '#ffffff',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '8px',
-                    color: '#000000',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                  }}
-                />
-                <Bar dataKey="pnl" radius={[4, 4, 0, 0]}>
-                  {sessionPerformanceData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="w-full h-[200px] pr-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={sessionPerformanceData} margin={{ right: 20 }}>
+                  <defs>
+                    {COLORS.map((color, index) => (
+                      <linearGradient key={`gradient-${index}`} id={`barGradient${index}`} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={color} stopOpacity={0.9}/>
+                        <stop offset="100%" stopColor={color} stopOpacity={0.3}/>
+                      </linearGradient>
+                    ))}
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" strokeOpacity={0.1} />
+                  <XAxis 
+                    dataKey="name" 
+                    stroke="#ffffff"
+                    strokeOpacity={0.4}
+                    fontSize={10}
+                    angle={-45}
+                    textAnchor="end"
+                    height={60}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis 
+                    stroke="#ffffff" 
+                    strokeOpacity={0.4} 
+                    fontSize={10}
+                    tickFormatter={(value) => `${value.toFixed(1)}%`}
+                    domain={['dataMin - 5', 'dataMax + 5']}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <Tooltip 
+                    formatter={(value: number) => [
+                      `${value.toFixed(1)}%`, 
+                      'PnL Total'
+                    ]}
+                    labelFormatter={(label: string) => label}
+                    contentStyle={{
+                      backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      borderRadius: '8px',
+                      color: '#ffffff',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    }}
+                    itemStyle={{
+                      color: '#ffffff'
+                    }}
+                    labelStyle={{
+                      color: '#ffffff'
+                    }}
+                  />
+                  <Bar dataKey="pnl" radius={[4, 4, 4, 4]}>
+                    {sessionPerformanceData.map((entry, index) => (
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={`url(#barGradient${index % COLORS.length})`}
+                        stroke="rgba(255,255,255,0.1)"
+                        strokeWidth={1}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Cumulative Performance */}
-      <Card className="border border-white/10 bg-black/20">
+      <Card className="border border-white/20 bg-gradient-to-br from-black/40 to-black/60 backdrop-blur-sm w-full">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg text-white font-argesta">Cumulative Performance</CardTitle>
-          <CardDescription className="text-white/60">
+          <CardTitle className="text-lg text-white font-argesta tracking-wide">CUMULATIVE PERFORMANCE</CardTitle>
+          <CardDescription className="text-white/70 font-argesta">
             Performance evolution over time
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={255}>
-            <AreaChart data={cumulativeData} >
-              <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" strokeOpacity={0.1} />
-              <XAxis 
-                dataKey="tradeNumber" 
-                stroke="#ffffff"
-                strokeOpacity={0.6}
-                fontSize={10}
-                label={{ value: 'Trade number', position: 'insideBottom', offset: -2, fill: '#ffffff', fontSize: 12 }}
-              />
+          <div className="space-y-6">
+            <div className="w-full h-[250px] pr-4">
+              <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={cumulativeData} margin={{ right: 20 }}>
+                <defs>
+                  <linearGradient id="performanceGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#10B981" stopOpacity={0.8}/>
+                    <stop offset="100%" stopColor="#10B981" stopOpacity={0.1}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" strokeOpacity={0.1} />
+                <XAxis 
+                  dataKey="tradeNumber" 
+                  stroke="#ffffff"
+                  strokeOpacity={0.4}
+                  fontSize={10}
+                  tickLine={false}
+                  axisLine={false}
+                  interval={4}
+                  tickFormatter={(value) => value % 5 === 0 ? value : ''}
+                />
                 <YAxis 
                   stroke="#ffffff" 
-                  strokeOpacity={0.6} 
+                  strokeOpacity={0.4} 
                   fontSize={10}
                   tickFormatter={(value) => `${value.toFixed(1)}%`}
-                  label={{ value: 'Performance (%)', angle: -90, position: 'insideLeft', fill: '#ffffff', fontSize: 12 }}
+                  tickLine={false}
+                  axisLine={false}
                 />
-              <Tooltip 
-                formatter={(value: number) => [
-                  `${value.toFixed(1)}%`, 
-                  'Cumulative PnL'
-                ]}
-                labelFormatter={(label: string) => `Trade #${label}`}
-                contentStyle={{
-                  backgroundColor: '#ffffff',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px',
-                  color: '#000000',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                }}
-                itemStyle={{
-                  color: '#000000'
-                }}
-                labelStyle={{
-                  color: '#000000'
-                }}
-              />
-              <Area 
-                type="monotone" 
-                dataKey="cumulative" 
-                stroke="#ffffff" 
-                fill="#ffffff" 
-                fillOpacity={0.2}
-                strokeWidth={2}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+                <Tooltip 
+                  formatter={(value: number) => [
+                    `${value.toFixed(1)}%`, 
+                    'Cumulative PnL'
+                  ]}
+                  labelFormatter={(label: string) => `Trade #${label}`}
+                  contentStyle={{
+                    backgroundColor: 'rgba(0,0,0,0.95)',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    borderRadius: '10px',
+                    color: '#ffffff',
+                    backdropFilter: 'blur(10px)',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.5)'
+                  }}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="cumulative" 
+                  stroke="#10B981" 
+                  fill="url(#performanceGradient)"
+                  strokeWidth={3}
+                  dot={(props) => {
+                    const { cx, cy, payload, index } = props;
+                    // Afficher le point seulement sur le dernier élément
+                    if (index === cumulativeData.length - 1) {
+                      return (
+                        <circle
+                          cx={cx}
+                          cy={cy}
+                          r={6}
+                          fill="#10B981"
+                          stroke="#10B981"
+                          strokeWidth={2}
+                        />
+                      );
+                    }
+                    return null;
+                  }}
+                />
+              </AreaChart>
+              </ResponsiveContainer>
+            </div>
+            
+            {/* Metrics Section */}
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-sm text-white/70 font-argesta tracking-wide">TOTAL PERFORMANCE</div>
+                <div className="text-2xl font-bold text-white font-argesta">
+                  {cumulativeData.length > 0 ? `${cumulativeData[cumulativeData.length - 1]?.cumulative.toFixed(1)}%` : '0.0%'}
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-sm text-white/70 font-argesta tracking-wide">TRADES</div>
+                <div className="text-2xl font-bold text-white font-argesta">
+                  {cumulativeData.length}
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-sm text-white/70 font-argesta tracking-wide">AVG PnL</div>
+                <div className="text-2xl font-bold text-white font-argesta">
+                  {cumulativeData.length > 0 ? `${(cumulativeData[cumulativeData.length - 1]?.cumulative / cumulativeData.length).toFixed(1)}%` : '0.0%'}
+                </div>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
