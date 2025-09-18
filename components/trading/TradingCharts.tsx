@@ -350,7 +350,7 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                   fill="url(#performanceGradient)"
                   strokeWidth={3}
                   dot={(props) => {
-                    const { cx, cy, payload, index } = props;
+                    const { cx, cy, index } = props;
                     // Afficher le point seulement sur le dernier élément
                     if (index === cumulativeData.length - 1) {
                       return (
