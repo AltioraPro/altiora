@@ -13,7 +13,8 @@ import {
   Tooltip, 
   ResponsiveContainer,
   AreaChart,
-  Area
+  Area,
+  ReferenceDot
 } from "recharts";
 
 interface TradingChartsProps {
@@ -349,24 +350,16 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                   stroke="#10B981" 
                   fill="url(#performanceGradient)"
                   strokeWidth={3}
-                  dot={(props) => {
-                    const { cx, cy, index } = props;
-                    // Afficher le point seulement sur le dernier élément
-                    if (index === cumulativeData.length - 1) {
-                      return (
-                        <circle
-                          cx={cx}
-                          cy={cy}
-                          r={6}
-                          fill="#10B981"
-                          stroke="#10B981"
-                          strokeWidth={2}
-                        />
-                      );
-                    }
-                    return null;
-                  }}
+                  dot={false}
                 />
+                {cumulativeData.length > 0 && (
+                  <ReferenceDot
+                    x={cumulativeData.length}
+                    y={cumulativeData[cumulativeData.length - 1]?.cumulative}
+                    r={6}
+                    fill="#10B981"
+                  />
+                )}
               </AreaChart>
               </ResponsiveContainer>
             </div>
