@@ -39,7 +39,6 @@ async function createDefaultJournal(userId: string) {
       userId,
       name: "Journal Principal",
       description: "Journal de trading principal",
-      isDefault: true,
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date(),
