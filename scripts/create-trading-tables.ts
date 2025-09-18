@@ -130,7 +130,7 @@ async function createTradingTables() {
         userId: testUserId,
         name: "Journal Principal",
         description: "Mon journal de trading principal",
-        isDefault: true,
+        isActive: true,
       })
       .returning();
 
