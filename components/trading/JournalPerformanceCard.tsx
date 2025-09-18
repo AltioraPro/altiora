@@ -111,7 +111,7 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
               </Badge>
             </div>
             <div className="mt-1 text-sm text-white/80">
-              {bestTrade.symbol} • {new Date(bestTrade.tradeDate).toLocaleDateString('en-US')}
+              {bestTrade.symbol.replace(/\s*#\d+\s*$/, '')} • {new Date(bestTrade.tradeDate).toLocaleDateString('en-US')}
             </div>
           </div>
         )}
@@ -119,10 +119,6 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
         {/* Actions */}
         <div className="flex items-center justify-between pt-3 border-t border-white/10">
           <div className="flex items-center space-x-1">
-            {/* Order indicator */}
-            <span className="text-xs text-white/40">
-              #{journal.order + 1}
-            </span>
           </div>
           
           <div className="flex items-center space-x-1">

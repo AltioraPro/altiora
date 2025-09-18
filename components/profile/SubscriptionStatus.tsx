@@ -30,7 +30,7 @@ export function SubscriptionStatus() {
     );
   }
 
-  const isPro = user.subscriptionPlan === "PRO" && user.stripeSubscriptionStatus === "active";
+  const isPro = (user.subscriptionPlan === "PRO" && user.stripeSubscriptionStatus === "active") || user.subscriptionPlan === "ALTIORANS";
 
   return (
     <div className="space-y-8">
@@ -44,7 +44,7 @@ export function SubscriptionStatus() {
           {isPro ? (
             <>
               <Crown className="w-5 h-5" />
-              <span className="font-argesta font-bold tracking-wide">PRO MEMBER</span>
+              <span className="font-argesta font-bold tracking-wide">ALTIORAN</span>
             </>
           ) : (
             <>
@@ -61,7 +61,7 @@ export function SubscriptionStatus() {
           <div className="flex items-center justify-between">
             <span className="text-sm font-argesta text-white/60 tracking-wide">PLAN TYPE</span>
             <span className={`font-argesta font-bold ${isPro ? "text-green-400" : "text-white"}`}>
-              {isPro ? "Professional" : "Free"}
+              {user.subscriptionPlan === "ALTIORANS" ? "Altioran" : isPro ? "Professional" : "Free"}
             </span>
           </div>
         </div>
