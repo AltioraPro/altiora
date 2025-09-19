@@ -117,7 +117,7 @@ export default function TradingPage() {
     slTrades: filteredTrades.filter(t => t.exitReason === 'SL').length,
     journal: selectedJournal ? {
       usePercentageCalculation: selectedJournal.usePercentageCalculation,
-      startingCapital: selectedJournal.startingCapital
+      startingCapital: selectedJournal.startingCapital || undefined
     } : undefined
   } : null;
   const { data: sessions } = api.trading.getSessions.useQuery(
