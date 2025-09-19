@@ -310,7 +310,7 @@ export default function TradingPage() {
               <CardTitle className="font-argesta text-white">Performance Charts</CardTitle>
               <CardDescription className="text-white/60">
                 Visual analysis of your trading performance
-                {dateFilter.type !== 'all' && filteredTrades && ` (${filteredTrades.length} trades)`}
+                {dateFilter.view !== 'all' && filteredTrades && ` (${filteredTrades.length} trades)`}
               </CardDescription>
             </CardHeader>
             <CardContent>

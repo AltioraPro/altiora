@@ -22,8 +22,8 @@ export function DateFilter({ onFilterChange, className = "" }: DateFilterProps) 
   });
 
   const months = [
-    'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-    'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
   const currentYear = new Date().getFullYear();
