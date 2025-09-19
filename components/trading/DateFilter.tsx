@@ -34,10 +34,10 @@ export function DateFilter({ onFilterChange, className = "" }: DateFilterProps) 
     
     // Initialize month and year when switching to monthly or yearly view
     if (view === 'monthly' && !newFilter.month) {
-      newFilter.month = new Date().toLocaleDateString('fr-FR', { month: 'long' });
+      newFilter = { ...newFilter, month: new Date().toLocaleDateString('fr-FR', { month: 'long' }) };
     }
     if ((view === 'monthly' || view === 'yearly') && !newFilter.year) {
-      newFilter.year = new Date().getFullYear().toString();
+      newFilter = { ...newFilter, year: new Date().getFullYear().toString() };
     }
     
     setFilter(newFilter);
