@@ -36,37 +36,32 @@ export default function TradingPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'trades' | 'assets' | 'sessions' | 'setups'>('trades');
-  const [dateFilter, setDateFilter] = useState<DateFilterState>({ type: 'all' });
+  const [dateFilter, setDateFilter] = useState<DateFilterState>({ 
+    view: 'all'
+  });
 
   // Fonction pour filtrer les trades par date
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const filterTradesByDate = (trades: any[] | undefined) => {
-    if (!trades || dateFilter.type === 'all') return trades;
+    if (!trades || dateFilter.view === 'all') return trades;
     
     return trades.filter(trade => {
       const tradeDate = new Date(trade.tradeDate);
       
-      switch (dateFilter.type) {
-        case 'day':
-          if (!dateFilter.value) return true;
-          const filterDate = new Date(dateFilter.value);
-          return tradeDate.toDateString() === filterDate.toDateString();
-          
-        case 'month':
-          if (!dateFilter.value) return true;
-          const [year, month] = dateFilter.value.split('-');
-          return tradeDate.getFullYear() === parseInt(year) && 
-                 tradeDate.getMonth() === parseInt(month) - 1;
+      switch (dateFilter.view) {
+        case 'monthly':
+          if (!dateFilter.month || !dateFilter.year) return true;
+          const monthNames = [
+            'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+            'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+          ];
+          const monthIndex = monthNames.indexOf(dateFilter.month);
+          return tradeDate.getFullYear() === parseInt(dateFilter.year) && 
+                 tradeDate.getMonth() === monthIndex;
                  
-        case 'year':
-          if (!dateFilter.value) return true;
-          return tradeDate.getFullYear() === parseInt(dateFilter.value);
-          
-        case 'custom':
-          if (!dateFilter.startDate || !dateFilter.endDate) return true;
-          const startDate = new Date(dateFilter.startDate);
-          const endDate = new Date(dateFilter.endDate);
-          return tradeDate >= startDate && tradeDate <= endDate;
+        case 'yearly':
+          if (!dateFilter.year) return true;
+          return tradeDate.getFullYear() === parseInt(dateFilter.year);
           
         default:
           return true;
@@ -102,13 +97,28 @@ export default function TradingPage() {
     totalPnL: filteredTrades ? filteredTrades.reduce((sum, t) => sum + Number(t.profitLossPercentage || 0), 0) : 0,
     avgPnL: filteredTrades && filteredTrades.length > 0 ? 
       filteredTrades.reduce((sum, t) => sum + Number(t.profitLossPercentage || 0), 0) / filteredTrades.length : 0,
-    totalAmountPnL: filteredTrades ? filteredTrades.reduce((sum, t) => sum + Number(t.profitLossAmount || 0), 0) : 0,
+    totalAmountPnL: (() => {
+      if (!filteredTrades) return 0;
+      
+      // Si le journal utilise le calcul en pourcentage et a un capital de départ
+      if (selectedJournal?.usePercentageCalculation && selectedJournal?.startingCapital) {
+        const totalPnLPercentage = filteredTrades.reduce((sum, t) => sum + Number(t.profitLossPercentage || 0), 0);
+        const startingCapital = parseFloat(selectedJournal.startingCapital);
+        return (totalPnLPercentage / 100) * startingCapital;
+      }
+      
+      // Sinon, utiliser la somme des montants P&L
+      return filteredTrades.reduce((sum, t) => sum + Number(t.profitLossAmount || 0), 0);
+    })(),
     tradesBySymbol: [],
     tradesBySetup: [],
     tpTrades: filteredTrades.filter(t => t.exitReason === 'TP').length,
     beTrades: filteredTrades.filter(t => t.exitReason === 'BE').length,
     slTrades: filteredTrades.filter(t => t.exitReason === 'SL').length,
-    journal: undefined
+    journal: selectedJournal ? {
+      usePercentageCalculation: selectedJournal.usePercentageCalculation,
+      startingCapital: selectedJournal.startingCapital
+    } : undefined
   } : null;
   const { data: sessions } = api.trading.getSessions.useQuery(
     { journalId: selectedJournalId || undefined },
