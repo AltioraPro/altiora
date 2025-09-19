@@ -10,7 +10,7 @@ const computedBaseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_U
 
 export const auth = betterAuth({
   baseURL: computedBaseUrl,
-  secret: process.env.BETTER_AUTH_SECRET || "secret-key-development",
+  secret: process.env.BETTER_AUTH_SECRET,
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
