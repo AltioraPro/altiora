@@ -358,6 +358,12 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                     y={cumulativeData[cumulativeData.length - 1]?.cumulative}
                     r={6}
                     fill="#10B981"
+                    stroke="#10B981"
+                    strokeWidth={2}
+                    style={{
+                      filter: 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.6)) drop-shadow(0 0 16px rgba(16, 185, 129, 0.3))',
+                      animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }}
                   />
                 )}
               </AreaChart>
