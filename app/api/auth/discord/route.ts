@@ -2,15 +2,14 @@ import { NextResponse } from "next/server";
 import { DiscordService } from "@/server/services/discord";
 import { nanoid } from "nanoid";
 
+
+// Route pour la connexion Discord
 export async function GET() {
   try {
-    // Générer un state unique pour la sécurité
     const state = nanoid();
     
-    // Générer l'URL d'autorisation Discord
     const authUrl = DiscordService.getAuthUrl(state);
     
-    // Stocker le state dans un cookie sécurisé (optionnel, pour validation)
     const response = NextResponse.redirect(authUrl);
     response.cookies.set('discord_state', state, {
       httpOnly: true,

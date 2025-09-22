@@ -6,6 +6,10 @@ import { useEffect, useState, useRef } from "react";
 import { CheckCircle, XCircle, Mail, ArrowRight, RefreshCw, AlertTriangle } from "lucide-react";
 import { api } from "@/trpc/client";
 
+
+
+// Page de vérification d'email
+
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<"loading" | "success" | "error" | "expired">("loading");
@@ -33,7 +37,6 @@ function VerifyEmailContent() {
 
   useEffect(() => {
     const verifyEmail = async () => {
-      // Éviter les vérifications multiples
       if (hasVerified.current) return;
       
       const token = searchParams.get("token");
@@ -49,7 +52,6 @@ function VerifyEmailContent() {
       try {
         await verifyEmailMutation.mutateAsync({ token });
       } catch (error) {
-        // Error handling is done in onError callback
         console.error("Verification error:", error);
       }
     };
@@ -60,15 +62,12 @@ function VerifyEmailContent() {
   const handleRetry = async () => {
     setIsRetrying(true);
     
-    // Réinitialiser la ref pour permettre une nouvelle vérification
     hasVerified.current = false;
     
-    // Simulation retry
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     setIsRetrying(false);
     
-    // Relancer la vérification
     const token = searchParams.get("token");
     if (token) {
       try {

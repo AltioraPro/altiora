@@ -11,7 +11,6 @@ import { type Goal } from "@/server/db/schema";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-  // Compact component for quarterly and monthly goals
   function QuarterlyGoalItem({
     goal,
     onGoalChange,
@@ -134,14 +133,13 @@ export function GoalsDashboard() {
 
 
 
-  // Reset page when filters change
   useEffect(() => {
     setPage(0);
   }, [filters, search]);
 
   const { data: goalsData, isLoading, error } = api.goals.getPaginated.useQuery({
     page,
-    limit: 50, // Increase limit to get all goals
+    limit: 50, 
     sortBy: "sortOrder",
     sortOrder: "asc",
     search: search || undefined,
@@ -149,7 +147,6 @@ export function GoalsDashboard() {
     type: filters.type !== "all" ? filters.type : undefined,
   });
 
-  // Debug: display query parameters
   console.log("Query params:", {
     page,
     search: search || undefined,
@@ -157,40 +154,34 @@ export function GoalsDashboard() {
     type: filters.type !== "all" ? filters.type : undefined,
   });
 
-  // Stats with automatic invalidation and refetch
   const { data: stats, refetch: refetchStats } = api.goals.getStats.useQuery(
     { period: "month" },
     {
-      refetchInterval: 3000, // Refetch every 3 seconds
+      refetchInterval: 3000, // 3 seconds
       refetchOnWindowFocus: true,
       refetchOnMount: true,
       refetchOnReconnect: true,
     }
   );
 
-  // Function to force stats update
   const forceUpdateStats = () => {
     refetchStats();
   };
 
-  // Function to open edit modal
   const handleEditGoal = (goal: Goal) => {
     setEditingGoal(goal);
   };
 
-  // Function to close edit modal
   const handleCloseEditModal = () => {
     setEditingGoal(null);
-    forceUpdateStats(); // Update stats after modification
+    forceUpdateStats(); 
   };
 
-  // Organize goals by type and dates
   const organizeGoalsByType = (goals: Goal[]) => {
     const annualGoals = goals.filter(goal => goal.type === "annual");
     const quarterlyGoals = goals.filter(goal => goal.type === "quarterly");
     const monthlyGoals = goals.filter(goal => goal.type === "monthly");
 
-    // Group goals by year
     const groupGoalsByYear = (goals: Goal[]) => {
       const grouped: Record<number, Goal[]> = {};
       goals.forEach(goal => {
@@ -227,14 +218,11 @@ export function GoalsDashboard() {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white">Goals</h1>
       </div>
 
-      {/* Top Actions with improved design */}
       <div className="flex items-center justify-between">
-        {/* Search Bar */}
         <GoalFilters 
           search={search} 
           onSearchChange={setSearch}
@@ -243,13 +231,10 @@ export function GoalsDashboard() {
         />
       </div>
 
-      {/* Bento Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left column: Goals List */}
         <div className="lg:col-span-8 space-y-8">
           {isLoading ? (
             <div className="space-y-8">
-              {/* Loading skeleton for sections */}
               {[1, 2].map((section) => (
                 <div key={section} className="space-y-4">
                   <div className="h-8 bg-white/10 rounded w-1/3 animate-pulse"></div>
@@ -294,16 +279,14 @@ export function GoalsDashboard() {
             </div>
           ) : (
             <div className="space-y-8">
-              {/* Annual Goals Section */}
               {Object.keys(annualByYear).length > 0 && (
                 <div className="space-y-6">
                   <h2 className="text-2xl font-bold text-white">Annual Goals</h2>
                   
-                  {/* Annual goals organized by year */}
                   <div className="space-y-8">
                     {Object.keys(annualByYear)
                       .map(Number)
-                      .sort((a, b) => a - b) // Sort years ascending (older years first)
+                      .sort((a, b) => a - b) 
                       .map(year => (
                         <div key={year} className="space-y-4">
                           <h3 className="text-xl font-semibold text-white/90 border-b border-white/20 pb-2">
@@ -330,23 +313,20 @@ export function GoalsDashboard() {
                 </div>
               )}
 
-              {/* Quarterly Goals Section */}
               {Object.keys(quarterlyByYear).length > 0 && (
                 <div className="space-y-6">
                   <h2 className="text-2xl font-bold text-white">Quarterly Goals</h2>
                   
-                  {/* Quarterly goals organized by year */}
                   <div className="space-y-8">
                     {Object.keys(quarterlyByYear)
                       .map(Number)
-                      .sort((a, b) => a - b) // Sort years ascending (older years first)
+                      .sort((a, b) => a - b) 
                       .map(year => (
                         <div key={year} className="space-y-4">
                           <h3 className="text-xl font-semibold text-white/90 border-b border-white/20 pb-2">
                             {year}
                           </h3>
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {/* Quarter 1 */}
                             <div className="space-y-4">
                               <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
                                 Q1 (Jan-Mar)
@@ -373,7 +353,6 @@ export function GoalsDashboard() {
                               </div>
                             </div>
 
-                            {/* Quarter 2 */}
                             <div className="space-y-4">
                               <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
                                 Q2 (Apr-Jun)
@@ -400,7 +379,6 @@ export function GoalsDashboard() {
                               </div>
                             </div>
 
-                            {/* Quarter 3 */}
                             <div className="space-y-4">
                               <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
                                 Q3 (Jul-Sep)
@@ -427,7 +405,6 @@ export function GoalsDashboard() {
                               </div>
                             </div>
 
-                            {/* Quarter 4 */}
                             <div className="space-y-4">
                               <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
                                 Q4 (Oct-Dec)
@@ -460,23 +437,20 @@ export function GoalsDashboard() {
                 </div>
               )}
 
-              {/* Monthly Goals Section */}
               {Object.keys(monthlyByYear).length > 0 && (
                 <div className="space-y-6">
                   <h2 className="text-2xl font-bold text-white">Monthly Goals</h2>
                   
-                  {/* Monthly goals organized by year */}
                   <div className="space-y-8">
                     {Object.keys(monthlyByYear)
                       .map(Number)
-                      .sort((a, b) => a - b) // Sort years ascending (older years first)
+                      .sort((a, b) => a - b) 
                       .map(year => (
                         <div key={year} className="space-y-4">
                           <h3 className="text-xl font-semibold text-white/90 border-b border-white/20 pb-2">
                             {year}
                           </h3>
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {/* January */}
                             <div className="space-y-4">
                               <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
                                 January
@@ -503,7 +477,6 @@ export function GoalsDashboard() {
                               </div>
                             </div>
 
-                            {/* February */}
                             <div className="space-y-4">
                               <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
                                 February
@@ -530,7 +503,6 @@ export function GoalsDashboard() {
                               </div>
                             </div>
 
-                            {/* March */}
                             <div className="space-y-4">
                               <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
                                 March
@@ -557,7 +529,6 @@ export function GoalsDashboard() {
                               </div>
                             </div>
 
-                            {/* April */}
                             <div className="space-y-4">
                               <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
                                 April
@@ -584,7 +555,6 @@ export function GoalsDashboard() {
                               </div>
                             </div>
 
-                            {/* May */}
                             <div className="space-y-4">
                               <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
                                 May
@@ -611,7 +581,6 @@ export function GoalsDashboard() {
                               </div>
                             </div>
 
-                            {/* June */}
                             <div className="space-y-4">
                               <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
                                 June
@@ -638,7 +607,6 @@ export function GoalsDashboard() {
                               </div>
                             </div>
 
-                            {/* July */}
                             <div className="space-y-4">
                               <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
                                 July

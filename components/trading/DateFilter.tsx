@@ -32,7 +32,6 @@ export function DateFilter({ onFilterChange, className = "" }: DateFilterProps) 
   const handleViewChange = (view: 'monthly' | 'yearly' | 'all') => {
     let newFilter = { ...filter, view };
     
-    // Initialize month and year when switching to monthly or yearly view
     if (view === 'monthly' && !newFilter.month) {
       newFilter = { ...newFilter, month: new Date().toLocaleDateString('fr-FR', { month: 'long' }) };
     }

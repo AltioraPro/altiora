@@ -24,7 +24,6 @@ export function GoalFilters({ search, onSearchChange, filters, onFiltersChange }
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const filtersRef = useRef<HTMLDivElement>(null);
 
-  // Debounce pour éviter trop de requêtes
   useEffect(() => {
     const timer = setTimeout(() => {
       onSearchChange(localSearch);
@@ -33,7 +32,6 @@ export function GoalFilters({ search, onSearchChange, filters, onFiltersChange }
     return () => clearTimeout(timer);
   }, [localSearch, onSearchChange]);
 
-  // Gestionnaire de clic en dehors pour fermer le panneau
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (filtersRef.current && !filtersRef.current.contains(event.target as Node)) {

@@ -227,12 +227,18 @@ export const tradingQueriesRouter = createTRPCRouter({
       }
       if (input.assetId) {
         whereConditions.push(eq(advancedTrades.assetId, input.assetId));
+      } else if (input.assetIds && input.assetIds.length > 0) {
+        whereConditions.push(inArray(advancedTrades.assetId, input.assetIds));
       }
       if (input.sessionId) {
         whereConditions.push(eq(advancedTrades.sessionId, input.sessionId));
+      } else if (input.sessionIds && input.sessionIds.length > 0) {
+        whereConditions.push(inArray(advancedTrades.sessionId, input.sessionIds));
       }
       if (input.setupId) {
         whereConditions.push(eq(advancedTrades.setupId, input.setupId));
+      } else if (input.setupIds && input.setupIds.length > 0) {
+        whereConditions.push(inArray(advancedTrades.setupId, input.setupIds));
       }
       if (input.symbol) {
         whereConditions.push(like(advancedTrades.symbol, `%${input.symbol}%`));
@@ -303,6 +309,15 @@ export const tradingQueriesRouter = createTRPCRouter({
         whereConditions.push(eq(advancedTrades.journalId, input.journalId));
       } else if (input.journalIds && input.journalIds.length > 0) {
         whereConditions.push(inArray(advancedTrades.journalId, input.journalIds));
+      }
+      if (input.assetIds && input.assetIds.length > 0) {
+        whereConditions.push(inArray(advancedTrades.assetId, input.assetIds));
+      }
+      if (input.sessionIds && input.sessionIds.length > 0) {
+        whereConditions.push(inArray(advancedTrades.sessionId, input.sessionIds));
+      }
+      if (input.setupIds && input.setupIds.length > 0) {
+        whereConditions.push(inArray(advancedTrades.setupId, input.setupIds));
       }
       if (input.startDate) {
         whereConditions.push(gte(advancedTrades.tradeDate, input.startDate));

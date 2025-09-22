@@ -6,7 +6,6 @@ import { Target, BookOpen, Trophy, Crown, BarChart3 } from "lucide-react";
 export function UsageStats() {
   const { data: limitsSummary, error, isLoading } = api.subscription.getLimitsSummary.useQuery();
 
-  // Fallback data si la requête échoue ou est en cours de chargement
   const fallbackData = {
     limits: {
       maxHabits: 3,
@@ -28,8 +27,8 @@ export function UsageStats() {
   const { limits, usage } = data;
 
   const getUsagePercentage = (current: number, max: number) => {
-    if (max === 999) return 0; // Unlimited
-    if (max === 0) return 0; // No limit set
+    if (max === 999) return 0;
+    if (max === 0) return 0; 
     return Math.min((current / max) * 100, 100);
   };
 

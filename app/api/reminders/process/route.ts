@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoalRemindersService } from "@/server/services/goal-reminders";
 
+
+// Route pour traiter les rappels manuellement
 export async function POST(request: NextRequest) {
   try {
-    // Vérifier l'authentification (optionnel, pour la sécurité)
     const authHeader = request.headers.get("authorization");
     const expectedToken = process.env.REMINDERS_WEBHOOK_TOKEN;
     
@@ -13,7 +14,6 @@ export async function POST(request: NextRequest) {
 
     console.log("🔔 [API] Processing reminders...");
     
-    // Traiter les rappels en retard
     await GoalRemindersService.sendOverdueReminders();
     
     return NextResponse.json({ 
@@ -31,7 +31,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Endpoint GET pour tester manuellement
 export async function GET() {
   try {
     console.log("🔔 [API] Manual reminder processing triggered...");

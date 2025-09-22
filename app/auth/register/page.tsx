@@ -9,7 +9,6 @@ import Link from "next/link";
 import { Mail, Lock, ArrowRight, Eye, EyeOff, AlertCircle, User, CheckCircle } from "lucide-react";
 import { z } from "zod";
 
-// Google Icon SVG Component
 const GoogleIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24">
     <path
@@ -81,14 +80,12 @@ export default function RegisterPage() {
       });
 
       if (error) {
-        // Gérer les différents types d'erreurs
         if (error.message?.includes("existing email") || error.status === 422) {
           setAuthError("This email is already registered. Please use a different email or sign in.");
         } else {
           setAuthError(error.message || "Registration error");
         }
       } else if (result?.user) {
-        // Rediriger vers la page de vérification d'email
         router.push(`/auth/check-email?email=${encodeURIComponent(data.email)}`);
       }
     } catch (error: unknown) {

@@ -18,7 +18,6 @@ export default function GoalsPage() {
     successRate: 0,
   });
 
-  // Récupérer les vraies statistiques des goals
   const { data: goalStats } = api.goals.getStats.useQuery(
     { period: "year" },
     {
@@ -27,7 +26,6 @@ export default function GoalsPage() {
     }
   ) as { data: { active: number; completed: number; overdue: number; completionRate: number } | undefined };
 
-  // Vérifier toutes les restrictions en une seule requête optimisée
   const { data: goalLimits, isLoading: limitsLoading } = api.goals.getAllGoalLimits.useQuery(
     undefined,
     { 
@@ -38,10 +36,8 @@ export default function GoalsPage() {
     }
   );
 
-  // Vérifier si l'utilisateur peut créer au moins un type de goal
   const canCreateAnyGoal = goalLimits?.canCreateAny ?? true;
 
-  // Animation des stats quand les vraies données sont chargées
   useEffect(() => {
     if (!goalStats) return;
 

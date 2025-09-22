@@ -30,23 +30,21 @@ export function GoalCard({ goal, viewMode, onGoalChange, onEditGoal }: GoalCardP
 
   const markCompletedMutation = api.goals.markCompleted.useMutation({
     onSuccess: () => {
-      // Invalider toutes les requêtes goals et les restrictions
       utils.goals.getPaginated.invalidate();
       utils.goals.getStats.invalidate();
       utils.goals.getAll.invalidate();
       utils.goals.getAllGoalLimits.invalidate();
-      onGoalChange?.(); // Appeler le callback pour mettre à jour les stats
+      onGoalChange?.(); 
     },
   });
 
   const deleteMutation = api.goals.delete.useMutation({
     onSuccess: () => {
-      // Invalider toutes les requêtes goals et les restrictions
       utils.goals.getPaginated.invalidate();
       utils.goals.getStats.invalidate();
       utils.goals.getAll.invalidate();
       utils.goals.getAllGoalLimits.invalidate();
-      onGoalChange?.(); // Appeler le callback pour mettre à jour les stats
+      onGoalChange?.(); 
     },
   });
 
@@ -148,15 +146,12 @@ export function GoalCard({ goal, viewMode, onGoalChange, onEditGoal }: GoalCardP
     );
   }
 
-  // Grid View compact pour bento grid
   return (
     <div className="group relative bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:border-white/20 transition-all duration-300 hover:scale-105 overflow-hidden">
-      {/* Background avec effet de brillance */}
       <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
       
       <div className="relative">
-        {/* Header compact */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-white/10 to-white/5 rounded-lg border border-white/10 group-hover:scale-110 transition-transform duration-300">
@@ -191,7 +186,6 @@ export function GoalCard({ goal, viewMode, onGoalChange, onEditGoal }: GoalCardP
           </div>
         </div>
 
-        {/* Titre et description */}
         <div className="mb-4">
           <h3 className={`text-lg font-semibold mb-2 ${goal.isCompleted ? 'line-through text-green-400/60' : 'text-white'} transition-all duration-300`}>
             {goal.title}
@@ -205,9 +199,7 @@ export function GoalCard({ goal, viewMode, onGoalChange, onEditGoal }: GoalCardP
 
 
 
-        {/* Footer compact */}
         <div className="space-y-4 pt-4 border-t border-white/10">
-          {/* Rappels */}
           <GoalReminders
             goalId={goal.id}
             currentFrequency={goal.reminderFrequency as "daily" | "weekly" | "monthly" | null}
@@ -215,7 +207,6 @@ export function GoalCard({ goal, viewMode, onGoalChange, onEditGoal }: GoalCardP
             isActive={goal.isActive}
           />
           
-          {/* Deadline et bouton de completion */}
           <div className="flex items-center justify-between">
             {goal.deadline && (
               <div className="flex items-center gap-2">

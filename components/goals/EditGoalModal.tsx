@@ -25,11 +25,10 @@ export function EditGoalModal({ goal, onClose, onGoalChange }: EditGoalModalProp
 
   const updateGoalMutation = api.goals.update.useMutation({
     onSuccess: () => {
-      // Invalider toutes les requêtes goals
       utils.goals.getPaginated.invalidate();
       utils.goals.getStats.invalidate();
       utils.goals.getAll.invalidate();
-      onGoalChange?.(); // Appeler le callback pour mettre à jour les stats
+      onGoalChange?.(); 
       onClose();
     },
   });

@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { DiscordService } from "@/server/services/discord";
 import { auth } from "@/lib/auth";
 
+
+// Route pour synchroniser un utilisateur spécifique
 export async function POST(request: NextRequest) {
   try {
-    // Vérifier l'authentification
     const session = await auth.api.getSession({
       headers: request.headers,
     });
@@ -16,21 +17,16 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { type, userId } = body;
 
-    // Synchronisation d'un utilisateur spécifique
     if (type === 'user' && userId) {
-      // Vérifier que l'utilisateur peut synchroniser son propre compte
       if (userId !== session.user.id) {
         return NextResponse.json({ error: 'Non autorisé' }, { status: 403 });
       }
 
-      // Logique de synchronisation d'un utilisateur spécifique
-      // (à implémenter selon les besoins)
+
       return NextResponse.json({ success: true, message: 'Synchronisation utilisateur déclenchée' });
     }
 
-    // Synchronisation de tous les utilisateurs (admin seulement)
     if (type === 'all') {
-      // Vérifier les permissions admin (à adapter selon votre système)
       const isAdmin = session.user.email === process.env.ADMIN_EMAIL;
       if (!isAdmin) {
         return NextResponse.json({ error: 'Permissions insuffisantes' }, { status: 403 });
@@ -56,7 +52,6 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    // Vérifier l'authentification
     const session = await auth.api.getSession({
       headers: request.headers,
     });
@@ -65,7 +60,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
     }
 
-    // Vérifier le statut du bot Discord
     const botUrl = process.env.DISCORD_BOT_WEBHOOK_URL || 'http://localhost:3001';
     const response = await fetch(`${botUrl}/health`, {
       method: 'GET',

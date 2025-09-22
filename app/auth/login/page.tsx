@@ -9,7 +9,6 @@ import Link from "next/link";
 import { Mail, Lock, ArrowRight, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { z } from "zod";
 
-// Google Icon SVG Component
 const GoogleIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24">
     <path
@@ -70,7 +69,6 @@ export default function LoginPage() {
       });
 
       if (error) {
-        // if the error is related to an unverified email, redirect to check-email
         if (error.message?.includes("email_not_verified") || error.message?.includes("verify")) {
           router.push(`/auth/check-email?email=${encodeURIComponent(data.email)}`);
           return;

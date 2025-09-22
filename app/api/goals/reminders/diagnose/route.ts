@@ -3,11 +3,12 @@ import { db } from "@/server/db";
 import { goals, users } from "@/server/db/schema";
 import { eq, and, isNotNull } from "drizzle-orm";
 
+
+// Route pour diagnostiquer le système de rappels
 export async function GET() {
   try {
     console.log("🔍 Diagnostic du système de rappels via API");
     
-    // 1. Vérifier tous les objectifs
     const allGoals = await db
       .select({
         id: goals.id,
@@ -21,7 +22,6 @@ export async function GET() {
       })
       .from(goals);
 
-    // 2. Vérifier les utilisateurs connectés à Discord
     const discordUsers = await db
       .select({
         id: users.id,
@@ -35,14 +35,12 @@ export async function GET() {
         eq(users.discordConnected, true)
       ));
 
-    // 3. Vérifier les objectifs éligibles pour les rappels
     const eligibleGoals = allGoals.filter(goal => 
       goal.remindersEnabled && 
       !goal.isCompleted && 
       goal.isActive
     );
 
-    // 4. Vérifier les objectifs avec rappels en retard
     const now = new Date();
     const overdueReminders = eligibleGoals.filter(goal => 
       goal.nextReminderDate && new Date(goal.nextReminderDate) <= now

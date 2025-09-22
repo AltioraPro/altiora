@@ -12,7 +12,6 @@ import { memo } from "react";
 import { useHabitsDashboard } from "@/lib/hooks/useHabitsQuery";
 import { LimitsBanner } from "@/components/subscription/LimitsBanner";
 
-// OPTIMIZATION: Memoized component to avoid unnecessary re-renders
 const ViewModeToggle = memo(({ 
   viewMode, 
   setViewMode 
@@ -41,7 +40,6 @@ const ViewModeToggle = memo(({
 
 ViewModeToggle.displayName = "ViewModeToggle";
 
-// OPTIMIZATION: Memoized component for creation button
 const CreateHabitButton = memo(({ 
   onClick 
 }: { 
@@ -65,7 +63,6 @@ export function HabitsDashboard() {
     setViewMode,
   } = useHabits();
 
-  // OPTIMIZATION: Using optimized custom hook
   const { data: dashboardData, isLoading, error } = useHabitsDashboard(viewMode);
 
   if (isLoading) {

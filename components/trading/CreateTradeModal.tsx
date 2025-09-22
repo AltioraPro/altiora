@@ -50,35 +50,30 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
       notes: "",
       journalId: journalId || "",
     },
-    mode: "onChange", // Pour déclencher la validation en temps réel
+    mode: "onChange", 
   });
 
-  // Mettre à jour journalId quand il change
   React.useEffect(() => {
     if (journalId) {
       form.setValue("journalId", journalId);
     }
   }, [journalId, form]);
 
-  // Data queries - Get assets, sessions, and setups for all user's journals
   const { data: assets } = api.trading.getAssets.useQuery({ journalId: "" });
   const { data: sessions } = api.trading.getSessions.useQuery({ journalId: "" });
   const { data: setups } = api.trading.getSetups.useQuery({ journalId: "" });
   
   
-  // Get journal info to access starting capital
   const { data: journal } = api.trading.getJournalById.useQuery(
     { id: journalId! }, 
     { enabled: !!journalId }
   );
 
-  // Get current capital for percentage calculations
   const { data: capitalData } = api.trading.getCurrentCapital.useQuery(
     { journalId: journalId! }, 
     { enabled: !!journalId && !!journal?.usePercentageCalculation }
   ) as { data: { currentCapital: string | null; startingCapital: string | null } | undefined };
 
-  // Calculate real-time conversions between amount and percentage
   const profitLossAmount = form.watch("profitLossAmount");
   const profitLossPercentage = form.watch("profitLossPercentage");
   
@@ -90,14 +85,12 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
     const currentCapital = parseFloat(capitalData.currentCapital);
     
     if (profitLossPercentage && !profitLossAmount) {
-      // Calculate amount from percentage based on current capital
       const percentage = parseFloat(profitLossPercentage);
       const amount = (percentage / 100) * currentCapital;
       return { calculatedAmount: amount.toFixed(2), calculatedPercentage: null };
     }
     
     if (profitLossAmount && !profitLossPercentage) {
-      // Calculate percentage from amount based on current capital
       const amount = parseFloat(profitLossAmount);
       const percentage = (amount / currentCapital) * 100;
       return { calculatedAmount: null, calculatedPercentage: percentage.toFixed(2) };
@@ -106,12 +99,10 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
     return { calculatedAmount: null, calculatedPercentage: null };
   }, [profitLossAmount, profitLossPercentage, journal?.usePercentageCalculation, capitalData?.currentCapital]);
 
-  // Mutations
   const createTradeMutation = api.trading.createTrade.useMutation({
     onSuccess: () => {
       form.reset();
       onClose();
-      // Invalidate queries to refresh data
       utils.trading.getTrades.invalidate();
       utils.trading.getStats.invalidate();
     },
@@ -120,7 +111,6 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
 
   const handleSubmit = async (data: CreateTradeForm) => {
     try {
-      // Validation côté client pour s'assurer qu'au moins un champ de résultat est rempli
       if (!data.profitLossAmount && !data.profitLossPercentage) {
         alert("Please provide either amount or percentage");
         return;
@@ -135,7 +125,6 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
       
       await createTradeMutation.mutateAsync(tradeData);
       
-      // Fermer la modal et réinitialiser le formulaire
       onClose();
       form.reset();
     } catch (error) {
@@ -164,7 +153,6 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
         </CardHeader>
         <CardContent className="text-white">
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-            {/* Date */}
             <div>
               <Label htmlFor="tradeDate" className="text-white/80">Date</Label>
                 <Input
@@ -180,7 +168,6 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
               )}
             </div>
 
-                         {/* Asset */}
              <div>
                <Label htmlFor="symbol" className="text-white/80">Asset</Label>
                <Select
@@ -205,7 +192,6 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                )}
             </div>
 
-            {/* Session */}
             <div>
               <Label htmlFor="sessionId" className="text-white/80">Session</Label>
               <Select
@@ -225,7 +211,6 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
               </Select>
             </div>
 
-            {/* Setup */}
             <div>
               <Label htmlFor="setupId" className="text-white/80">Setup</Label>
               <Select
@@ -245,7 +230,6 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
               </Select>
             </div>
 
-            {/* Risk */}
             <div>
               <Label htmlFor="riskInput" className="text-white/80">Risk (%)</Label>
               <Input
@@ -261,9 +245,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
               )}
             </div>
 
-            {/* Result - Conditional display based on journal type */}
             {journal?.usePercentageCalculation && journal?.startingCapital ? (
-              // Journal avec capital : afficher les deux champs avec conversion
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="profitLossAmount" className="text-white/80">
@@ -314,7 +296,6 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                 </div>
               </div>
             ) : (
-              // Journal backtest : seulement le pourcentage
               <div>
                 <Label htmlFor="profitLossPercentage" className="text-white/80">
                   Result (%)
@@ -339,7 +320,6 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
               </div>
             )}
 
-            {/* Capital info */}
             {journal?.usePercentageCalculation && capitalData && (
               <div className="text-xs text-white/50 bg-black/20 p-2 rounded border border-white/10">
                 Current capital: {capitalData.currentCapital}€
@@ -351,7 +331,6 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
               </div>
             )}
 
-            {/* Exit reason */}
             <div>
               <Label htmlFor="exitReason" className="text-white/80">Exit reason</Label>
               <Select
@@ -374,7 +353,6 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
               )}
             </div>
 
-            {/* TradingView link */}
             <div>
               <Label htmlFor="tradingviewLink" className="text-white/80">TradingView link (optional)</Label>
               <Input
@@ -385,7 +363,6 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
               />
             </div>
 
-            {/* Notes */}
             <div>
               <Label htmlFor="notes" className="text-white/80">Notes (optional)</Label>
               <Textarea
@@ -397,7 +374,6 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
               />
             </div>
 
-            {/* Actions */}
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={onClose} className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white">
                 Cancel

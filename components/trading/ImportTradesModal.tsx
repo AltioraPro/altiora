@@ -27,7 +27,6 @@ interface ExcelTrade {
   TradingViewLink?: string;
 }
 
-// Structure spécifique du fichier Excel
 interface ExcelRow {
   [key: number]: unknown;
 }
@@ -45,11 +44,10 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
     setups: string[];
   }>({ assets: [], sessions: [], setups: [] });
   
-  // Cache local pour les items créés pendant l'import (synchrone avec useRef)
   const localCacheRef = useRef<{
-    assets: Map<string, string>; // name -> id
-    sessions: Map<string, string>; // name -> id
-    setups: Map<string, string>; // name -> id
+    assets: Map<string, string>; 
+    sessions: Map<string, string>; 
+    setups: Map<string, string>; 
   }>({
     assets: new Map(),
     sessions: new Map(),
@@ -58,13 +56,11 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
 
   const utils = api.useUtils();
 
-  // Mutations
   const createTradeMutation = api.trading.createTrade.useMutation();
   const createAssetMutation = api.trading.createAsset.useMutation();
   const createSessionMutation = api.trading.createSession.useMutation();
   const createSetupMutation = api.trading.createSetup.useMutation();
-
-  // Queries for existing data - use current journal or empty string for global
+    
   const { data: existingAssets } = api.trading.getAssets.useQuery({ journalId: journalId || "" });
   const { data: existingSessions } = api.trading.getSessions.useQuery({ journalId: journalId || "" });
   const { data: existingSetups } = api.trading.getSetups.useQuery({ journalId: journalId || "" });
@@ -81,10 +77,8 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         
-        // Lire les données brutes avec les indices de colonnes
         const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as ExcelRow[];
         
-        // Debug: Afficher la structure du fichier Excel
         console.log('Structure du fichier Excel:');
         console.log('Nombre de lignes:', rawData.length);
         if (rawData.length > 0) {
@@ -92,31 +86,31 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
           console.log('Deuxième ligne (exemple):', rawData[1]);
         }
         
-        // Convertir les données brutes en format structuré
+
         const processedTrades: ExcelTrade[] = [];
         
-        for (let i = 1; i < rawData.length; i++) { // Commencer à 1 pour ignorer l'en-tête
+        for (let i = 1; i < rawData.length; i++) { 
           const row = rawData[i];
-          if (!row || !row[0]) continue; // Ignorer les lignes vides
+          if (!row || !row[0]) continue; 
           
-                     const trade: ExcelTrade = {
-             Date: String(row[0] || ''), // Colonne 0: Date
-             Asset: String(row[6] || ''), // Colonne 6: Actif
-             Symbol: String(row[6] || ''), // Même que Asset
-             Session: String(row[11] || ''), // Colonne 11: Session
-             Risk: row[25] as string | number, // Colonne 25: Risk
-             Result: row[28] as string | number, // Colonne 28: Profit
-             Setup: String(row[31] || ''), // Colonne 31: Setup
-             Notes: String(row[45] || ''), // Colonne 45: Notes
-             TradingViewLink: String(row[50] || ''), // Colonne 50: Lien
-           };
+          const trade: ExcelTrade = {
+              Date: String(row[0] || ''), 
+              Asset: String(row[6] || ''), 
+              Symbol: String(row[6] || ''), 
+              Session: String(row[11] || ''), 
+              Risk: row[25] as string | number, 
+              Result: row[28] as string | number, 
+              Setup: String(row[31] || ''), 
+              Notes: String(row[45] || ''), 
+              TradingViewLink: String(row[50] || ''), 
+            };
           
           processedTrades.push(trade);
         }
 
         setTradesToImport(processedTrades);
         setCreatedItems({ assets: [], sessions: [], setups: [] });
-        // Reset local cache for new import
+
         console.log('🔄 Resetting local cache for new import');
         localCacheRef.current = {
           assets: new Map(),
@@ -146,14 +140,14 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
     
     console.log('🔍 Checking asset:', assetToUse, 'Cache size:', localCacheRef.current.assets.size);
     
-    // Check if asset already exists in local cache
+
     const cachedAssetId = localCacheRef.current.assets.get(assetToUse.toLowerCase());
     if (cachedAssetId) {
       console.log('Found in cache:', assetToUse, '->', cachedAssetId);
       return cachedAssetId;
     }
     
-    // Check if asset already exists in current data
+
     const existingAsset = existingAssets?.find(a => 
       a.name.toLowerCase() === assetToUse.toLowerCase() || 
       (a.symbol && a.symbol.toLowerCase() === assetToUse.toLowerCase())
@@ -161,12 +155,12 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
     
     if (existingAsset) {
       console.log('Found existing asset:', assetToUse, '->', existingAsset.id);
-      // Add to local cache
+
       localCacheRef.current.assets.set(assetToUse.toLowerCase(), existingAsset.id);
       return existingAsset.id;
     }
 
-    // Create new asset
+
     try {
       console.log('🆕 Creating new asset:', assetToUse);
       const result = await createAssetMutation.mutateAsync({
@@ -178,11 +172,11 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
       
       console.log('✅ Created asset:', assetToUse, '->', result.id);
       
-      // Add to local cache
+
       localCacheRef.current.assets.set(assetToUse.toLowerCase(), result.id);
       console.log('📝 Updated cache, new size:', localCacheRef.current.assets.size);
       
-      // Track created asset (only if not already tracked)
+
       setCreatedItems(prev => ({
         ...prev,
         assets: prev.assets.includes(assetToUse) ? prev.assets : [...prev.assets, assetToUse]
@@ -203,26 +197,26 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
     
     console.log('🔍 Checking session:', sessionToUse, 'Cache size:', localCacheRef.current.sessions.size);
     
-    // Check if session already exists in local cache
+
     const cachedSessionId = localCacheRef.current.sessions.get(sessionToUse.toLowerCase());
     if (cachedSessionId) {
       console.log('✅ Found in cache:', sessionToUse, '->', cachedSessionId);
       return cachedSessionId;
     }
     
-    // Check if session already exists
+
     const existingSession = existingSessions?.find(s => 
       s.name.toLowerCase() === sessionToUse.toLowerCase()
     );
     
     if (existingSession) {
       console.log('✅ Found existing session:', sessionToUse, '->', existingSession.id);
-      // Add to local cache
+
       localCacheRef.current.sessions.set(sessionToUse.toLowerCase(), existingSession.id);
       return existingSession.id;
     }
 
-    // Create new session
+
     try {
       console.log('🆕 Creating new session:', sessionToUse);
       const result = await createSessionMutation.mutateAsync({
@@ -233,11 +227,9 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
       
       console.log('✅ Created session:', sessionToUse, '->', result.id);
       
-      // Add to local cache
       localCacheRef.current.sessions.set(sessionToUse.toLowerCase(), result.id);
       console.log('📝 Updated session cache, new size:', localCacheRef.current.sessions.size);
       
-      // Track created session (only if not already tracked)
       setCreatedItems(prev => ({
         ...prev,
         sessions: prev.sessions.includes(sessionToUse) ? prev.sessions : [...prev.sessions, sessionToUse]
@@ -257,27 +249,25 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
     if (!setupToUse) return null;
     
     console.log('🔍 Checking setup:', setupToUse, 'Cache size:', localCacheRef.current.setups.size);
-    
-    // Check if setup already exists in local cache
+  
     const cachedSetupId = localCacheRef.current.setups.get(setupToUse.toLowerCase());
     if (cachedSetupId) {
       console.log('✅ Found in cache:', setupToUse, '->', cachedSetupId);
       return cachedSetupId;
     }
     
-    // Check if setup already exists
     const existingSetup = existingSetups?.find(s => 
       s.name.toLowerCase() === setupToUse.toLowerCase()
     );
     
     if (existingSetup) {
       console.log('✅ Found existing setup:', setupToUse, '->', existingSetup.id);
-      // Add to local cache
+
       localCacheRef.current.setups.set(setupToUse.toLowerCase(), existingSetup.id);
       return existingSetup.id;
     }
 
-    // Create new setup
+
     try {
       console.log('🆕 Creating new setup:', setupToUse);
       const result = await createSetupMutation.mutateAsync({
@@ -289,11 +279,11 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
       
       console.log('✅ Created setup:', setupToUse, '->', result.id);
       
-      // Add to local cache
+
       localCacheRef.current.setups.set(setupToUse.toLowerCase(), result.id);
       console.log('📝 Updated setup cache, new size:', localCacheRef.current.setups.size);
       
-      // Track created setup (only if not already tracked)
+
       setCreatedItems(prev => ({
         ...prev,
         setups: prev.setups.includes(setupToUse) ? prev.setups : [...prev.setups, setupToUse]
@@ -317,22 +307,22 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
 
     for (const trade of tradesToImport) {
       try {
-        // Parse date - handle various formats and ensure YYYY-MM-DD output
+
         let tradeDate = new Date().toISOString().split('T')[0]; // Default to today
         if (trade.Date) {
           const dateStr = String(trade.Date).trim();
           
-          // Check if already in YYYY-MM-DD format
+
           if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
             tradeDate = dateStr;
           } else {
-            // Try to parse various date formats
+
             let parsedDate: Date;
             
-            // Handle Excel date serial numbers (days since 1900-01-01)
+
             if (/^\d+\.?\d*$/.test(dateStr)) {
               const excelDate = parseFloat(dateStr);
-              // Excel date serial number conversion
+
               parsedDate = new Date((excelDate - 25569) * 86400 * 1000);
             } else {
               // Try standard date parsing

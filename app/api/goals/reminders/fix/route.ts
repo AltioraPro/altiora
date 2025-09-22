@@ -4,13 +4,14 @@ import { goals } from "@/server/db/schema";
 import { eq, and, isNull } from "drizzle-orm";
 import { addDays, addWeeks, addMonths } from "date-fns";
 
+
+// Route pour corriger les rappels non programmés
 export async function POST() {
   try {
     console.log("🔧 Correction des rappels non programmés");
     
     const now = new Date();
     
-    // Trouver tous les objectifs avec rappels activés mais sans date de prochain rappel
     const goalsToFix = await db
       .select()
       .from(goals)
@@ -44,7 +45,6 @@ export async function POST() {
           continue;
       }
 
-      // Mettre à jour l'objectif avec la nouvelle date de rappel
       await db
         .update(goals)
         .set({

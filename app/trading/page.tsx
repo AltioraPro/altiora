@@ -14,6 +14,7 @@ import { AssetsManager } from "@/components/trading/AssetsManager";
 import { SessionsManager } from "@/components/trading/SessionsManager";
 import { SetupsManager } from "@/components/trading/SetupsManager";
 import { DateFilter, type DateFilterState } from "@/components/trading/DateFilter";
+import { AdvancedFilters } from "@/components/trading/AdvancedFilters";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,6 +40,11 @@ export default function TradingPage() {
   const [dateFilter, setDateFilter] = useState<DateFilterState>({ 
     view: 'all'
   });
+  const [advancedFilters, setAdvancedFilters] = useState<{
+    sessions: string[];
+    setups: string[];
+    assets: string[];
+  }>({ sessions: [], setups: [], assets: [] });
 
   // Fonction pour filtrer les trades par date
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -57,8 +63,8 @@ export default function TradingPage() {
           ];
           const monthIndex = monthNames.indexOf(dateFilter.month);
           return tradeDate.getFullYear() === parseInt(dateFilter.year) && 
-                 tradeDate.getMonth() === monthIndex;
-                 
+                tradeDate.getMonth() === monthIndex;
+                
         case 'yearly':
           if (!dateFilter.year) return true;
           return tradeDate.getFullYear() === parseInt(dateFilter.year);
@@ -69,25 +75,34 @@ export default function TradingPage() {
     });
   };
 
-  // Queries
   const { data: journals, isLoading: journalsLoading } = api.trading.getJournals.useQuery();
   
-  // Récupérer le journal sélectionné
   const selectedJournal = journals?.find(j => j.id === selectedJournalId);
   
-  // Récupérer tous les trades pour les statistiques (sans pagination)
   const { data: allTrades } = api.trading.getTrades.useQuery(
     { 
-      journalId: selectedJournalId || undefined
+      journalId: selectedJournalId || undefined,
+      sessionIds: advancedFilters.sessions.length > 0 ? advancedFilters.sessions : undefined,
+      setupIds: advancedFilters.setups.length > 0 ? advancedFilters.setups : undefined,
+      assetIds: advancedFilters.assets.length > 0 ? advancedFilters.assets : undefined,
     },
     { enabled: !!selectedJournalId }
   );
   
-  // Filtrer les trades par date
   const filteredTrades = allTrades ? filterTradesByDate(allTrades) : undefined;
   
-  // Calculer les stats basées sur les trades filtrés
-  const stats = filteredTrades && filteredTrades.length > 0 ? {
+  // Utiliser les statistiques du backend avec les filtres avancés
+  const { data: backendStats } = api.trading.getStats.useQuery(
+    {
+      journalId: selectedJournalId || undefined,
+      sessionIds: advancedFilters.sessions.length > 0 ? advancedFilters.sessions : undefined,
+      setupIds: advancedFilters.setups.length > 0 ? advancedFilters.setups : undefined,
+      assetIds: advancedFilters.assets.length > 0 ? advancedFilters.assets : undefined,
+    },
+    { enabled: !!selectedJournalId }
+  );
+
+  const stats = backendStats || (filteredTrades && filteredTrades.length > 0 ? {
     totalTrades: filteredTrades.length,
     closedTrades: filteredTrades.length,
     winningTrades: filteredTrades.filter(t => Number(t.profitLossPercentage || 0) > 0).length,
@@ -100,14 +115,12 @@ export default function TradingPage() {
     totalAmountPnL: (() => {
       if (!filteredTrades) return 0;
       
-      // Si le journal utilise le calcul en pourcentage et a un capital de départ
       if (selectedJournal?.usePercentageCalculation && selectedJournal?.startingCapital) {
         const totalPnLPercentage = filteredTrades.reduce((sum, t) => sum + Number(t.profitLossPercentage || 0), 0);
         const startingCapital = parseFloat(selectedJournal.startingCapital);
         return (totalPnLPercentage / 100) * startingCapital;
       }
       
-      // Sinon, utiliser la somme des montants P&L
       return filteredTrades.reduce((sum, t) => sum + Number(t.profitLossAmount || 0), 0);
     })(),
     tradesBySymbol: [],
@@ -119,7 +132,7 @@ export default function TradingPage() {
       usePercentageCalculation: selectedJournal.usePercentageCalculation,
       startingCapital: selectedJournal.startingCapital || undefined
     } : undefined
-  } : null;
+  } : null);
   const { data: sessions } = api.trading.getSessions.useQuery(
     { journalId: selectedJournalId || undefined },
     { enabled: !!selectedJournalId }
@@ -129,21 +142,17 @@ export default function TradingPage() {
     { enabled: !!selectedJournalId }
   );
 
-  // Mutations
   const createJournalMutation = api.trading.createJournal.useMutation({
     onSuccess: () => {
-      // Refetch journals
     },
   });
 
   
 
-  // Handle journal selection from URL params or default
   const handleJournalFound = useCallback((journalId: string) => {
     setSelectedJournalId(journalId);
   }, []);
 
-  // Set first journal when loaded only if no journal is selected and no URL param
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const journalFromUrl = urlParams.get('journalId') || urlParams.get('journal');
@@ -244,6 +253,12 @@ export default function TradingPage() {
         
         <div className="flex items-center space-x-4">
           <DateFilter onFilterChange={setDateFilter} />
+          {selectedJournalId && (
+            <AdvancedFilters 
+              journalId={selectedJournalId}
+              onFiltersChange={setAdvancedFilters}
+            />
+          )}
         </div>
         
                 <div className="flex items-center space-x-2">

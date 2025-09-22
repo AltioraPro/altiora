@@ -35,7 +35,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
   const { getOptimisticStats, optimisticUpdates } = useHabits();
   const [isRankModalOpen, setIsRankModalOpen] = useState(false);
   
-  // Gestion de la touche Échap pour fermer la modal
+
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isRankModalOpen) {
@@ -56,30 +56,30 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
     };
   }, [isRankModalOpen]);
   
-  // Create optimistic habits directly from optimistic updates
+
   const optimisticTodayHabits = todayHabits?.map(habit => ({
     ...habit,
     isCompleted: optimisticUpdates[habit.id] ?? habit.isCompleted
   })) ?? [];
   
-  // Calculate immediately the basic stats even without server data
+
   const todayCompletedHabits = optimisticTodayHabits.filter(h => h.isCompleted).length;
   const todayTotalHabits = optimisticTodayHabits.length;
   const todayCompletionRate = todayTotalHabits > 0 ? Math.round((todayCompletedHabits / todayTotalHabits) * 100) : 0;
   const willContinueStreak = todayCompletedHabits > 0;
   
-  // Use optimistic data if available, otherwise calculate from today
+
   const optimisticData = getOptimisticStats(data, optimisticTodayHabits);
   
-  // Final stats: optimistic if available, otherwise calculated from today
+
   const totalActiveHabits = optimisticData?.totalActiveHabits ?? todayTotalHabits;
   const averageCompletionRate = optimisticData?.averageCompletionRate ?? todayCompletionRate;
   const optimisticCurrentStreak = optimisticData?.currentStreak ?? (willContinueStreak ? 1 : 0);
   const longestStreak = optimisticData?.longestStreak ?? optimisticCurrentStreak;
 
-  // Variables already calculated above (todayCompletedHabits and willContinueStreak)
 
-  // Complete rank system
+
+
   const rankSystem: RankInfo[] = [
     {
       name: "NEW",
@@ -182,7 +182,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
     }
   ];
 
-  // Find current rank and next
+
   const currentRank = rankSystem.find(rank => optimisticCurrentStreak >= rank.minStreak) || rankSystem[0]!;
   const nextRank = rankSystem.find(rank => rank.minStreak > optimisticCurrentStreak);
   const daysToNextRank = nextRank ? nextRank.minStreak - optimisticCurrentStreak : 0;
@@ -201,7 +201,6 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
       value: optimisticCurrentStreak,
       suffix: "d",
       color: optimisticCurrentStreak >= 7 ? "text-green-400" : optimisticCurrentStreak >= 3 ? "text-white" : "text-white/70",
-      // Add visual indication if streak will continue
       showPulse: willContinueStreak && optimisticCurrentStreak > 0,
     },
     {
@@ -223,17 +222,17 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
   return (
     <>
       <div className="bg-white/5 rounded-2xl border border-white/10 backdrop-blur-sm relative overflow-hidden">
-        {/* Gradient accent */}
+
         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
         
         <div className="p-6">
-          {/* Header */}
+
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-bold font-argesta tracking-tight">
               STATISTICS
             </h3>
             
-            {/* Rank Badge - Clickable */}
+
             <button
               onClick={() => setIsRankModalOpen(true)}
               className={`flex items-center space-x-2 ${currentRank.bgColor} border ${currentRank.borderColor} rounded-lg px-3 py-1 hover:scale-105 transition-all duration-200 group`}
@@ -246,7 +245,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
             </button>
           </div>
 
-          {/* Stats Grid */}
+
           <div className="grid grid-cols-2 lg:grid-cols-2 gap-4">
             {stats.map((stat) => {
               const Icon = stat.icon;

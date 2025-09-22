@@ -52,7 +52,6 @@ export function DraggableJournalList({
     })
   );
 
-  // Update items when journals prop changes (only if it's a real change from server)
   useEffect(() => {
     setItems(journals);
   }, [journals]);
@@ -76,8 +75,7 @@ export function DraggableJournalList({
       
       const newItems = arrayMove(items, oldIndex, newIndex);
       setItems(newItems);
-      
-      // Call the reorder callback with the new order (optimistic update)
+            
       onReorder(newItems.map(item => item.id));
     }
   }

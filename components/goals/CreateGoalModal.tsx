@@ -20,7 +20,6 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
     reminderFrequency: "weekly" as "daily" | "weekly" | "monthly",
   });
 
-  // Vérifier toutes les restrictions en une seule requête optimisée
   const { data: goalLimits } = api.goals.getAllGoalLimits.useQuery(
     undefined,
     { 
@@ -31,7 +30,6 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
     }
   );
 
-  // Déterminer le type par défaut basé sur les restrictions
   React.useEffect(() => {
     if (goalLimits?.annual.canCreate) {
       setFormData(prev => ({ ...prev, type: "annual" }));

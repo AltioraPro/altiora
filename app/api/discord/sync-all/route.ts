@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
 import { DiscordService } from '@/server/services/discord';
 
+
+// Route pour synchroniser tous les utilisateurs discord
 export async function POST() {
   try {
     console.log('🔄 [API] Synchronisation globale demandée');
     
-    // Appeler le service Discord pour synchroniser tous les utilisateurs
     const result = await DiscordService.syncAllConnectedUsers();
     
     console.log('✅ [API] Synchronisation globale terminée', result);

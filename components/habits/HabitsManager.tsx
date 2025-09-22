@@ -11,7 +11,6 @@ export function HabitsManager() {
   const { openEditModal } = useHabits();
   const { addToast } = useToast();
   
-  // Mutations
   const utils = api.useUtils();
   const deleteHabitMutation = api.habits.delete.useMutation({
     onSuccess: () => {
@@ -65,10 +64,9 @@ export function HabitsManager() {
   const [searchInput, setSearchInput] = useState("");
   const [showInactive, setShowInactive] = useState(false);
 
-  // Debounce the search to avoid frequent requests
+
   const debouncedSearch = useDebounce(searchInput, 300);
 
-  // Use pagination instead of static habits
   const { data: paginatedData, isLoading } = api.habits.getPaginated.useQuery({
     page,
     limit,
@@ -83,7 +81,7 @@ export function HabitsManager() {
 
   const handleSearch = useCallback((value: string) => {
     setSearchInput(value);
-    setPage(0); // Reset to first page when searching
+    setPage(0); 
   }, []);
 
   const handlePageChange = (newPage: number) => {
@@ -92,7 +90,7 @@ export function HabitsManager() {
 
   const handleToggleInactive = () => {
     setShowInactive(!showInactive);
-    setPage(0); // Reset to first page when toggling filter
+    setPage(0); 
   };
 
   if (isLoading) {

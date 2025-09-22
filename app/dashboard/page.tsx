@@ -12,18 +12,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 import { GlobalTradingStats } from "@/components/trading/GlobalTradingStats";
 import { GlobalTradingCharts } from "@/components/trading/GlobalTradingCharts";
-// Removed trade creation/import modals from global dashboard
 
 export default function GlobalDashboardPage() {
   useSession();
   const [selectedJournalIds, setSelectedJournalIds] = useState<string[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  // Removed create/import modal state for global dashboard
 
   const { data: journals, isLoading: journalsLoading } = api.trading.getJournals.useQuery();
 
-  // Use selectedJournalIds for queries, or all journals if none selected
   const effectiveJournalIds = selectedJournalIds.length > 0 ? selectedJournalIds : undefined;
 
   const { data: stats } = api.trading.getStats.useQuery({ 
@@ -31,15 +28,12 @@ export default function GlobalDashboardPage() {
   });
   const { data: allTrades } = api.trading.getTrades.useQuery({ 
     journalIds: effectiveJournalIds
-    // Pas de limite = récupérer tous les trades
   });
 
   const { data: sessions } = api.trading.getSessions.useQuery({ 
     journalIds: effectiveJournalIds 
   });
-  // For global dashboard, we don't display setups/assets in the table; keep minimal queries
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {

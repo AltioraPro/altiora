@@ -18,21 +18,20 @@ interface HabitsProgressChartProps {
 export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsProgressChartProps) {
   const { getOptimisticRecentActivity } = useHabits();
   
-  // Utiliser les données optimistes
+
   const optimisticData = getOptimisticRecentActivity(data, habits);
 
   const chartData = useMemo(() => {
     if (!optimisticData || optimisticData.length === 0) return [];
     
-    // Trier et filtrer les données selon le viewMode
     let filteredData = [...optimisticData];
     
     if (viewMode === 'week') {
-      // For the week, start with Monday
+
       const today = new Date();
       const monday = new Date(today);
       const dayOfWeek = today.getDay();
-      const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // 0 = Sunday
+      const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; 
       monday.setDate(today.getDate() - daysToMonday);
       
       const mondayStr = monday.toISOString().split('T')[0]!;
@@ -42,7 +41,7 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
         item.date >= mondayStr && item.date <= sundayStr
       );
       
-      // Create entries for all days of the week if missing
+
       const weekData = [];
       for (let i = 0; i < 7; i++) {
         const date = new Date(monday.getTime() + i * 24 * 60 * 60 * 1000);
@@ -63,10 +62,10 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
     }
     
     if (viewMode === 'month') {
-      // For the month, show last 30 days from today
+
       const today = new Date();
       const thirtyDaysAgo = new Date(today);
-      thirtyDaysAgo.setDate(today.getDate() - 29); // 29 to include today (30 days total)
+      thirtyDaysAgo.setDate(today.getDate() - 29); 
       
       const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split('T')[0]!;
       const todayStr = today.toISOString().split('T')[0]!;
@@ -75,7 +74,7 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
         item.date >= thirtyDaysAgoStr && item.date <= todayStr
       );
       
-      // Create entries for all 30 days if missing
+
       const monthData = [];
       for (let i = 0; i < 30; i++) {
         const date = new Date(thirtyDaysAgo.getTime() + i * 24 * 60 * 60 * 1000);
@@ -95,7 +94,7 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
       return monthData;
     }
     
-    // For today, return only today
+
     if (viewMode === 'today') {
       const today = new Date().toISOString().split('T')[0]!;
       const todayData = optimisticData.find(item => item.date === today);
@@ -110,7 +109,7 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
       }];
     }
     
-    // By default, return sorted data by date
+
     return filteredData
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
       .map((item, index) => ({
@@ -145,11 +144,11 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
 
   return (
     <div className="bg-white/5 rounded-2xl border border-white/10 backdrop-blur-sm relative overflow-hidden">
-      {/* Gradient accent */}
+
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
       
       <div className="p-6">
-        {/* Header */}
+
         <div className="flex items-center justify-between mb-6">
           <div>
             <h3 className="text-xl font-bold font-argesta tracking-tight">
@@ -160,7 +159,7 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
             </p>
           </div>
           
-          {/* Quick Stats */}
+
           <div className="flex items-center space-x-6 text-sm">
             <div className="text-center">
               <div className="text-lg font-bold font-argesta">
@@ -189,16 +188,15 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
           </div>
         </div>
 
-        {/* Chart */}
         <div className="relative">
-          {/* Grid Lines */}
+
           <div className="absolute inset-0 flex flex-col justify-between opacity-20">
             {[100, 75, 50, 25, 0].map((value) => (
               <div key={value} className="border-t border-white/20" />
             ))}
           </div>
 
-          {/* Chart Bars */}
+
           <div className={`relative flex items-end justify-between h-[230px] ${
             viewMode === 'month' ? 'space-x-1' : 'space-x-2'
           }`}>
@@ -208,7 +206,7 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
               
               return (
                 <div key={item.date} className="flex-1 flex flex-col items-center min-w-0">
-                  {/* Bar */}
+
                   <div className="relative w-full flex justify-center">
                     <div
                       className={`${
@@ -222,7 +220,7 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
                     />
                   </div>
                   
-                  {/* Day Label */}
+
                   <div className={`text-center ${
                     viewMode === 'month' ? 'mt-1' : 'mt-2'
                   }`}>
@@ -242,7 +240,7 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
                     )}
                   </div>
                   
-                  {/* Percentage */}
+
                   <div className={`text-center ${
                     viewMode === 'month' ? 'mt-0.5' : 'mt-1'
                   }`}>
@@ -260,7 +258,7 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
           </div>
         </div>
 
-        {/* Additional Stats */}
+
         <div className="mt-6 pt-6 border-t border-white/10 grid grid-cols-2 gap-4 text-sm">
           <div className="text-center">
             <div className="text-white/60 font-argesta">BEST DAY</div>
@@ -281,7 +279,7 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
   );
 }
 
-// Loading skeleton
+
 function HabitsProgressChartSkeleton() {
   return (
     <div className="bg-white/5 rounded-2xl border border-white/10 p-6 animate-pulse">

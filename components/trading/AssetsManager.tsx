@@ -26,11 +26,9 @@ export function AssetsManager({ journalId }: AssetsManagerProps) {
     type: "forex" as "forex" | "crypto" | "stocks" | "commodities"
   });
 
-  // Queries
   const { data: assets, isLoading } = api.trading.getAssets.useQuery({ journalId });
   const utils = api.useUtils();
 
-  // Mutations
   const createAssetMutation = api.trading.createAsset.useMutation({
     onSuccess: () => {
       utils.trading.getAssets.invalidate();

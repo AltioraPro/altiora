@@ -16,10 +16,8 @@ export default function JournalsPage() {
   type EditingJournal = Pick<TradingJournal, "id" | "name" | "description"> | null;
   const [editingJournal, setEditingJournal] = useState<EditingJournal>(null);
 
-  // Queries
   const { data: journals, isLoading: journalsLoading, refetch: refetchJournals } = api.trading.getJournals.useQuery();
 
-  // Mutations
   const deleteJournalMutation = api.trading.deleteJournal.useMutation({
     onSuccess: () => {
       refetchJournals();
@@ -28,8 +26,7 @@ export default function JournalsPage() {
 
 
   const reorderJournalsMutation = api.trading.reorderJournals.useMutation({
-    // Pas de refetch automatique pour éviter que les journaux reviennent à leur place
-    // L'ordre est déjà mis à jour de manière optimiste dans le composant DraggableJournalList
+
   });
 
   const handleDeleteJournal = async (journalId: string) => {

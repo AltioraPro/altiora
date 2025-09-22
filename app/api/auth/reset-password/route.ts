@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 
+
+// Route pour envoyer un email de réinitialisation du mot de passe
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -13,7 +15,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Utiliser Better Auth pour envoyer l'email de réinitialisation
     const response = await auth.api.forgetPassword({
       body: {
         email,

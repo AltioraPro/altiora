@@ -34,19 +34,15 @@ export function EditTradeModal({ isOpen, onClose, tradeId, onSuccess }: EditTrad
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // Fetch trade data
   const { data: trade, isLoading: tradeLoading } = api.trading.getTradeById.useQuery(
     { id: tradeId },
     { enabled: isOpen && !!tradeId }
   );
 
-  // Fetch related data
-  // const { data: journals } = api.trading.getJournals.useQuery();
   const { data: sessions } = api.trading.getSessions.useQuery({ journalId: trade?.journalId });
   const { data: setups } = api.trading.getSetups.useQuery({ journalId: trade?.journalId });
   const { data: assets } = api.trading.getAssets.useQuery({ journalId: trade?.journalId });
 
-  // Update form data when trade is loaded
   useEffect(() => {
     if (trade) {
       setFormData({
@@ -143,7 +139,6 @@ export function EditTradeModal({ isOpen, onClose, tradeId, onSuccess }: EditTrad
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Date */}
               <div>
                 <Label htmlFor="tradeDate" className="text-white">Date *</Label>
                 <Input
@@ -156,7 +151,6 @@ export function EditTradeModal({ isOpen, onClose, tradeId, onSuccess }: EditTrad
                 />
               </div>
 
-              {/* Asset */}
               <div>
                 <Label htmlFor="assetId" className="text-white">Asset</Label>
                 <Select
@@ -176,7 +170,6 @@ export function EditTradeModal({ isOpen, onClose, tradeId, onSuccess }: EditTrad
                 </Select>
               </div>
 
-              {/* Session */}
               <div>
                 <Label htmlFor="sessionId" className="text-white">Session</Label>
                 <Select
@@ -196,7 +189,6 @@ export function EditTradeModal({ isOpen, onClose, tradeId, onSuccess }: EditTrad
                 </Select>
               </div>
 
-              {/* Setup */}
               <div>
                 <Label htmlFor="setupId" className="text-white">Setup</Label>
                 <Select
@@ -264,7 +256,6 @@ export function EditTradeModal({ isOpen, onClose, tradeId, onSuccess }: EditTrad
                 </Select>
               </div>
 
-              {/* TradingView Link */}
               <div>
                 <Label htmlFor="tradingViewLink" className="text-white">TradingView link (optional)</Label>
                 <Input
@@ -277,7 +268,6 @@ export function EditTradeModal({ isOpen, onClose, tradeId, onSuccess }: EditTrad
                 />
               </div>
 
-              {/* Notes */}
               <div>
                 <Label htmlFor="notes" className="text-white">Notes (optional)</Label>
                 <Textarea
@@ -290,7 +280,6 @@ export function EditTradeModal({ isOpen, onClose, tradeId, onSuccess }: EditTrad
                 />
               </div>
 
-              {/* Actions */}
               <div className="flex justify-end space-x-3 pt-4 border-t border-white/10">
                 <Button
                   type="button"

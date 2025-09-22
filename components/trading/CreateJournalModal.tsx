@@ -30,7 +30,6 @@ export function CreateJournalModal({ isOpen, onClose, onSuccess }: CreateJournal
 
   const createJournalMutation = api.trading.createJournal.useMutation({
     onSuccess: () => {
-      // Reset form
       setName("");
       setDescription("");
       setStartingCapital("");

@@ -24,7 +24,6 @@ interface GlobalTradingChartsProps {
 }
 
 export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
-      // Monthly performance (sum of PnL per month)
   const monthlyPerformanceData = (() => {
     if (!trades) return [];
       const monthStats = new Map<string, { key: string; label: string; totalPnL: number }>();
@@ -43,14 +42,14 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
       .map((item) => ({ name: item.label, pnl: item.totalPnL }));
   })();
 
-  // Cumulative performance
+    
   const cumulativeData = trades
     ?.sort((a, b) => new Date(a.tradeDate).getTime() - new Date(b.tradeDate).getTime())
     .reduce((acc, trade, index) => {
       const pnl = trade.profitLossPercentage ? parseFloat(trade.profitLossPercentage) || 0 : 0;
       const previousCumulative = acc.length > 0 ? acc[acc.length - 1].cumulative : 0;
       
-      // Calcul simple : addition des pourcentages PnL
+        
       const cumulative = previousCumulative + pnl;
       
       acc.push({

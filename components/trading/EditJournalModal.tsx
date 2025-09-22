@@ -27,7 +27,6 @@ export function EditJournalModal({ isOpen, onClose, journal, onSuccess }: EditJo
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
-  // Initialize form with journal data
   useEffect(() => {
     if (journal) {
       setName(journal.name || "");

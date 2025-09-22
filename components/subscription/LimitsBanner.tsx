@@ -13,7 +13,6 @@ export function LimitsBanner() {
 
   const { limits, usage } = limitsSummary;
 
-  // Check if any limits are reached
   const isHabitsLimitReached = usage.currentHabits >= limits.maxHabits && limits.maxHabits !== 999;
   const isTradingLimitReached = usage.monthlyTradingEntries >= limits.maxTradingEntries && limits.maxTradingEntries !== 999;
   const isGoalsLimitReached = (usage.currentAnnualGoals + usage.currentQuarterlyGoals) >= (limits.maxAnnualGoals + limits.maxQuarterlyGoals) && (limits.maxAnnualGoals + limits.maxQuarterlyGoals) !== 999;

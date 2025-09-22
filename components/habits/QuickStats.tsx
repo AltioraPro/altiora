@@ -10,16 +10,15 @@ export function QuickStats() {
     viewMode: "today"
   });
 
-  // Calculate optimistic statistics
   const optimisticTodayStats = getOptimisticTodayStats(dashboardData?.todayStats);
   const optimisticStats = getOptimisticStats(dashboardData?.stats, dashboardData?.todayStats.habits);
 
-  // Extract values for display
+
   const todayCompleted = optimisticTodayStats?.completedHabits ?? 0;
   const todayTotal = optimisticTodayStats?.totalHabits ?? 0;
   const currentStreak = optimisticStats?.currentStreak ?? 0;
 
-  // Display default values while loading
+
   if (isLoading) {
     return (
       <div className="hidden md:flex items-center space-x-6">

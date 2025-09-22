@@ -24,7 +24,6 @@ interface HabitItemProps {
   onToggle: () => void; 
 }
 
-// OPTIMIZATION: Memoized component for each habit with proper prop types
 const HabitItem = memo<HabitItemProps>(({ 
   habit, 
   isOptimistic, 
@@ -111,24 +110,24 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
 
   const utils = api.useUtils();
 
-  // Optimistic data calculation
+
   const optimisticData = useMemo(() => {
     return getOptimisticTodayStats(data);
   }, [data, getOptimisticTodayStats]);
 
   const toggleCompletion = api.habits.toggleCompletion.useMutation({
     onMutate: async ({ habitId, isCompleted }) => {
-      // Set optimistic update
+
       setOptimisticUpdate(habitId, isCompleted);
       
-      // Cancel any outgoing refetches
+
       await utils.habits.getDashboard.cancel();
       
-      // Snapshot the previous value
+
       const previousData = utils.habits.getDashboard.getData();
       
       if (previousData) {
-        // Optimistically update the dashboard data
+
         const optimisticTodayStats = getOptimisticTodayStats(previousData.todayStats);
         const optimisticStats = getOptimisticStats(previousData.stats, optimisticTodayStats?.habits);
         const optimisticRecentActivity = getOptimisticRecentActivity(previousData.recentActivity, optimisticTodayStats?.habits);
@@ -144,13 +143,13 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
       return { previousData };
     },
     onSuccess: () => {
-      // Optimistic updates are cleared automatically by the context
+
     },
     onError: (error, variables, context) => {
-      // Revert optimistic update
+
       clearOptimisticUpdate(variables.habitId);
       
-      // Revert the optimistic data
+
       if (context?.previousData) {
         utils.habits.getDashboard.setData(undefined, context.previousData);
       }
@@ -166,17 +165,15 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
     },
   });
 
-  // OPTIMIZATION: Memoization of toggle handler with debouncing to avoid rapid clicks
   const handleToggleHabit = useCallback(async (habitId: string, currentStatus: boolean) => {
     if (habitId.startsWith('temp-')) {
       return;
     }
     
-    // Avoid multiple clicks on the same habit in a short time
     const now = Date.now();
     const lastClick = lastClickTimes.current.get(habitId) || 0;
     
-    if (now - lastClick < 300) { // 300ms protection
+    if (now - lastClick < 300) {
       return;
     }
     
@@ -191,7 +188,6 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
     });
   }, [toggleCompletion]);
 
-  // Memoize the habits list to prevent unnecessary re-renders
   const habitsList = useMemo(() => {
     if (!optimisticData?.habits) return [];
     
@@ -209,11 +205,9 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
 
   return (
     <div className="bg-white/5 rounded-2xl border border-white/10 backdrop-blur-sm relative overflow-hidden">
-      {/* Gradient accent */}
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
       
       <div className="p-6">
-        {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
             <h3 className="text-xl font-bold font-argesta tracking-tight">
@@ -247,7 +241,6 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
             </div>
             
             <div className="relative w-16 h-16">
-              {/* Progress Ring */}
               <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 64 64">
                 <circle
                   cx="32"
@@ -272,7 +265,6 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
                 />
               </svg>
               
-              {/* Center Icon */}
               <div className="absolute inset-0 flex items-center justify-center">
                 {completionPercentage === 100 ? (
                   <Check className="w-6 h-6 text-green-400" />
@@ -286,7 +278,6 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
           </div>
         </div>
 
-        {/* Habits List */}
         <div className="space-y-4">
           {habitsList.length === 0 ? (
             <div className="text-center py-8 text-white/50">
@@ -306,7 +297,6 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
           )}
         </div>
 
-        {/* Quick Actions */}
         {habitsList.length > 0 && (
           <div className="mt-6 pt-6 border-t border-white/10 flex justify-between items-center text-sm text-white/60">
             <span className="font-argesta">
@@ -331,7 +321,6 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
   );
 }
 
-// Loading skeleton
 function TodayHabitsCardSkeleton() {
   return (
     <div className="bg-white/5 rounded-2xl border border-white/10 p-6 animate-pulse">

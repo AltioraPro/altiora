@@ -22,7 +22,6 @@ export function GoalStats({ stats }: GoalStatsProps) {
     completionRate: 0,
   });
 
-  // Animation des chiffres
   useEffect(() => {
     const duration = 1500;
     const steps = 60;
@@ -140,7 +139,6 @@ export function GoalStats({ stats }: GoalStatsProps) {
             </div>
           </div>
 
-          {/* Overdue Goals */}
           <div className="group relative">
             <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
             <div className="relative bg-white/[0.05] border border-white/10 rounded-lg p-4 hover:border-white/20 transition-all duration-300 hover:scale-105">

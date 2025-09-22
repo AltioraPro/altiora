@@ -140,8 +140,11 @@ export const filterTradesSchema = z.object({
   journalId: z.string().optional(),
   journalIds: z.array(z.string()).optional(),
   assetId: z.string().optional(),
+  assetIds: z.array(z.string()).optional(),
   sessionId: z.string().optional(),
+  sessionIds: z.array(z.string()).optional(),
   setupId: z.string().optional(),
+  setupIds: z.array(z.string()).optional(),
   symbol: z.string().optional(),
   startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)").optional(),
   endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)").optional(),
@@ -154,6 +157,9 @@ export const filterTradesSchema = z.object({
 export const tradingStatsSchema = z.object({
   journalId: z.string().optional(),
   journalIds: z.array(z.string()).optional(),
+  assetIds: z.array(z.string()).optional(),
+  sessionIds: z.array(z.string()).optional(),
+  setupIds: z.array(z.string()).optional(),
   startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)").optional(),
   endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)").optional(),
 });

@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/server/db';
 
+
+// Route pour vérifier la santé de l'application
 export async function GET() {
   try {
-    // Vérifier la connexion à la base de données
     await db.execute('SELECT 1');
     
     const status = {

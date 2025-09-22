@@ -33,7 +33,6 @@ export function EditHabitModal() {
   
   const utils = api.useUtils();
 
-  // Get all habits for editing (without pagination)
   const { data: habits } = api.habits.getAll.useQuery(undefined, {
     enabled: isEditModalOpen && !!editingHabit,
   });
@@ -209,7 +208,6 @@ export function EditHabitModal() {
     resetForm();
   }, [closeEditModal, resetForm]);
 
-  // Gestion de la touche Escape
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isEditModalOpen) {
