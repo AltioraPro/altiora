@@ -37,8 +37,8 @@ export function CreateHabitModal() {
       utils.subscription.getLimitsSummary.invalidate();
       addToast({
         type: "success",
-        title: "Habitude créée",
-        message: "Votre nouvelle habitude a été créée avec succès",
+        title: "Habits created",
+        message: "Your new habit has been created successfully",
       });
       handleClose();
     },
@@ -46,8 +46,8 @@ export function CreateHabitModal() {
       console.error("Error creating habit:", error);
       addToast({
         type: "error",
-        title: "Erreur",
-        message: error.message || "Impossible de créer l'habitude",
+        title: "Error",
+        message: error.message || "Impossible to create the habit",
       });
     },
   });
