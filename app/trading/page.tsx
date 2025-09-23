@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense, useCallback } from "react";
+import { useState, useEffect, Suspense, useCallback, useMemo } from "react";
 import { useSession } from "@/lib/auth-client";
 import { api } from "@/trpc/client";
 import { useSearchParams } from "next/navigation";
@@ -47,6 +47,40 @@ export default function TradingPage() {
     assets: string[];
   }>({ sessions: [], setups: [], assets: [] });
 
+  const dateRange = useMemo(() => {
+    if (dateFilter.view === 'all') return { startDate: undefined, endDate: undefined };
+    
+    if (dateFilter.view === 'monthly' && dateFilter.month && dateFilter.year) {
+      const monthNames = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ];
+      const monthIndex = monthNames.indexOf(dateFilter.month);
+      const year = parseInt(dateFilter.year);
+      
+      const startDate = new Date(year, monthIndex, 1);
+      const endDate = new Date(year, monthIndex + 1, 0);
+      
+      return {
+        startDate: startDate.toISOString().split('T')[0],
+        endDate: endDate.toISOString().split('T')[0]
+      };
+    }
+    
+    if (dateFilter.view === 'yearly' && dateFilter.year) {
+      const year = parseInt(dateFilter.year);
+      const startDate = new Date(year, 0, 1);
+      const endDate = new Date(year, 11, 31);
+      
+      return {
+        startDate: startDate.toISOString().split('T')[0],
+        endDate: endDate.toISOString().split('T')[0]
+      };
+    }
+    
+    return { startDate: undefined, endDate: undefined };
+  }, [dateFilter]);
+
   const filterTradesByDate = (trades: AdvancedTrade[] | undefined) => {
     if (!trades || dateFilter.view === 'all') return trades;
     
@@ -57,8 +91,8 @@ export default function TradingPage() {
         case 'monthly':
           if (!dateFilter.month || !dateFilter.year) return true;
           const monthNames = [
-            'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-            'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
           ];
           const monthIndex = monthNames.indexOf(dateFilter.month);
           return tradeDate.getFullYear() === parseInt(dateFilter.year) && 
@@ -84,18 +118,22 @@ export default function TradingPage() {
       sessionIds: advancedFilters.sessions.length > 0 ? advancedFilters.sessions : undefined,
       setupIds: advancedFilters.setups.length > 0 ? advancedFilters.setups : undefined,
       assetIds: advancedFilters.assets.length > 0 ? advancedFilters.assets : undefined,
+      startDate: dateRange.startDate,
+      endDate: dateRange.endDate,
     },
     { enabled: !!selectedJournalId }
   );
   
   const filteredTrades = allTrades ? filterTradesByDate(allTrades) : undefined;
-  
+
   const { data: backendStats } = api.trading.getStats.useQuery(
     {
       journalId: selectedJournalId || undefined,
       sessionIds: advancedFilters.sessions.length > 0 ? advancedFilters.sessions : undefined,
       setupIds: advancedFilters.setups.length > 0 ? advancedFilters.setups : undefined,
       assetIds: advancedFilters.assets.length > 0 ? advancedFilters.assets : undefined,
+      startDate: dateRange.startDate,
+      endDate: dateRange.endDate,
     },
     { enabled: !!selectedJournalId }
   );

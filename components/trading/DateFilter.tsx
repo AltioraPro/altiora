@@ -33,7 +33,8 @@ export function DateFilter({ onFilterChange, className = "" }: DateFilterProps) 
     let newFilter = { ...filter, view };
     
     if (view === 'monthly' && !newFilter.month) {
-      newFilter = { ...newFilter, month: new Date().toLocaleDateString('fr-FR', { month: 'long' }) };
+      const currentMonthIndex = new Date().getMonth();
+      newFilter = { ...newFilter, month: months[currentMonthIndex] };
     }
     if ((view === 'monthly' || view === 'yearly') && !newFilter.year) {
       newFilter = { ...newFilter, year: new Date().getFullYear().toString() };
