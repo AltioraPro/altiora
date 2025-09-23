@@ -11,7 +11,7 @@ import { TradingStats } from "@/components/trading/TradingStats";
 import { TradingCharts } from "@/components/trading/TradingCharts";
 import { TradesTable } from "@/components/trading/TradesTable";
 import { AssetsManager } from "@/components/trading/AssetsManager";
-import type { Trade } from "@/server/db/schema";
+import type { AdvancedTrade } from "@/server/db/schema";
 import { SessionsManager } from "@/components/trading/SessionsManager";
 import { SetupsManager } from "@/components/trading/SetupsManager";
 import { DateFilter, type DateFilterState } from "@/components/trading/DateFilter";
@@ -47,7 +47,7 @@ export default function TradingPage() {
     assets: string[];
   }>({ sessions: [], setups: [], assets: [] });
 
-  const filterTradesByDate = (trades: Trade[] | undefined) => {
+  const filterTradesByDate = (trades: AdvancedTrade[] | undefined) => {
     if (!trades || dateFilter.view === 'all') return trades;
     
     return trades.filter(trade => {
