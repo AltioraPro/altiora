@@ -27,11 +27,9 @@ export function SetupsManager({ journalId }: SetupsManagerProps) {
     successRate: ""
   });
 
-  // Queries
   const { data: setups, isLoading } = api.trading.getSetups.useQuery({ journalId });
   const utils = api.useUtils();
 
-  // Mutations
   const createSetupMutation = api.trading.createSetup.useMutation({
     onSuccess: () => {
       utils.trading.getSetups.invalidate();

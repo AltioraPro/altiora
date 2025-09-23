@@ -1,14 +1,8 @@
 import { pgTable, varchar, text, boolean, timestamp, integer, index, pgTableCreator } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
-/**
- * Table creator avec préfixe pour les tables métier
- */
 export const createTable = pgTableCreator((name) => `altiora_${name}`);
 
-/**
- * Table des utilisateurs (Better Auth)
- */
 export const users = pgTable(
   "user",
   {
@@ -17,12 +11,8 @@ export const users = pgTable(
     name: varchar("name", { length: 255 }).notNull(),
     image: varchar("image", { length: 1024 }),
     emailVerified: boolean("email_verified").default(false).notNull(),
-    
-    // Rank and subscription fields
     rank: varchar("rank", { length: 50 }).default("NEW").notNull(),
     subscriptionPlan: varchar("subscription_plan", { length: 20 }).default("FREE").notNull(),
-    
-    // Discord integration fields
     discordId: varchar("discord_id", { length: 255 }),
     discordUsername: varchar("discord_username", { length: 255 }),
     discordDiscriminator: varchar("discord_discriminator", { length: 10 }),
@@ -30,14 +20,10 @@ export const users = pgTable(
     discordConnected: boolean("discord_connected").default(false).notNull(),
     discordRoleSynced: boolean("discord_role_synced").default(false).notNull(),
     lastDiscordSync: timestamp("last_discord_sync", { withTimezone: true }),
-    
-    // Stripe fields
     stripeCustomerId: varchar("stripe_customer_id", { length: 255 }),
     stripeSubscriptionId: varchar("stripe_subscription_id", { length: 255 }),
     stripeSubscriptionStatus: varchar("stripe_subscription_status", { length: 50 }),
     stripeSubscriptionEndDate: timestamp("stripe_subscription_end_date", { withTimezone: true }),
-    
-    // Timestamps
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -65,8 +51,6 @@ export const sessions = pgTable(
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
     ipAddress: varchar("ip_address", { length: 45 }),
     userAgent: varchar("user_agent", { length: 1024 }),
-    
-    // Timestamps
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -80,9 +64,6 @@ export const sessions = pgTable(
   })
 );
 
-/**
- * Table des comptes (Better Auth)
- */
 export const accounts = pgTable(
   "account",
   {
@@ -99,8 +80,6 @@ export const accounts = pgTable(
     scope: varchar("scope", { length: 1024 }),
     idToken: varchar("id_token", { length: 1024 }),
     password: varchar("password", { length: 255 }),
-    
-    // Timestamps
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -124,8 +103,6 @@ export const verifications = pgTable(
     identifier: varchar("identifier", { length: 255 }).notNull(),
     value: varchar("value", { length: 255 }).notNull(),
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
-    
-    // Timestamps
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -156,8 +133,6 @@ export const habits = createTable(
     targetFrequency: varchar("target_frequency", { length: 20 }).default("daily"), // daily, weekly, monthly
     isActive: boolean("is_active").default(true).notNull(),
     sortOrder: integer("sort_order").default(0), // For display order
-    
-    // Timestamps
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -171,9 +146,6 @@ export const habits = createTable(
   })
 );
 
-/**
- * Daily habit completions table
- */
 export const habitCompletions = createTable(
   "habit_completion",
   {
@@ -188,8 +160,6 @@ export const habitCompletions = createTable(
     completionDate: varchar("completion_date", { length: 10 }).notNull(), // Format YYYY-MM-DD
     isCompleted: boolean("is_completed").default(false).notNull(),
     notes: text("notes"), // Optional notes about the completion
-    
-    // Timestamps
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -207,9 +177,6 @@ export const habitCompletions = createTable(
   })
 );
 
-/**
- * Table des trades
- */
 export const trades = createTable(
   "trade",
   {
@@ -241,9 +208,6 @@ export const trades = createTable(
   })
 );
 
-/**
- * Table des journaux de trading
- */
 export const tradingJournals = createTable(
   "trading_journal",
   {
@@ -256,12 +220,8 @@ export const tradingJournals = createTable(
     description: text("description"),
     isActive: boolean("is_active").default(true).notNull(),
     order: integer("order").default(0).notNull(),
-    
-    // Gestion du capital pour calculs en pourcentage
     startingCapital: varchar("starting_capital", { length: 50 }), // Montant initial pour calculs en %
     usePercentageCalculation: boolean("use_percentage_calculation").default(false).notNull(),
-    
-    // Timestamps
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -293,8 +253,6 @@ export const tradingAssets = createTable(
     symbol: varchar("symbol", { length: 20 }).notNull(),
     type: varchar("type", { length: 20 }).default("forex"), // forex, crypto, stocks, commodities
     isActive: boolean("is_active").default(true).notNull(),
-    
-    // Timestamps
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -329,8 +287,6 @@ export const tradingSessions = createTable(
     endTime: varchar("end_time", { length: 5 }), // Format HH:MM
     timezone: varchar("timezone", { length: 50 }).default("UTC"),
     isActive: boolean("is_active").default(true).notNull(),
-    
-    // Timestamps
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -363,8 +319,6 @@ export const tradingSetups = createTable(
     strategy: text("strategy"), // Description détaillée de la stratégie
     successRate: integer("success_rate"), // Pourcentage de réussite
     isActive: boolean("is_active").default(true).notNull(),
-    
-    // Timestamps
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -391,38 +345,22 @@ export const advancedTrades = createTable(
     journalId: varchar("journal_id", { length: 255 })
       .references(() => tradingJournals.id, { onDelete: "cascade" })
       .notNull(),
-    
-    // Références optionnelles
     assetId: varchar("asset_id", { length: 255 })
       .references(() => tradingAssets.id, { onDelete: "set null" }),
     sessionId: varchar("session_id", { length: 255 })
       .references(() => tradingSessions.id, { onDelete: "set null" }),
     setupId: varchar("setup_id", { length: 255 })
       .references(() => tradingSetups.id, { onDelete: "set null" }),
-    
-    // Informations de base du trade
     tradeDate: varchar("trade_date", { length: 10 }).notNull(), // Format YYYY-MM-DD
     symbol: varchar("symbol", { length: 50 }).notNull(), // Fallback si pas d'asset
-    
-    // Gestion du risque
     riskInput: varchar("risk_input", { length: 50 }), // 1%, 2R, etc.
-    
-    // Résultats - calcul automatique basé sur le capital de départ
     profitLossAmount: varchar("profit_loss_amount", { length: 50 }), // Montant brut du P&L
     profitLossPercentage: varchar("profit_loss_percentage", { length: 50 }), // % calculé automatiquement
     exitReason: varchar("exit_reason", { length: 20 }), // TP, BE, SL, Manual
-    
-    // Détection automatique des BE avec seuil personnalisable
     breakEvenThreshold: varchar("break_even_threshold", { length: 10 }).default("0.1"), // Seuil en % pour BE (0.1% par défaut)
-    
-    // Liens et notes
     tradingviewLink: varchar("tradingview_link", { length: 1024 }),
     notes: text("notes"),
-    
-    // Métadonnées
     isClosed: boolean("is_closed").default(false).notNull(),
-    
-    // Timestamps
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -456,22 +394,16 @@ export const subscriptionPlans = pgTable(
     billingInterval: varchar("billing_interval", { length: 20 }).default("monthly").notNull(), // monthly, yearly
     stripePriceId: varchar("stripe_price_id", { length: 255 }),
     isActive: boolean("is_active").default(true).notNull(),
-    
-    // Limitations par plan
     maxHabits: integer("max_habits").default(3).notNull(),
     maxTradingEntries: integer("max_trading_entries").default(10).notNull(), // par mois
     maxAnnualGoals: integer("max_annual_goals").default(1).notNull(),
     maxQuarterlyGoals: integer("max_quarterly_goals").default(1).notNull(),
     maxMonthlyGoals: integer("max_monthly_goals").default(0).notNull(),
-    
-    // Fonctionnalités incluses
     hasDiscordIntegration: boolean("has_discord_integration").default(false).notNull(),
     hasPrioritySupport: boolean("has_priority_support").default(false).notNull(),
     hasEarlyAccess: boolean("has_early_access").default(false).notNull(),
     hasMonthlyChallenges: boolean("has_monthly_challenges").default(false).notNull(),
     hasPremiumDiscord: boolean("has_premium_discord").default(false).notNull(),
-    
-    // Timestamps
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),

@@ -79,14 +79,6 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
         
         const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as ExcelRow[];
         
-        console.log('Structure du fichier Excel:');
-        console.log('Nombre de lignes:', rawData.length);
-        if (rawData.length > 0) {
-          console.log('Première ligne (en-têtes):', rawData[0]);
-          console.log('Deuxième ligne (exemple):', rawData[1]);
-        }
-        
-
         const processedTrades: ExcelTrade[] = [];
         
         for (let i = 1; i < rawData.length; i++) { 
@@ -111,7 +103,6 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
         setTradesToImport(processedTrades);
         setCreatedItems({ assets: [], sessions: [], setups: [] });
 
-        console.log('🔄 Resetting local cache for new import');
         localCacheRef.current = {
           assets: new Map(),
           sessions: new Map(),
@@ -138,31 +129,23 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
     const assetToUse = assetName || symbol;
     if (!assetToUse) return '';
     
-    console.log('🔍 Checking asset:', assetToUse, 'Cache size:', localCacheRef.current.assets.size);
-    
-
     const cachedAssetId = localCacheRef.current.assets.get(assetToUse.toLowerCase());
     if (cachedAssetId) {
-      console.log('Found in cache:', assetToUse, '->', cachedAssetId);
       return cachedAssetId;
     }
     
-
     const existingAsset = existingAssets?.find(a => 
       a.name.toLowerCase() === assetToUse.toLowerCase() || 
       (a.symbol && a.symbol.toLowerCase() === assetToUse.toLowerCase())
     );
     
     if (existingAsset) {
-      console.log('Found existing asset:', assetToUse, '->', existingAsset.id);
-
       localCacheRef.current.assets.set(assetToUse.toLowerCase(), existingAsset.id);
       return existingAsset.id;
     }
 
 
     try {
-      console.log('🆕 Creating new asset:', assetToUse);
       const result = await createAssetMutation.mutateAsync({
         journalId: journalId || "",
         name: assetToUse,
@@ -170,13 +153,8 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
         type: "forex"
       });
       
-      console.log('✅ Created asset:', assetToUse, '->', result.id);
-      
-
       localCacheRef.current.assets.set(assetToUse.toLowerCase(), result.id);
-      console.log('📝 Updated cache, new size:', localCacheRef.current.assets.size);
       
-
       setCreatedItems(prev => ({
         ...prev,
         assets: prev.assets.includes(assetToUse) ? prev.assets : [...prev.assets, assetToUse]
@@ -195,40 +173,29 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
     const sessionToUse = sessionName.trim();
     if (!sessionToUse) return null;
     
-    console.log('🔍 Checking session:', sessionToUse, 'Cache size:', localCacheRef.current.sessions.size);
-    
-
     const cachedSessionId = localCacheRef.current.sessions.get(sessionToUse.toLowerCase());
     if (cachedSessionId) {
-      console.log('✅ Found in cache:', sessionToUse, '->', cachedSessionId);
       return cachedSessionId;
     }
     
-
     const existingSession = existingSessions?.find(s => 
       s.name.toLowerCase() === sessionToUse.toLowerCase()
     );
     
     if (existingSession) {
-      console.log('✅ Found existing session:', sessionToUse, '->', existingSession.id);
-
       localCacheRef.current.sessions.set(sessionToUse.toLowerCase(), existingSession.id);
       return existingSession.id;
     }
 
 
     try {
-      console.log('🆕 Creating new session:', sessionToUse);
       const result = await createSessionMutation.mutateAsync({
         journalId: journalId || "",
         name: sessionToUse,
         description: `Imported session: ${sessionToUse}`
       });
       
-      console.log('✅ Created session:', sessionToUse, '->', result.id);
-      
       localCacheRef.current.sessions.set(sessionToUse.toLowerCase(), result.id);
-      console.log('📝 Updated session cache, new size:', localCacheRef.current.sessions.size);
       
       setCreatedItems(prev => ({
         ...prev,
@@ -248,11 +215,8 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
     const setupToUse = setupName.trim();
     if (!setupToUse) return null;
     
-    console.log('🔍 Checking setup:', setupToUse, 'Cache size:', localCacheRef.current.setups.size);
-  
     const cachedSetupId = localCacheRef.current.setups.get(setupToUse.toLowerCase());
     if (cachedSetupId) {
-      console.log('✅ Found in cache:', setupToUse, '->', cachedSetupId);
       return cachedSetupId;
     }
     
@@ -261,15 +225,12 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
     );
     
     if (existingSetup) {
-      console.log('✅ Found existing setup:', setupToUse, '->', existingSetup.id);
-
       localCacheRef.current.setups.set(setupToUse.toLowerCase(), existingSetup.id);
       return existingSetup.id;
     }
 
 
     try {
-      console.log('🆕 Creating new setup:', setupToUse);
       const result = await createSetupMutation.mutateAsync({
         journalId: journalId || "",
         name: setupToUse,
@@ -277,13 +238,8 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
         strategy: "Imported"
       });
       
-      console.log('✅ Created setup:', setupToUse, '->', result.id);
-      
-
       localCacheRef.current.setups.set(setupToUse.toLowerCase(), result.id);
-      console.log('📝 Updated setup cache, new size:', localCacheRef.current.setups.size);
       
-
       setCreatedItems(prev => ({
         ...prev,
         setups: prev.setups.includes(setupToUse) ? prev.setups : [...prev.setups, setupToUse]
@@ -307,29 +263,22 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
 
     for (const trade of tradesToImport) {
       try {
-
-        let tradeDate = new Date().toISOString().split('T')[0]; // Default to today
+        let tradeDate = new Date().toISOString().split('T')[0];
         if (trade.Date) {
           const dateStr = String(trade.Date).trim();
           
-
           if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
             tradeDate = dateStr;
           } else {
-
             let parsedDate: Date;
             
-
             if (/^\d+\.?\d*$/.test(dateStr)) {
               const excelDate = parseFloat(dateStr);
-
               parsedDate = new Date((excelDate - 25569) * 86400 * 1000);
             } else {
-              // Try standard date parsing
               parsedDate = new Date(dateStr);
             }
             
-            // Validate the parsed date
             if (!isNaN(parsedDate.getTime()) && parsedDate.getFullYear() > 1900) {
               tradeDate = parsedDate.toISOString().split('T')[0];
             } else {
@@ -338,43 +287,20 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
           }
         }
         
-        // Handle asset/symbol
         const assetName = trade.Asset || trade.Symbol || '';
         const symbol = trade.Symbol || trade.Asset || '';
         const assetId = await findOrCreateAsset(assetName, symbol);
 
-        // Handle session
         const sessionId = trade.Session ? await findOrCreateSession(trade.Session) : null;
-
-        // Handle setup
         const setupId = trade.Setup ? await findOrCreateSetup(trade.Setup) : null;
-
-        // Parse numeric values - clean up percentages and commas
         const cleanRiskValue = trade.Risk ? String(trade.Risk).replace(/[%,]/g, '').trim() : '';
         const cleanProfitValue = trade.Result ? String(trade.Result).replace(/[%,]/g, '').trim() : '';
         
         const riskInput = cleanRiskValue || '';
-        // Permettre explicitement la valeur "0" comme profit valide
-        // Si pas de valeur de profit, utiliser "0" par défaut pour Break Even
         const profitLossPercentage = cleanProfitValue || '0';
         
-        // Debug logging
-        console.log('Trade data:', {
-          originalDate: trade.Date,
-          parsedTradeDate: tradeDate,
-          originalResult: trade.Result,
-          cleanProfitValue,
-          profitLossPercentage,
-          isCleanProfitEmpty: cleanProfitValue === '',
-          isCleanProfitZero: cleanProfitValue === '0'
-        });
-
-        // Map exit reason based on profit/loss
         let exitReason: 'TP' | 'BE' | 'SL' | undefined = undefined;
-        
-        // Déterminer l'exit reason basé sur le profit/loss
         if (!profitLossPercentage || profitLossPercentage === '') {
-          // Si pas de valeur de profit, c'est un BE
           exitReason = 'BE';
         } else {
           const profitValue = parseFloat(profitLossPercentage);
@@ -387,26 +313,19 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
           }
         }
         
-        console.log('Exit reason determination:', {
-          profitLossPercentage,
-          exitReason
-        });
-
-        // Validate tradeDate format before sending
         if (!tradeDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
           console.error(`Invalid tradeDate format: ${tradeDate}`);
           throw new Error(`Format de date invalide: ${tradeDate}`);
         }
 
-        // Create trade
         await createTradeMutation.mutateAsync({
           tradeDate,
           assetId: assetId || undefined,
-          symbol: symbol, // Keep the original symbol for display
+          symbol: symbol,
           sessionId: sessionId || undefined,
           setupId: setupId || undefined,
           riskInput,
-          profitLossAmount: profitLossPercentage, // Utiliser la même valeur pour les deux champs
+          profitLossAmount: profitLossPercentage,
           profitLossPercentage,
           exitReason,
           tradingviewLink: trade.TradingViewLink || undefined,
@@ -436,7 +355,6 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
         type: 'success',
         message: `Successfully imported ${successCount} trades!${summaryText}`
       });
-      // Invalidate queries to refresh data
       utils.trading.getTrades.invalidate();
       utils.trading.getStats.invalidate();
       utils.trading.getAssets.invalidate();
@@ -470,7 +388,6 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
         </CardHeader>
         <CardContent className="text-white">
           <div className="space-y-6">
-            {/* File Upload */}
             <div>
               <Label className="text-white/80 block mb-2">Select Excel File</Label>
               <div className="border-2 border-dashed border-white/20 rounded-lg p-6 text-center">
@@ -489,7 +406,6 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
               </div>
             </div>
 
-            {/* Import Status */}
             {importStatus && (
               <div className={`p-4 rounded-lg border ${
                 importStatus.type === 'success' ? 'border-green-500/20 bg-green-500/10' :
@@ -509,7 +425,6 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
               </div>
             )}
 
-            {/* Preview */}
             {tradesToImport.length > 0 && (
               <div>
                 <h3 className="text-white/80 mb-3">Preview ({tradesToImport.length} trades)</h3>
@@ -543,7 +458,6 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
               </div>
             )}
 
-            {/* Actions */}
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={onClose} className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white">
                 Cancel

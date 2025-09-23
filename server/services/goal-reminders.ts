@@ -18,16 +18,12 @@ export interface GoalReminder {
 }
 
 export class GoalRemindersService {
-  /**
-   * Envoyer les rappels en retard
-   */
   static async sendOverdueReminders() {
-    console.log("🔔 [Reminders] Checking for overdue reminders...");
+    console.log("Checking for overdue reminders...");
     
     try {
       const now = new Date();
       
-      // Récupérer tous les goals avec des rappels activés qui sont en retard
       const overdueGoals = await db
         .select({
           id: goals.id,
@@ -50,7 +46,7 @@ export class GoalRemindersService {
            )
          );
 
-      console.log(`📊 [Reminders] Found ${overdueGoals.length} overdue reminders`);
+      console.log(`Found ${overdueGoals.length} overdue reminders`);
 
       for (const goal of overdueGoals) {
         if (goal.reminderFrequency) {
@@ -66,9 +62,9 @@ export class GoalRemindersService {
         }
       }
 
-      console.log("✅ [Reminders] Overdue reminders processed successfully");
+      console.log("Overdue reminders processed successfully");
     } catch (error) {
-      console.error("❌ [Reminders] Error processing overdue reminders:", error);
+      console.error("Error processing overdue reminders:", error);
     }
   }
 
@@ -84,7 +80,6 @@ export class GoalRemindersService {
     reminderFrequency: "daily" | "weekly" | "monthly";
   }) {
     try {
-      // Récupérer les informations de l'utilisateur
       const [user] = await db
         .select({
           discordId: users.discordId,
@@ -96,21 +91,19 @@ export class GoalRemindersService {
         .limit(1);
 
       if (!user) {
-        console.warn(`⚠️ [Reminders] User not found for goal ${goal.id}`);
+        console.warn(`User not found for goal ${goal.id}`);
         return;
       }
 
-      // Envoyer le rappel Discord si l'utilisateur est connecté
       if (user.discordId && user.discordConnected) {
         await this.sendDiscordReminder(user.discordId, goal);
       }
 
-      // Enregistrer le rappel envoyé
       await this.recordReminderSent(goal.id, goal.userId, "discord");
 
-      console.log(`📨 [Reminders] Reminder sent for goal: ${goal.title}`);
+      console.log(`Reminder sent for goal: ${goal.title}`);
     } catch (error) {
-      console.error(`❌ [Reminders] Error sending reminder for goal ${goal.id}:`, error);
+      console.error(`Error sending reminder for goal ${goal.id}:`, error);
     }
   }
 
@@ -162,9 +155,9 @@ export class GoalRemindersService {
       };
 
       await DiscordService.sendDirectMessage(discordId, message);
-      console.log(`📨 [Discord] Reminder sent to ${discordId} for goal: ${goal.title}`);
+      console.log(`Reminder sent to ${discordId} for goal: ${goal.title}`);
     } catch (error) {
-      console.error(`❌ [Discord] Error sending reminder to ${discordId}:`, error);
+      console.error(`Error sending reminder to ${discordId}:`, error);
     }
   }
 
@@ -188,7 +181,6 @@ export class GoalRemindersService {
           break;
       }
 
-      // Définir l'heure à 9h00 du matin
       nextDate.setHours(9, 0, 0, 0);
 
       await db
@@ -200,9 +192,9 @@ export class GoalRemindersService {
         })
         .where(eq(goals.id, goalId));
 
-      console.log(`📅 [Reminders] Next reminder date updated for goal ${goalId}: ${nextDate}`);
+      console.log(`Next reminder date updated for goal ${goalId}: ${nextDate}`);
     } catch (error) {
-      console.error(`❌ [Reminders] Error updating next reminder date for goal ${goalId}:`, error);
+      console.error(`Error updating next reminder date for goal ${goalId}:`, error);
     }
   }
 
@@ -222,9 +214,9 @@ export class GoalRemindersService {
         status: "sent",
       });
 
-      console.log(`📝 [Reminders] Reminder record created: ${reminderId}`);
+      console.log(`Reminder record created: ${reminderId}`);
     } catch (error) {
-      console.error(`❌ [Reminders] Error recording reminder sent:`, error);
+      console.error(`Error recording reminder sent:`, error);
     }
   }
 
@@ -236,7 +228,6 @@ export class GoalRemindersService {
       const now = new Date();
       const nextDate = new Date(now);
 
-      // Programmer pour demain à 9h00
       nextDate.setDate(nextDate.getDate() + 1);
       nextDate.setHours(9, 0, 0, 0);
 
@@ -249,9 +240,9 @@ export class GoalRemindersService {
         })
         .where(eq(goals.id, goalId));
 
-      console.log(`📅 [Reminders] Reminder scheduled for goal ${goalId} at ${nextDate}`);
+      console.log(`Reminder scheduled for goal ${goalId} at ${nextDate}`);
     } catch (error) {
-      console.error(`❌ [Reminders] Error scheduling reminder for goal ${goalId}:`, error);
+      console.error(`Error scheduling reminder for goal ${goalId}:`, error);
     }
   }
 
@@ -270,9 +261,9 @@ export class GoalRemindersService {
         })
         .where(eq(goals.id, goalId));
 
-      console.log(`❌ [Reminders] Reminders cancelled for goal ${goalId}`);
+      console.log(`Reminders cancelled for goal ${goalId}`);
     } catch (error) {
-      console.error(`❌ [Reminders] Error cancelling reminders for goal ${goalId}:`, error);
+      console.error(`Error cancelling reminders for goal ${goalId}:`, error);
     }
   }
 
@@ -281,13 +272,11 @@ export class GoalRemindersService {
    */
   static async getReminderStats(userId: string) {
     try {
-      // Total des rappels programmés
       const totalReminders = await db
         .select()
         .from(goals)
         .where(and(eq(goals.userId, userId), eq(goals.isActive, true), isNotNull(goals.reminderFrequency)));
 
-      // Rappels envoyés ce mois
       const sentReminders = await db
         .select()
         .from(goalReminders)
@@ -298,7 +287,6 @@ export class GoalRemindersService {
           )
         );
 
-      // Rappels actifs
       const activeReminders = await db
         .select()
         .from(goals)
@@ -317,7 +305,7 @@ export class GoalRemindersService {
         activeReminders: activeReminders.length,
       };
     } catch (error) {
-      console.error("❌ [Reminders] Error getting reminder stats:", error);
+      console.error("Error getting reminder stats:", error);
       return {
         totalReminders: 0,
         sentThisMonth: 0,

@@ -55,17 +55,14 @@ interface TradingChartsProps {
 const COLORS = ['#8B5CF6', '#3B82F6', '#06B6D4', '#10B981', '#F59E0B', '#EF4444', '#EC4899'];
 
 export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
-  // Data for win rate donut chart
   const winRateData = [
     { name: 'Winners', value: stats.winningTrades, color: '#ffffff', percentage: stats.winRate },
     { name: 'Losers', value: stats.losingTrades, color: '#404040', percentage: 100 - stats.winRate }
   ];
 
-  // Data for session performance chart
   const sessionPerformanceData = (() => {
     if (!trades || !sessions) return [];
     
-    // Group trades by session and calculate total PnL for each session
     const sessionStats = new Map<string, { name: string; totalPnL: number; count: number }>();
     
     trades.forEach(trade => {
@@ -89,7 +86,6 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
       }
     });
     
-    // Convert to array and sort by performance
     return Array.from(sessionStats.values())
       .map((item, index) => ({
         name: item.name,
@@ -97,17 +93,15 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
         count: item.count,
         color: COLORS[index % COLORS.length]
       }))
-      .sort((a, b) => b.pnl - a.pnl); // Sort by decreasing performance
+      .sort((a, b) => b.pnl - a.pnl);
   })();
 
-  // Data for cumulative performance chart
   const cumulativeData = trades
     ?.sort((a, b) => new Date(a.tradeDate).getTime() - new Date(b.tradeDate).getTime())
     .reduce((acc, trade, index) => {
       const pnl = trade.profitLossPercentage ? parseFloat(trade.profitLossPercentage) || 0 : 0;
       const previousCumulative = acc.length > 0 ? acc[acc.length - 1].cumulative : 0;
       
-      // Calcul simple : addition des pourcentages PnL
       const cumulative = previousCumulative + pnl;
       
       acc.push({
@@ -123,9 +117,7 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
 
   return (
     <div className="space-y-6">
-      {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Win Rate Donut Chart */}
         <Card className="border border-white/20 bg-gradient-to-br from-black/40 to-black/60 backdrop-blur-sm">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg text-white font-argesta tracking-wide">WIN RATE</CardTitle>
@@ -199,7 +191,6 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
               </div>
             </div>
             
-            {/* Minimalist Legend */}
             <div className="flex justify-center space-x-8 mt-6">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 rounded-full bg-white"></div>
@@ -213,7 +204,6 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
           </CardContent>
         </Card>
 
-        {/* Performance by Session */}
         <Card className="border border-white/20 bg-gradient-to-br from-black/40 to-black/60 backdrop-blur-sm lg:col-span-2">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg text-white font-argesta tracking-wide">PERFORMANCE BY SESSION</CardTitle>
@@ -291,7 +281,6 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
         </Card>
       </div>
 
-      {/* Cumulative Performance */}
       <Card className="border border-white/20 bg-gradient-to-br from-black/40 to-black/60 backdrop-blur-sm w-full">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg text-white font-argesta tracking-wide">CUMULATIVE PERFORMANCE</CardTitle>
@@ -370,7 +359,6 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
               </ResponsiveContainer>
             </div>
             
-            {/* Metrics Section */}
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-sm text-white/70 font-argesta tracking-wide">TOTAL PERFORMANCE</div>

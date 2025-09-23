@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoalRemindersService } from "@/server/services/goal-reminders";
 
-
-// Route pour traiter les rappels manuellement
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get("authorization");
@@ -12,7 +10,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    console.log("🔔 [API] Processing reminders...");
+    console.log("Processing reminders...");
     
     await GoalRemindersService.sendOverdueReminders();
     
@@ -23,7 +21,7 @@ export async function POST(request: NextRequest) {
     });
     
   } catch (error) {
-    console.error("❌ [API] Error processing reminders:", error);
+    console.error("Error processing reminders:", error);
     return NextResponse.json(
       { error: "Internal server error" }, 
       { status: 500 }
@@ -33,7 +31,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
-    console.log("🔔 [API] Manual reminder processing triggered...");
+    console.log("Manual reminder processing triggered...");
     
     await GoalRemindersService.sendOverdueReminders();
     
@@ -44,7 +42,7 @@ export async function GET() {
     });
     
   } catch (error) {
-    console.error("❌ [API] Error in manual reminder processing:", error);
+    console.error("Error in manual reminder processing:", error);
     return NextResponse.json(
       { error: "Internal server error" }, 
       { status: 500 }

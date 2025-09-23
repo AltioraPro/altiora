@@ -3,11 +3,9 @@ import { db } from "@/server/db";
 import { goals, users } from "@/server/db/schema";
 import { eq, and, isNotNull } from "drizzle-orm";
 
-
-// Route pour diagnostiquer le système de rappels
 export async function GET() {
   try {
-    console.log("🔍 Diagnostic du système de rappels via API");
+    console.log("Diagnostic du système de rappels via API");
     
     const allGoals = await db
       .select({
@@ -105,7 +103,7 @@ export async function GET() {
 
     return NextResponse.json(diagnosis);
   } catch (error) {
-    console.error("❌ Erreur lors du diagnostic:", error);
+    console.error("Erreur lors du diagnostic:", error);
     return NextResponse.json(
       { 
         success: false, 

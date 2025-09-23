@@ -28,12 +28,10 @@ export function SessionsManager({ journalId }: SessionsManagerProps) {
     timezone: "UTC"
   });
 
-  // Queries
   const { data: sessions, isLoading } = api.trading.getSessions.useQuery({ journalId });
   const { data: trades } = api.trading.getTrades.useQuery({ journalId });
   const utils = api.useUtils();
 
-  // Mutations
   const createSessionMutation = api.trading.createSession.useMutation({
     onSuccess: () => {
       utils.trading.getSessions.invalidate();
@@ -75,7 +73,6 @@ export function SessionsManager({ journalId }: SessionsManagerProps) {
     }
   };
 
-  // Calculer les performances par session
   const sessionPerformances = sessions?.map(session => {
     const sessionTrades = trades?.filter(trade => trade.sessionId === session.id) || [];
     const totalPnL = sessionTrades.reduce((sum, trade) => {

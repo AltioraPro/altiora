@@ -4,7 +4,6 @@ export function useOptimizedInvalidation() {
   const utils = api.useUtils();
 
   const invalidateGoalsData = () => {
-    // Invalidation optimisée en batch pour toutes les données goals
     Promise.all([
       utils.goals.getPaginated.invalidate(),
       utils.goals.getStats.invalidate(),
@@ -14,7 +13,6 @@ export function useOptimizedInvalidation() {
   };
 
   const invalidateGoalsAndLimits = () => {
-    // Invalidation spécifique pour les goals et leurs restrictions
     Promise.all([
       utils.goals.getPaginated.invalidate(),
       utils.goals.getStats.invalidate(),
@@ -24,7 +22,6 @@ export function useOptimizedInvalidation() {
   };
 
   const invalidateGoalsOnly = () => {
-    // Invalidation pour les goals seulement (sans les restrictions)
     Promise.all([
       utils.goals.getPaginated.invalidate(),
       utils.goals.getStats.invalidate(),

@@ -26,12 +26,10 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
   const { data: allTrades } = api.trading.getTrades.useQuery(
     { 
       journalId: journal.id
-      // Récupérer tous les trades pour trouver le vrai meilleur
     },
     { enabled: !!journal.id }
   );
 
-  // Trouver le meilleur trade (le plus haut pourcentage, positif ou négatif)
   const bestTrade = allTrades && allTrades.length > 0 
     ? allTrades.reduce((best, current) => {
         const currentPnl = Number(current.profitLossPercentage || 0);
@@ -56,7 +54,6 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
       </CardHeader>
       
       <CardContent className="pt-0">
-        {/* Métriques principales */}
         {stats && (
           <div className="grid grid-cols-3 gap-3 mb-4">
             <div className="text-center p-3 bg-black/20 rounded-lg border border-white/10">
@@ -80,7 +77,6 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
           </div>
         )}
 
-        {/* Best trade */}
         {bestTrade && (
           <div className={`mb-4 p-3 rounded-lg border ${
             Number(bestTrade.profitLossPercentage || 0) >= 0 
@@ -116,7 +112,6 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
           </div>
         )}
 
-        {/* Actions */}
         <div className="flex items-center justify-between pt-3 border-t border-white/10">
           <div className="flex items-center space-x-1">
           </div>

@@ -7,7 +7,6 @@ export function useOptimizedGoalMutation() {
 
   const createGoalMutation = api.goals.create.useMutation({
     onSuccess: (data) => {
-      // Invalidation optimisée avec batch
       invalidateGoalsAndLimits();
       return data;
     },
@@ -19,28 +18,24 @@ export function useOptimizedGoalMutation() {
 
   const updateGoalMutation = api.goals.update.useMutation({
     onSuccess: () => {
-      // Invalidation optimisée
       invalidateGoalsOnly();
     },
   });
 
   const deleteGoalMutation = api.goals.delete.useMutation({
     onSuccess: () => {
-      // Invalidation optimisée avec mise à jour des limites
       invalidateGoalsAndLimits();
     },
   });
 
   const markCompletedMutation = api.goals.markCompleted.useMutation({
     onSuccess: () => {
-      // Invalidation optimisée
       invalidateGoalsOnly();
     },
   });
 
   const updateProgressMutation = api.goals.updateProgress.useMutation({
     onSuccess: () => {
-      // Invalidation optimisée
       invalidateGoalsOnly();
     },
   });

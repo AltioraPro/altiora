@@ -27,7 +27,7 @@ export async function getGoalsPaginated(
   const { page, limit, sortBy, sortOrder, search, type, status, showInactive } = input;
   const offset = page * limit;
 
-  console.log("🔍 [Goals API] Filter params:", { search, type, status, showInactive });
+  console.log("Filter params:", { search, type, status, showInactive });
 
   const whereConditions = [eq(goals.userId, userId)];
 
@@ -37,12 +37,12 @@ export async function getGoalsPaginated(
 
   if (search) {
     whereConditions.push(like(goals.title, `%${search}%`));
-    console.log("🔍 [Goals API] Applied search filter:", search);
+    console.log("Applied search filter:", search);
   }
 
   if (type) {
     whereConditions.push(eq(goals.type, type));
-    console.log("🔍 [Goals API] Applied type filter:", type);
+    console.log("Applied type filter:", type);
   }
 
   if (status) {
@@ -144,7 +144,6 @@ export async function getGoalWithDetails(goalId: string, userId: string) {
 export async function getGoalStats(
   userId: string
 ) {
-  // Vérifier le cache d'abord
   const cached = await cacheUtils.getStats(userId, 'goals-stats');
   if (cached) {
     return cached;
@@ -152,7 +151,6 @@ export async function getGoalStats(
 
   const now = new Date();
 
-  // Récupérer tous les goals de l'utilisateur pour calculer les stats
   const allGoals = await db
     .select()
     .from(goals)
@@ -163,7 +161,6 @@ export async function getGoalStats(
       )
     );
 
-  // Calculer les stats basées sur les goals réels
   const total = allGoals.length;
   const completed = allGoals.filter(goal => goal.isCompleted).length;
   const overdue = allGoals.filter(goal => 
@@ -176,7 +173,6 @@ export async function getGoalStats(
     (!goal.deadline || new Date(goal.deadline) >= now)
   ).length;
 
-  // Calcul du taux de completion
   const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
 
   const stats = {
@@ -187,7 +183,6 @@ export async function getGoalStats(
     completionRate,
   };
 
-  // Mettre en cache pour 5 minutes
   await cacheUtils.setStats(userId, 'goals-stats', stats, {}, 300);
 
   return stats;

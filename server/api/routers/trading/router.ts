@@ -3,7 +3,6 @@ import { tradingMutationsRouter } from "./mutations";
 import { tradingQueriesRouter } from "./queries";
 
 export const tradingRouter = createTRPCRouter({
-  // Mutations
   createJournal: tradingMutationsRouter.createTradingJournal,
   updateJournal: tradingMutationsRouter.updateTradingJournal,
   deleteJournal: tradingMutationsRouter.deleteTradingJournal,
@@ -25,9 +24,7 @@ export const tradingRouter = createTRPCRouter({
   updateTrade: tradingMutationsRouter.updateAdvancedTrade,
   deleteTrade: tradingMutationsRouter.deleteAdvancedTrade,
   deleteMultipleTrades: tradingMutationsRouter.deleteMultipleTrades,
-  // closeTrade removed; no corresponding mutation
 
-  // Queries
   getJournals: tradingQueriesRouter.getTradingJournals,
   getJournalById: tradingQueriesRouter.getTradingJournalById,
 

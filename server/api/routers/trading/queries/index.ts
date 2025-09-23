@@ -16,7 +16,6 @@ import { eq, and, desc, asc, gte, lte, like, sql, count, sum, avg, inArray } fro
 import { TRPCError } from "@trpc/server";
 
 export const tradingQueriesRouter = createTRPCRouter({
-  // Queries pour les journaux de trading
   getTradingJournals: protectedProcedure
     .query(async ({ ctx }) => {
       const { session } = ctx;
@@ -60,7 +59,6 @@ export const tradingQueriesRouter = createTRPCRouter({
     }),
 
 
-  // Queries pour les assets
   getTradingAssets: protectedProcedure
     .input(z.object({ journalId: z.string().optional() }))
     .query(async ({ ctx, input }) => {
@@ -107,7 +105,6 @@ export const tradingQueriesRouter = createTRPCRouter({
       return asset;
     }),
 
-  // Queries pour les sessions
   getTradingSessions: protectedProcedure
     .input(z.object({ 
       journalId: z.string().optional(),
@@ -159,7 +156,6 @@ export const tradingQueriesRouter = createTRPCRouter({
       return tradingSession;
     }),
 
-  // Queries pour les setups
   getTradingSetups: protectedProcedure
     .input(z.object({ 
       journalId: z.string().optional(),
@@ -211,7 +207,6 @@ export const tradingQueriesRouter = createTRPCRouter({
       return setup;
     }),
 
-  // Queries pour les trades avancés
   getAdvancedTrades: protectedProcedure
     .input(filterTradesSchema)
     .query(async ({ ctx, input }) => {
@@ -253,7 +248,6 @@ export const tradingQueriesRouter = createTRPCRouter({
         whereConditions.push(eq(advancedTrades.isClosed, input.isClosed));
       }
 
-      // Construire la requête avec ou sans limite
       const trades = input.limit 
         ? await db
             .select()
@@ -268,7 +262,6 @@ export const tradingQueriesRouter = createTRPCRouter({
             .where(and(...whereConditions))
             .orderBy(desc(advancedTrades.tradeDate), desc(advancedTrades.createdAt));
 
-      // Plus de champ tags dans advancedTrades
       return trades;
     }),
 
@@ -326,7 +319,6 @@ export const tradingQueriesRouter = createTRPCRouter({
         whereConditions.push(lte(advancedTrades.tradeDate, input.endDate));
       }
 
-      // Récupérer les infos du journal si journalId est fourni
       let journal = null;
       if (input.journalId) {
         const [journalResult] = await db
@@ -340,7 +332,6 @@ export const tradingQueriesRouter = createTRPCRouter({
         journal = journalResult;
       }
 
-      // Statistiques de base
       const [totalTrades] = await db
         .select({ count: count() })
         .from(advancedTrades)
@@ -351,7 +342,6 @@ export const tradingQueriesRouter = createTRPCRouter({
         .from(advancedTrades)
         .where(and(...whereConditions, eq(advancedTrades.isClosed, true)));
 
-      // Calcul du P&L total
       const [pnlStats] = await db
         .select({
           totalPnL: sum(sql`CAST(${advancedTrades.profitLossPercentage} AS DECIMAL)`),
@@ -361,7 +351,6 @@ export const tradingQueriesRouter = createTRPCRouter({
         .from(advancedTrades)
         .where(and(...whereConditions, eq(advancedTrades.isClosed, true)));
 
-      // Trades gagnants vs perdants basés sur exitReason
       const [winningTrades] = await db
         .select({ count: count() })
         .from(advancedTrades)
@@ -380,7 +369,6 @@ export const tradingQueriesRouter = createTRPCRouter({
           eq(advancedTrades.exitReason, "SL")
         ));
 
-      // Trades par symbole
       const tradesBySymbol = await db
         .select({
           symbol: advancedTrades.symbol,
@@ -392,7 +380,6 @@ export const tradingQueriesRouter = createTRPCRouter({
         .groupBy(advancedTrades.symbol)
         .orderBy(desc(count()));
 
-      // Trades par setup
       const tradesBySetup = await db
         .select({
           setupId: advancedTrades.setupId,
@@ -404,7 +391,6 @@ export const tradingQueriesRouter = createTRPCRouter({
         .groupBy(advancedTrades.setupId)
         .orderBy(desc(count()));
 
-      // Statistiques de sortie (TP, BE, SL)
       const [tpTrades] = await db
         .select({ count: count() })
         .from(advancedTrades)
@@ -420,11 +406,9 @@ export const tradingQueriesRouter = createTRPCRouter({
         .from(advancedTrades)
         .where(and(...whereConditions, eq(advancedTrades.exitReason, "SL")));
 
-      // Calculer le gain total en euros et le pourcentage total correct
       let totalAmountPnL = pnlStats.totalAmountPnL || 0;
       let totalPnLPercentage = 0;
       
-      // Récupérer tous les trades fermés pour calculer la performance cumulative correcte
       const closedTradesData = await db
         .select({
           profitLossPercentage: advancedTrades.profitLossPercentage,
@@ -434,36 +418,23 @@ export const tradingQueriesRouter = createTRPCRouter({
         .where(and(...whereConditions, eq(advancedTrades.isClosed, true)))
         .orderBy(asc(advancedTrades.tradeDate));
 
-      // Calculer la performance cumulative en utilisant une simple addition des pourcentages
       if (closedTradesData.length > 0) {
-        // Simple addition des pourcentages PnL
         totalPnLPercentage = closedTradesData.reduce((sum, trade) => {
           const pnlPercentage = trade.profitLossPercentage ? parseFloat(trade.profitLossPercentage) || 0 : 0;
           return sum + pnlPercentage;
         }, 0);
         
-        // Calculer le montant total si on a le capital de départ
         if (journal?.usePercentageCalculation && journal?.startingCapital) {
           const startingCapital = parseFloat(journal.startingCapital);
           totalAmountPnL = (totalPnLPercentage / 100) * startingCapital;
         } else {
-          // Utiliser la somme des montants si pas de calcul en pourcentage
           totalAmountPnL = pnlStats.totalAmountPnL || 0;
         }
-        
-        console.log("Calcul performance cumulative (addition simple):", {
-          tradesCount: closedTradesData.length,
-          totalPnLPercentage,
-          totalAmountPnL,
-          startingCapital: journal?.startingCapital
-        });
       } else {
-        // Pas de trades fermés
         totalPnLPercentage = 0;
         totalAmountPnL = 0;
       }
 
-      // Calculer le winrate : total des TP / nombre total de trades fermés * 100
       const winRate = closedTrades.count > 0 ? (winningTrades.count / closedTrades.count) * 100 : 0;
 
       return {
@@ -483,24 +454,21 @@ export const tradingQueriesRouter = createTRPCRouter({
         journal: journal ? {
           usePercentageCalculation: journal.usePercentageCalculation,
           startingCapital: journal.startingCapital || undefined
-        } : undefined, // Inclure les infos du journal pour l'affichage
+        } : undefined,
       };
     }),
 
-  // Query pour obtenir le capital actuel d'un journal
   getCurrentCapital: protectedProcedure
     .input(z.object({ journalId: z.string() }))
     .query(async ({ ctx, input }) => {
       const { session } = ctx;
       const userId = session.userId;
 
-      // Vérifier le cache d'abord
       const cached = await cacheUtils.getStats(userId, 'trading-capital', { journalId: input.journalId });
       if (cached) {
         return cached;
       }
 
-      // Vérifier que le journal appartient à l'utilisateur
       const [journal] = await db
         .select()
         .from(tradingJournals)
@@ -523,7 +491,6 @@ export const tradingQueriesRouter = createTRPCRouter({
 
       const startingCapital = parseFloat(journal.startingCapital);
       
-      // Récupérer tous les trades fermés pour calculer la composition des rendements
       const closedTradesData = await db
         .select({
           profitLossPercentage: advancedTrades.profitLossPercentage,
@@ -536,7 +503,6 @@ export const tradingQueriesRouter = createTRPCRouter({
         ))
         .orderBy(asc(advancedTrades.tradeDate));
       
-      // Calculer le capital actuel avec addition simple des pourcentages
       const totalPnLPercentage = closedTradesData.reduce((sum, trade) => {
         const pnlPercentage = trade.profitLossPercentage ? parseFloat(trade.profitLossPercentage) || 0 : 0;
         return sum + pnlPercentage;
@@ -549,20 +515,17 @@ export const tradingQueriesRouter = createTRPCRouter({
         startingCapital: startingCapital.toFixed(2) 
       };
 
-      // Mettre en cache pour 10 minutes (capital change moins souvent)
       await cacheUtils.setStats(userId, 'trading-capital', result, { journalId: input.journalId }, 600);
 
       return result;
     }),
 
-  // Query pour obtenir tous les éléments d'un journal
   getJournalOverview: protectedProcedure
     .input(z.object({ journalId: z.string() }))
     .query(async ({ ctx, input }) => {
       const { session } = ctx;
       const userId = session.userId;
 
-      // Vérifier que le journal appartient à l'utilisateur
       const [journal] = await db
         .select()
         .from(tradingJournals)
@@ -579,7 +542,6 @@ export const tradingQueriesRouter = createTRPCRouter({
         });
       }
 
-      // Récupérer tous les éléments du journal
       const [assets, sessions, setups, trades] = await Promise.all([
         db
           .select()
@@ -613,7 +575,7 @@ export const tradingQueriesRouter = createTRPCRouter({
           .from(advancedTrades)
           .where(eq(advancedTrades.journalId, input.journalId))
           .orderBy(desc(advancedTrades.tradeDate))
-          .limit(10), // Derniers 10 trades
+          .limit(10),
       ]);
 
       return {
@@ -625,7 +587,6 @@ export const tradingQueriesRouter = createTRPCRouter({
       };
     }),
 
-  // Query pour récupérer un trade par ID
   getTradeById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {

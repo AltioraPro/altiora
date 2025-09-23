@@ -31,7 +31,6 @@ interface TradingStatsProps {
       count: number;
       totalPnL: string | null;
     }>;
-    // Nouvelles métriques
     tpTrades: number;
     beTrades: number;
     slTrades: number;

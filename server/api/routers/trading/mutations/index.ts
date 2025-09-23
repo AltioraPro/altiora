@@ -26,7 +26,6 @@ import { eq, and, sum, sql, inArray, asc } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
 export const tradingMutationsRouter = createTRPCRouter({
-  // Mutations pour les journaux de trading
   createTradingJournal: protectedProcedure
     .input(createTradingJournalSchema)
     .mutation(async ({ ctx, input }) => {
@@ -57,7 +56,6 @@ export const tradingMutationsRouter = createTRPCRouter({
       const userId = session.userId;
       const { id, ...updateData } = input;
 
-      // Vérifier que le journal appartient à l'utilisateur
       const existingJournal = await db
         .select()
         .from(tradingJournals)
@@ -96,7 +94,6 @@ export const tradingMutationsRouter = createTRPCRouter({
       const { session } = ctx;
       const userId = session.userId;
 
-      // Vérifier que le journal appartient à l'utilisateur
       const existingJournal = await db
         .select()
         .from(tradingJournals)
@@ -113,7 +110,6 @@ export const tradingMutationsRouter = createTRPCRouter({
         });
       }
 
-      // Supprimer le journal (les assets, sessions, setups et trades seront supprimés en cascade)
       await db
         .delete(tradingJournals)
         .where(and(
@@ -125,14 +121,12 @@ export const tradingMutationsRouter = createTRPCRouter({
     }),
 
 
-  // Mutations pour les assets
   createTradingAsset: protectedProcedure
     .input(createTradingAssetSchema)
     .mutation(async ({ ctx, input }) => {
       const { session } = ctx;
       const userId = session.userId;
 
-      // Vérifier que le journal appartient à l'utilisateur
       const journal = await db
         .select()
         .from(tradingJournals)
@@ -211,14 +205,12 @@ export const tradingMutationsRouter = createTRPCRouter({
       return { success: true };
     }),
 
-  // Mutations pour les sessions
   createTradingSession: protectedProcedure
     .input(createTradingSessionSchema)
     .mutation(async ({ ctx, input }) => {
       const { session } = ctx;
       const userId = session.userId;
 
-      // Vérifier que le journal appartient à l'utilisateur
       const journal = await db
         .select()
         .from(tradingJournals)
@@ -299,14 +291,12 @@ export const tradingMutationsRouter = createTRPCRouter({
       return { success: true };
     }),
 
-  // Mutations pour les setups
   createTradingSetup: protectedProcedure
     .input(createTradingSetupSchema)
     .mutation(async ({ ctx, input }) => {
       const { session } = ctx;
       const userId = session.userId;
 
-      // Vérifier que le journal appartient à l'utilisateur
       const journal = await db
         .select()
         .from(tradingJournals)
@@ -386,7 +376,6 @@ export const tradingMutationsRouter = createTRPCRouter({
       return { success: true };
     }),
 
-  // Mutations pour les trades avancés
   createAdvancedTrade: protectedProcedure
     .input(createAdvancedTradeSchema)
     .mutation(async ({ ctx, input }) => {
@@ -398,7 +387,6 @@ export const tradingMutationsRouter = createTRPCRouter({
       console.log("UserId:", userId);
       console.log("Session:", session);
 
-      // Vérifier que le journal appartient à l'utilisateur
       console.log("Recherche du journal avec ID:", input.journalId);
       const journal = await db
         .select()
@@ -419,7 +407,6 @@ export const tradingMutationsRouter = createTRPCRouter({
         });
       }
 
-      // Récupérer l'assetId à partir du symbol si assetId n'est pas fourni
       let assetId = input.assetId;
       if (!assetId && input.symbol) {
         console.log("Recherche de l'asset avec le symbol:", input.symbol);
@@ -439,15 +426,11 @@ export const tradingMutationsRouter = createTRPCRouter({
 
       console.log("Insertion du trade dans la base de données...");
       
-      // Nettoyer les valeurs numériques
       const cleanRiskInput = input.riskInput ? String(input.riskInput).replace(/[%,]/g, '').trim() : null;
-      
-      // Calculer le capital actuel si le journal utilise le calcul en pourcentage
       let currentCapital: number | undefined;
       if (journal[0].usePercentageCalculation && journal[0].startingCapital) {
         const startingCapital = parseFloat(journal[0].startingCapital);
         
-        // Récupérer tous les trades fermés pour calculer la composition des rendements
         const closedTradesData = await db
           .select({
             profitLossPercentage: advancedTrades.profitLossPercentage,
@@ -460,7 +443,6 @@ export const tradingMutationsRouter = createTRPCRouter({
           ))
           .orderBy(asc(advancedTrades.tradeDate));
         
-        // Calculer le capital actuel avec addition simple des pourcentages
         const totalPnLPercentage = closedTradesData.reduce((sum, trade) => {
           const pnlPercentage = trade.profitLossPercentage ? parseFloat(trade.profitLossPercentage) || 0 : 0;
           return sum + pnlPercentage;
@@ -476,7 +458,6 @@ export const tradingMutationsRouter = createTRPCRouter({
         });
       }
       
-      // Calculer les résultats du trade (montant <-> pourcentage)
       const calculatedResults = calculateTradeResults(
         {
           profitLossAmount: input.profitLossAmount,
@@ -502,7 +483,7 @@ export const tradingMutationsRouter = createTRPCRouter({
         profitLossAmount: calculatedResults.profitLossAmount || null,
         profitLossPercentage: calculatedResults.profitLossPercentage,
         exitReason: calculatedResults.exitReason,
-        breakEvenThreshold: "0.1", // Valeur par défaut, non utilisée
+        breakEvenThreshold: "0.1",
         tradingviewLink: input.tradingviewLink || null,
         notes: input.notes || null,
         isClosed: input.isClosed ?? true,
@@ -539,7 +520,6 @@ export const tradingMutationsRouter = createTRPCRouter({
       return { success: true };
     }),
 
-  // Mutation pour mettre à jour un trade
   updateAdvancedTrade: protectedProcedure
     .input(updateAdvancedTradeSchema)
     .mutation(async ({ ctx, input }) => {
@@ -547,7 +527,6 @@ export const tradingMutationsRouter = createTRPCRouter({
       const userId = session.userId;
       const { id, ...updateData } = input;
 
-      // Vérifier que le trade appartient à l'utilisateur
       const existingTrade = await db
         .select()
         .from(advancedTrades)
@@ -564,7 +543,6 @@ export const tradingMutationsRouter = createTRPCRouter({
         });
       }
 
-      // Récupérer le journal pour les calculs
       const journal = await db
         .select()
         .from(tradingJournals)
@@ -581,12 +559,10 @@ export const tradingMutationsRouter = createTRPCRouter({
         });
       }
 
-      // Calculer le capital actuel si nécessaire
       let currentCapital: number | undefined;
       if (journal[0].usePercentageCalculation && journal[0].startingCapital) {
         const startingCapital = parseFloat(journal[0].startingCapital);
         
-        // Récupérer tous les trades fermés pour calculer la composition des rendements
         const closedTradesData = await db
           .select({
             profitLossPercentage: advancedTrades.profitLossPercentage,
@@ -599,7 +575,6 @@ export const tradingMutationsRouter = createTRPCRouter({
           ))
           .orderBy(asc(advancedTrades.tradeDate));
         
-        // Calculer le capital actuel avec addition simple des pourcentages
         const totalPnLPercentage = closedTradesData.reduce((sum, trade) => {
           const pnlPercentage = trade.profitLossPercentage ? parseFloat(trade.profitLossPercentage) || 0 : 0;
           return sum + pnlPercentage;
@@ -608,7 +583,6 @@ export const tradingMutationsRouter = createTRPCRouter({
         currentCapital = startingCapital + (totalPnLPercentage / 100) * startingCapital;
       }
 
-      // Calculer les résultats du trade si des valeurs sont fournies
       let calculatedResults = {};
       if (updateData.profitLossAmount !== undefined || updateData.profitLossPercentage !== undefined) {
         calculatedResults = calculateTradeResults(
@@ -622,7 +596,6 @@ export const tradingMutationsRouter = createTRPCRouter({
         );
       }
 
-      // Mettre à jour le trade
       const [updatedTrade] = await db
         .update(advancedTrades)
         .set({
@@ -652,7 +625,6 @@ export const tradingMutationsRouter = createTRPCRouter({
         });
       }
 
-      // Supprimer tous les trades sélectionnés qui appartiennent à l'utilisateur
       await db
         .delete(advancedTrades)
         .where(and(
@@ -663,14 +635,12 @@ export const tradingMutationsRouter = createTRPCRouter({
       return { success: true, deletedCount: input.tradeIds.length };
     }),
 
-  // Mutation pour réorganiser les journaux
   reorderJournals: protectedProcedure
     .input(reorderJournalsSchema)
     .mutation(async ({ ctx, input }) => {
       const { session } = ctx;
       const userId = session.userId;
 
-      // Vérifier que tous les journaux appartiennent à l'utilisateur
       const journals = await db
         .select()
         .from(tradingJournals)
@@ -689,7 +659,6 @@ export const tradingMutationsRouter = createTRPCRouter({
         });
       }
 
-      // Mettre à jour l'ordre des journaux
       for (let i = 0; i < input.journalIds.length; i++) {
         await db
           .update(tradingJournals)

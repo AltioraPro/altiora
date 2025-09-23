@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Laisser passer les routes publiques et les API
   if (
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/auth") ||
@@ -19,7 +18,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Vérifier l'authentification pour les routes protégées
   const protectedPrefixes = [
     "/dashboard",
     "/trading",
@@ -31,7 +29,6 @@ export async function middleware(request: NextRequest) {
   ];
 
   if (protectedPrefixes.some((p) => pathname.startsWith(p))) {
-    // Debug: log des cookies disponibles en développement
     if (process.env.NODE_ENV === "development") {
       console.log("🔍 Middleware debug:", {
         pathname,
@@ -39,18 +36,15 @@ export async function middleware(request: NextRequest) {
       });
     }
 
-    // Vérification robuste: si pas de cookie détecté, tente une validation serveur via route interne
     const hasAnyCookie =
       request.cookies.get("better-auth.session_token") ||
       request.cookies.get("better-auth.session-id") ||
-      // Certains environnements ajoutent le préfixe __Secure- pour les cookies HTTPS only
       request.cookies.get("__Secure-better-auth.session_token") ||
       request.cookies.get("__Secure-better-auth.session-id") ||
       request.cookies.get("session_token") ||
       request.cookies.get("session");
 
     if (!hasAnyCookie) {
-      // Double check: ping l'API de session (évite les soucis de nom de cookie en prod)
       try {
         const apiUrl = new URL("/api/auth/session-check", request.url);
         const res = await fetch(apiUrl, {

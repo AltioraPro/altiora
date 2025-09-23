@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Variables de couleurs pour la palette noir/blanc */
 :root {
   --pure-black: #000000;
   --pure-white: #ffffff;
@@ -11,13 +10,11 @@
   --glass-shadow: rgba(0, 0, 0, 0.1);
 }
 
-/* Dark mode par défaut selon les préférences */
 body {
   background-color: var(--pure-black);
   color: var(--pure-white);
 }
 
-/* Animations pour InfiniteMovingCards */
 @keyframes scroll {
   to {
     transform: translate(calc(-50% - 0.5rem));
@@ -29,7 +26,6 @@ body {
 }
 
 
-/* Effet de ripple au hover */
 .liquid-glass-enhanced:hover::after {
   content: '';
   position: absolute;
@@ -56,7 +52,6 @@ body {
   }
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .liquid-glass-enhanced {
     backdrop-filter: blur(8px);
@@ -64,12 +59,10 @@ body {
   }
 }
 
-/* Amélioration pour les transitions */
 .liquid-transition {
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* Support pour les navigateurs sans backdrop-filter */
 @supports not (backdrop-filter: blur()) {
   .liquid-glass-enhanced {
     background: rgba(0, 0, 0, 0.8);
@@ -149,7 +142,6 @@ body {
 
 
 
-/* SPECTACULAR FOOTER TRANSITION ANIMATIONS */
 @keyframes magneticPull {
   0%, 100% {
     transform: translateY(0) scale(1);
@@ -257,7 +249,6 @@ body {
   }
 }
 
-/* Apply animations via classes */
 .animate-wave {
   animation: wave 8s ease-in-out infinite;
 }
@@ -282,7 +273,6 @@ body {
   animation: pulse-fast 2s ease-in-out infinite;
 }
 
-/* SOPHISTICATED BORDER ANIMATIONS */
 @keyframes borderFlow {
   0% {
     transform: translateX(-100%);
@@ -311,7 +301,6 @@ body {
   }
 }
 
-/* ELEGANT "WOAW" BORDER ANIMATIONS */
 @keyframes elegantFlow {
   0%, 100% {
     transform: translateX(-50%);
@@ -348,7 +337,6 @@ body {
   }
 } 
 
-/* Custom animations for goals page */
 @layer utilities {
   .animate-in {
     animation: animateIn 0.5s ease-out;
@@ -415,7 +403,6 @@ body {
   }
 }
 
-/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -433,14 +420,12 @@ body {
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* Glass morphism effect */
 .glass {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Gradient text effect */
 .gradient-text {
   background: linear-gradient(135deg, #ffffff 0%, #ffffff80 100%);
   -webkit-background-clip: text;
@@ -448,7 +433,6 @@ body {
   background-clip: text;
 }
 
-/* Shimmer effect */
 .shimmer {
   background: linear-gradient(
     90deg,
@@ -469,7 +453,6 @@ body {
   }
 }
 
-/* Floating animation */
 .float {
   animation: float 6s ease-in-out infinite;
 }
@@ -483,7 +466,6 @@ body {
   }
 }
 
-/* Bounce animation */
 .bounce-in {
   animation: bounceIn 0.6s ease-out;
 }
@@ -506,7 +488,6 @@ body {
   }
 }
 
-/* Line clamp utilities */
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -521,12 +502,10 @@ body {
   overflow: hidden;
 }
 
-/* Custom focus styles */
 .focus-ring {
   @apply focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-black;
 }
 
-/* Hover effects */
 .hover-lift {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -536,12 +515,10 @@ body {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
-/* Progress bar glow effect */
 .progress-glow {
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
 }
 
-/* Card hover effects */
 .card-hover {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -551,7 +528,6 @@ body {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
-/* Button hover effects */
 .btn-hover {
   transition: all 0.3s ease;
   position: relative;
@@ -573,7 +549,6 @@ body {
   left: 100%;
 }
 
-/* Text selection */
 ::selection {
   background: rgba(255, 255, 255, 0.2);
   color: white;
@@ -584,7 +559,6 @@ body {
   color: white;
 } 
 
-/* Custom form elements for dark theme */
 select option {
   background-color: #171717 !important;
   color: white !important;
@@ -631,7 +605,6 @@ input[type="datetime-local"]::-webkit-datetime-edit-minute-field {
   }
 }
 
-/* Améliorations pour les cartes de trading */
 .trading-card {
   @apply transition-all duration-200 ease-in-out;
 }
@@ -640,7 +613,6 @@ input[type="datetime-local"]::-webkit-datetime-edit-minute-field {
   @apply shadow-lg transform scale-[1.02];
 }
 
-/* Animations pour les métriques */
 .metric-value {
   @apply transition-all duration-300 ease-out;
 }
@@ -649,7 +621,6 @@ input[type="datetime-local"]::-webkit-datetime-edit-minute-field {
   @apply scale-105;
 }
 
-/* Styles pour les badges de statut */
 .status-badge {
   @apply inline-flex items-center px-2 py-1 rounded-full text-xs font-medium;
 }
@@ -666,7 +637,6 @@ input[type="datetime-local"]::-webkit-datetime-edit-minute-field {
   @apply bg-yellow-100 text-yellow-800;
 }
 
-/* Améliorations pour les boutons d'action */
 .action-button {
   @apply transition-all duration-200 ease-in-out;
 }
@@ -675,7 +645,6 @@ input[type="datetime-local"]::-webkit-datetime-edit-minute-field {
   @apply transform scale-105;
 }
 
-/* Styles pour les gradients subtils */
 .gradient-bg {
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
 }

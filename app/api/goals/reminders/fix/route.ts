@@ -4,11 +4,9 @@ import { goals } from "@/server/db/schema";
 import { eq, and, isNull } from "drizzle-orm";
 import { addDays, addWeeks, addMonths } from "date-fns";
 
-
-// Route pour corriger les rappels non programmés
 export async function POST() {
   try {
-    console.log("🔧 Correction des rappels non programmés");
+    console.log("Correction des rappels non programmés");
     
     const now = new Date();
     
@@ -22,7 +20,7 @@ export async function POST() {
         eq(goals.isActive, true)
       ));
 
-    console.log(`📊 ${goalsToFix.length} objectifs à corriger`);
+    console.log(`${goalsToFix.length} objectifs à corriger`);
 
     const fixedGoals = [];
 
@@ -60,7 +58,7 @@ export async function POST() {
         nextReminderDate: nextReminderDate,
       });
 
-      console.log(`✅ Corrigé: ${goal.title} -> ${nextReminderDate.toISOString()}`);
+      console.log(`Corrigé: ${goal.title} -> ${nextReminderDate.toISOString()}`);
     }
 
     return NextResponse.json({
@@ -70,7 +68,7 @@ export async function POST() {
     });
 
   } catch (error) {
-    console.error("❌ Erreur lors de la correction:", error);
+    console.error("Erreur lors de la correction:", error);
     return NextResponse.json(
       { 
         success: false, 

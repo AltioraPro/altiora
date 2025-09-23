@@ -46,8 +46,6 @@ export default function TradingPage() {
     assets: string[];
   }>({ sessions: [], setups: [], assets: [] });
 
-  // Fonction pour filtrer les trades par date
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const filterTradesByDate = (trades: any[] | undefined) => {
     if (!trades || dateFilter.view === 'all') return trades;
     
@@ -91,7 +89,6 @@ export default function TradingPage() {
   
   const filteredTrades = allTrades ? filterTradesByDate(allTrades) : undefined;
   
-  // Utiliser les statistiques du backend avec les filtres avancés
   const { data: backendStats } = api.trading.getStats.useQuery(
     {
       journalId: selectedJournalId || undefined,
@@ -232,7 +229,6 @@ export default function TradingPage() {
       <Suspense fallback={null}>
         <JournalParamSync onFound={handleJournalFound} />
       </Suspense>
-      {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div className="flex items-center space-x-4">
           <Link className="text-pure-black" href="/trading/journals">
@@ -280,17 +276,14 @@ export default function TradingPage() {
         </div>
       </div>
 
-      {/* Journal URL Sync */}
       <JournalParamSync onFound={handleJournalFound} />
 
-      {/* Statistics */}
       {stats && (
         <div className="mb-8">
           <TradingStats stats={stats} />
         </div>
       )}
 
-      {/* Tabs Navigation */}
       {selectedJournalId && (
         <div className="mb-6">
           <div className="flex space-x-1 bg-black/20 p-1 rounded-lg border border-white/10">
@@ -317,7 +310,6 @@ export default function TradingPage() {
         </div>
       )}
 
-      {/* Charts */}
       {stats && sessions && filteredTrades && setups && activeTab === 'trades' && (
         <div className="mb-8">
           <Card className="border border-white/10 bg-black/20">
@@ -339,7 +331,6 @@ export default function TradingPage() {
         </div>
       )}
 
-      {/* Content based on active tab */}
       {selectedJournalId && (
         <>
           {activeTab === 'trades' && (
@@ -362,7 +353,6 @@ export default function TradingPage() {
         </>
       )}
 
-      {/* Modals */}
       <CreateTradeModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}

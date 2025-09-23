@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { DiscordService } from "@/server/services/discord";
 import { auth } from "@/lib/auth";
 
-
-// Route pour synchroniser un utilisateur spécifique
 export async function POST(request: NextRequest) {
   try {
     const session = await auth.api.getSession({

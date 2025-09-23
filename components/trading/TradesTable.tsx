@@ -31,7 +31,6 @@ export function TradesTable({ journalId }: TradesTableProps) {
   const itemsPerPage = 10;
   const offset = currentPage * itemsPerPage;
 
-  // Queries
   const { data: trades, isLoading } = api.trading.getTrades.useQuery({
     journalId,
     limit: itemsPerPage,
@@ -43,7 +42,6 @@ export function TradesTable({ journalId }: TradesTableProps) {
   const { data: sessions } = api.trading.getSessions.useQuery({ journalId });
   const { data: setups } = api.trading.getSetups.useQuery({ journalId });
 
-  // Mutations
   const utils = api.useUtils();
   const deleteTradeMutation = api.trading.deleteTrade.useMutation({
     onSuccess: () => {
@@ -173,7 +171,6 @@ export function TradesTable({ journalId }: TradesTableProps) {
       <CardContent>
         {trades && trades.length > 0 ? (
           <div className="space-y-4">
-            {/* Table */}
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -272,7 +269,6 @@ export function TradesTable({ journalId }: TradesTableProps) {
               </table>
             </div>
 
-            {/* Pagination */}
             {totalPages > 1 && (
               <div className="flex items-center justify-between pt-4">
                 <div className="text-sm text-white/60">
@@ -333,7 +329,6 @@ export function TradesTable({ journalId }: TradesTableProps) {
       </CardContent>
     </Card>
 
-    {/* Edit Trade Modal */}
     {editingTradeId && (
       <EditTradeModal
         isOpen={!!editingTradeId}
@@ -341,7 +336,6 @@ export function TradesTable({ journalId }: TradesTableProps) {
         tradeId={editingTradeId}
         onSuccess={() => {
           setEditingTradeId(null);
-          // Refetch trades
           utils.trading.getTrades.invalidate();
           utils.trading.getStats.invalidate();
         }}

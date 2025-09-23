@@ -27,9 +27,6 @@ export interface UsageStats {
 }
 
 export class SubscriptionLimitsService {
-  /**
-   * Get user plan limits
-   */
   static async getUserPlanLimits(userId: string): Promise<PlanLimits> {
     try {
       const user = await db
@@ -52,7 +49,6 @@ export class SubscriptionLimitsService {
         .limit(1);
 
       if (!plan[0]) {
-        // Default plan (FREE)
         return {
           maxHabits: 3,
           maxTradingEntries: 10,
@@ -81,7 +77,7 @@ export class SubscriptionLimitsService {
       };
     } catch (error) {
       console.error("Error getting user plan limits:", error);
-      // Return default plan if there's an error
+
       return {
         maxHabits: 3,
         maxTradingEntries: 10,
@@ -97,21 +93,15 @@ export class SubscriptionLimitsService {
     }
   }
 
-  /**
-   * Get current user usage statistics
-   */
   static async getUserUsageStats(userId: string): Promise<UsageStats> {
-    const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+    const currentMonth = new Date().toISOString().slice(0, 7); 
 
-    // Optimized: Get all usage stats in parallel
     const [habitsCount, tradingEntriesCount, goalsCounts] = await Promise.all([
-      // Count active habits
       db
         .select({ count: sql<number>`count(*)` })
         .from(habits)
         .where(and(eq(habits.userId, userId), eq(habits.isActive, true))),
 
-      // Count current month trading entries
       (async () => {
         const monthStart = new Date();
         monthStart.setDate(1);
@@ -123,7 +113,6 @@ export class SubscriptionLimitsService {
           .where(and(eq(trades.userId, userId), gte(trades.createdAt, monthStart)));
       })(),
 
-      // Count goals by type (with error handling for missing table)
       (async () => {
         try {
           return await db
@@ -135,14 +124,12 @@ export class SubscriptionLimitsService {
             .where(eq(goals.userId, userId))
             .groupBy(goals.type);
         } catch (error) {
-          // If goals table doesn't exist yet, use default values
           console.warn("Goals table not found, using default values:", error);
           return [];
         }
       })(),
     ]);
 
-    // Process goals by type
     const goalsByType: Record<string, number> = { annual: 0, quarterly: 0, monthly: 0 };
     goalsCounts.forEach(goal => {
       goalsByType[goal.type] = Number(goal.count);
@@ -158,9 +145,6 @@ export class SubscriptionLimitsService {
     };
   }
 
-  /**
-   * Check if user can create a new habit
-   */
   static async canCreateHabit(userId: string): Promise<{ canCreate: boolean; reason?: string }> {
     const [limits, usage] = await Promise.all([
       this.getUserPlanLimits(userId),
@@ -177,9 +161,6 @@ export class SubscriptionLimitsService {
     return { canCreate: true };
   }
 
-  /**
-   * Check if user can create a new trading entry
-   */
   static async canCreateTradingEntry(userId: string): Promise<{ canCreate: boolean; reason?: string }> {
     const [limits, usage] = await Promise.all([
       this.getUserPlanLimits(userId),
@@ -196,9 +177,6 @@ export class SubscriptionLimitsService {
     return { canCreate: true };
   }
 
-  /**
-   * Check if user can create a new goal
-   */
   static async canCreateGoal(userId: string, goalType: "annual" | "quarterly" | "monthly"): Promise<{ canCreate: boolean; reason?: string }> {
     const [limits, usage] = await Promise.all([
       this.getUserPlanLimits(userId),
@@ -235,9 +213,6 @@ export class SubscriptionLimitsService {
     return { canCreate: true };
   }
 
-  /**
-   * Get all goal creation limits for a user in a single optimized query
-   */
   static async getAllGoalLimits(userId: string): Promise<{
     annual: { canCreate: boolean; reason?: string; current: number; max: number };
     quarterly: { canCreate: boolean; reason?: string; current: number; max: number };
@@ -284,13 +259,9 @@ export class SubscriptionLimitsService {
     };
   }
 
-  /**
-   * Increment monthly usage counter
-   */
   static async incrementMonthlyUsage(userId: string, type: "trading" | "habits" | "goals"): Promise<void> {
     const currentMonth = new Date().toISOString().slice(0, 7);
 
-    // Check if user already has a record for this month
     const existingUsage = await db
       .select()
       .from(monthlyUsage)
@@ -298,7 +269,6 @@ export class SubscriptionLimitsService {
       .limit(1);
 
     if (existingUsage[0]) {
-      // Update existing record
       const updateData: any = {};
       switch (type) {
         case "trading":
@@ -317,7 +287,7 @@ export class SubscriptionLimitsService {
         .set(updateData)
         .where(eq(monthlyUsage.id, existingUsage[0].id));
     } else {
-      // Create new record
+
       const newUsage = {
         id: createId(),
         userId,
@@ -331,9 +301,6 @@ export class SubscriptionLimitsService {
     }
   }
 
-  /**
-   * Check if user has access to a specific feature
-   */
   static async hasFeatureAccess(userId: string, feature: keyof Omit<PlanLimits, "maxHabits" | "maxTradingEntries" | "maxAnnualGoals" | "maxQuarterlyGoals" | "maxMonthlyGoals">): Promise<boolean> {
     const limits = await this.getUserPlanLimits(userId);
     return limits[feature];

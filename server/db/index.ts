@@ -3,7 +3,6 @@ import postgres from "postgres";
 import * as schema from "./schema";
 import { config } from "dotenv";
 
-// Charger les variables d'environnement
 config();
 
 const connectionString = process.env.DATABASE_URL;
@@ -19,7 +18,6 @@ export * from "./schema";
 
 import { Redis } from "@upstash/redis";
 
-// Configuration Redis avec fallback gracieux
 const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
   ? new Redis({
       url: process.env.UPSTASH_REDIS_REST_URL,
@@ -29,7 +27,6 @@ const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_RE
 
 export { redis };
 
-// Service de cache intelligent avec fallback
 export const cacheUtils = {
   async get<T>(key: string): Promise<T | null> {
     if (!redis) return null;
@@ -70,7 +67,6 @@ export const cacheUtils = {
     return `${prefix}:${userId}:${params.join(":")}`;
   },
 
-  // Méthodes spécialisées pour les stats
   async getStats<T>(userId: string, type: string, params: Record<string, any> = {}): Promise<T | null> {
     const key = this.generateKey('stats', userId, type, JSON.stringify(params));
     return this.get<T>(key);

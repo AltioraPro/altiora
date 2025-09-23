@@ -76,20 +76,16 @@ export function CreateHabitModal() {
 
   return (
     <>
-      {/* Backdrop */}
       <div 
         className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999]"
         onClick={handleClose}
       />
       
-      {/* Modal */}
       <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 pointer-events-none">
         <div className="bg-pure-black border border-white/20 rounded-2xl w-full max-w-md max-h-[90vh] relative overflow-hidden pointer-events-auto">
-          {/* Gradient accent */}
           <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
           
           <div className="p-4 overflow-y-auto max-h-[calc(90vh-2rem)]">
-            {/* Header */}
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold font-argesta tracking-tight">
                 NEW HABIT
@@ -102,12 +98,9 @@ export function CreateHabitModal() {
               </button>
             </div>
 
-            {/* Limits Banner */}
             <LimitsBanner />
 
-            {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Emoji Selection */}
               <div>
                 <label className="block text-xs font-argesta text-white/80 mb-2">
                   EMOJI
@@ -130,7 +123,6 @@ export function CreateHabitModal() {
                 </div>
               </div>
 
-              {/* Title */}
               <div>
                 <label className="block text-xs font-argesta text-white/80 mb-2">
                   TITLE
@@ -151,7 +143,6 @@ export function CreateHabitModal() {
                 </div>
               </div>
 
-              {/* Description */}
               <div>
                 <label className="block text-xs font-argesta text-white/80 mb-2">
                   DESCRIPTION (OPTIONAL)
@@ -165,7 +156,6 @@ export function CreateHabitModal() {
                 />
               </div>
 
-              {/* Color Selection */}
               <div>
                 <label className="block text-xs font-argesta text-white/80 mb-2">
                   ACCENT COLOR
@@ -187,7 +177,6 @@ export function CreateHabitModal() {
                 </div>
               </div>
 
-              {/* Preview */}
               <div className="p-3 bg-white/5 rounded-lg border border-white/10">
                 <div className="flex items-center space-x-2">
                   <div className="text-lg">{emoji}</div>
@@ -206,7 +195,6 @@ export function CreateHabitModal() {
                 </div>
               </div>
 
-              {/* Buttons */}
               <div className="flex items-center space-x-3 pt-3">
                 <button
                   type="button"
