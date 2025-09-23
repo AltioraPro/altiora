@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
     }
 
-    const botUrl = process.env.DISCORD_BOT_WEBHOOK_URL || 'http://localhost:3001';
+    const botUrl = process.env.DISCORD_BOT_WEBHOOK_URL;
     const response = await fetch(`${botUrl}/health`, {
       method: 'GET',
       headers: {

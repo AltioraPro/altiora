@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/server/db';
 
-
-// Route pour vérifier la santé de l'application
 export async function GET() {
   try {
     await db.execute('SELECT 1');
@@ -12,7 +10,7 @@ export async function GET() {
       timestamp: new Date().toISOString(),
       database: 'connected',
       uptime: process.uptime(),
-      environment: process.env.NODE_ENV || 'development'
+      environment: process.env.NODE_ENV
     };
     
     return NextResponse.json(status);
