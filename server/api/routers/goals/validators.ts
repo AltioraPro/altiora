@@ -60,7 +60,6 @@ export const getGoalStatsValidator = z.object({
   period: z.enum(["week", "month", "quarter", "year"]).default("month"),
 });
 
-// Sous-objectifs
 export const createSubGoalValidator = z.object({
   goalId: z.string().min(1, "Goal ID is required"),
   title: z.string().min(1, "Title is required").max(255, "Title too long"),
@@ -80,7 +79,6 @@ export const deleteSubGoalValidator = z.object({
   id: z.string().min(1, "Sub-goal ID is required"),
 });
 
-// Tâches
 export const createGoalTaskValidator = z.object({
   goalId: z.string().min(1, "Goal ID is required"),
   title: z.string().min(1, "Title is required").max(255, "Title too long"),

@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// Types pour Discord
 export interface DiscordUser {
   id: string;
   username: string;
@@ -23,7 +22,6 @@ export interface Goal {
   userId: string;
 }
 
-// Configuration Discord
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID!;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET!;
 const DISCORD_GUILD_ID = process.env.DISCORD_GUILD_ID!;
@@ -31,12 +29,10 @@ const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN!;
 const DISCORD_BOT_WEBHOOK_URL = process.env.DISCORD_BOT_WEBHOOK_URL || 'http://localhost:3001';
 const REDIRECT_URI = process.env.DISCORD_REDIRECT_URI || `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/discord/callback`;
 
-// S'assurer que REDIRECT_URI n'est jamais undefined
 if (!REDIRECT_URI) {
   throw new Error('DISCORD_REDIRECT_URI must be defined');
 }
 
-// Validation de la configuration
 if (!DISCORD_CLIENT_ID || !DISCORD_CLIENT_SECRET || !DISCORD_GUILD_ID || !DISCORD_BOT_TOKEN || !REDIRECT_URI) {
   console.error('Discord configuration missing:', {
     clientId: !!DISCORD_CLIENT_ID,
@@ -47,7 +43,6 @@ if (!DISCORD_CLIENT_ID || !DISCORD_CLIENT_SECRET || !DISCORD_GUILD_ID || !DISCOR
   });
 }
 
-// Mapping des ranks vers les IDs de rôles Discord
 const RANK_ROLE_MAPPING: Record<string, string> = {
   NEW: process.env.DISCORD_ROLE_NEW!,
   BEGINNER: process.env.DISCORD_ROLE_BEGINNER!,
@@ -61,9 +56,6 @@ const RANK_ROLE_MAPPING: Record<string, string> = {
 };
 
 export class DiscordService {
-  /**
-   * Génère l'URL d'autorisation Discord OAuth2
-   */
   static getAuthUrl(state: string): string {
     const params = new URLSearchParams({
       client_id: DISCORD_CLIENT_ID,
@@ -76,9 +68,6 @@ export class DiscordService {
     return `https://discord.com/api/oauth2/authorize?${params.toString()}`;
   }
 
-  /**
-   * Échange le code d'autorisation contre un token d'accès
-   */
   static async exchangeCodeForToken(code: string): Promise<{ access_token: string; refresh_token: string }> {
     const body = new URLSearchParams({
       client_id: DISCORD_CLIENT_ID,
@@ -105,9 +94,6 @@ export class DiscordService {
     return response.json();
   }
 
-  /**
-   * Récupère les informations de l'utilisateur Discord
-   */
   static async getUserInfo(accessToken: string): Promise<DiscordUser> {
     const response = await fetch('https://discord.com/api/users/@me', {
       headers: {
@@ -122,9 +108,6 @@ export class DiscordService {
     return response.json();
   }
 
-  /**
-   * Ajoute l'utilisateur au serveur Discord
-   */
   static async addUserToGuild(discordId: string, accessToken: string): Promise<void> {
     const response = await fetch(`https://discord.com/api/guilds/${DISCORD_GUILD_ID}/members/${discordId}`, {
       method: 'PUT',
@@ -142,16 +125,12 @@ export class DiscordService {
     }
   }
 
-  /**
-   * Met à jour le rôle de l'utilisateur sur Discord
-   */
   static async updateUserRole(discordId: string, rank: string): Promise<void> {
     const roleId = RANK_ROLE_MAPPING[rank];
     if (!roleId) {
       throw new Error(`No Discord role mapping found for rank: ${rank}`);
     }
 
-    // Récupérer les rôles actuels de l'utilisateur
     const memberResponse = await fetch(`https://discord.com/api/guilds/${DISCORD_GUILD_ID}/members/${discordId}`, {
       headers: {
         'Authorization': `Bot ${DISCORD_BOT_TOKEN}`,
@@ -164,7 +143,6 @@ export class DiscordService {
 
     const member: DiscordGuildMember = await memberResponse.json();
     
-    // Ajouter le nouveau rôle et retirer les anciens rôles de rank
     const newRoles = [...member.roles.filter(roleId => !Object.values(RANK_ROLE_MAPPING).includes(roleId)), roleId];
 
     const response = await fetch(`https://discord.com/api/guilds/${DISCORD_GUILD_ID}/members/${discordId}`, {
@@ -183,9 +161,6 @@ export class DiscordService {
     }
   }
 
-  /**
-   * Vérifie si l'utilisateur est membre du serveur
-   */
   static async isUserInGuild(discordId: string): Promise<boolean> {
     const response = await fetch(`https://discord.com/api/guilds/${DISCORD_GUILD_ID}/members/${discordId}`, {
       headers: {
@@ -196,18 +171,13 @@ export class DiscordService {
     return response.ok;
   }
 
-  /**
-   * Synchronise le rank de l'utilisateur avec Discord
-   */
   static async syncUserRank(discordId: string, rank: string): Promise<void> {
     try {
-      // Vérifier si l'utilisateur est dans le serveur
       const isInGuild = await this.isUserInGuild(discordId);
       if (!isInGuild) {
         throw new Error('User is not in Discord guild');
       }
 
-      // Mettre à jour le rôle
       await this.updateUserRole(discordId, rank);
     } catch (error) {
       console.error('Failed to sync user rank with Discord:', error);
@@ -215,9 +185,6 @@ export class DiscordService {
     }
   }
 
-  /**
-   * Envoie une requête webhook au bot Discord pour synchronisation automatique
-   */
   static async sendWebhookSync(discordId: string, rank: string): Promise<void> {
     console.log(`🔄 [Discord Webhook] Tentative de synchronisation pour ${discordId} -> ${rank}`);
     
@@ -259,22 +226,16 @@ export class DiscordService {
     }
   }
 
-  /**
-   * Synchronise automatiquement le rank de l'utilisateur avec Discord
-   * Utilise le webhook pour une synchronisation plus rapide
-   */
   static async autoSyncUserRank(discordId: string, rank: string): Promise<void> {
     console.log(`🚀 [Discord AutoSync] Début de synchronisation automatique pour ${discordId} -> ${rank}`);
     
     try {
-      // Essayer d'abord le webhook pour une synchronisation rapide
       console.log(`🔄 [Discord AutoSync] Tentative webhook...`);
       await this.sendWebhookSync(discordId, rank);
       console.log(`✅ [Discord AutoSync] Synchronisation webhook réussie`);
     } catch (webhookError) {
       console.warn(`⚠️ [Discord AutoSync] Webhook échoué, fallback vers API directe:`, webhookError);
       
-      // Fallback vers l'API directe si le webhook échoue
       console.log(`🔄 [Discord AutoSync] Tentative API directe...`);
       await this.syncUserRank(discordId, rank);
       console.log(`✅ [Discord AutoSync] Synchronisation API directe réussie`);
@@ -283,9 +244,6 @@ export class DiscordService {
     console.log(`🎉 [Discord AutoSync] Synchronisation terminée pour ${discordId} -> ${rank}`);
   }
 
-  /**
-   * Synchronise automatiquement tous les utilisateurs Discord connectés
-   */
   static async syncAllConnectedUsers(): Promise<{ success: number; failed: number }> {
     console.log(`🚀 [Discord BulkSync] Début de synchronisation de tous les utilisateurs`);
     
@@ -294,7 +252,6 @@ export class DiscordService {
     const { and, isNotNull, eq } = await import('drizzle-orm');
 
     try {
-      // Récupérer tous les utilisateurs connectés à Discord
       console.log(`📊 [Discord BulkSync] Récupération des utilisateurs connectés...`);
       const connectedUsers = await db.query.users.findMany({
         where: and(
@@ -326,7 +283,6 @@ export class DiscordService {
         try {
           await this.autoSyncUserRank(user.discordId, user.rank);
           
-          // Mettre à jour le statut de synchronisation
           await db.update(users)
             .set({
               discordRoleSynced: true,
@@ -350,12 +306,8 @@ export class DiscordService {
     }
   }
 
-  /**
-   * Envoie un message privé (DM) à un utilisateur Discord
-   */
   static async sendDirectMessage(discordId: string, message: string | object): Promise<void> {
     try {
-      // Créer un DM channel avec l'utilisateur
       const createDMResponse = await fetch('https://discord.com/api/users/@me/channels', {
         method: 'POST',
         headers: {
@@ -373,10 +325,8 @@ export class DiscordService {
 
       const dmChannel = await createDMResponse.json();
 
-      // Préparer le payload du message
       const messagePayload = typeof message === 'string' ? { content: message } : message;
 
-      // Envoyer le message dans le DM
       const sendMessageResponse = await fetch(`https://discord.com/api/channels/${dmChannel.id}/messages`, {
         method: 'POST',
         headers: {
@@ -397,30 +347,20 @@ export class DiscordService {
     }
   }
 
-  /**
-   * Envoie un rappel d'objectif via Discord DM
-   */
   static async sendGoalReminder(discordId: string, goal: Goal): Promise<void> {
     const message = this.formatGoalReminderMessage(goal);
     await this.sendDirectMessage(discordId, message);
   }
 
-  /**
-   * Envoie un message de félicitations quand un objectif est complété
-   */
   static async sendGoalCompletion(discordId: string, goal: Goal): Promise<void> {
     const message = this.formatGoalCompletionMessage(goal);
     await this.sendDirectMessage(discordId, message);
   }
 
-  /**
-   * Formate le message de rappel d'objectif
-   */
   private static formatGoalReminderMessage(goal: Goal): string {
     const deadline = goal.deadline ? new Date(goal.deadline).toLocaleDateString('fr-FR') : 'Aucune date limite';
     const daysLeft = goal.deadline ? Math.ceil((new Date(goal.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : null;
     
-    // Emoji dynamique selon l'urgence
     let urgencyEmoji = '⏰';
     let urgencyText = '';
     if (daysLeft !== null) {
@@ -468,9 +408,6 @@ export class DiscordService {
     return message;
   }
 
-  /**
-   * Formate le message de félicitations pour un objectif complété
-   */
   private static formatGoalCompletionMessage(goal: Goal): string {
     const completionDate = new Date().toLocaleDateString('fr-FR');
     const completionTime = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
@@ -487,7 +424,6 @@ export class DiscordService {
     
     message += `✅ **Complété le:** ${completionDate} à ${completionTime}\n\n`;
     
-    // Messages de motivation aléatoires
     const motivationalMessages = [
       "🌟 **Vous êtes incroyable ! Continuez comme ça !** 🌟",
       "🔥 **Un objectif de plus dans votre collection de succès !** 🔥",
@@ -507,7 +443,6 @@ export class DiscordService {
   }
 }
 
-// Schémas de validation
 export const discordAuthSchema = z.object({
   code: z.string(),
   state: z.string(),

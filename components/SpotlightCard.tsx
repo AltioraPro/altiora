@@ -1,6 +1,3 @@
-/*
-	Installed from https://reactbits.dev/ts/tailwind/
-*/
 
 import React, { useRef, useState } from "react";
 

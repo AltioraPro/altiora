@@ -147,12 +147,6 @@ export function GoalsDashboard() {
     type: filters.type !== "all" ? filters.type : undefined,
   });
 
-  console.log("Query params:", {
-    page,
-    search: search || undefined,
-    status: filters.status !== "all" ? filters.status : undefined,
-    type: filters.type !== "all" ? filters.type : undefined,
-  });
 
   const { data: stats, refetch: refetchStats } = api.goals.getStats.useQuery(
     { period: "month" },
@@ -633,7 +627,6 @@ export function GoalsDashboard() {
                               </div>
                             </div>
 
-                            {/* August */}
                             <div className="space-y-4">
                               <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
                                 August
@@ -660,7 +653,6 @@ export function GoalsDashboard() {
                               </div>
                             </div>
 
-                            {/* September */}
                             <div className="space-y-4">
                               <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
                                 September
@@ -687,7 +679,6 @@ export function GoalsDashboard() {
                               </div>
                             </div>
 
-                            {/* October */}
                             <div className="space-y-4">
                               <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
                                 October
@@ -714,7 +705,6 @@ export function GoalsDashboard() {
                               </div>
                             </div>
 
-                            {/* November */}
                             <div className="space-y-4">
                               <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
                                 November
@@ -741,7 +731,6 @@ export function GoalsDashboard() {
                               </div>
                             </div>
 
-                            {/* December */}
                             <div className="space-y-4">
                               <h4 className="text-lg font-medium text-white/70 border-b border-white/10 pb-2">
                                 December
@@ -777,9 +766,7 @@ export function GoalsDashboard() {
           )}
         </div>
 
-        {/* Right column: Stats + Quick Actions */}
         <div className="lg:col-span-4 space-y-6">
-          {/* Stats */}
           {stats && (
             <div className="relative">
               <GoalStats stats={stats as { total: number; completed: number; overdue: number; active: number; completionRate: number }} />
@@ -788,7 +775,6 @@ export function GoalsDashboard() {
         </div>
       </div>
 
-      {/* Edit Modal */}
       {editingGoal && (
         <EditGoalModal
           goal={editingGoal}

@@ -62,8 +62,7 @@ export function HabitsProvider({ children }: HabitsProviderProps) {
   };
 
   const setSelectedDate = (date: string) => {
-    
-    console.log("Selected date:", date);
+    // Date selection logic can be added here if needed
   };
 
   const setOptimisticUpdate = (habitId: string, isCompleted: boolean) => {

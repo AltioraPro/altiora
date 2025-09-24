@@ -68,9 +68,6 @@ export class GoalRemindersService {
     }
   }
 
-  /**
-   * Envoyer un rappel pour un goal spécifique
-   */
   static async sendReminder(goal: {
     id: string;
     userId: string;
@@ -107,9 +104,6 @@ export class GoalRemindersService {
     }
   }
 
-  /**
-   * Envoyer un rappel Discord
-   */
   static async sendDiscordReminder(discordId: string, goal: {
     title: string;
     description?: string;
@@ -161,9 +155,6 @@ export class GoalRemindersService {
     }
   }
 
-  /**
-   * Mettre à jour la prochaine date de rappel
-   */
   static async updateNextReminderDate(goalId: string, frequency: "daily" | "weekly" | "monthly") {
     try {
       const now = new Date();
@@ -198,9 +189,6 @@ export class GoalRemindersService {
     }
   }
 
-  /**
-   * Enregistrer qu'un rappel a été envoyé
-   */
   static async recordReminderSent(goalId: string, userId: string, reminderType: "discord" | "email" | "push") {
     try {
       const reminderId = createId();
@@ -220,9 +208,6 @@ export class GoalRemindersService {
     }
   }
 
-  /**
-   * Programmer un rappel pour un goal
-   */
   static async scheduleReminder(goalId: string, frequency: "daily" | "weekly" | "monthly") {
     try {
       const now = new Date();
@@ -246,9 +231,6 @@ export class GoalRemindersService {
     }
   }
 
-  /**
-   * Annuler les rappels pour un goal
-   */
   static async cancelReminders(goalId: string) {
     try {
       await db
@@ -267,9 +249,6 @@ export class GoalRemindersService {
     }
   }
 
-  /**
-   * Obtenir les statistiques des rappels
-   */
   static async getReminderStats(userId: string) {
     try {
       const totalReminders = await db

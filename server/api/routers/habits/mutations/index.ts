@@ -18,7 +18,6 @@ export const createHabit = async (
   userId: string
 ) => {
   try {
-    // Vérifier les limites du plan d'abonnement
     const canCreate = await SubscriptionLimitsService.canCreateHabit(userId);
     if (!canCreate.canCreate) {
       throw new TRPCError({
@@ -45,7 +44,6 @@ export const createHabit = async (
       });
     }
 
-    // Incrémenter le compteur d'utilisation
     await SubscriptionLimitsService.incrementMonthlyUsage(userId, "habits");
 
     return newHabit;
@@ -145,7 +143,6 @@ export const toggleHabitCompletion = async (
   try {
     const { habitId, completionDate, isCompleted, notes } = input;
 
-    //requete unique plus opti imo ?
     const existingHabit = await db
       .select()
       .from(habits)
@@ -159,7 +156,6 @@ export const toggleHabitCompletion = async (
       });
     }
 
-    // Vérifier si une completion existe déjà pour cette date
     const existingCompletion = await db
       .select()
       .from(habitCompletions)
@@ -175,7 +171,6 @@ export const toggleHabitCompletion = async (
     let completion;
 
     if (existingCompletion.length > 0) {
-      // Mettre à jour l'enregistrement existant
       [completion] = await db
         .update(habitCompletions)
         .set({
@@ -186,7 +181,6 @@ export const toggleHabitCompletion = async (
         .where(eq(habitCompletions.id, existingCompletion[0]!.id))
         .returning();
     } else {
-      // Créer un nouvel enregistrement
       const completionId = createId();
       [completion] = await db
         .insert(habitCompletions)
@@ -201,7 +195,6 @@ export const toggleHabitCompletion = async (
         .returning();
     }
 
-    // Calculer et mettre à jour le rank après chaque completion
     await updateUserRank(userId);
 
     return completion;
@@ -214,5 +207,4 @@ export const toggleHabitCompletion = async (
   }
 };
 
-// Export updateUserRank for use in router
 export { updateUserRank }; 

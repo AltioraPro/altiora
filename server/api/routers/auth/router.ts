@@ -4,7 +4,6 @@ import { getCurrentUser, getUserEmailStatus } from "./queries";
 import { syncUser, sendVerificationEmail, verifyEmail, updateProfile, updateRank } from "./mutations";
 
 export const authRouter = createTRPCRouter({
-  // Queries
   getCurrentUser: protectedProcedure.query(async ({ ctx }) => {
     const { db, session } = ctx;
     return await getCurrentUser({ db, session });
@@ -16,7 +15,6 @@ export const authRouter = createTRPCRouter({
       return await getUserEmailStatus({ email: input.email });
     }),
 
-  // Mutations
   syncUser: publicProcedure
     .input(syncUserSchema)
     .mutation(async ({ ctx, input }) => {
