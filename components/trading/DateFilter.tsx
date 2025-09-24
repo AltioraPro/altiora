@@ -58,13 +58,11 @@ export function DateFilter({ onFilterChange, className = "" }: DateFilterProps) 
 
   return (
     <div className={`flex items-center space-x-4 ${className}`}>
-      {/* Filter Label with Icon */}
       <div className="flex items-center space-x-2">
         <Calendar className="h-4 w-6 text-white/60" />
         <span className="text-white/80 w-32">Filter by period:</span>
       </div>
 
-      {/* Month Dropdown - Only show for monthly view */}
       {filter.view === 'monthly' && (
         <Select value={filter.month} onValueChange={handleMonthChange}>
           <SelectTrigger className="w-32 bg-black/50 border-white/20 text-white rounded-lg">
@@ -80,7 +78,6 @@ export function DateFilter({ onFilterChange, className = "" }: DateFilterProps) 
         </Select>
       )}
 
-      {/* Year Dropdown - Show for monthly and yearly views */}
       {(filter.view === 'monthly' || filter.view === 'yearly') && (
         <Select value={filter.year} onValueChange={handleYearChange}>
           <SelectTrigger className="w-20 bg-black/50 border-white/20 text-white rounded-lg">
@@ -96,7 +93,6 @@ export function DateFilter({ onFilterChange, className = "" }: DateFilterProps) 
         </Select>
       )}
 
-      {/* View Selection Buttons */}
       <div className="flex space-x-1">
         <Button
           onClick={() => handleViewChange('monthly')}

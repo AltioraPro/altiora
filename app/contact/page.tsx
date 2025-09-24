@@ -32,7 +32,6 @@
     const [floatingElements, setFloatingElements] = useState<FloatingElement[]>([]);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    // Generate floating geometric elements
     useEffect(() => {
       const elements = Array.from({ length: 12 }, (_, i) => ({
         id: i,
@@ -44,7 +43,6 @@
       setFloatingElements(elements);
     }, []);
 
-    // Track mouse position
     useEffect(() => {
       const handleMouseMove = (e: MouseEvent) => {
         if (containerRef.current) {
@@ -72,13 +70,11 @@
       e.preventDefault();
       setIsSubmitting(true);
       
-      // Simulate sending
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       console.log('Form submitted:', formData);
       setIsSubmitting(false);
       
-      // Reset form
       setFormData({
         fullName: '',
         email: '',
@@ -91,7 +87,6 @@
       <div className="min-h-screen bg-pure-black text-pure-white relative overflow-hidden" ref={containerRef}>
         <Header />
         
-        {/* Floating geometric elements */}
         <div className="absolute inset-0 pointer-events-none">
           {floatingElements.map((element) => (
             <div
@@ -110,7 +105,6 @@
           ))}
         </div>
 
-              {/* Luminous cursor effect */}
       <div
         className="absolute pointer-events-none z-5 transition-all duration-300 ease-out"
           style={{
@@ -128,39 +122,33 @@
             
             <div className="grid lg:grid-cols-2 gap-16 items-center w-full">
               
-              {/* Title section - Left side */}
               <div className="relative">
-                {/* Decorative geometric elements */}
                 <div className="absolute -top-8 -left-8 w-16 h-16 border border-white/20 rounded-full animate-pulse" />
                 <div className="absolute -top-4 -left-4 w-8 h-8 bg-white/10 rotate-45" />
                 
                 <h1 className="text-[8vw] lg:text-[6vw] leading-none font-bold font-argesta bg-gradient-to-b from-white via-white to-gray-400 bg-clip-text text-transparent mb-8 text-right">
                   CONTACT<br />
-                                                   <span className="relative inline-block text-white">
-                   <span className="absolute -left-96 top-1/2 transform -translate-y-1/2 w-96 h-px bg-gradient-to-r from-transparent to-white/60"></span>
+                    <span className="relative inline-block text-white">
+                    <span className="absolute -left-96 top-1/2 transform -translate-y-1/2 w-96 h-px bg-gradient-to-r from-transparent to-white/60"></span>
                     US
-                 </span>
+                  </span>
                 </h1>
                 
-                {/* Geometric circle */}
                 <div className="flex">
                   <div className="w-20 h-20 rounded-full border border-white/30 relative">
                     <div className="absolute inset-0 rounded-full border border-white/10 animate-spin" style={{animationDuration: '20s'}} />
                     <div className="absolute inset-2 rounded-full border border-white/20 animate-spin" style={{animationDuration: '15s', animationDirection: 'reverse'}} />
                     <div className="absolute top-1/2 left-1/2 w-1 h-1 bg-white rounded-full transform -translate-x-1/2 -translate-y-1/2" />
                     
-                    {/* Connected lines */}
                     <div className="absolute top-1/2 -right-12 w-12 h-px bg-gradient-to-r from-white/60 to-transparent" />
                     <div className="absolute top-1/2 -left-12 w-12 h-px bg-gradient-to-l from-white/60 to-transparent" />
                   </div>
                 </div>
               </div>
 
-              {/* Form - Right side */}
               <div className="relative w-full max-w-2xl">
               <form onSubmit={handleSubmit} className="space-y-6">
                 
-                {/* Full name */}
                 <div className="relative">
                   <label className="block text-xs font-medium text-white/60 mb-2 tracking-widest">
                     FULL NAME *
@@ -188,7 +176,6 @@
                   </div>
                 </div>
 
-                {/* Email and Phone on same line */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="relative">
                     <label className="block text-xs font-medium text-white/60 mb-2 tracking-widest">
@@ -244,7 +231,6 @@
                   </div>
                 </div>
 
-                {/* Message */}
                 <div className="relative">
                   <label className="block text-xs font-medium text-white/60 mb-2 tracking-widest">
                     MESSAGE *
@@ -269,22 +255,18 @@
                   </div>
                 </div>
 
-                              {/* Send button with enhanced effects */}
               <div className="relative mt-8">
                 <button
                   type="submit"
                   disabled={isSubmitting}
                   className="group relative w-full py-6 bg-transparent border border-white/30 rounded-none overflow-hidden transition-all duration-700 hover:border-white disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {/* Multiple layered effects */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-center" />
                   <div className="absolute inset-0 bg-white/10 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
                   
-                  {/* Geometric corner accents */}
                   <div className="absolute top-0 left-0 w-8 h-8 border-t border-l border-white/40 transform -translate-x-full -translate-y-full group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-500" />
                   <div className="absolute bottom-0 right-0 w-8 h-8 border-b border-r border-white/40 transform translate-x-full translate-y-full group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-500 delay-100" />
                   
-                  {/* Animated border lines */}
                   <div className="absolute top-0 left-0 w-0 h-px bg-white group-hover:w-full transition-all duration-600" />
                   <div className="absolute bottom-0 right-0 w-0 h-px bg-white group-hover:w-full transition-all duration-600 delay-200" />
                   
@@ -315,7 +297,6 @@
                     )}
                   </div>
                   
-                  {/* Subtle glow effect */}
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-500 bg-gradient-to-r from-transparent via-white/10 to-transparent blur-sm" />
                 </button>
               </div>
@@ -325,7 +306,6 @@
           </div>
         </div>
 
-        {/* Floating animations styles */}
         <style jsx>{`
           ${floatingElements.map(element => `
             @keyframes float-${element.id} {
