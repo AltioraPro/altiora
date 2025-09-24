@@ -114,11 +114,12 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
       return acc;
     }, [] as Array<{ date: string; pnl: number; cumulative: number; tradeNumber: number }>) || [];
 
+  const totalPerformance = cumulativeData.length > 0 ? cumulativeData[cumulativeData.length - 1]?.cumulative : 0;
 
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="border border-white/20 bg-gradient-to-br from-black/40 to-black/60 backdrop-blur-sm">
+        <Card className="border border-white/20 bg-gradient-to-br from-black/40 to-black/6  0 backdrop-blur-sm">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg text-white font-argesta tracking-wide">WIN RATE</CardTitle>
             <CardDescription className="text-white/70 font-argesta">
@@ -284,7 +285,7 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
       <Card className="border border-white/20 bg-gradient-to-br from-black/40 to-black/60 backdrop-blur-sm w-full">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg text-white font-argesta tracking-wide">CUMULATIVE PERFORMANCE</CardTitle>
-          <CardDescription className="text-white/70 font-argesta">
+          <CardDescription className="text-white/70">
             Performance evolution over time
           </CardDescription>
         </CardHeader>
@@ -344,7 +345,7 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                 {cumulativeData.length > 0 && (
                   <ReferenceDot
                     x={cumulativeData.length}
-                    y={cumulativeData[cumulativeData.length - 1]?.cumulative}
+                    y={totalPerformance}
                     r={6}
                     fill="#10B981"
                     stroke="#10B981"
@@ -361,21 +362,21 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
             
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-sm text-white/70 font-argesta tracking-wide">TOTAL PERFORMANCE</div>
+                <div className="text-sm text-white/70  tracking-wide">TOTAL PERFORMANCE</div>
                 <div className="text-2xl font-bold text-white font-argesta">
-                  {cumulativeData.length > 0 ? `${cumulativeData[cumulativeData.length - 1]?.cumulative.toFixed(1)}%` : '0.0%'}
+                  {totalPerformance.toFixed(1)}%
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-sm text-white/70 font-argesta tracking-wide">TRADES</div>
-                <div className="text-2xl font-bold text-white font-argesta">
+                <div className="text-sm text-white/70  tracking-wide">TRADES</div>
+                <div className="text-2xl font-bold text-white text-center font-argesta">
                   {cumulativeData.length}
                 </div>
               </div>
               <div className="text-right">
                 <div className="text-sm text-white/70 font-argesta tracking-wide">AVG PnL</div>
                 <div className="text-2xl font-bold text-white font-argesta">
-                  {cumulativeData.length > 0 ? `${(cumulativeData[cumulativeData.length - 1]?.cumulative / cumulativeData.length).toFixed(1)}%` : '0.0%'}
+                  {cumulativeData.length > 0 ? `${(totalPerformance / cumulativeData.length).toFixed(1)}%` : '0.0%'}
                 </div>
               </div>
             </div>

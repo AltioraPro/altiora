@@ -138,23 +138,36 @@ export default function TradingPage() {
     { enabled: !!selectedJournalId }
   );
 
-  const stats = backendStats || (filteredTrades && filteredTrades.length > 0 ? {
+    return trades
+      .sort((a, b) => new Date(a.tradeDate).getTime() - new Date(b.tradeDate).getTime())
+      .reduce((acc, trade) => {
+        const pnl = trade.profitLossPercentage ? parseFloat(trade.profitLossPercentage) || 0 : 0;
+        const previousCumulative = acc.length > 0 ? acc[acc.length - 1].cumulative : 0;
+        const cumulative = previousCumulative + pnl;
+        acc.push({ cumulative });
+        return acc;
+      }, [] as Array<{ cumulative: number }>);
+  };
+
+  const cumulativeData = filteredTrades ? calculateCumulativePerformance(filteredTrades) : [];
+  const totalPerformance = cumulativeData.length > 0 ? cumulativeData[cumulativeData.length - 1]?.cumulative : 0;
+
+  const stats = (filteredTrades && filteredTrades.length > 0 ? {
     totalTrades: filteredTrades.length,
     closedTrades: filteredTrades.length,
     winningTrades: filteredTrades.filter(t => Number(t.profitLossPercentage || 0) > 0).length,
     losingTrades: filteredTrades.filter(t => Number(t.profitLossPercentage || 0) < 0).length,
     winRate: filteredTrades && filteredTrades.length > 0 ? 
       (filteredTrades.filter(t => Number(t.profitLossPercentage || 0) > 0).length / filteredTrades.length) * 100 : 0,
-    totalPnL: filteredTrades ? filteredTrades.reduce((sum, t) => sum + Number(t.profitLossPercentage || 0), 0) : 0,
+    totalPnL: totalPerformance,
     avgPnL: filteredTrades && filteredTrades.length > 0 ? 
-      filteredTrades.reduce((sum, t) => sum + Number(t.profitLossPercentage || 0), 0) / filteredTrades.length : 0,
+      totalPerformance / filteredTrades.length : 0,
     totalAmountPnL: (() => {
       if (!filteredTrades) return 0;
       
       if (selectedJournal?.usePercentageCalculation && selectedJournal?.startingCapital) {
-        const totalPnLPercentage = filteredTrades.reduce((sum, t) => sum + Number(t.profitLossPercentage || 0), 0);
         const startingCapital = parseFloat(selectedJournal.startingCapital);
-        return (totalPnLPercentage / 100) * startingCapital;
+        return (totalPerformance / 100) * startingCapital;
       }
       
       return filteredTrades.reduce((sum, t) => sum + Number(t.profitLossAmount || 0), 0);
@@ -168,7 +181,7 @@ export default function TradingPage() {
       usePercentageCalculation: selectedJournal.usePercentageCalculation,
       startingCapital: selectedJournal.startingCapital || undefined
     } : undefined
-  } : null);
+  } : null) || backendStats;
   const { data: sessions } = api.trading.getSessions.useQuery(
     { journalId: selectedJournalId || undefined },
     { enabled: !!selectedJournalId }
