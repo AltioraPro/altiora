@@ -138,6 +138,7 @@ export default function TradingPage() {
     { enabled: !!selectedJournalId }
   );
 
+  const calculateCumulativePerformance = (trades: AdvancedTrade[]) => {
     return trades
       .sort((a, b) => new Date(a.tradeDate).getTime() - new Date(b.tradeDate).getTime())
       .reduce((acc, trade) => {
