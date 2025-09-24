@@ -60,8 +60,8 @@ export function DateFilter({ onFilterChange, className = "" }: DateFilterProps) 
     <div className={`flex items-center space-x-4 ${className}`}>
       {/* Filter Label with Icon */}
       <div className="flex items-center space-x-2">
-        <Calendar className="h-4 w-4 text-white/60" />
-        <span className="text-white/80 font-argesta">Filter by period:</span>
+        <Calendar className="h-4 w-6 text-white/60" />
+        <span className="text-white/80 w-32">Filter by period:</span>
       </div>
 
       {/* Month Dropdown - Only show for monthly view */}
