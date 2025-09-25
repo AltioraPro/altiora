@@ -20,7 +20,7 @@ export async function getCurrentUser({ db, session }: AuthQueryContext) {
         email: true,
         name: true,
         image: true,
-        emailVerified: new Date(),
+        emailVerified: true,
         rank: true,
         subscriptionPlan: true,
         stripeCustomerId: true,
