@@ -30,6 +30,7 @@ export const auth = betterAuth({
       verification: verifications,
     },
   }),
+  trustedOrigins: [computedBaseUrl],
   cookies: {
     sessionToken: {
       name: "better-auth.session_token",
@@ -129,6 +130,20 @@ export const auth = betterAuth({
     },
   },
   
+  advanced: {
+    allowDangerousEmailAccountLinking: true,
+  },
+  
+  onError: (error: any, request?: any) => {
+    console.error("Better Auth Error:", {
+      error: error.message || error,
+      code: error.code,
+      stack: error.stack,
+      url: request?.url,
+      method: request?.method
+    });
+  },
+
   ...(process.env.NODE_ENV === "development" && {
     debug: true,
   }),
