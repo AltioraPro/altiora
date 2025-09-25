@@ -6,7 +6,17 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const computedBaseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+const computedBaseUrl = (() => {
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return process.env.NEXT_PUBLIC_APP_URL;
+  }
+  
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  
+  return "http://localhost:3000";
+})();
 
 export const auth = betterAuth({
   baseURL: computedBaseUrl,
@@ -118,6 +128,10 @@ export const auth = betterAuth({
       redirectURI: `${computedBaseUrl}/api/auth/callback/google`,
     },
   },
+  
+  ...(process.env.NODE_ENV === "development" && {
+    debug: true,
+  }),
 
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days
