@@ -1,4 +1,4 @@
-import { pgTable, varchar, text, boolean, timestamp, integer, index, pgTableCreator } from "drizzle-orm/pg-core";
+import { pgTable, varchar, text, boolean, timestamp, integer, index, pgTableCreator, unique } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
 export const createTable = pgTableCreator((name) => `altiora_${name}`);
@@ -10,7 +10,7 @@ export const users = pgTable(
     email: varchar("email", { length: 255 }).notNull().unique(),
     name: varchar("name", { length: 255 }).notNull(),
     image: varchar("image", { length: 1024 }),
-    emailVerified: boolean("email_verified").default(false).notNull(),
+    emailVerified: timestamp("email_verified", { withTimezone: true }),
     rank: varchar("rank", { length: 50 }).default("NEW").notNull(),
     subscriptionPlan: varchar("subscription_plan", { length: 20 }).default("FREE").notNull(),
     discordId: varchar("discord_id", { length: 255 }),
@@ -90,6 +90,8 @@ export const accounts = pgTable(
   (table) => ({
     userIdIdx: index("account_user_id_idx").on(table.userId),
     providerAccountIdx: index("account_provider_account_idx").on(table.providerId, table.accountId),
+    // Contrainte unique pour éviter les doublons de comptes OAuth
+    providerAccountUnique: unique("account_provider_account_unique").on(table.providerId, table.accountId),
   })
 );
 

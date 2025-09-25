@@ -131,6 +131,13 @@ export const auth = betterAuth({
     },
   },
   
+  account: {
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ["google"],
+    },
+  },
+  
   
   onError: (error: Error, request?: Request) => {
     console.error("Better Auth Error:", {
