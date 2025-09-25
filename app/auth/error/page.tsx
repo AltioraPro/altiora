@@ -2,10 +2,10 @@
 
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 
-export default function AuthErrorPage() {
+function AuthErrorContent() {
 const searchParams = useSearchParams();
 const router = useRouter();
 const [errorDetails, setErrorDetails] = useState<{
@@ -166,7 +166,19 @@ return (
             </div>
         </div>
         </div>
-    </div>
-    </div>
-);
+     </div>
+     </div>
+ );
+ }
+
+export default function AuthErrorPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-pure-black text-pure-white flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+      </div>
+    }>
+      <AuthErrorContent />
+    </Suspense>
+  );
 }
