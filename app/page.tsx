@@ -14,7 +14,6 @@ export default function HomePage() {
     <>
       <Header />
       <section className="h-screen w-full flex items-center justify-center bg-cover bg-center bg-no-repeat relative overflow-hidden grayscale ">
-        {/* Background Silk */}
         <div className="absolute inset-0 w-full h-full">
         <Silk
           speed={5}
@@ -25,7 +24,6 @@ export default function HomePage() {
         />
         </div>
 
-        {/* Effet de lumière du bas vers le haut */}
         <div 
           className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-[120%] h-[60%] pointer-events-none opacity-50 z-10"
           style={{
@@ -33,7 +31,6 @@ export default function HomePage() {
           }}
         ></div>
 
-        {/* Decorative elements left side */}
         <div className="absolute left-8 top-1/2 transform -translate-y-1/2 space-y-8 opacity-60 z-20">
           <div className="flex flex-col space-y-6">
             <div className="flex items-center space-x-3">
@@ -50,7 +47,6 @@ export default function HomePage() {
             </div>
           </div>
           
-          {/* Ligne décorative verticale */}
           <div className="w-px h-32 bg-gradient-to-b from-transparent via-white to-transparent opacity-30"></div>
           
           <div className="space-y-2">
@@ -58,7 +54,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Éléments décoratifs côté droit */}
         <div className="absolute right-8 top-1/2 transform -translate-y-1/2 space-y-8 opacity-60 z-20 flex flex-col items-end">
           <div className="flex flex-col items-end space-y-6">
             <div className="flex items-center space-x-3">
@@ -75,7 +70,6 @@ export default function HomePage() {
             </div>
           </div>
           
-          {/* Ligne décorative verticale */}
           <div className="w-px h-32 bg-gradient-to-b from-transparent via-white to-transparent opacity-30"></div>
           
           <div className="space-y-2">
@@ -83,7 +77,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Formes géométriques décoratives */}
         <div className="absolute top-20 left-20 w-4 h-4 border border-white opacity-20 rotate-45 z-20"></div>
         <div className="absolute top-32 right-32 w-6 h-6 border border-white opacity-15 rotate-12 z-20"></div>
         <div className="absolute bottom-40 left-40 w-3 h-3 bg-white opacity-10 rounded-full z-20"></div>
