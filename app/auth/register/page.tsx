@@ -116,6 +116,7 @@ export default function RegisterPage() {
       });
 
       if (error) {
+        if (error.message?.includes("unable_to_link_account")) {
           router.push("/auth/error?error=unable_to_link_account");
           return;
         }
