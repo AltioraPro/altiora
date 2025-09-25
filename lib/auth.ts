@@ -138,14 +138,26 @@ export const auth = betterAuth({
     },
   },
   
+  advanced: {
+    crossSubDomainCookies: {
+      enabled: true,
+    },
+    useSecureCookies: process.env.NODE_ENV === "production",
+    generateId: false,
+  },
+  
   
   onError: (error: Error, request?: Request) => {
-    console.error("Better Auth Error:", {
+    console.error("Better Auth Error - DETAILED:", {
       error: error.message || error,
       code: (error as Error & { code?: string }).code,
       stack: error.stack,
       url: request?.url,
-      method: request?.method
+      method: request?.method,
+      headers: request?.headers ? Object.fromEntries(request.headers.entries()) : {},
+      timestamp: new Date().toISOString(),
+      errorType: error.constructor.name,
+      fullError: JSON.stringify(error, Object.getOwnPropertyNames(error))
     });
   },
 
