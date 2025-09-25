@@ -100,6 +100,18 @@ export default function LoginPage() {
       });
 
       if (error) {
+        if (error.message?.includes("unable_to_link_account")) {
+          router.push("/auth/error?error=unable_to_link_account");
+          return;
+        }
+        if (error.message?.includes("access_denied")) {
+          router.push("/auth/error?error=access_denied");
+          return;
+        }
+        if (error.message?.includes("oauth_callback_error")) {
+          router.push("/auth/error?error=oauth_callback_error");
+          return;
+        }
         setAuthError(error.message || "Google sign-in failed. Please try again.");
       }
     } catch (error: unknown) {
