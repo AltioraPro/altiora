@@ -1,12 +1,10 @@
 import type { Habit, HabitCompletion } from "@/server/db/schema";
 
-// Type for a habit with its completions
 export interface HabitWithCompletions extends Habit {
   completions: HabitCompletion[];
   completionRate?: number;
 }
 
-// Type for pagination
 export interface PaginationParams {
   page: number;
   limit: number;
@@ -27,11 +25,10 @@ export interface PaginatedResponse<T> {
   };
 }
 
-// Type for daily statistics
 export interface DailyHabitStats {
-  date: string; // Format YYYY-MM-DD
+  date: string; 
   totalHabits: number;
-  completedHabits: number;
+  completedHabits: number
   completionPercentage: number;
   habits: Array<{
     id: string;
@@ -42,7 +39,6 @@ export interface DailyHabitStats {
   }>;
 }
 
-// Type for global statistics
 export interface HabitStatsOverview {
   totalActiveHabits: number;
   currentStreak: number;
@@ -59,7 +55,7 @@ export interface HabitStatsOverview {
   }>;
 }
 
-// Type for dashboard response
+
 export interface HabitsDashboardData {
   todayStats: DailyHabitStats;
   habits: HabitWithCompletions[];

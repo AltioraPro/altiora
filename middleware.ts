@@ -4,7 +4,6 @@ import { auth } from "@/lib/auth";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Public routes that don't require authentication
   const publicRoutes = [
     "/",
     "/demo",
@@ -17,7 +16,6 @@ export async function middleware(request: NextRequest) {
     "/static",
   ];
 
-  // Check if current path is public
   const isPublicRoute = publicRoutes.some(route => 
     pathname.startsWith(route) || pathname.includes(".")
   );
@@ -26,7 +24,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Protected routes that require authentication
   const protectedPrefixes = [
     "/dashboard",
     "/trading", 
@@ -43,7 +40,6 @@ export async function middleware(request: NextRequest) {
 
   if (isProtectedRoute) {
     try {
-      // Use Better-Auth's built-in session verification
       const session = await auth.api.getSession({
         headers: request.headers,
       });
@@ -52,7 +48,6 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL("/auth/login", request.url));
       }
 
-      // Session is valid, continue
       return NextResponse.next();
     } catch (error) {
       console.error("Middleware auth error:", error);

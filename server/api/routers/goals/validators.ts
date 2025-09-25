@@ -80,7 +80,6 @@ export const deleteSubGoalValidator = z.object({
   id: z.string().min(1, "Sub-goal ID is required"),
 });
 
-// Tâches
 export const createGoalTaskValidator = z.object({
   goalId: z.string().min(1, "Goal ID is required"),
   title: z.string().min(1, "Title is required").max(255, "Title too long"),

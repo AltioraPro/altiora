@@ -127,12 +127,12 @@ export const habits = createTable(
       .notNull(),
     
     title: varchar("title", { length: 255 }).notNull(),
-    emoji: varchar("emoji", { length: 10 }).notNull(), // Emoji associated with the habit
+    emoji: varchar("emoji", { length: 10 }).notNull(),
     description: text("description"),
-    color: varchar("color", { length: 7 }).default("#ffffff"), // Hexadecimal color for personalization
-    targetFrequency: varchar("target_frequency", { length: 20 }).default("daily"), // daily, weekly, monthly
+    color: varchar("color", { length: 7 }).default("#ffffff"), 
+    targetFrequency: varchar("target_frequency", { length: 20 }).default("daily"), 
     isActive: boolean("is_active").default(true).notNull(),
-    sortOrder: integer("sort_order").default(0), // For display order
+    sortOrder: integer("sort_order").default(0), 
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -157,9 +157,9 @@ export const habitCompletions = createTable(
       .references(() => habits.id, { onDelete: "cascade" })
       .notNull(),
     
-    completionDate: varchar("completion_date", { length: 10 }).notNull(), // Format YYYY-MM-DD
+    completionDate: varchar("completion_date", { length: 10 }).notNull(), 
     isCompleted: boolean("is_completed").default(false).notNull(),
-    notes: text("notes"), // Optional notes about the completion
+    notes: text("notes"), 
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -186,14 +186,13 @@ export const trades = createTable(
       .notNull(),
     
     symbol: varchar("symbol", { length: 50 }).notNull(),
-    side: varchar("side", { length: 10 }).notNull(), // buy, sell
+    side: varchar("side", { length: 10 }).notNull(), 
     quantity: integer("quantity").notNull(),
     entryPrice: varchar("entry_price", { length: 20 }).notNull(),
     exitPrice: varchar("exit_price", { length: 20 }),
     reasoning: text("reasoning").notNull(),
     pnl: varchar("pnl", { length: 20 }),
     
-    // Timestamps
     entryTime: timestamp("entry_time", { withTimezone: true }).notNull(),
     exitTime: timestamp("exit_time", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
@@ -220,7 +219,7 @@ export const tradingJournals = createTable(
     description: text("description"),
     isActive: boolean("is_active").default(true).notNull(),
     order: integer("order").default(0).notNull(),
-    startingCapital: varchar("starting_capital", { length: 50 }), // Montant initial pour calculs en %
+    startingCapital: varchar("starting_capital", { length: 50 }), 
     usePercentageCalculation: boolean("use_percentage_calculation").default(false).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
@@ -236,7 +235,7 @@ export const tradingJournals = createTable(
 );
 
 /**
- * Table des assets (instruments financiers)
+ * Table des assets
  */
 export const tradingAssets = createTable(
   "trading_asset",
@@ -249,9 +248,9 @@ export const tradingAssets = createTable(
       .references(() => tradingJournals.id, { onDelete: "cascade" })
       .notNull(),
     
-    name: varchar("name", { length: 50 }).notNull(), // XAUUSD, EURUSD, etc.
+    name: varchar("name", { length: 50 }).notNull(), 
     symbol: varchar("symbol", { length: 20 }).notNull(),
-    type: varchar("type", { length: 20 }).default("forex"), // forex, crypto, stocks, commodities
+    type: varchar("type", { length: 20 }).default("forex"), 
     isActive: boolean("is_active").default(true).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
@@ -268,7 +267,7 @@ export const tradingAssets = createTable(
 );
 
 /**
- * Table des sessions de trading
+ * Table des sessions
  */
 export const tradingSessions = createTable(
   "trading_session",
@@ -281,10 +280,10 @@ export const tradingSessions = createTable(
       .references(() => tradingJournals.id, { onDelete: "cascade" })
       .notNull(),
     
-    name: varchar("name", { length: 100 }).notNull(), // London Open, New York Close, etc.
+    name: varchar("name", { length: 100 }).notNull(), 
     description: text("description"),
-    startTime: varchar("start_time", { length: 5 }), // Format HH:MM
-    endTime: varchar("end_time", { length: 5 }), // Format HH:MM
+    startTime: varchar("start_time", { length: 5 }), 
+    endTime: varchar("end_time", { length: 5 }), 
     timezone: varchar("timezone", { length: 50 }).default("UTC"),
     isActive: boolean("is_active").default(true).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
@@ -301,7 +300,7 @@ export const tradingSessions = createTable(
 );
 
 /**
- * Table des setups de trading
+ * Table des setups
  */
 export const tradingSetups = createTable(
   "trading_setup",
@@ -314,10 +313,10 @@ export const tradingSetups = createTable(
       .references(() => tradingJournals.id, { onDelete: "cascade" })
       .notNull(),
     
-    name: varchar("name", { length: 100 }).notNull(), // LIT CYCLE, BINKS, etc.
+    name: varchar("name", { length: 100 }).notNull(), 
     description: text("description"),
-    strategy: text("strategy"), // Description détaillée de la stratégie
-    successRate: integer("success_rate"), // Pourcentage de réussite
+    strategy: text("strategy"), 
+    successRate: integer("success_rate"), 
     isActive: boolean("is_active").default(true).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
@@ -333,7 +332,7 @@ export const tradingSetups = createTable(
 );
 
 /**
- * Table des trades avancés (remplace l'ancienne table trades)
+ * Table des trades 
  */
 export const advancedTrades = createTable(
   "advanced_trade",
@@ -351,13 +350,13 @@ export const advancedTrades = createTable(
       .references(() => tradingSessions.id, { onDelete: "set null" }),
     setupId: varchar("setup_id", { length: 255 })
       .references(() => tradingSetups.id, { onDelete: "set null" }),
-    tradeDate: varchar("trade_date", { length: 10 }).notNull(), // Format YYYY-MM-DD
-    symbol: varchar("symbol", { length: 50 }).notNull(), // Fallback si pas d'asset
-    riskInput: varchar("risk_input", { length: 50 }), // 1%, 2R, etc.
-    profitLossAmount: varchar("profit_loss_amount", { length: 50 }), // Montant brut du P&L
-    profitLossPercentage: varchar("profit_loss_percentage", { length: 50 }), // % calculé automatiquement
-    exitReason: varchar("exit_reason", { length: 20 }), // TP, BE, SL, Manual
-    breakEvenThreshold: varchar("break_even_threshold", { length: 10 }).default("0.1"), // Seuil en % pour BE (0.1% par défaut)
+    tradeDate: varchar("trade_date", { length: 10 }).notNull(), 
+    symbol: varchar("symbol", { length: 50 }).notNull(), 
+    riskInput: varchar("risk_input", { length: 50 }), 
+    profitLossAmount: varchar("profit_loss_amount", { length: 50 }), 
+    profitLossPercentage: varchar("profit_loss_percentage", { length: 50 }), 
+    exitReason: varchar("exit_reason", { length: 20 }), 
+    breakEvenThreshold: varchar("break_even_threshold", { length: 10 }).default("0.1"), 
     tradingviewLink: varchar("tradingview_link", { length: 1024 }),
     notes: text("notes"),
     isClosed: boolean("is_closed").default(false).notNull(),
@@ -380,22 +379,22 @@ export const advancedTrades = createTable(
 );
 
 /**
- * Plans d'abonnement
+ * Plans
  */
 export const subscriptionPlans = pgTable(
   "subscription_plan",
   {
     id: varchar("id", { length: 255 }).primaryKey(),
-    name: varchar("name", { length: 50 }).notNull(), // FREE, PRO, ALTIORANS
+    name: varchar("name", { length: 50 }).notNull(), 
     displayName: varchar("display_name", { length: 100 }).notNull(),
     description: text("description"),
-    price: integer("price").notNull(), // Prix en centimes
+    price: integer("price").notNull(), 
     currency: varchar("currency", { length: 3 }).default("EUR").notNull(),
-    billingInterval: varchar("billing_interval", { length: 20 }).default("monthly").notNull(), // monthly, yearly
+    billingInterval: varchar("billing_interval", { length: 20 }).default("monthly").notNull(), 
     stripePriceId: varchar("stripe_price_id", { length: 255 }),
     isActive: boolean("is_active").default(true).notNull(),
     maxHabits: integer("max_habits").default(3).notNull(),
-    maxTradingEntries: integer("max_trading_entries").default(10).notNull(), // par mois
+    maxTradingEntries: integer("max_trading_entries").default(10).notNull(), 
     maxAnnualGoals: integer("max_annual_goals").default(1).notNull(),
     maxQuarterlyGoals: integer("max_quarterly_goals").default(1).notNull(),
     maxMonthlyGoals: integer("max_monthly_goals").default(0).notNull(),
@@ -423,12 +422,11 @@ export const monthlyUsage = pgTable(
     userId: varchar("user_id", { length: 255 })
       .references(() => users.id, { onDelete: "cascade" })
       .notNull(),
-    month: varchar("month", { length: 7 }).notNull(), // Format: YYYY-MM
+    month: varchar("month", { length: 7 }).notNull(), 
     tradingEntriesCount: integer("trading_entries_count").default(0).notNull(),
     habitsCreatedCount: integer("habits_created_count").default(0).notNull(),
     goalsCreatedCount: integer("goals_created_count").default(0).notNull(),
     
-    // Timestamps
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -454,8 +452,8 @@ export const goals = createTable(
     
     title: varchar("title", { length: 255 }).notNull(),
     description: text("description"),
-    type: varchar("type", { length: 20 }).notNull(), // annual, quarterly, custom
-    goalType: varchar("goal_type", { length: 20 }).notNull(), // gradual
+    type: varchar("type", { length: 20 }).notNull(), 
+    goalType: varchar("goal_type", { length: 20 }).notNull(), 
     targetValue: varchar("target_value", { length: 100 }),
     currentValue: varchar("current_value", { length: 100 }).default("0"),
     unit: varchar("unit", { length: 50 }),
@@ -464,13 +462,11 @@ export const goals = createTable(
     isActive: boolean("is_active").default(true).notNull(),
     sortOrder: integer("sort_order").default(0),
     
-    // Rappels et notifications
     remindersEnabled: boolean("reminders_enabled").default(false).notNull(),
-    reminderFrequency: varchar("reminder_frequency", { length: 20 }), // daily, weekly, monthly
+    reminderFrequency: varchar("reminder_frequency", { length: 20 }), 
     lastReminderSent: timestamp("last_reminder_sent", { withTimezone: true }),
     nextReminderDate: timestamp("next_reminder_date", { withTimezone: true }),
     
-    // Timestamps
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -505,7 +501,6 @@ export const subGoals = createTable(
     isCompleted: boolean("is_completed").default(false).notNull(),
     sortOrder: integer("sort_order").default(0),
     
-    // Timestamps
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -537,10 +532,9 @@ export const goalTasks = createTable(
     description: text("description"),
     dueDate: timestamp("due_date", { withTimezone: true }),
     isCompleted: boolean("is_completed").default(false).notNull(),
-    priority: varchar("priority", { length: 20 }).default("medium"), // low, medium, high
+    priority: varchar("priority", { length: 20 }).default("medium"),  
     sortOrder: integer("sort_order").default(0),
     
-    // Timestamps
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -569,11 +563,10 @@ export const goalReminders = createTable(
       .references(() => users.id, { onDelete: "cascade" })
       .notNull(),
     
-    reminderType: varchar("reminder_type", { length: 20 }).notNull(), // email, push, discord
+    reminderType: varchar("reminder_type", { length: 20 }).notNull(), 
     sentAt: timestamp("sent_at", { withTimezone: true }).notNull(),
-    status: varchar("status", { length: 20 }).default("sent"), // sent, delivered, failed
+    status: varchar("status", { length: 20 }).default("sent"), 
     
-    // Timestamps
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -585,7 +578,6 @@ export const goalReminders = createTable(
   })
 );
 
-// Export des types pour TypeScript
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
@@ -601,7 +593,6 @@ export type NewHabitCompletion = typeof habitCompletions.$inferInsert;
 export type Trade = typeof trades.$inferSelect;
 export type NewTrade = typeof trades.$inferInsert; 
 
-// Types pour le système de trading avancé
 export type TradingJournal = typeof tradingJournals.$inferSelect;
 export type NewTradingJournal = typeof tradingJournals.$inferInsert;
 export type TradingAsset = typeof tradingAssets.$inferSelect;

@@ -16,10 +16,9 @@
     ],
   });
 
-  // Configuration
   const GUILD_ID = process.env.DISCORD_GUILD_ID;
-  const LOGS_CHANNEL_ID = process.env.DISCORD_LOGS_CHANNEL_ID; // Nouveau: ID du canal de logs
-  const COMMITS_CHANNEL_ID = process.env.DISCORD_COMMITS_CHANNEL_ID; // Canal pour les commits GitHub
+  const LOGS_CHANNEL_ID = process.env.DISCORD_LOGS_CHANNEL_ID; 
+  const COMMITS_CHANNEL_ID = process.env.DISCORD_COMMITS_CHANNEL_ID; 
   const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
   const GITHUB_OWNER = process.env.GITHUB_OWNER || '17Sx';
   const GITHUB_REPO = process.env.GITHUB_REPO || 'altiora';
@@ -35,7 +34,6 @@
     IMMORTAL: process.env.DISCORD_ROLE_IMMORTAL,
   };
 
-  // Système de logs Discord
   class DiscordLogger {
     constructor(client, channelId) {
       this.client = client;
@@ -53,10 +51,8 @@
         timestamp
       };
 
-      // Ajouter à la queue
       this.queue.push(logEntry);
 
-      // Traiter la queue si pas déjà en cours
       if (!this.isProcessing) {
         this.processQueue();
       }
@@ -74,13 +70,11 @@
           return;
         }
 
-        // Traiter les logs par batch (max 10 par message)
         const batchSize = 10;
         while (this.queue.length > 0) {
           const batch = this.queue.splice(0, batchSize);
           await this.sendBatch(channel, batch);
           
-          // Attendre un peu entre les envois pour éviter le rate limiting
           if (this.queue.length > 0) {
             await new Promise(resolve => setTimeout(resolve, 1000));
           }
@@ -90,7 +84,6 @@
       } finally {
         this.isProcessing = false;
         
-        // Si de nouveaux logs sont arrivés pendant le traitement, continuer
         if (this.queue.length > 0) {
           setTimeout(() => this.processQueue(), 1000);
         }
@@ -158,7 +151,7 @@
       }
     }
 
-    // Méthodes de convenance
+    // Convenience methods
     async error(message, data) {
       await this.sendLog('error', message, data);
     }
@@ -176,10 +169,8 @@
     }
   }
 
-  // Initialiser le logger Discord
   const discordLogger = new DiscordLogger(client, LOGS_CHANNEL_ID);
 
-  // Fonction pour logger vers Discord ET console
   const log = {
     error: (message, data) => {
       console.error(`❌ ${message}`, data);
@@ -205,7 +196,6 @@
     log.info(`Nombre de serveurs: ${client.guilds.cache.size}`);
     log.info(`Nombre total de membres: ${client.guilds.cache.reduce((acc, guild) => acc + guild.memberCount, 0)}`);
     
-    // Vérifier les permissions du bot
     const guild = client.guilds.cache.get(GUILD_ID);
     if (guild) {
       const botMember = guild.members.cache.get(client.user.id);
@@ -228,14 +218,12 @@
       });
     }
 
-    // Vérifier le canal de logs
     if (LOGS_CHANNEL_ID) {
       log.info(`Canal de logs configuré: ${LOGS_CHANNEL_ID}`);
     } else {
       log.warn('Aucun canal de logs configuré - les logs ne seront envoyés que dans la console');
     }
 
-    // Vérifier la configuration GitHub
     if (COMMITS_CHANNEL_ID && GITHUB_TOKEN) {
       log.info(`Configuration GitHub activée`, {
         commitsChannel: COMMITS_CHANNEL_ID,
@@ -249,10 +237,8 @@
       });
     }
     
-    // Log de test pour vérifier que les commandes fonctionnent
     log.info(`Bot prêt à recevoir des commandes. Testez avec !help`);
 
-    // Programmer la tâche quotidienne pour envoyer les commits à 8h
     cron.schedule('0 8 * * *', async () => {
       log.info(`Exécution de la tâche quotidienne - envoi des commits`);
       await sendDailyCommits();
@@ -264,7 +250,6 @@
     log.info(`Tâche programmée configurée - envoi des commits tous les jours à 8h (Europe/Paris)`);
   });
 
-  // Log des événements de connexion/déconnexion
   client.on('disconnect', () => {
     log.warn('Bot déconnecté');
   });
@@ -277,7 +262,6 @@
     log.success(`Bot reconnecté, ${replayed} événements rejoués`);
   });
 
-  // Log des changements de membres
   client.on('guildMemberUpdate', (oldMember, newMember) => {
     const addedRoles = newMember.roles.cache.filter(role => !oldMember.roles.cache.has(role.id));
     const removedRoles = oldMember.roles.cache.filter(role => !newMember.roles.cache.has(role.id));
@@ -296,8 +280,7 @@
       });
     }
   });
-
-  // Log des nouveaux membres
+  
   client.on('guildMemberAdd', (member) => {
     log.success(`Nouveau membre: ${member.user.tag}`, {
       user: { id: member.id, tag: member.user.tag },
@@ -305,18 +288,15 @@
     });
   });
 
-  // Log des départs de membres
   client.on('guildMemberRemove', (member) => {
     log.warn(`Membre parti: ${member.user.tag}`, {
       user: { id: member.id, tag: member.user.tag }
     });
   });
 
-  // Commande pour synchroniser un utilisateur
   client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
     
-    // Log de debug pour voir si les messages sont reçus
     console.log(`📨 [Debug] Message reçu: "${message.content}" de ${message.author.tag}`);
     
     log.info(`Message de ${message.author.tag}`, {
@@ -325,7 +305,6 @@
       channel: { id: message.channel.id, name: message.channel.name }
     });
     
-    // Vérifier si le message commence par une commande
     if (!message.content.startsWith('!')) {
       console.log(`📨 [Debug] Message ignoré (pas de commande): "${message.content}"`);
       return;
@@ -333,7 +312,6 @@
     
     console.log(`🤖 [Debug] Commande détectée: "${message.content}"`);
     
-    // Commande !sync pour synchroniser un utilisateur
     if (message.content.startsWith('!sync')) {
       log.info(`Commande sync détectée`, {
         user: { id: message.author.id, tag: message.author.tag },
@@ -378,7 +356,6 @@
       }
     }
 
-    // Commande !health pour vérifier l'état du bot
     if (message.content === '!health') {
       log.info(`Commande health demandée`, {
         user: { id: message.author.id, tag: message.author.tag }
@@ -417,7 +394,6 @@
       }
     }
 
-    // Commande !roles pour lister les rôles configurés
     if (message.content === '!roles') {
       log.info(`Commande roles demandée`, {
         user: { id: message.author.id, tag: message.author.tag }
@@ -462,7 +438,6 @@
       }
     }
 
-    // Commande !help pour afficher l'aide
     if (message.content === '!help') {
       log.info(`Commande help demandée`, {
         user: { id: message.author.id, tag: message.author.tag }
@@ -502,7 +477,6 @@
       log.info(`Aide envoyée`);
     }
 
-    // Commande !stats pour afficher les statistiques du serveur
     if (message.content === '!stats') {
       log.info(`Commande stats demandée`, {
         user: { id: message.author.id, tag: message.author.tag }
@@ -515,7 +489,6 @@
           return;
         }
 
-        // Compter les membres par rôle de rank
         const roleStats = {};
         Object.entries(RANK_ROLE_MAPPING).forEach(([rank, roleId]) => {
           const role = guild.roles.cache.get(roleId);
@@ -536,7 +509,6 @@
             { name: '📈 Pourcentage', value: `${((totalRankMembers / totalMembers) * 100).toFixed(1)}%`, inline: true }
           );
 
-        // Ajouter les statistiques par rang
         Object.entries(roleStats).forEach(([rank, count]) => {
           embed.addFields({
             name: rank,

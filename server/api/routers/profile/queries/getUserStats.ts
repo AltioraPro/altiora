@@ -13,7 +13,6 @@ export async function getUserStats({ db, session }: AuthQueryContext) {
   }
 
   try {
-    // Get habit statistics
     const habitsStats = await db
       .select({
         totalHabits: count(habits.id),
@@ -27,7 +26,6 @@ export async function getUserStats({ db, session }: AuthQueryContext) {
         )
       );
 
-    // Get trading statistics
     const tradesStats = await db
       .select({
         totalTrades: count(trades.id),
@@ -35,7 +33,6 @@ export async function getUserStats({ db, session }: AuthQueryContext) {
       .from(trades)
       .where(eq(trades.userId, session.userId));
 
-    // Get user information
     const user = await db.query.users.findFirst({
       where: eq(users.id, session.userId),
       columns: {
@@ -52,7 +49,6 @@ export async function getUserStats({ db, session }: AuthQueryContext) {
       });
     }
 
-    // Calculate days since registration
     const daysSinceRegistration = Math.floor(
       (Date.now() - user.createdAt.getTime()) / (1000 * 60 * 60 * 24)
     );

@@ -23,27 +23,22 @@ export const FeaturesSection = () => {
         background: 'linear-gradient(220.55deg, #000000 0%, #0a0a0a 100%)'
       }}
     >
-      {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Grille de points subtile */}
         <div className="absolute inset-0 opacity-[0.015]" 
-             style={{
-               backgroundImage: `radial-gradient(circle, white 1px, transparent 1px)`,
-               backgroundSize: '40px 40px',
-             }} 
+              style={{
+                backgroundImage: `radial-gradient(circle, white 1px, transparent 1px)`,
+                backgroundSize: '40px 40px',
+              }} 
         />
         
-        {/* Formes géométriques animées */}
         <div className="absolute top-20 left-10 w-5 h-5 border border-white/10 rotate-45 animate-pulse" />
         <div className="absolute top-40 right-20 w-8 h-8 border border-white/15 rotate-12 animate-bounce" style={{animationDuration: '3s'}} />
         <div className="absolute bottom-32 left-1/3 w-6 h-6 border border-white/20 rotate-45" />
         <div className="absolute bottom-60 right-1/4 w-4 h-4 bg-white/5 rounded-full animate-pulse" style={{animationDelay: '1s'}} />
         
-        {/* Lignes décoratives */}
         <div className="absolute top-1/3 left-0 w-24 h-px bg-gradient-to-r from-transparent to-white/20" />
         <div className="absolute top-2/3 right-0 w-32 h-px bg-gradient-to-l from-transparent to-white/25" />
         
-        {/* Effet de lumière central */}
         <div 
           className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[80%] h-[60%] pointer-events-none opacity-20"
           style={{
@@ -53,7 +48,6 @@ export const FeaturesSection = () => {
       </div>
 
       <div className="relative z-10 container mx-auto px-6 py-20">
-        {/* Header de section */}
         <div className="text-center mb-20">
           <div className="flex items-center justify-center space-x-4 mb-6">
             <div className="w-16 h-px bg-gradient-to-r from-transparent to-white/30" />
@@ -81,10 +75,8 @@ export const FeaturesSection = () => {
           />
         </div>
 
-        {/* Grille des fonctionnalités */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
           
-          {/* Trading Journal */}
           <AnimatedCard delay={0}>
             <SpotlightCard className="custom-spotlight-card group relative h-[400px] bg-pure-black" spotlightColor="rgba(255, 255, 255, 0.2)">
               <div className="relative mb-6">
@@ -92,7 +84,6 @@ export const FeaturesSection = () => {
                   <BookOpen className="w-8 h-8 text-white/80 group-hover:text-white transition-colors duration-300" />
                 </div>
                 
-                {/* Effet particule */}
                 <div className="absolute -top-2 -right-2 w-3 h-3 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping" />
               </div>
               
@@ -104,7 +95,6 @@ export const FeaturesSection = () => {
                 Analyze your trades, identify patterns and optimize your strategy with an intelligent journal.
               </p>
               
-              {/* Points clés */}
               <ul className="space-y-2 text-xs text-white/50">
                 <li className="flex items-center space-x-2">
                   <div className="w-1 h-1 bg-white/40 rounded-full" />
@@ -122,7 +112,6 @@ export const FeaturesSection = () => {
             </SpotlightCard>
           </AnimatedCard>
 
-          {/* Habit Tracker */}
           <AnimatedCard delay={150}>
             <SpotlightCard className="custom-spotlight-card group relative h-[400px] bg-pure-black" spotlightColor="rgba(255, 255, 255, 0.2)">
               <div className="relative mb-6">
@@ -157,7 +146,6 @@ export const FeaturesSection = () => {
             </SpotlightCard>
           </AnimatedCard>
 
-          {/* Goal Planning */}
           <AnimatedCard delay={300}>
             <SpotlightCard className="custom-spotlight-card group relative h-[400px] bg-pure-black" spotlightColor="rgba(255, 255, 255, 0.2)">
               <div className="relative mb-6">
@@ -192,7 +180,6 @@ export const FeaturesSection = () => {
             </SpotlightCard>
           </AnimatedCard>
 
-          {/* Discord Integration */}
           <AnimatedCard delay={450}>
             <SpotlightCard className="custom-spotlight-card group relative h-[400px] bg-pure-black" spotlightColor="rgba(255, 255, 255, 0.2)" >
                 <div className="relative mb-6">
@@ -228,7 +215,6 @@ export const FeaturesSection = () => {
           </AnimatedCard>
         </div>
 
-        {/* And more section */}
         <AnimatedCard delay={500}>
           <div className="text-center mt-16 mb-8">
             
@@ -246,7 +232,6 @@ export const FeaturesSection = () => {
           </div>
         </AnimatedCard>
 
-        {/* Call to action */}
         <AnimatedCard delay={550}>
           <div className="text-center mt-20">
             <div className="inline-flex flex-col items-center space-y-6">
@@ -266,7 +251,6 @@ export const FeaturesSection = () => {
                 </HoverBorderGradient>
               </Link>
               
-              {/* Stats décoratives */}
               <div className="flex items-center space-x-8 text-xs text-white/40 mt-8">
                 <div className="text-center">
                   <div className="font-argesta text-white/60">1000+</div>

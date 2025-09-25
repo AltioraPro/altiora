@@ -122,7 +122,6 @@ export const goalsRouter = createTRPCRouter({
       return await reorderGoals(input.goalIds, ctx.session.userId);
     }),
 
-  // Sous-objectifs
   createSubGoal: protectedProcedure
     .input(createSubGoalValidator)
     .mutation(async ({ ctx, input }) => {
@@ -141,7 +140,6 @@ export const goalsRouter = createTRPCRouter({
       return await deleteSubGoal(input.id, ctx.session.userId);
     }),
 
-  // Tâches
   createTask: protectedProcedure
     .input(createGoalTaskValidator)
     .mutation(async ({ ctx, input }) => {
@@ -169,7 +167,6 @@ export const goalsRouter = createTRPCRouter({
       return await markTaskCompleted(input.taskId, input.isCompleted, ctx.session.userId);
     }),
 
-  // Vérifier les restrictions d'abonnement pour la création de goals
   checkCreateGoalLimits: protectedProcedure
     .input(z.object({
       goalType: z.enum(["annual", "quarterly", "monthly"])
@@ -179,7 +176,6 @@ export const goalsRouter = createTRPCRouter({
       return await SubscriptionLimitsService.canCreateGoal(ctx.session.userId, input.goalType);
     }),
 
-  // Récupérer toutes les restrictions d'abonnement en une seule requête optimisée
   getAllGoalLimits: protectedProcedure
     .query(async ({ ctx }) => {
       const { SubscriptionLimitsService } = await import("@/server/services/subscription-limits");

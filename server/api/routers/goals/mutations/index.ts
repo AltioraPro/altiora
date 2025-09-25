@@ -8,7 +8,7 @@ import { SubscriptionLimitsService } from "@/server/services/subscription-limits
 import { TRPCError } from "@trpc/server";
 
 export async function createGoal(input: Omit<NewGoal, 'id' | 'userId'>, userId: string) {
-  // Vérifier les restrictions d'abonnement avant de créer le goal
+
   const goalType = input.type as "annual" | "quarterly" | "monthly";
   const canCreateResult = await SubscriptionLimitsService.canCreateGoal(userId, goalType);
   
@@ -33,12 +33,10 @@ export async function createGoal(input: Omit<NewGoal, 'id' | 'userId'>, userId: 
     .values(newGoal)
     .returning();
 
-  // Incrémenter le compteur d'utilisation mensuelle
   try {
     await SubscriptionLimitsService.incrementMonthlyUsage(userId, "goals");
   } catch (error) {
     console.error("Error incrementing monthly usage:", error);
-    // Ne pas faire échouer la création du goal si l'incrémentation échoue
   }
 
   return createdGoal;
@@ -77,10 +75,8 @@ export async function markGoalCompleted(goalId: string, isCompleted: boolean, us
     .where(and(eq(goals.id, goalId), eq(goals.userId, userId)))
     .returning();
 
-  // Si l'objectif vient d'être marqué comme complété, envoyer un DM de félicitations
   if (isCompleted && updatedGoal) {
     try {
-      // Récupérer les informations de l'utilisateur pour Discord
       const [user] = await db
         .select({
           discordId: users.discordId,
@@ -89,7 +85,6 @@ export async function markGoalCompleted(goalId: string, isCompleted: boolean, us
         .from(users)
         .where(eq(users.id, userId));
 
-      // Envoyer le DM de félicitations si l'utilisateur est connecté à Discord
       if (user?.discordId && user?.discordConnected) {
         await DiscordService.sendGoalCompletion(user.discordId, {
           id: updatedGoal.id,
@@ -98,11 +93,9 @@ export async function markGoalCompleted(goalId: string, isCompleted: boolean, us
           deadline: updatedGoal.deadline,
           userId: updatedGoal.userId,
         });
-        console.log(`🎉 [Goal Completion] DM de félicitations envoyé pour l'objectif: ${updatedGoal.title}`);
       }
     } catch (error) {
-      console.error(`❌ [Goal Completion] Erreur lors de l'envoi du DM de félicitations:`, error);
-      // Ne pas faire échouer la fonction si l'envoi du DM échoue
+      console.error("Error::", error);
     }
   }
 
@@ -132,7 +125,6 @@ export async function reorderGoals(goalIds: string[], userId: string) {
   return { success: true, message: "Goals reordered successfully" };
 }
 
-// Sous-objectifs
 export async function createSubGoal(input: Omit<NewSubGoal, 'id' | 'userId'>, userId: string) {
   const subGoalId = nanoid();
   
@@ -173,7 +165,6 @@ export async function deleteSubGoal(subGoalId: string, userId: string) {
   return { success: true, message: "Sub-goal deleted successfully" };
 }
 
-// Tâches
 export async function createGoalTask(input: Omit<NewGoalTask, 'id' | 'userId'>, userId: string) {
   const taskId = nanoid();
   

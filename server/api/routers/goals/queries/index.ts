@@ -157,7 +157,7 @@ export async function getGoalStats(
     .where(
       and(
         eq(goals.userId, userId),
-        eq(goals.isActive, true) // Seulement les goals actifs
+        eq(goals.isActive, true) 
       )
     );
 

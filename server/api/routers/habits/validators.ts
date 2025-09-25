@@ -35,7 +35,6 @@ export const getHabitStatsValidator = z.object({
   period: z.enum(["week", "month", "quarter", "year"]).default("month"),
 });
 
-// Validateur pour la pagination
 export const getHabitsPaginatedValidator = z.object({
   page: z.number().int().min(0).default(0),
   limit: z.number().int().min(1).max(100).default(10),
@@ -45,7 +44,6 @@ export const getHabitsPaginatedValidator = z.object({
   showInactive: z.boolean().default(false),
 });
 
-// Validateur pour le dashboard
 export const getDashboardValidator = z.object({
   viewMode: z.enum(["today", "week", "month"]).default("today"),
 }).optional().default({ viewMode: "today" }); 
