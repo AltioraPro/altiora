@@ -127,17 +127,15 @@ export const auth = betterAuth({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       redirectURI: `${computedBaseUrl}/api/auth/callback/google`,
+      allowDangerousEmailAccountLinking: true,
     },
   },
   
-  advanced: {
-    allowDangerousEmailAccountLinking: true,
-  },
   
-  onError: (error: any, request?: any) => {
+  onError: (error: Error, request?: Request) => {
     console.error("Better Auth Error:", {
       error: error.message || error,
-      code: error.code,
+      code: (error as Error & { code?: string }).code,
       stack: error.stack,
       url: request?.url,
       method: request?.method
