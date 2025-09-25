@@ -6,7 +6,7 @@ export const createTable = pgTableCreator((name) => `altiora_${name}`);
 export const users = pgTable(
   "user",
   {
-    id: varchar("id", { length: 255 }).primaryKey(),
+    id: varchar("id", { length: 255 }).primaryKey().default(sql`gen_random_uuid()`),
     email: varchar("email", { length: 255 }).notNull().unique(),
     name: varchar("name", { length: 255 }).notNull(),
     image: varchar("image", { length: 1024 }),
@@ -43,7 +43,7 @@ export const users = pgTable(
 export const sessions = pgTable(
   "session",
   {
-    id: varchar("id", { length: 255 }).primaryKey(),
+    id: varchar("id", { length: 255 }).primaryKey().default(sql`gen_random_uuid()`),
     userId: varchar("user_id", { length: 255 })
       .references(() => users.id, { onDelete: "cascade" })
       .notNull(),
@@ -67,7 +67,7 @@ export const sessions = pgTable(
 export const accounts = pgTable(
   "account",
   {
-    id: varchar("id", { length: 255 }).primaryKey(),
+    id: varchar("id", { length: 255 }).primaryKey().default(sql`gen_random_uuid()`),
     userId: varchar("user_id", { length: 255 })
       .references(() => users.id, { onDelete: "cascade" })
       .notNull(),
@@ -101,7 +101,7 @@ export const accounts = pgTable(
 export const verifications = pgTable(
   "verification",
   {
-    id: varchar("id", { length: 255 }).primaryKey(),
+    id: varchar("id", { length: 255 }).primaryKey().default(sql`gen_random_uuid()`),
     identifier: varchar("identifier", { length: 255 }).notNull(),
     value: varchar("value", { length: 255 }).notNull(),
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
