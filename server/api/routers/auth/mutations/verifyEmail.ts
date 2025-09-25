@@ -42,7 +42,7 @@ export async function verifyEmail({ token }: VerifyEmailParams) {
 
     await tx.update(users)
       .set({ 
-        emailVerified: true,
+        emailVerified: new Date(),
         updatedAt: new Date()
       })
       .where(eq(users.id, userData.id));
