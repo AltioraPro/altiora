@@ -10,10 +10,7 @@ if (!connectionString) {
 
 const client = postgres(connectionString);
 
-export const db = drizzle(client, { 
-  schema,
-  dateMode: "date"
-});
+export const db = drizzle(client, { schema });
 
 export * from "./schema";
 
