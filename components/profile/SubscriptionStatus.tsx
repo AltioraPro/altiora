@@ -7,7 +7,16 @@ import { api } from "@/trpc/client";
 
 export function SubscriptionStatus() {
   const [showDetails, setShowDetails] = useState(false);
-  const { data: user, isLoading } = api.auth.getCurrentUser.useQuery();
+  const { data: user, isLoading, error } = api.auth.getCurrentUser.useQuery(undefined, {
+    retry: (failureCount, error) => {
+      if (error && typeof error === 'object' && 'data' in error && 
+          error.data && typeof error.data === 'object' && 'code' in error.data && 
+          error.data.code === "UNAUTHORIZED") return false;
+      return failureCount < 2;
+    },
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+  });
   
   const { data: limits } = api.subscription.getPlanLimits.useQuery(undefined, {
     enabled: !!user,
@@ -15,6 +24,17 @@ export function SubscriptionStatus() {
   const { data: usage } = api.subscription.getUsageStats.useQuery(undefined, {
     enabled: !!user,
   });
+
+  if (error && typeof error === 'object' && 'data' in error && 
+      error.data && typeof error.data === 'object' && 'code' in error.data && 
+      error.data.code === "UNAUTHORIZED") {
+    return (
+      <div className="text-center py-8">
+        <div className="text-white/60 mb-4">Session expired. Please log in again.</div>
+        <a href="/auth/login" className="text-white underline">Log in</a>
+      </div>
+    );
+  }
 
   if (isLoading || !user) {
     return (

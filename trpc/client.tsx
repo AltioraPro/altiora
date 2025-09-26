@@ -13,7 +13,6 @@ import { type AppRouter } from "@/server/api/root";
 let clientQueryClientSingleton: QueryClient | undefined = undefined;
 const getQueryClient = () => {
   if (typeof window === "undefined") {
-    // Server: always create a new query client
     return new QueryClient({
       defaultOptions: {
         queries: {
@@ -21,6 +20,12 @@ const getQueryClient = () => {
           gcTime: 5 * 60 * 1000,
           refetchOnWindowFocus: false,
           refetchOnMount: false,
+          retry: (failureCount, error) => {
+            if (error && typeof error === 'object' && 'data' in error && 
+                error.data && typeof error.data === 'object' && 'code' in error.data && 
+                error.data.code === "UNAUTHORIZED") return false;
+            return failureCount < 2;
+          },
         },
       },
     });
@@ -33,6 +38,12 @@ const getQueryClient = () => {
         gcTime: 5 * 60 * 1000,
         refetchOnWindowFocus: false,
         refetchOnMount: false,
+        retry: (failureCount, error) => {
+          if (error && typeof error === 'object' && 'data' in error && 
+              error.data && typeof error.data === 'object' && 'code' in error.data && 
+              error.data.code === "UNAUTHORIZED") return false;
+          return failureCount < 2;
+        },
       },
     },
   }));

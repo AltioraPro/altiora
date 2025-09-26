@@ -38,8 +38,16 @@ export function DiscordConnection() {
   const [isConnecting, setIsConnecting] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
 
-  const { data: connectionStatus, refetch } = api.discord.getConnectionStatus.useQuery();
-  const { data: botStatus } = api.discord.checkBotStatus.useQuery();
+  const { data: connectionStatus, refetch } = api.discord.getConnectionStatus.useQuery(undefined, {
+    retry: false,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+  });
+  const { data: botStatus } = api.discord.checkBotStatus.useQuery(undefined, {
+    retry: false,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+  });
   const disconnectMutation = api.discord.disconnect.useMutation();
   const syncRankMutation = api.discord.syncRank.useMutation();
   const autoSyncRankMutation = api.discord.autoSyncRank.useMutation();

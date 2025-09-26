@@ -136,12 +136,18 @@ export const discordRouter = createTRPCRouter({
   checkBotStatus: protectedProcedure.query(async () => {
     try {
       const botUrl = process.env.DISCORD_BOT_WEBHOOK_URL || 'http://localhost:3001';
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); 
+      
       const response = await fetch(`${botUrl}/health`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       return {
         online: response.ok,

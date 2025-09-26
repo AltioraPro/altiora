@@ -6,12 +6,20 @@ import { api } from "@/trpc/client";
 import { User, Mail, Calendar, Shield, Edit3, Save, X } from "lucide-react";
 
 export function ProfileForm() {
-  const { data: user, isLoading } = api.auth.getCurrentUser.useQuery();
+  const { data: user, isLoading, error } = api.auth.getCurrentUser.useQuery(undefined, {
+    retry: (failureCount, error) => {
+      if (error && typeof error === 'object' && 'data' in error && 
+          error.data && typeof error.data === 'object' && 'code' in error.data && 
+          error.data.code === "UNAUTHORIZED") return false;
+      return failureCount < 2;
+    },
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+  });
   
   const [name, setName] = useState("");
   const [isEditing, setIsEditing] = useState(false);
 
-  // Set name when user data loads
   if (user && name === "") {
     setName(user.name);
   }
@@ -37,6 +45,17 @@ export function ProfileForm() {
       day: "numeric",
     }).format(date);
   };
+
+  if (error && typeof error === 'object' && 'data' in error && 
+      error.data && typeof error.data === 'object' && 'code' in error.data && 
+      error.data.code === "UNAUTHORIZED") {
+    return (
+      <div className="text-center py-8">
+        <div className="text-white/60 mb-4">Session expired. Please log in again.</div>
+        <a href="/auth/login" className="text-white underline">Log in</a>
+      </div>
+    );
+  }
 
   if (isLoading || !user) {
     return (
