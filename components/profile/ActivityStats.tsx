@@ -1,6 +1,6 @@
 "use client";
 
-import { Target, TrendingUp, Trophy, Calendar } from "lucide-react";
+import { Target, TrendingUp, Trophy, Calendar, Sparkles, Shield, Zap, Crown, Star, Award, TrendingUp as Rising, Crosshair } from "lucide-react";
 import { api } from "@/trpc/client";
 
 export function ActivityStats() {
@@ -46,23 +46,23 @@ export function ActivityStats() {
   const getRankIcon = (rank: string) => {
     switch (rank) {
       case "IMMORTAL":
-        return "✨";
+        return <Sparkles className="w-6 h-6" />;
       case "GRANDMASTER":
-        return "🛡️";
+        return <Shield className="w-6 h-6" />;
       case "MASTER":
-        return "⚡";
+        return <Zap className="w-6 h-6" />;
       case "LEGEND":
-        return "👑";
+        return <Crown className="w-6 h-6" />;
       case "EXPERT":
-        return "⭐";
+        return <Star className="w-6 h-6" />;
       case "CHAMPION":
-        return "🏆";
+        return <Award className="w-6 h-6" />;
       case "RISING":
-        return "📈";
+        return <Rising className="w-6 h-6" />;
       case "BEGINNER":
-        return "🎯";
+        return <Crosshair className="w-6 h-6" />;
       default:
-        return "🎯";
+        return <Crosshair className="w-6 h-6" />;
     }
   };
 
@@ -100,9 +100,14 @@ export function ActivityStats() {
           <Trophy className="w-6 h-6 text-white/60" />
         </div>
         <div className="text-2xl font-argesta font-bold mb-2">
-          <span className={getRankColor(stats.user.rank)}>
-            {getRankIcon(stats.user.rank)} {stats.user.rank}
-          </span>
+          <div className="flex items-center justify-center gap-2">
+            <span className={getRankColor(stats.user.rank)}>
+              {getRankIcon(stats.user.rank)}
+            </span>
+            <span className={getRankColor(stats.user.rank)}>
+              {stats.user.rank}
+            </span>
+          </div>
         </div>
         <div className="text-sm text-white/60 font-argesta tracking-wide">
           CURRENT RANK
