@@ -144,7 +144,9 @@ export const auth = betterAuth({
       enabled: true,
     },
     useSecureCookies: process.env.NODE_ENV === "production",
-    generateId: false,
+    database: {
+      generateId: false,
+    },
   },
   
   
