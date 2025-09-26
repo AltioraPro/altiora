@@ -3,7 +3,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/server/db";
 import { users, sessions, accounts, verifications } from "@/server/db/schema";
 import { Resend } from "resend";
-import { createAuthMiddleware, APIError } from "better-auth/api";
+import { createAuthMiddleware } from "better-auth/api";
 
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -72,7 +72,7 @@ export const auth = betterAuth({
         const adapter = ctx.context.adapter;
         if (adapter && adapter.create) {
           const originalCreate = adapter.create;
-          adapter.create = async <T extends Record<string, any>, R = T>(data: { model: string; data: Omit<T, "id">; select?: string[] | undefined; forceAllowId?: boolean | undefined; }): Promise<R> => {
+          adapter.create = async <T extends Record<string, unknown>, R = T>(data: { model: string; data: Omit<T, "id">; select?: string[] | undefined; forceAllowId?: boolean | undefined; }): Promise<R> => {
             const payload = structuredClone(data);
 
             if (payload.model === "user") {
