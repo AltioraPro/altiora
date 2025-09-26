@@ -4,10 +4,8 @@ import { SubscriptionStatus } from "@/components/profile/SubscriptionStatus";
 import { DiscordConnection } from "@/components/profile/DiscordConnection";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { User, MessageCircle, CreditCard, Edit3, CheckCircle, XCircle, Crown, Shield } from "lucide-react";
-import { api } from "@/trpc/client";
-import Image from "next/image";
+import { User, MessageCircle, CreditCard } from "lucide-react";
+
 
 export default function ProfilePage() {
   return (
