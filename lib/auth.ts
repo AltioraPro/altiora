@@ -76,7 +76,7 @@ export const auth = betterAuth({
       }
     }),
     
-    after: createAuthMiddleware(async (ctx) => {
+    after: createAuthMiddleware(async () => {
     }),
   },
   trustedOrigins: [computedBaseUrl],
