@@ -72,7 +72,7 @@ export const auth = betterAuth({
         const adapter = ctx.context.adapter;
         if (adapter && adapter.create) {
           const originalCreate = adapter.create;
-          adapter.create = async (data: any) => {
+          adapter.create = async <T extends Record<string, any>, R = T>(data: { model: string; data: Omit<T, "id">; select?: string[] | undefined; forceAllowId?: boolean | undefined; }): Promise<R> => {
             const payload = structuredClone(data);
 
             if (payload.model === "user") {
