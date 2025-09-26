@@ -76,13 +76,13 @@ export const auth = betterAuth({
             const payload = structuredClone(data);
 
             if (payload.model === "user") {
-              if (payload.data.emailVerified && payload.data.emailVerified !== "UNVERIFIED") {
-                payload.data.emailVerified =
-                  payload.data.emailVerified instanceof Date
-                    ? payload.data.emailVerified
+              if ((payload.data as any).emailVerified && (payload.data as any).emailVerified !== "UNVERIFIED") {
+                (payload.data as any).emailVerified =
+                  (payload.data as any).emailVerified instanceof Date
+                    ? (payload.data as any).emailVerified
                     : new Date();
               } else {
-                payload.data.emailVerified = null;
+                (payload.data as any).emailVerified = null;
               }
             }
 
