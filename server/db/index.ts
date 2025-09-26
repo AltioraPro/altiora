@@ -12,9 +12,7 @@ const client = postgres(connectionString);
 
 export const db = drizzle(client, { 
   schema,
-  config: {
-    dateMode: "date"
-  }
+  dateMode: "date"
 });
 
 export * from "./schema";
