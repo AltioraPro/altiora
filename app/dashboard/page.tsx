@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 import { GlobalTradingStats } from "@/components/trading/GlobalTradingStats";
 import { GlobalTradingCharts } from "@/components/trading/GlobalTradingCharts";
+import { DiscordWelcomeChecker } from "@/components/auth/DiscordWelcomeChecker";
 
 export default function GlobalDashboardPage() {
   useSession();
@@ -201,6 +202,8 @@ export default function GlobalDashboardPage() {
       )}
 
       {/* Trade creation/import modals removed on global dashboard */}
+      
+      <DiscordWelcomeChecker />
     </div>
   );
 }

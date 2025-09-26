@@ -3,6 +3,7 @@ import { Header } from "@/components/layout/Header";
 import { SubscriptionStatus } from "@/components/profile/SubscriptionStatus";
 import { DiscordConnection } from "@/components/profile/DiscordConnection";
 import { ProfileForm } from "@/components/profile/ProfileForm";
+import { DiscordWelcomeChecker } from "@/components/auth/DiscordWelcomeChecker";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User, MessageCircle, CreditCard } from "lucide-react";
 
@@ -75,6 +76,9 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* Discord Welcome Checker - Force show on profile */}
+      <DiscordWelcomeChecker forceShow={true} />
     </>
   );
 } 

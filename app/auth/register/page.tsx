@@ -112,7 +112,7 @@ export default function RegisterPage() {
     try {
       const { error } = await signIn.social({
         provider: "google",
-        callbackURL: "/dashboard",
+        callbackURL: "/profile",
       });
 
       if (error) {

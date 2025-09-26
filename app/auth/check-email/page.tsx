@@ -5,6 +5,7 @@
   import { Mail, CheckCircle, RefreshCw, ArrowLeft, ExternalLink, AlertCircle } from "lucide-react";
   import { useState, useEffect } from "react";
   import { api } from "@/trpc/client";
+  import { DiscordWelcomePopup } from "@/components/auth/DiscordWelcomePopup";
 
   function CheckEmailContent() {
   const searchParams = useSearchParams();
@@ -15,6 +16,7 @@
   const [emailSent, setEmailSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isAlreadyVerified, setIsAlreadyVerified] = useState(false);
+  const [showDiscordPopup, setShowDiscordPopup] = useState(false);
 
   const emailStatusQuery = api.auth.getUserEmailStatus.useQuery(
     { email: email || "" },
@@ -40,6 +42,11 @@
       
       if (emailStatusQuery.data.emailVerified) {
         setIsAlreadyVerified(true);
+        // Vérifier si l'utilisateur a déjà vu la popup Discord
+        const hasSeenDiscordPopup = localStorage.getItem('discord-welcome-seen');
+        if (!hasSeenDiscordPopup) {
+          setShowDiscordPopup(true);
+        }
         return;
       }
 
@@ -89,6 +96,11 @@
       const url = providers[domain] || `https://${domain}`;
       window.open(url, '_blank');
     }
+  };
+
+  const handleDiscordConnect = () => {
+    // Rediriger vers la page de connexion Discord
+    window.location.href = '/api/auth/discord';
   };
 
   return (
@@ -358,6 +370,13 @@
           </div>
         </div>
       </div>
+
+      {/* Discord Welcome Popup */}
+      <DiscordWelcomePopup
+        isOpen={showDiscordPopup}
+        onClose={() => setShowDiscordPopup(false)}
+        onConnect={handleDiscordConnect}
+      />
     </div>
   );
   }
