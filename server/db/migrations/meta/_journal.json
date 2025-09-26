@@ -106,6 +106,13 @@
       "when": 1758830835085,
       "tag": "0014_fixed_silhouette",
       "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1758880107407,
+      "tag": "0015_wooden_krista_starr",
+      "breakpoints": true
     }
   ]
 }

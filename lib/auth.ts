@@ -4,6 +4,7 @@ import { db } from "@/server/db";
 import { users, sessions, accounts, verifications } from "@/server/db/schema";
 import { Resend } from "resend";
 
+
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const computedBaseUrl = (() => {
@@ -85,7 +86,7 @@ export const auth = betterAuth({
     },
     sendVerificationEmail: async ({ user, url }: { user: { email: string }, url: string }) => {
       await resend.emails.send({
-                 from: "Altiora <noreply@altiora.pro>",
+        from: "Altiora <noreply@altiora.pro>",
         to: user.email,
         subject: "Verify your email address",
         html: `
