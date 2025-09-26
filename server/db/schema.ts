@@ -10,7 +10,7 @@ export const users = pgTable(
     email: varchar("email", { length: 255 }).notNull().unique(),
     name: varchar("name", { length: 255 }).notNull(),
     image: varchar("image", { length: 1024 }),
-    emailVerified: timestamp("email_verified", { withTimezone: true }),
+    emailVerified: timestamp("email_verified"),
     rank: varchar("rank", { length: 50 }).default("NEW").notNull(),
     subscriptionPlan: varchar("subscription_plan", { length: 20 }).default("FREE").notNull(),
     discordId: varchar("discord_id", { length: 255 }),
@@ -19,17 +19,17 @@ export const users = pgTable(
     discordAvatar: varchar("discord_avatar", { length: 1024 }),
     discordConnected: boolean("discord_connected").default(false).notNull(),
     discordRoleSynced: boolean("discord_role_synced").default(false).notNull(),
-    lastDiscordSync: timestamp("last_discord_sync", { withTimezone: true }),
+    lastDiscordSync: timestamp("last_discord_sync", { mode: "date" }),
     stripeCustomerId: varchar("stripe_customer_id", { length: 255 }),
     stripeSubscriptionId: varchar("stripe_subscription_id", { length: 255 }),
     stripeSubscriptionStatus: varchar("stripe_subscription_status", { length: 50 }),
-    stripeSubscriptionEndDate: timestamp("stripe_subscription_end_date", { withTimezone: true }),
-    createdAt: timestamp("created_at", { withTimezone: true })
+    stripeSubscriptionEndDate: timestamp("stripe_subscription_end_date", { mode: "date" }),
+    createdAt: timestamp("created_at", { mode: "date" })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
+    updatedAt: timestamp("updated_at", { mode: "date" })
       .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
+      .notNull()
   },
   (table) => ({
     emailIdx: index("user_email_idx").on(table.email),
@@ -48,13 +48,13 @@ export const sessions = pgTable(
       .references(() => users.id, { onDelete: "cascade" })
       .notNull(),
     token: varchar("token", { length: 255 }).notNull(),
-    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    expiresAt: timestamp("expires_at", { mode: "date" }).notNull(),
     ipAddress: varchar("ip_address", { length: 45 }),
     userAgent: varchar("user_agent", { length: 1024 }),
-    createdAt: timestamp("created_at", { withTimezone: true })
+    createdAt: timestamp("created_at", { mode: "date" })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
+    updatedAt: timestamp("updated_at", { mode: "date" })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
   },
@@ -75,15 +75,15 @@ export const accounts = pgTable(
     providerId: varchar("provider_id", { length: 255 }).notNull(),
     accessToken: varchar("access_token", { length: 4096 }),
     refreshToken: varchar("refresh_token", { length: 4096 }),
-    accessTokenExpiresAt: timestamp("access_token_expires_at", { withTimezone: true }),
-    refreshTokenExpiresAt: timestamp("refresh_token_expires_at", { withTimezone: true }),
+    accessTokenExpiresAt: timestamp("access_token_expires_at", { mode: "date" }),
+    refreshTokenExpiresAt: timestamp("refresh_token_expires_at", { mode: "date" }),
     scope: varchar("scope", { length: 4096 }),
     idToken: varchar("id_token", { length: 4096 }),
     password: varchar("password", { length: 255 }),
-    createdAt: timestamp("created_at", { withTimezone: true })
+    createdAt: timestamp("created_at", { mode: "date" })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
+    updatedAt: timestamp("updated_at", { mode: "date" })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
   },
@@ -104,16 +104,18 @@ export const verifications = pgTable(
     id: varchar("id", { length: 255 }).primaryKey().default(sql`gen_random_uuid()`),
     identifier: varchar("identifier", { length: 255 }).notNull(),
     value: varchar("value", { length: 255 }).notNull(),
-    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
+    expiresAt: timestamp("expires_at", { mode: "date" }).notNull(),
+    createdAt: timestamp("created_at", { mode: "date" })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
+    updatedAt: timestamp("updated_at", { mode: "date" })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
   },
   (table) => ({
     identifierIdx: index("verification_identifier_idx").on(table.identifier),
+    valueIdx: index("verification_value_idx").on(table.value),
+    expiresAtIdx: index("verification_expires_at_idx").on(table.expiresAt),
   })
 );
 

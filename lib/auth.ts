@@ -3,9 +3,12 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/server/db";
 import { users, sessions, accounts, verifications } from "@/server/db/schema";
 import { Resend } from "resend";
+import { createAuthMiddleware, APIError } from "better-auth/api";
 
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+
+
 
 const computedBaseUrl = (() => {
   if (process.env.NEXT_PUBLIC_APP_URL) {
@@ -31,6 +34,85 @@ export const auth = betterAuth({
       verification: verifications,
     },
   }),
+  hooks: {
+    before: createAuthMiddleware(async (ctx) => {
+      console.log("🔍 Hook before - Path:", ctx.path);
+      console.log("🔍 Hook before - Body:", ctx.body);
+      
+      if (ctx.path === "/sign-up/email") {
+        console.log("📝 Modifying sign-up request");
+        return {
+          context: {
+            ...ctx,
+            body: {
+              ...ctx.body,
+              name: ctx.body.name || "John Doe",
+            },
+          }
+        };
+      }
+      
+      if (ctx.path === "/sign-in/social") {
+        console.log("🔐 Social sign-in detected");
+        console.log("🔐 Provider:", ctx.query?.provider);
+        console.log("🔐 Body:", ctx.body);
+        
+        // Vérifier si un state va être créé
+        if (ctx.body?.provider === 'google') {
+          console.log("🔐 Google OAuth initiation");
+        }
+      }
+      
+      if (ctx.path === "/callback/:id") {
+        console.log("🔄 OAuth callback detected");
+        console.log("🔄 Query params:", ctx.query);
+        
+      // Intercepter la création d'utilisateur pour corriger les dates
+      try {
+        const adapter = ctx.context.adapter;
+        if (adapter && adapter.create) {
+          const originalCreate = adapter.create;
+          adapter.create = async (data: any) => {
+            const payload = structuredClone(data);
+
+            if (payload.model === "user") {
+              if (payload.data.emailVerified && payload.data.emailVerified !== "UNVERIFIED") {
+                payload.data.emailVerified =
+                  payload.data.emailVerified instanceof Date
+                    ? payload.data.emailVerified
+                    : new Date();
+              } else {
+                payload.data.emailVerified = null;
+              }
+            }
+
+            return originalCreate.call(adapter, payload);
+          };
+        }
+      } catch (error) {
+        console.error("❌ Error intercepting adapter:", error);
+      }
+      }
+    }),
+    
+    after: createAuthMiddleware(async (ctx) => {
+      console.log("✅ Hook after - Path:", ctx.path);
+      
+      if (ctx.path.startsWith("/sign-up")) {
+        console.log("🎉 New user registered!");
+        if (ctx.context.newSession) {
+          console.log("👤 New session created:", ctx.context.newSession.user);
+        }
+      }
+      
+      if (ctx.path.startsWith("/sign-in")) {
+        console.log("🔑 User signed in!");
+        if (ctx.context.newSession) {
+          console.log("👤 Session details:", ctx.context.newSession.user);
+        }
+      }
+    }),
+  },
   trustedOrigins: [computedBaseUrl],
   cookies: {
     sessionToken: {
@@ -149,7 +231,7 @@ export const auth = betterAuth({
       generateId: false,
     },
   },
-  
+
   
   onError: (error: Error, request?: Request) => {
     console.error("Better Auth Error - DETAILED:", {
