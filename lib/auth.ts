@@ -126,6 +126,50 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
+  },
+  
+  emailVerification: {
+    sendOnSignUp: true,
+    sendVerificationEmail: async ({ user, url }: { user: { email: string }, url: string }) => {
+      await resend.emails.send({
+        from: "Altiora <noreply@altiora.pro>",
+        to: user.email,
+        subject: "Verify your email address",
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #000; color: #fff; padding: 40px 20px;">
+            <div style="text-align: center; margin-bottom: 40px;">
+              <h1 style="color: #fff; font-size: 32px; margin: 0;">ALTIORA</h1>
+              <p style="color: #999; margin: 8px 0 0 0;">Personal coaching platform</p>
+            </div>
+            
+            <div style="background: #111; border: 1px solid #333; border-radius: 8px; padding: 32px; margin-bottom: 24px;">
+              <h2 style="color: #fff; margin: 0 0 16px 0; font-size: 24px;">Welcome to Altiora!</h2>
+              <p style="color: #ccc; margin: 0 0 24px 0; line-height: 1.6;">
+                Complete your account setup by verifying your email address. Click the button below to get started.
+              </p>
+              
+              <div style="text-align: center; margin: 32px 0;">
+                <a href="${url}" style="background: #fff; color: #000; padding: 16px 32px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold; font-size: 16px;">
+                  Verify Email Address
+                </a>
+              </div>
+              
+              <p style="color: #666; font-size: 14px; margin: 24px 0 0 0; text-align: center;">
+                This link will expire in 24 hours.
+              </p>
+            </div>
+            
+            <div style="text-align: center; color: #666; font-size: 12px;">
+              <p style="margin: 0;">If you didn't create this account, please ignore this email.</p>
+              <p style="margin: 8px 0 0 0;">© 2024 Altiora. All rights reserved.</p>
+            </div>
+          </div>
+        `,
+      });
+    },
+  },
+
+  passwordReset: {
     sendResetPassword: async ({ user, url }: { user: { email: string }, url: string }) => {
       await resend.emails.send({
         from: "Altiora <noreply@altiora.pro>",
@@ -161,43 +205,6 @@ export const auth = betterAuth({
             
             <div style="text-align: center; color: #666; font-size: 12px;">
               <p style="margin: 0;">© 2024 Altiora. All rights reserved.</p>
-            </div>
-          </div>
-        `,
-      });
-    },
-    sendVerificationEmail: async ({ user, url }: { user: { email: string }, url: string }) => {
-      await resend.emails.send({
-        from: "Altiora <noreply@altiora.pro>",
-        to: user.email,
-        subject: "Verify your email address",
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #000; color: #fff; padding: 40px 20px;">
-            <div style="text-align: center; margin-bottom: 40px;">
-              <h1 style="color: #fff; font-size: 32px; margin: 0;">ALTIORA</h1>
-              <p style="color: #999; margin: 8px 0 0 0;">Personal coaching platform</p>
-            </div>
-            
-            <div style="background: #111; border: 1px solid #333; border-radius: 8px; padding: 32px; margin-bottom: 24px;">
-              <h2 style="color: #fff; margin: 0 0 16px 0; font-size: 24px;">Welcome to Altiora!</h2>
-              <p style="color: #ccc; margin: 0 0 24px 0; line-height: 1.6;">
-                Complete your account setup by verifying your email address. Click the button below to get started.
-              </p>
-              
-              <div style="text-align: center; margin: 32px 0;">
-                <a href="${url}" style="background: #fff; color: #000; padding: 16px 32px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold; font-size: 16px;">
-                  Verify Email Address
-                </a>
-              </div>
-              
-              <p style="color: #666; font-size: 14px; margin: 24px 0 0 0; text-align: center;">
-                This link will expire in 24 hours.
-              </p>
-            </div>
-            
-            <div style="text-align: center; color: #666; font-size: 12px;">
-              <p style="margin: 0;">If you didn't create this account, please ignore this email.</p>
-              <p style="margin: 8px 0 0 0;">© 2024 Altiora. All rights reserved.</p>
             </div>
           </div>
         `,
