@@ -86,7 +86,7 @@ export const auth = betterAuth({
               }
             }
 
-            return originalCreate.call(adapter, payload);
+            return originalCreate.call(adapter, payload) as Promise<R>;
           };
         }
       } catch (error) {
