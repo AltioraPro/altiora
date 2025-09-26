@@ -73,12 +73,12 @@ export const accounts = pgTable(
       .notNull(),
     accountId: varchar("account_id", { length: 255 }).notNull(),
     providerId: varchar("provider_id", { length: 255 }).notNull(),
-    accessToken: varchar("access_token", { length: 2048 }),
-    refreshToken: varchar("refresh_token", { length: 2048 }),
+    accessToken: varchar("access_token", { length: 4096 }),
+    refreshToken: varchar("refresh_token", { length: 4096 }),
     accessTokenExpiresAt: timestamp("access_token_expires_at", { withTimezone: true }),
     refreshTokenExpiresAt: timestamp("refresh_token_expires_at", { withTimezone: true }),
-    scope: varchar("scope", { length: 2048 }),
-    idToken: varchar("id_token", { length: 2048 }),
+    scope: varchar("scope", { length: 4096 }),
+    idToken: varchar("id_token", { length: 4096 }),
     password: varchar("password", { length: 255 }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
