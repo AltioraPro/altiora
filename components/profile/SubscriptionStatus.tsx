@@ -9,6 +9,7 @@ export function SubscriptionStatus() {
   const [showDetails, setShowDetails] = useState(false);
   const { data: user, isLoading } = api.auth.getCurrentUser.useQuery();
   
+  const { data: limits } = api.subscription.getPlanLimits.useQuery(undefined, {
     enabled: !!user,
   });
   const { data: usage } = api.subscription.getUsageStats.useQuery(undefined, {
