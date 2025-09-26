@@ -1,72 +1,82 @@
 import { Suspense } from "react";
 import { Header } from "@/components/layout/Header";
-import { ActivityStats } from "@/components/profile/ActivityStats";
 import { SubscriptionStatus } from "@/components/profile/SubscriptionStatus";
 import { DiscordConnection } from "@/components/profile/DiscordConnection";
 import { ProfileForm } from "@/components/profile/ProfileForm";
-import { UsageStats } from "@/components/subscription/UsageStats";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { User, MessageCircle, CreditCard, Edit3, CheckCircle, XCircle, Crown, Shield } from "lucide-react";
+import { api } from "@/trpc/client";
+import Image from "next/image";
 
 export default function ProfilePage() {
   return (
     <>
       <Header />
       
-      <section className="min-h-screen bg-gradient-to-br from-pure-black to-neutral-950 pt-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-argesta text-white mb-2">Profile</h1>
+          <p className="text-white/60">
+            Manage your account settings
+          </p>
+        </div>
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           
-          {/* Header */}
-          <div className="text-center mb-16">
-            <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 font-argesta">
-              Profile
-            </h1>
-            <p className="text-xl text-neutral-400 max-w-2xl mx-auto font-argesta">
-              Manage your account and track your progress
-            </p>
+          {/* Left Column - Profile Info */}
+          <div className="space-y-6">
+            {/* Profile Card */}
+            <Card className="border border-white/10 bg-black/20">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2 text-white">
+                  <User className="w-5 h-5" />
+                  <span>Account Information</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Suspense fallback={<div className="h-32 bg-white/5 rounded-lg animate-pulse" />}>
+                  <ProfileForm />
+                </Suspense>
+              </CardContent>
+            </Card>
+
+            {/* Discord Card */}
+            <Card className="border border-white/10 bg-black/20">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2 text-white">
+                  <MessageCircle className="w-5 h-5" />
+                  <span>Discord Integration</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Suspense fallback={<div className="h-32 bg-white/5 rounded-lg animate-pulse" />}>
+                  <DiscordConnection />
+                </Suspense>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* Grid Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            {/* Left Column */}
-            <div className="lg:col-span-8 space-y-8">
-              
-              {/* Activity Stats */}
-              <Suspense fallback={<div className="h-64 bg-white/5 rounded-xl animate-pulse" />}>
-                <ActivityStats />
-              </Suspense>
-
-              {/* Profile Form */}
-              <div className="bg-white/5 rounded-xl border border-white/10 p-8">
-                <h2 className="text-2xl font-bold text-white mb-6 font-argesta">Profile Information</h2>
-                <ProfileForm />
-              </div>
-
-              {/* Discord Connection */}
-              <div className="bg-white/5 rounded-xl border border-white/10 p-8">
-                <h2 className="text-2xl font-bold text-white mb-6 font-argesta">Discord Connection</h2>
-                <DiscordConnection />
-              </div>
-            </div>
-
-            {/* Right Column */}
-            <div className="lg:col-span-4 space-y-8">
-              
-              {/* Subscription Status */}
-              <div className="bg-white/5 rounded-xl border border-white/10 p-8">
-                <h2 className="text-2xl font-bold text-white mb-6 font-argesta">Subscription</h2>
-                <Suspense fallback={<div className="h-32 bg-white/5 rounded-xl animate-pulse" />}>
+          {/* Right Column - Subscription */}
+          <div className="space-y-6">
+            <Card className="border border-white/10 bg-black/20">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2 text-white">
+                  <CreditCard className="w-5 h-5" />
+                  <span>Subscription</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Suspense fallback={<div className="h-32 bg-white/5 rounded-lg animate-pulse" />}>
                   <SubscriptionStatus />
                 </Suspense>
-              </div>
-
-              {/* Usage Stats - Client component outside Suspense */}
-              <div className="bg-white/5 rounded-xl border border-white/10 p-8">
-                <UsageStats />
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
-      </section>
+      </div>
     </>
   );
 } 
