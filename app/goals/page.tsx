@@ -135,80 +135,60 @@ export default function GoalsPage() {
             </div>
           </div>
 
-          {/* Quick Stats Bento Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-            {/* Active Goals */}
-            <div className="group relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-white/10 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
-              <div className="relative bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-white/20 transition-all duration-300 hover:scale-105 backdrop-blur-sm">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-white/60 text-sm font-medium mb-2 font-argesta">Active Goals</p>
-                    <p className="text-3xl font-bold text-green-400 tracking-tight font-argesta">
-                      {animatedStats.active}
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-white/10 to-white/5 rounded-lg border border-white/10 group-hover:scale-110 transition-transform duration-300">
-                    <Target className="w-6 h-6 text-white/70" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Completed Goals */}
-            <div className="group relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-white/10 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
-              <div className="relative bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-white/20 transition-all duration-300 hover:scale-105 backdrop-blur-sm">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-white/60 text-sm font-medium mb-2 font-argesta">Completed</p>
-                    <p className="text-3xl font-bold text-green-400 tracking-tight font-argesta">
-                      {animatedStats.completed}
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-white/10 to-white/5 rounded-lg border border-white/10 group-hover:scale-110 transition-transform duration-300">
-                    <TrendingUp className="w-6 h-6 text-white/70" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Overdue Goals */}
-            <div className="group relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-white/10 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
-              <div className="relative bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-white/20 transition-all duration-300 hover:scale-105 backdrop-blur-sm">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-white/60 text-sm font-medium mb-2 font-argesta">Overdue</p>
-                    <p className="text-3xl font-bold text-red-400 tracking-tight font-argesta">
-                      {animatedStats.overdue}
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-white/10 to-white/5 rounded-lg border border-white/10 group-hover:scale-110 transition-transform duration-300">
-                    <Calendar className="w-6 h-6 text-white/70" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Success Rate */}
-            <div className="group relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-white/10 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
-              <div className="relative bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-white/20 transition-all duration-300 hover:scale-105 backdrop-blur-sm">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-white/60 text-sm font-medium mb-2 font-argesta">Success Rate</p>
-                    <p className="text-3xl font-bold text-green-400 tracking-tight font-argesta">
-                      {animatedStats.successRate}%
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-white/10 to-white/5 rounded-lg border border-white/10 group-hover:scale-110 transition-transform duration-300">
-                    <Sparkles className="w-6 h-6 text-white/70" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+           {/* Quick Stats Cards */}
+           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+             {/* Active Goals */}
+             <div className="bg-black/20 border border-white/10 rounded-lg p-6 relative">
+               <div className="absolute top-4 right-4">
+                 <Target className="w-4 h-4 text-white" />
+               </div>
+               <div>
+                 <p className="text-white/60 text-sm font-medium mb-2">Active Goals</p>
+                 <p className="text-3xl font-bold text-green-400">
+                   {animatedStats.active}
+                 </p>
+               </div>
+             </div>
+             
+             {/* Completed Goals */}
+             <div className="bg-black/20 border border-white/10 rounded-lg p-6 relative">
+               <div className="absolute top-4 right-4">
+                 <TrendingUp className="w-4 h-4 text-white" />
+               </div>
+               <div>
+                 <p className="text-white/60 text-sm font-medium mb-2">Completed</p>
+                 <p className="text-3xl font-bold text-green-400">
+                   {animatedStats.completed}
+                 </p>
+               </div>
+             </div>
+             
+             {/* Overdue Goals */}
+             <div className="bg-black/20 border border-white/10 rounded-lg p-6 relative">
+               <div className="absolute top-4 right-4">
+                 <Calendar className="w-4 h-4 text-white" />
+               </div>
+               <div>
+                 <p className="text-white/60 text-sm font-medium mb-2">Overdue</p>
+                 <p className="text-3xl font-bold text-red-400">
+                   {animatedStats.overdue}
+                 </p>
+               </div>
+             </div>
+             
+             {/* Success Rate */}
+             <div className="bg-black/20 border border-white/10 rounded-lg p-6 relative">
+               <div className="absolute top-4 right-4">
+                 <Sparkles className="w-4 h-4 text-white" />
+               </div>
+               <div>
+                 <p className="text-white/60 text-sm font-medium mb-2">Success Rate</p>
+                 <p className="text-3xl font-bold text-white">
+                   {animatedStats.successRate}%
+                 </p>
+               </div>
+             </div>
+           </div>
 
           {/* Goals Dashboard */}
           <GoalsDashboard />
