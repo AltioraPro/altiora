@@ -239,7 +239,7 @@ export const FeaturesSection = () => {
                 READY TO TRANSFORM YOUR DISCIPLINE?
               </p>
               
-              <Link href="/auth/register">
+              <Link href="/pricing">
                 <HoverBorderGradient
                   containerClassName="bg-pure-black"
                   className="bg-pure-black text-white border border-white/10 px-8 py-4"
