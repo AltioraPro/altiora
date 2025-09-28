@@ -76,125 +76,94 @@ export function GoalStats({ stats }: GoalStatsProps) {
   };
 
   return (
-    <div className="relative overflow-hidden">
-      {/* Background avec effet de profondeur */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] via-white/[0.01] to-transparent rounded-xl" />
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+    <div className="bg-black/20 border border-white/10 rounded-lg p-6">
+      {/* Header */}
+      <div className="mb-6">
+        <h3 className="text-lg font-bold text-white mb-1">
+          Monthly Performance
+        </h3>
+        <p className="text-white/60 text-sm">
+          Track your progress
+        </p>
+      </div>
       
-      <div className="relative bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-xl p-6 shadow-2xl">
-        {/* Header compact */}
-        <div className="relative mb-6">
-          <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-white/10 to-white/5 rounded-lg blur-sm" />
-          <div className="relative bg-white/[0.05] border border-white/10 rounded-lg p-3">
-            <h3 className="text-lg font-bold text-white tracking-wide font-argesta">
-              Monthly Performance
-            </h3>
-            <p className="text-white/60 text-xs mt-1">
-              Track your progress
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        {/* Total Goals */}
+        <div className="bg-black/20 border border-white/10 rounded-lg p-4 relative">
+          <div className="absolute top-3 right-3">
+            <Target className="w-4 h-4 text-white" />
+          </div>
+          <p className="text-2xl font-bold text-white mb-1">
+            {animatedStats.total}
+          </p>
+          <p className="text-xs text-white/60">Total</p>
+        </div>
+
+        {/* Active Goals */}
+        <div className="bg-black/20 border border-white/10 rounded-lg p-4 relative">
+          <div className="absolute top-3 right-3">
+            <Zap className="w-4 h-4 text-white" />
+          </div>
+          <p className="text-2xl font-bold text-white mb-1">
+            {animatedStats.active}
+          </p>
+          <p className="text-xs text-white/60">Active</p>
+        </div>
+
+        {/* Completed Goals */}
+        <div className="bg-black/20 border border-white/10 rounded-lg p-4 relative">
+          <div className="absolute top-3 right-3">
+            <CheckCircle className="w-4 h-4 text-white" />
+          </div>
+          <p className="text-2xl font-bold text-white mb-1">
+            {animatedStats.completed}
+          </p>
+          <p className="text-xs text-white/60">Done</p>
+        </div>
+
+        {/* Overdue Goals */}
+        <div className="bg-black/20 border border-white/10 rounded-lg p-4 relative">
+          <div className="absolute top-3 right-3">
+            <Calendar className="w-4 h-4 text-white" />
+          </div>
+          <p className="text-2xl font-bold text-white mb-1">
+            {animatedStats.overdue}
+          </p>
+          <p className="text-xs text-white/60">Late</p>
+        </div>
+      </div>
+
+      {/* Success Rate Section */}
+      <div className="bg-black/20 border border-white/10 rounded-lg p-4">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <p className="text-xs text-white/60 mb-1">Success Rate</p>
+            <p className={`text-2xl font-bold ${getCompletionRateColor(animatedStats.completionRate)}`}>
+              {animatedStats.completionRate}%
             </p>
+          </div>
+          <div className="flex items-center justify-center w-10 h-10">
+            <div className="text-white">
+              {getCompletionRateIcon(animatedStats.completionRate)}
+            </div>
           </div>
         </div>
         
-        {/* Stats Grid compact */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          {/* Total Goals */}
-          <div className="group relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
-            <div className="relative bg-white/[0.05] border border-white/10 rounded-lg p-4 hover:border-white/20 transition-all duration-300 hover:scale-105">
-              <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-white/10 to-white/5 rounded-lg mx-auto mb-2 group-hover:scale-110 transition-transform duration-300">
-                <Target className="w-5 h-5 text-white/70" />
-              </div>
-              <p className="text-2xl font-bold text-white text-center mb-1 tracking-tight">
-                {animatedStats.total}
-              </p>
-              <p className="text-xs text-white/60 text-center font-medium">Total</p>
-            </div>
-          </div>
-
-          {/* Active Goals */}
-          <div className="group relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
-            <div className="relative bg-white/[0.05] border border-white/10 rounded-lg p-4 hover:border-white/20 transition-all duration-300 hover:scale-105">
-              <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-white/10 to-white/5 rounded-lg mx-auto mb-2 group-hover:scale-110 transition-transform duration-300">
-                <Zap className="w-5 h-5 text-white/70" />
-              </div>
-              <p className="text-2xl font-bold text-white text-center mb-1 tracking-tight">
-                {animatedStats.active}
-              </p>
-              <p className="text-xs text-white/60 text-center font-medium">Active</p>
-            </div>
-          </div>
-
-          {/* Completed Goals */}
-          <div className="group relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
-            <div className="relative bg-white/[0.05] border border-white/10 rounded-lg p-4 hover:border-white/20 transition-all duration-300 hover:scale-105">
-              <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-white/10 to-white/5 rounded-lg mx-auto mb-2 group-hover:scale-110 transition-transform duration-300">
-                <CheckCircle className="w-5 h-5 text-white/70" />
-              </div>
-              <p className="text-2xl font-bold text-white text-center mb-1 tracking-tight">
-                {animatedStats.completed}
-              </p>
-              <p className="text-xs text-white/60 text-center font-medium">Done</p>
-            </div>
-          </div>
-
-          <div className="group relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
-            <div className="relative bg-white/[0.05] border border-white/10 rounded-lg p-4 hover:border-white/20 transition-all duration-300 hover:scale-105">
-              <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-white/10 to-white/5 rounded-lg mx-auto mb-2 group-hover:scale-110 transition-transform duration-300">
-                <Calendar className="w-5 h-5 text-white/70" />
-              </div>
-              <p className="text-2xl font-bold text-white text-center mb-1 tracking-tight">
-                {animatedStats.overdue}
-              </p>
-              <p className="text-xs text-white/60 text-center font-medium">Late</p>
-            </div>
-          </div>
+        {/* Progress Bar */}
+        <div className="w-full bg-white/5 rounded-full h-2">
+          <div 
+            className="h-2 rounded-full bg-white/60 transition-all duration-1000 ease-out"
+            style={{ width: `${animatedStats.completionRate}%` }}
+          />
         </div>
+      </div>
 
-        {/* Completion Rate Section compact */}
-        <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-white/[0.02] via-white/[0.01] to-transparent rounded-lg" />
-          <div className="relative bg-white/[0.03] border border-white/10 rounded-lg p-4">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <p className="text-xs text-white/60 font-medium mb-1 font-argesta">Success Rate</p>
-                <p className={`text-2xl font-bold ${getCompletionRateColor(animatedStats.completionRate)} tracking-tight`}>
-                  {animatedStats.completionRate}%
-                </p>
-              </div>
-              <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-white/10 to-white/5 rounded-full border border-white/10">
-                <div className="text-white/80">
-                  {getCompletionRateIcon(animatedStats.completionRate)}
-                </div>
-              </div>
-            </div>
-            
-            {/* Progress Bar compact */}
-            <div className="relative">
-              <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-white/5 to-white/10 rounded-full" />
-                <div 
-                  className="relative h-2 rounded-full bg-gradient-to-r from-white/60 via-white/40 to-white/20 transition-all duration-1000 ease-out"
-                  style={{ 
-                    width: `${animatedStats.completionRate}%`,
-                    boxShadow: `0 0 10px rgba(255, 255, 255, ${animatedStats.completionRate / 100 * 0.3})`
-                  }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Message d'encouragement compact */}
-        <div className="mt-4 p-3 bg-white/[0.02] border border-white/5 rounded-lg">
-          <p className="text-white/70 text-xs font-medium text-center">
-            {getCompletionRateMessage(animatedStats.completionRate)}
-          </p>
-        </div>
+      {/* Message */}
+      <div className="mt-4 p-3 bg-black/20 border border-white/10 rounded-lg">
+        <p className="text-white/70 text-xs text-center">
+          {getCompletionRateMessage(animatedStats.completionRate)}
+        </p>
       </div>
     </div>
   );
