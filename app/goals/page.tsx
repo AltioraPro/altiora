@@ -7,7 +7,6 @@ import { CreateGoalModal } from "@/components/goals/CreateGoalModal";
 import { Button } from "@/components/ui/button";
 import { Plus, Target, Calendar, TrendingUp, Sparkles, Crown } from "lucide-react";
 import { api } from "@/trpc/client";
-import { Footer } from "@/components/layout/Footer";
 
 export default function GoalsPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
