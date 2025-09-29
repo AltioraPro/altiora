@@ -487,6 +487,52 @@ export const goals = createTable(
 );
 
 /**
+ * Table des sessions Pomodoro Discord
+ */
+export const discordPomodoroSessions = createTable(
+  "discord_pomodoro_session",
+  {
+    id: varchar("id", { length: 255 }).primaryKey(),
+    userId: varchar("user_id", { length: 255 })
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    discordId: varchar("discord_id", { length: 255 }).notNull(),
+    channelId: varchar("channel_id", { length: 255 }).notNull(),
+    
+    // Configuration de la session
+    duration: integer("duration").notNull(), // Durée en minutes
+    workTime: integer("work_time").notNull(), // Temps de travail en minutes
+    breakTime: integer("break_time").notNull(), // Temps de pause en minutes
+    format: varchar("format", { length: 20 }).notNull(), // "25/5", "50/10", etc.
+    
+    // État de la session
+    status: varchar("status", { length: 20 }).default("active").notNull(), // active, paused, completed, cancelled
+    currentPhase: varchar("current_phase", { length: 20 }).default("work").notNull(), // work, break
+    phaseStartTime: timestamp("phase_start_time", { withTimezone: true }),
+    totalWorkTime: integer("total_work_time").default(0).notNull(), // Temps total de travail en minutes
+    totalBreakTime: integer("total_break_time").default(0).notNull(), // Temps total de pause en minutes
+    
+    // Timestamps
+    startedAt: timestamp("started_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    endedAt: timestamp("ended_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (table) => ({
+    userIdIdx: index("discord_pomodoro_user_id_idx").on(table.userId),
+    discordIdIdx: index("discord_pomodoro_discord_id_idx").on(table.discordId),
+    statusIdx: index("discord_pomodoro_status_idx").on(table.status),
+    startedAtIdx: index("discord_pomodoro_started_at_idx").on(table.startedAt),
+  })
+);
+
+/**
  * Table des sous-objectifs
  */
 export const subGoals = createTable(
