@@ -4,6 +4,7 @@
         import Link from "next/link";
         import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
         import ShinyText from "@/components/landing/ShinyText";
+        import StripeCheckout from "@/components/subscription/StripeCheckout";
 
                 export default function PricingPage() {
                 const testimonials1 = [
@@ -147,10 +148,10 @@
                         <p className="text-gray-300 mb-6">Unlimited access to everything</p>
                         
                         <div className="flex items-baseline mb-3">
-                        <span className="text-6xl font-bold text-white">€14.99</span>
+                        <span className="text-6xl font-bold text-white">€15</span>
                         <span className="text-gray-300 ml-2">/ month</span>
                         </div>
-                        <p className="text-sm text-gray-300">€143.90/year (save 20%)</p>
+                        <p className="text-sm text-gray-300">€150/year (save 17%)</p>
                     </div>
 
                     <ul className="space-y-4 mb-8">
@@ -184,12 +185,12 @@
                         </li>
                     </ul>
 
-                    <Link 
-                        href="/auth/register"
-                        className="block w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white text-center py-4 rounded-xl font-bold hover:from-purple-400 hover:to-purple-500 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                    <StripeCheckout 
+                        priceId="price_1SCdcHBtAefV566E4tUitB8Z"
+                        className="block w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white text-center py-4 rounded-xl font-bold hover:from-purple-400 hover:to-purple-500 transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         Get Altioran
-                    </Link>
+                    </StripeCheckout>
                     </div>
 
                     {/* Private Coaching Plan */}
