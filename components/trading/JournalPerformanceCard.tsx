@@ -8,6 +8,7 @@ import { TrendingUp, Edit, Trash2, ExternalLink, Camera, Loader2 } from "lucide-
 import { api } from "@/trpc/client";
 import html2canvas from "html2canvas";
 import { ResponsiveContainer, AreaChart, Area, CartesianGrid, XAxis, YAxis } from "recharts";
+import Image from "next/image";
 
 interface JournalPerformanceCardProps {
   journal: {
@@ -61,13 +62,6 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
       })
     : null;
 
-  const worstTrade = tradesData && tradesData.length > 0 
-    ? tradesData.reduce((worst, current) => {
-        const currentPnl = Number(current.profitLossPercentage || 0);
-        const worstPnl = Number(worst.profitLossPercentage || 0);
-        return currentPnl < worstPnl ? current : worst;
-      })
-    : null;
 
   const finalCumulative = cumulativeData.length > 0 ? cumulativeData[cumulativeData.length - 1].cumulative : Number(stats?.totalPnL || 0);
 
@@ -235,10 +229,12 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
           </div>
 
           <div className="flex flex-col items-center justify-center">
-            <img 
+            <Image 
               src="/img/logo.png" 
               alt="Altiora" 
-              className="w-4 opacity-60"
+              width={16}
+              height={16}
+              className="opacity-60"
             />
             <span className="text-white/40 text-xs">altiora.pro</span>
           </div>
@@ -381,9 +377,11 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
           </div>
           
           <div className="mb-4">
-            <img 
+            <Image 
               src={capturedImage} 
               alt="Trading performance screenshot" 
+              width={400}
+              height={500}
               className="w-full rounded-xl border border-white/10 shadow-lg"
             />
           </div>
