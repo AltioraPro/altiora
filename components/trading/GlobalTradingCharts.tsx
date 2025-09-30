@@ -7,7 +7,6 @@ import {
   XAxis, 
   YAxis, 
   CartesianGrid, 
-  Tooltip, 
   ResponsiveContainer,
   AreaChart,
   Area
@@ -71,46 +70,88 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
             <CardDescription className="text-white/60">Performance evolution</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <AreaChart data={cumulativeData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" strokeOpacity={0.1} />
-                <XAxis dataKey="tradeNumber" stroke="#ffffff" strokeOpacity={0.6} fontSize={10} />
-                <YAxis stroke="#ffffff" strokeOpacity={0.6} fontSize={10} tickFormatter={(value) => `${value.toFixed(1)}%`} />
-                <Tooltip 
-                  formatter={(value: number) => [ `${value.toFixed(1)}%`, 'Cumulative PnL' ]}
-                  labelFormatter={(label: string) => `Trade #${label}`}
-                  contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', color: '#000000', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
-                  itemStyle={{ color: '#000000' }}
-                  labelStyle={{ color: '#000000' }}
-                />
-                <Area type="monotone" dataKey="cumulative" stroke="#ffffff" fill="#ffffff" fillOpacity={0.2} strokeWidth={2} />
-              </AreaChart>
-            </ResponsiveContainer>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={cumulativeData} margin={{ top: 10, right: 16, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="global-cumulative-gradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#10b981" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="#10b981" stopOpacity={0.05} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid stroke="rgba(255,255,255,0.1)" vertical={false} />
+                  <XAxis
+                    dataKey="tradeNumber"
+                    tickLine={false}
+                    axisLine={false}
+                    stroke="#ffffff"
+                    strokeOpacity={0.4}
+                    tick={{ fontSize: 10, fill: "rgba(255,255,255,0.5)" }}
+                  />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    stroke="#ffffff"
+                    strokeOpacity={0.4}
+                    tickFormatter={(value) => `${value.toFixed(0)}%`}
+                    tick={{ fontSize: 10, fill: "rgba(255,255,255,0.5)" }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="cumulative"
+                    stroke="#10b981"
+                    fill="url(#global-cumulative-gradient)"
+                    strokeWidth={2}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </CardContent>
         </Card>
 
         {/* Monthly Performance */}
-        <Card className="border border-white/10 bg-black/20">
+        <Card className="border border-white/20 bg-gradient-to-br from-black/40 to-black/60 backdrop-blur-sm">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg text-white">Monthly Performance</CardTitle>
-            <CardDescription className="text-white/60">Sum of PnL per month</CardDescription>
+            <CardTitle className="text-lg text-white font-argesta tracking-wide">MONTHLY PERFORMANCE</CardTitle>
+            <CardDescription className="text-white/70 font-argesta">
+              Performance by month
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={monthlyPerformanceData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" strokeOpacity={0.1} />
-                <XAxis dataKey="name" stroke="#ffffff" strokeOpacity={0.6} fontSize={10} height={30} />
-                <YAxis stroke="#ffffff" strokeOpacity={0.6} fontSize={10} tickFormatter={(value) => `${value.toFixed(1)}%`} domain={['dataMin - 5', 'dataMax + 5']} />
-                <Tooltip 
-                  formatter={(value: number) => [ `${value.toFixed(1)}%`, 'Total PnL' ]}
-                  labelFormatter={(label: string) => label}
-                  contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', color: '#000000', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
-                  itemStyle={{ color: '#000000' }}
-                  labelStyle={{ color: '#000000' }}
-                />
-                <Bar dataKey="pnl" radius={[6, 6, 0, 0]} fill="#ffffff" />
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="w-full h-[250px] pr-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={monthlyPerformanceData} margin={{ right: 20 }}>
+                  <defs>
+                    <linearGradient id="monthlyGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#10B981" stopOpacity={0.9}/>
+                      <stop offset="100%" stopColor="#10B981" stopOpacity={0.3}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" strokeOpacity={0.1} />
+                  <XAxis 
+                    dataKey="name" 
+                    stroke="#ffffff"
+                    strokeOpacity={0.4}
+                    fontSize={10}
+                    angle={-45}
+                    textAnchor="end"
+                    height={60}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis 
+                    stroke="#ffffff" 
+                    strokeOpacity={0.4} 
+                    fontSize={10}
+                    tickFormatter={(value) => `${value.toFixed(1)}%`}
+                    domain={['dataMin - 5', 'dataMax + 5']}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <Bar dataKey="pnl" radius={[4, 4, 4, 4]} fill="url(#monthlyGradient)" stroke="rgba(255,255,255,0.1)" strokeWidth={1} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </CardContent>
         </Card>
       </div>
