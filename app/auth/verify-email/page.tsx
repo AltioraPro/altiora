@@ -78,8 +78,8 @@ function VerifyEmailContent() {
     }
   };
 
-  const handleNavigateToLogin = () => {
-    window.location.href = "/auth/login";
+  const handleNavigateToDashboard = () => {
+    window.location.href = "/dashboard";
   };
 
   const handleNavigateToRegister = () => {
@@ -300,7 +300,7 @@ function VerifyEmailContent() {
                 <ul className="space-y-2 text-gray-300 text-sm">
                   <li className="flex items-start space-x-3">
                     <span className="text-white/40 font-mono text-xs mt-0.5">01</span>
-                    <span>Sign in to your account</span>
+                    <span>Access your dashboard</span>
                   </li>
                   <li className="flex items-start space-x-3">
                     <span className="text-white/40 font-mono text-xs mt-0.5">02</span>
@@ -355,13 +355,13 @@ function VerifyEmailContent() {
             <div className="space-y-4">
               {status === "success" && (
                 <button
-                  onClick={handleNavigateToLogin}
+                  onClick={handleNavigateToDashboard}
                   className="group relative w-full py-4 bg-transparent border border-white/30 rounded-lg overflow-hidden transition-all duration-300 hover:border-white"
                 >
                   <div className="absolute inset-0 bg-white/10 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                   
                   <div className="relative flex items-center justify-center space-x-3">
-                    <span className="tracking-widest">SIGN IN</span>
+                    <span className="tracking-widest">GO TO DASHBOARD</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                   </div>
                 </button>

@@ -21,7 +21,11 @@ const HABIT_COLORS = [
   "#8b5cf6", "#a855f7", "#d946ef", "#ec4899"
 ];
 
-export function CreateHabitModal() {
+interface CreateHabitModalProps {
+  onSuccess?: () => void;
+}
+
+export function CreateHabitModal({ onSuccess }: CreateHabitModalProps = {}) {
   const { isCreateModalOpen, closeCreateModal } = useHabits();
   const { addToast } = useToast();
   const [title, setTitle] = useState("");
@@ -41,6 +45,7 @@ export function CreateHabitModal() {
         message: "Your new habit has been created successfully",
       });
       handleClose();
+      onSuccess?.();
     },
     onError: (error) => {
       console.error("Error creating habit:", error);

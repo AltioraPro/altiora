@@ -8,9 +8,10 @@ import { useOptimizedGoalMutation } from "@/hooks/useOptimizedGoalMutation";
 interface CreateGoalModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
-export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
+export function CreateGoalModal({ isOpen, onClose, onSuccess }: CreateGoalModalProps) {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -52,6 +53,7 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
     createGoal(data, {
       onSuccess: () => {
         handleClose();
+        onSuccess?.();
       },
     });
   };
