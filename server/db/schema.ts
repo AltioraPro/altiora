@@ -24,12 +24,8 @@ export const users = pgTable(
     stripeSubscriptionId: varchar("stripe_subscription_id", { length: 255 }),
     stripeSubscriptionStatus: varchar("stripe_subscription_status", { length: 50 }),
     stripeSubscriptionEndDate: timestamp("stripe_subscription_end_date"),
-    createdAt: timestamp("created_at")
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updated_at")
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull()
+    createdAt: timestamp("created_at").notNull(),
+    updatedAt: timestamp("updated_at").notNull()
   },
   (table) => ({
     emailIdx: index("user_email_idx").on(table.email),
@@ -51,12 +47,8 @@ export const sessions = pgTable(
     expiresAt: timestamp("expires_at").notNull(),
     ipAddress: varchar("ip_address", { length: 45 }),
     userAgent: varchar("user_agent", { length: 1024 }),
-    createdAt: timestamp("created_at")
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updated_at")
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
+    createdAt: timestamp("created_at").notNull(),
+    updatedAt: timestamp("updated_at").notNull(),
   },
   (table) => ({
     userIdIdx: index("session_user_id_idx").on(table.userId),
@@ -80,12 +72,8 @@ export const accounts = pgTable(
     scope: varchar("scope", { length: 4096 }),
     idToken: varchar("id_token", { length: 4096 }),
     password: varchar("password", { length: 255 }),
-    createdAt: timestamp("created_at")
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updated_at")
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
+    createdAt: timestamp("created_at").notNull(),
+    updatedAt: timestamp("updated_at").notNull(),
   },
   (table) => ({
     userIdIdx: index("account_user_id_idx").on(table.userId),
@@ -105,12 +93,8 @@ export const verifications = pgTable(
     identifier: varchar("identifier", { length: 255 }).notNull(),
     value: varchar("value", { length: 255 }).notNull(),
     expiresAt: timestamp("expires_at").notNull(),
-    createdAt: timestamp("created_at")
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updated_at")
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
+    createdAt: timestamp("created_at").notNull(),
+    updatedAt: timestamp("updated_at").notNull(),
   },
   (table) => ({
     identifierIdx: index("verification_identifier_idx").on(table.identifier),

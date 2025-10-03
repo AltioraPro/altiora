@@ -47,6 +47,7 @@ export const discordRouter = createTRPCRouter({
         discordConnected: false,
         discordRoleSynced: false,
         lastDiscordSync: null,
+        updatedAt: new Date(),
       })
       .where(eq(users.id, session.user.id));
 
@@ -73,10 +74,12 @@ export const discordRouter = createTRPCRouter({
       await DiscordService.syncUserRank(user.discordId, user.rank);
       
       // Mettre à jour le statut de synchronisation
+      const now = new Date();
       await db.update(users)
         .set({
           discordRoleSynced: true,
-          lastDiscordSync: new Date(),
+          lastDiscordSync: now,
+          updatedAt: now,
         })
         .where(eq(users.id, session.user.id));
 
@@ -107,10 +110,12 @@ export const discordRouter = createTRPCRouter({
       await DiscordService.autoSyncUserRank(user.discordId, user.rank);
       
       // Mettre à jour le statut de synchronisation
+      const now = new Date();
       await db.update(users)
         .set({
           discordRoleSynced: true,
-          lastDiscordSync: new Date(),
+          lastDiscordSync: now,
+          updatedAt: now,
         })
         .where(eq(users.id, session.user.id));
 

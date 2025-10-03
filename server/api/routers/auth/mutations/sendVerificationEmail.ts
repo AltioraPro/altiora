@@ -28,11 +28,14 @@ export async function sendVerificationEmail({ email }: SendVerificationEmailPara
   const token = nanoid();
   const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 heures
 
+  const now = new Date();
   await db.insert(verifications).values({
     id: nanoid(),
     identifier: email,
     value: token,
     expiresAt,
+    createdAt: now,
+    updatedAt: now,
   });
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
