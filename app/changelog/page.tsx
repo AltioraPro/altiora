@@ -99,11 +99,11 @@ export default function ChangelogPage() {
       <div className="min-h-screen bg-pure-black text-pure-white pt-20">
         <div className="max-w-4xl mx-auto px-6 py-16">
           <div className="text-center mb-12">
-            <h1 className="text-5xl font-bold font-argesta mb-4 bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent">
+            <h1 className="text-5xl font-bold  mb-4 bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent">
               CHANGELOG
             </h1>
             <div className="w-24 h-px bg-gradient-to-r from-transparent via-white to-transparent mx-auto opacity-50" />
-            <p className="text-white/60 mt-6 font-argesta">
+            <p className="text-white/60 mt-6 ">
               Track all updates, improvements, and new features
             </p>
           </div>
@@ -118,7 +118,7 @@ export default function ChangelogPage() {
                       <span className={`px-3 py-1 rounded-full text-xs font-bold border ${getVersionBadgeColor(release.type)}`}>
                         v{release.version}
                       </span>
-                      <span className="text-white/50 text-sm font-argesta">
+                      <span className="text-white/50 text-sm ">
                         {new Date(release.date).toLocaleDateString('en-US', { 
                           year: 'numeric', 
                           month: 'long', 
@@ -127,7 +127,7 @@ export default function ChangelogPage() {
                       </span>
                     </div>
                   </div>
-                  <h2 className="text-xl font-bold font-argesta text-white">
+                  <h2 className="text-xl font-bold  text-white">
                     {release.title}
                   </h2>
                 </div>
@@ -151,7 +151,7 @@ export default function ChangelogPage() {
 
           {/* Legend */}
           <div className="mt-12 bg-white/5 rounded-2xl border border-white/10 p-6">
-            <h3 className="text-lg font-bold font-argesta text-white mb-4">Legend</h3>
+            <h3 className="text-lg font-bold  text-white mb-4">Legend</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="flex items-center space-x-3">
                 <Plus className="w-4 h-4 text-green-400" />
@@ -170,7 +170,7 @@ export default function ChangelogPage() {
 
           {/* Subscribe to Updates */}
           <div className="mt-12 text-center bg-white/5 rounded-2xl border border-white/10 p-8">
-            <h3 className="text-xl font-bold font-argesta text-white mb-4">
+            <h3 className="text-xl font-bold  text-white mb-4">
               Stay Updated
             </h3>
             <p className="text-white/60 mb-6">
@@ -178,7 +178,7 @@ export default function ChangelogPage() {
             </p>
             <a
               href="mailto:updates@altiora.app?subject=Subscribe to Updates"
-              className="inline-flex items-center px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 rounded-xl text-white transition-all duration-300 font-argesta"
+              className="inline-flex items-center px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 rounded-xl text-white transition-all duration-300 "
             >
               Subscribe to Updates
             </a>

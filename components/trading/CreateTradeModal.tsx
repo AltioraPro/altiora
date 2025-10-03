@@ -141,7 +141,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="font-argesta text-white">New Trade</CardTitle>
+              <CardTitle className=" text-white">New Trade</CardTitle>
               <CardDescription className="text-white/70">
                 Add a new trade to your journal
               </CardDescription>

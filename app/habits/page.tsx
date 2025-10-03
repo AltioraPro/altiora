@@ -25,7 +25,7 @@ export default function HabitsPage() {
                   <h1 className="text-3xl font-bold font-argesta tracking-tight">
                     Habits Tracker
                   </h1>
-                  <p className="text-white/60 font-argesta text-sm mt-2">
+                  <p className="text-white/60 text-sm mt-2">
                     Forge your discipline. Build your legacy.
                   </p>
                 </div>

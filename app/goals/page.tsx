@@ -92,7 +92,7 @@ export default function GoalsPage() {
                   <h1 className="text-3xl font-bold font-argesta tracking-tight">
                     Goals Tracker
                   </h1>
-                  <p className="text-white/60 font-argesta text-sm mt-2">
+                  <p className="text-white/60 text-sm mt-2">
                     Define your vision. Achieve your destiny.
                   </p>
                 </div>

@@ -214,7 +214,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
             <div className={`text-center mb-8 transition-all duration-1000 ${
               isMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
             }`}>
-              <h1 className="text-5xl font-bold bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent font-argesta leading-none mb-2">
+              <h1 className="text-5xl font-bold bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent  leading-none mb-2">
                 ALTIORA
               </h1>
               <div className="w-20 h-px bg-gradient-to-r from-transparent via-white to-transparent mx-auto opacity-50" />
@@ -267,7 +267,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
                         }}
                       >
                         <div className="bg-black/90 backdrop-blur-sm rounded-lg px-3 py-1.5 border border-white/30 shadow-lg">
-                          <span className="text-white text-xs font-medium font-argesta tracking-widest whitespace-nowrap">
+                          <span className="text-white text-xs font-medium  tracking-widest whitespace-nowrap">
                             {item.label}
                           </span>
                         </div>
@@ -315,7 +315,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
               <Link
                 href="/pricing"
                 onClick={toggleMenu}
-                className="inline-flex items-center px-8 py-3 rounded-full border border-white/20 bg-white/5 backdrop-blur-md text-white/80 hover:text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300 font-medium font-argesta tracking-wide group"
+                className="inline-flex items-center px-8 py-3 rounded-full border border-white/20 bg-white/5 backdrop-blur-md text-white/80 hover:text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300 font-medium  tracking-wide group"
               >
                 GET STARTED
                 <div className="ml-2 w-1 h-1 rounded-full bg-white/60 group-hover:w-6 group-hover:h-0.5 transition-all duration-300" />
@@ -330,10 +330,10 @@ export const Header = ({ className = "" }: HeaderProps) => {
                       <User className="w-5 h-5" />
                     </div>
                     <div className="text-center">
-                      <p className="text-sm font-medium font-argesta tracking-wide">
+                      <p className="text-sm font-medium  tracking-wide">
                         {session.user.name?.split(' ')[0] || session.user.email.split('@')[0]}
                       </p>
-                      <p className="text-xs text-white/50 font-argesta">
+                      <p className="text-xs text-white/50 ">
                         {session.user.email}
                       </p>
                     </div>
@@ -343,7 +343,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
                     <Link
                       href="/profile"
                       onClick={toggleMenu}
-                      className="text-white/60 hover:text-white transition-all duration-300 font-medium font-argesta tracking-wide text-sm group"
+                      className="text-white/60 hover:text-white transition-all duration-300 font-medium  tracking-wide text-sm group"
                     >
                       PROFILE
                       <div className="w-0 h-px bg-white/60 group-hover:w-full transition-all duration-300 mt-1" />
@@ -355,7 +355,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
                         toggleMenu();
                         window.location.href = "/";
                       }}
-                      className="text-white/60 hover:text-red-400 transition-all duration-300 font-medium font-argesta tracking-wide text-sm group"
+                      className="text-white/60 hover:text-red-400 transition-all duration-300 font-medium  tracking-wide text-sm group"
                     >
                       LOGOUT
                       <div className="w-0 h-px bg-red-400/60 group-hover:w-full transition-all duration-300 mt-1" />
@@ -368,7 +368,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
                   <Link
                     href="/auth/login"
                     onClick={toggleMenu}
-                    className="text-white/60 hover:text-white transition-all duration-300 font-medium font-argesta tracking-wide text-sm group"
+                    className="text-white/60 hover:text-white transition-all duration-300 font-medium  tracking-wide text-sm group"
                   >
                     LOGIN
                     <div className="w-0 h-px bg-white/60 group-hover:w-full transition-all duration-300 mt-1" />
@@ -377,7 +377,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
                   <Link
                     href="/auth/register"
                     onClick={toggleMenu}
-                    className="text-white/60 hover:text-white transition-all duration-300 font-medium font-argesta tracking-wide text-sm group"
+                    className="text-white/60 hover:text-white transition-all duration-300 font-medium  tracking-wide text-sm group"
                   >
                     REGISTER
                     <div className="w-0 h-px bg-white/60 group-hover:w-full transition-all duration-300 mt-1" />
@@ -394,7 +394,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
               isMenuOpen ? 'opacity-60 translate-y-0' : 'opacity-0 translate-y-[-10px]'
             }`}
           >
-            <span className="text-xs text-white/40 font-argesta tracking-widest group-hover:text-white/80 transition-colors duration-200">
+            <span className="text-xs text-white/40  tracking-widest group-hover:text-white/80 transition-colors duration-200">
               ESC TO CLOSE
             </span>
           </button>

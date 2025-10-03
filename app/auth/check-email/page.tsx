@@ -130,7 +130,7 @@
             </h1>
             
             <div className="space-y-4 text-gray-300">
-              <p className="text-xl font-argesta">
+              <p className="text-xl">
                 Almost there.
               </p>
               <p className="text-base opacity-80">
@@ -164,7 +164,7 @@
             {/* Decorative line */}
             <div className="mt-12 flex items-center space-x-4">
               <div className="w-20 h-px bg-gradient-to-r from-white to-transparent" />
-              <span className="text-xs text-white/60 font-argesta tracking-widest">
+              <span className="text-xs text-white/60 tracking-widest">
                 VERIFY
               </span>
               <div className="w-20 h-px bg-gradient-to-l from-white to-transparent" />
@@ -192,7 +192,7 @@
                     </div>
                   </div>
                   
-                  <h2 className="text-2xl font-bold text-white mb-2 font-argesta">
+                  <h2 className="text-2xl font-bold text-white mb-2">
                     Email Already Verified
                   </h2>
                   <p className="text-gray-400 text-sm">
@@ -208,7 +208,7 @@
                     </div>
                   </div>
                   
-                  <h2 className="text-2xl font-bold text-white mb-2 font-argesta">
+                  <h2 className="text-2xl font-bold text-white mb-2">
                     Check Your Email
                   </h2>
                   <p className="text-gray-400 text-sm">
@@ -250,7 +250,7 @@
               {!isAlreadyVerified && (
                 <>
                   <div className="p-4 border border-white/10 bg-white/5 backdrop-blur-sm rounded-lg">
-                    <h3 className="text-white font-medium mb-3 text-sm font-argesta tracking-wide">
+                    <h3 className="text-white font-medium mb-3 text-sm tracking-wide">
                       NEXT STEPS
                     </h3>
                     <ol className="space-y-2 text-gray-300 text-sm">
@@ -284,7 +284,7 @@
                   <div className="flex items-center space-x-3">
                     <CheckCircle className="w-5 h-5 text-green-400" />
                     <div>
-                      <h3 className="text-green-400 font-medium text-sm font-argesta">
+                      <h3 className="text-green-400 font-medium text-sm">
                         VERIFICATION COMPLETE
                       </h3>
                       <p className="text-green-300 text-xs mt-1">

@@ -51,7 +51,7 @@ export const FeaturesSection = () => {
         <div className="text-center mb-20">
           <div className="flex items-center justify-center space-x-4 mb-6">
             <div className="w-16 h-px bg-gradient-to-r from-transparent to-white/30" />
-            <span className="text-xs font-argesta tracking-[0.3em] text-white/60">FEATURES</span>
+            <span className="text-xs tracking-[0.3em] text-white/60">FEATURES</span>
             <div className="w-16 h-px bg-gradient-to-l from-transparent to-white/30" />
           </div>
           
@@ -69,7 +69,7 @@ export const FeaturesSection = () => {
           
           <AnimatedText 
             text="A complete platform to develop your personal and professional discipline"
-            className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto font-argesta"
+            className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto"
             delay={200}
             charDelay={30}
           />
@@ -87,7 +87,7 @@ export const FeaturesSection = () => {
                 <div className="absolute -top-2 -right-2 w-3 h-3 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping" />
               </div>
               
-              <h3 className="text-xl font-argesta font-bold mb-4 text-white">
+              <h3 className="text-xl font-bold mb-4 text-white">
                 TRADING JOURNAL
               </h3>
               
@@ -121,7 +121,7 @@ export const FeaturesSection = () => {
                 <div className="absolute -top-2 -right-2 w-3 h-3 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping" />
               </div>
               
-              <h3 className="text-xl font-argesta font-bold mb-4 text-white">
+              <h3 className="text-xl font-bold mb-4 text-white">
                 HABIT TRACKER
               </h3>
               
@@ -155,7 +155,7 @@ export const FeaturesSection = () => {
                 <div className="absolute -top-2 -right-2 w-3 h-3 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping" />
               </div>
               
-              <h3 className="text-xl font-argesta font-bold mb-4 text-white">
+              <h3 className="text-xl font-bold mb-4 text-white">
                 GOAL PLANNING
               </h3>
               
@@ -189,7 +189,7 @@ export const FeaturesSection = () => {
                   <div className="absolute -top-2 -right-2 w-3 h-3 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping" />
                 </div>
                 
-                <h3 className="text-xl font-argesta font-bold mb-4 text-white">
+                <h3 className="text-xl font-bold mb-4 text-white">
                   DISCORD POMODORO
                 </h3>
                 
@@ -218,7 +218,7 @@ export const FeaturesSection = () => {
         <AnimatedCard delay={500}>
           <div className="text-center mt-16 mb-8">
             
-            <p className="text-white/50 text-sm font-argesta tracking-[0.2em]">
+            <p className="text-white/50 text-sm tracking-[0.2em]">
               AND MUCH MORE...
             </p>
             
@@ -235,7 +235,7 @@ export const FeaturesSection = () => {
         <AnimatedCard delay={550}>
           <div className="text-center mt-20">
             <div className="inline-flex flex-col items-center space-y-6">
-              <p className="text-white/60 text-sm font-argesta tracking-widest">
+              <p className="text-white/60 text-sm tracking-widest">
                 READY TO TRANSFORM YOUR DISCIPLINE?
               </p>
               
@@ -244,7 +244,7 @@ export const FeaturesSection = () => {
                   containerClassName="bg-pure-black"
                   className="bg-pure-black text-white border border-white/10 px-8 py-4"
                 >
-                  <span className="flex items-center gap-3 font-argesta tracking-widest">
+                  <span className="flex items-center gap-3 tracking-widest">
                     START NOW
                     <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
                   </span>
@@ -253,17 +253,17 @@ export const FeaturesSection = () => {
               
               <div className="flex items-center space-x-8 text-xs text-white/40 mt-8">
                 <div className="text-center">
-                  <div className="font-argesta text-white/60">1000+</div>
+                  <div className="text-white/60">1000+</div>
                   <div>Active users</div>
                 </div>
                 <div className="w-px h-8 bg-white/20" />
                 <div className="text-center">
-                  <div className="font-argesta text-white/60">50K+</div>
+                  <div className="text-white/60">50K+</div>
                   <div>Trades analyzed</div>
                 </div>
                 <div className="w-px h-8 bg-white/20" />
                 <div className="text-center">
-                  <div className="font-argesta text-white/60">95%</div>
+                  <div className="text-white/60">95%</div>
                   <div>Satisfaction</div>
                 </div>
               </div>

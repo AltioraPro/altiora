@@ -97,7 +97,7 @@ export function HabitsManager() {
     return (
       <div className="bg-white/5 rounded-2xl border border-white/10 p-6">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="font-argesta text-lg text-white">HABITS MANAGER</h3>
+          <h3 className=" text-lg text-white">HABITS MANAGER</h3>
           <div className="h-8 w-32 bg-white/5 rounded-lg animate-pulse" />
         </div>
         <div className="space-y-3">
@@ -112,7 +112,7 @@ export function HabitsManager() {
   return (
     <div className="bg-white/5 rounded-2xl border border-white/10 p-6">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="font-argesta text-lg text-white">HABITS MANAGER</h3>
+        <h3 className=" text-lg text-white">HABITS MANAGER</h3>
       </div>
 
       {/* Search and Filter */}
@@ -132,7 +132,7 @@ export function HabitsManager() {
         {/* Show Inactive Toggle */}
         <button
           onClick={handleToggleInactive}
-          className={`ml-4 px-4 py-2 rounded-lg transition-colors text-sm font-argesta ${
+          className={`ml-4 px-4 py-2 rounded-lg transition-colors text-sm  ${
             showInactive 
               ? 'bg-white/20 text-white border border-white/40' 
               : 'bg-white/5 text-white/60 hover:text-white/80 border border-white/20 hover:border-white/40'

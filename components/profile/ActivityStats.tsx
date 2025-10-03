@@ -73,10 +73,10 @@ export function ActivityStats() {
         <div className="flex items-center justify-center mb-3">
           <Target className="w-6 h-6 text-white/60" />
         </div>
-        <div className="text-3xl font-argesta font-bold text-white mb-2">
+        <div className="text-3xl  font-bold text-white mb-2">
           {stats.habits.active}
         </div>
-        <div className="text-sm text-white/60 font-argesta tracking-wide">
+        <div className="text-sm text-white/60  tracking-wide">
           ACTIVE HABITS
         </div>
       </div>
@@ -86,10 +86,10 @@ export function ActivityStats() {
         <div className="flex items-center justify-center mb-3">
           <TrendingUp className="w-6 h-6 text-white/60" />
         </div>
-        <div className="text-3xl font-argesta font-bold text-white mb-2">
+        <div className="text-3xl  font-bold text-white mb-2">
           {stats.trades.total}
         </div>
-        <div className="text-sm text-white/60 font-argesta tracking-wide">
+        <div className="text-sm text-white/60  tracking-wide">
           TRADING ENTRIES
         </div>
       </div>
@@ -99,7 +99,7 @@ export function ActivityStats() {
         <div className="flex items-center justify-center mb-3">
           <Trophy className="w-6 h-6 text-white/60" />
         </div>
-        <div className="text-2xl font-argesta font-bold mb-2">
+        <div className="text-2xl  font-bold mb-2">
           <div className="flex items-center justify-center gap-2">
             <span className={getRankColor(stats.user.rank)}>
               {getRankIcon(stats.user.rank)}
@@ -109,7 +109,7 @@ export function ActivityStats() {
             </span>
           </div>
         </div>
-        <div className="text-sm text-white/60 font-argesta tracking-wide">
+        <div className="text-sm text-white/60  tracking-wide">
           CURRENT RANK
         </div>
       </div>
@@ -119,10 +119,10 @@ export function ActivityStats() {
         <div className="flex items-center justify-center mb-3">
           <Calendar className="w-6 h-6 text-white/60" />
         </div>
-        <div className="text-3xl font-argesta font-bold text-white mb-2">
+        <div className="text-3xl  font-bold text-white mb-2">
           {stats.user.daysSinceRegistration}
         </div>
-        <div className="text-sm text-white/60 font-argesta tracking-wide">
+        <div className="text-sm text-white/60  tracking-wide">
           DAYS ACTIVE
         </div>
       </div>
@@ -132,10 +132,10 @@ export function ActivityStats() {
         <div className="flex items-center justify-center mb-3">
           <Target className="w-6 h-6 text-white/60" />
         </div>
-        <div className="text-3xl font-argesta font-bold text-white mb-2">
+        <div className="text-3xl  font-bold text-white mb-2">
           {stats.habits.total}
         </div>
-        <div className="text-sm text-white/60 font-argesta tracking-wide">
+        <div className="text-sm text-white/60  tracking-wide">
           TOTAL HABITS
         </div>
       </div>
@@ -145,12 +145,12 @@ export function ActivityStats() {
         <div className="flex items-center justify-center mb-3">
           <Trophy className="w-6 h-6 text-white/60" />
         </div>
-        <div className="text-2xl font-argesta font-bold mb-2">
+        <div className="text-2xl  font-bold mb-2">
           <span className={stats.user.subscriptionPlan === "PRO" ? "text-green-400" : "text-white/60"}>
             {stats.user.subscriptionPlan}
           </span>
         </div>
-        <div className="text-sm text-white/60 font-argesta tracking-wide">
+        <div className="text-sm text-white/60  tracking-wide">
           PLAN
         </div>
       </div>

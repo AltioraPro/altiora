@@ -84,7 +84,7 @@ export default function GlobalDashboardPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="text-center max-w-2xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-4xl font-argesta text-white mb-4">Global Dashboard</h1>
+            <h1 className="text-4xl font-argesta text-white mb-4 font-bold">Global Dashboard</h1>
             <p className="text-white/60">Create your first journal to see global statistics.</p>
           </div>
 
@@ -92,7 +92,7 @@ export default function GlobalDashboardPage() {
           <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
             <BarChart3 className="w-8 h-8 text-white/60" />
           </div>
-            <h3 className="text-xl font-argesta text-white mb-4">No journals</h3>
+            <h3 className="text-xl text-white mb-4">No journals</h3>
             <p className="text-white/60 mb-8">Create a journal to start tracking your performance.</p>
 
             <Link href="/trading/journals">
@@ -118,7 +118,7 @@ export default function GlobalDashboardPage() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-argesta text-white">Global Dashboard</h1>
+            <h1 className="text-3xl font-argesta text-white font-bold">Global Dashboard</h1>
             <p className="text-white/60">Overview of all your statistics. Select a journal to filter.</p>
           </div>
         </div>
@@ -191,7 +191,7 @@ export default function GlobalDashboardPage() {
         <div className="mb-8">
           <Card className="border border-white/10 bg-black/20">
             <CardHeader>
-              <CardTitle className="font-argesta text-white">Performance Charts</CardTitle>
+              <CardTitle className="text-white">Performance Charts</CardTitle>
               <CardDescription className="text-white/60">Visual analysis of your overall performance</CardDescription>
             </CardHeader>
             <CardContent>

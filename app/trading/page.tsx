@@ -248,7 +248,7 @@ export default function TradingPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="text-center max-w-2xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-4xl font-argesta text-white mb-4">Trading Dashboard</h1>
+            <h1 className="text-4xl font-argesta text-white mb-4 font-bold">Trading Dashboard</h1>
             <p className="text-white/60">
               Start your trading journey by creating your first journal
             </p>
@@ -258,7 +258,7 @@ export default function TradingPage() {
             <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
               <BarChart3 className="w-8 h-8 text-white/60" />
             </div>
-            <h3 className="text-xl font-argesta text-white mb-4">No Journal Created</h3>
+            <h3 className="text-xl text-white mb-4">No Journal Created</h3>
             <p className="text-white/60 mb-8">
               Create your first trading journal to start tracking your performance.
             </p>
@@ -291,7 +291,7 @@ export default function TradingPage() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-argesta text-white">
+            <h1 className="text-3xl font-argesta text-white font-bold">
               {selectedJournal ? selectedJournal.name : "Trading Dashboard"}
             </h1>
             <p className="text-white/60">
@@ -367,7 +367,7 @@ export default function TradingPage() {
         <div className="mb-8">
           <Card className="border border-white/10 bg-black/20">
             <CardHeader>
-              <CardTitle className="font-argesta text-white">Performance Charts</CardTitle>
+              <CardTitle className="text-white">Performance Charts</CardTitle>
               <CardDescription className="text-white/60">
                 Visual analysis of your trading performance
                 {dateFilter.view !== 'all' && filteredTrades && ` (${filteredTrades.length} trades)`}

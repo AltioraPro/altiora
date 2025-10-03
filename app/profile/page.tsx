@@ -16,7 +16,7 @@ export default function ProfilePage() {
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-argesta text-white mb-2">Profile</h1>
+          <h1 className="text-3xl font-argesta text-white mb-2 font-bold">Profile</h1>
           <p className="text-white/60">
             Manage your account settings
           </p>

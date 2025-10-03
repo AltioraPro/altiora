@@ -121,8 +121,8 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="border border-white/20 bg-gradient-to-br from-black/40 to-black/6  0 backdrop-blur-sm">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg text-white font-argesta tracking-wide">WIN RATE</CardTitle>
-            <CardDescription className="text-white/70 font-argesta">
+            <CardTitle className="text-lg text-white  tracking-wide">WIN RATE</CardTitle>
+            <CardDescription className="text-white/70 ">
               Performance distribution
             </CardDescription>
           </CardHeader>
@@ -181,11 +181,11 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
               </ResponsiveContainer>
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-white font-argesta tracking-wide">
+                  <div className="text-2xl font-bold text-white  tracking-wide">
                     {stats.winRate.toFixed(1)}%
                   </div>
-                  <div className="text-xs text-white/70 font-argesta tracking-wide">WIN RATE</div>
-                  <div className="text-xs text-white/50 font-argesta mt-1">
+                  <div className="text-xs text-white/70  tracking-wide">WIN RATE</div>
+                  <div className="text-xs text-white/50  mt-1">
                     {stats.winningTrades}W • {stats.losingTrades}L
                   </div>
                 </div>
@@ -195,11 +195,11 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
             <div className="flex justify-center space-x-8 mt-6">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 rounded-full bg-white"></div>
-                <span className="text-xs text-white/70 font-argesta tracking-wide">Winners</span>
+                <span className="text-xs text-white/70  tracking-wide">Winners</span>
               </div>
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 rounded-full bg-gray-600"></div>
-                <span className="text-xs text-white/70 font-argesta tracking-wide">Losers</span>
+                <span className="text-xs text-white/70  tracking-wide">Losers</span>
               </div>
             </div>
           </CardContent>
@@ -207,8 +207,8 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
 
         <Card className="border border-white/20 bg-gradient-to-br from-black/40 to-black/60 backdrop-blur-sm lg:col-span-2">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg text-white font-argesta tracking-wide">PERFORMANCE BY SESSION</CardTitle>
-            <CardDescription className="text-white/70 font-argesta">
+            <CardTitle className="text-lg text-white  tracking-wide">PERFORMANCE BY SESSION</CardTitle>
+            <CardDescription className="text-white/70 ">
               Performance by trading session
             </CardDescription>
           </CardHeader>
@@ -284,7 +284,7 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
 
       <Card className="border border-white/20 bg-gradient-to-br from-black/40 to-black/60 backdrop-blur-sm w-full">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg text-white font-argesta tracking-wide">CUMULATIVE PERFORMANCE</CardTitle>
+          <CardTitle className="text-lg text-white  tracking-wide">CUMULATIVE PERFORMANCE</CardTitle>
           <CardDescription className="text-white/70">
             Performance evolution over time
           </CardDescription>
@@ -363,19 +363,19 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-sm text-white/70  tracking-wide">TOTAL PERFORMANCE</div>
-                <div className="text-2xl font-bold text-white font-argesta">
+                <div className="text-2xl font-bold text-white ">
                   {totalPerformance.toFixed(1)}%
                 </div>
               </div>
               <div className="text-right">
                 <div className="text-sm text-white/70  tracking-wide">TRADES</div>
-                <div className="text-2xl font-bold text-white text-center font-argesta">
+                <div className="text-2xl font-bold text-white text-center ">
                   {cumulativeData.length}
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-sm text-white/70 font-argesta tracking-wide">AVG PnL</div>
-                <div className="text-2xl font-bold text-white font-argesta">
+                <div className="text-sm text-white/70  tracking-wide">AVG PnL</div>
+                <div className="text-2xl font-bold text-white ">
                   {cumulativeData.length > 0 ? `${(totalPerformance / cumulativeData.length).toFixed(1)}%` : '0.0%'}
                 </div>
               </div>

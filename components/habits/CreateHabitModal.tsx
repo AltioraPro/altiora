@@ -87,7 +87,7 @@ export function CreateHabitModal() {
           
           <div className="p-4 overflow-y-auto max-h-[calc(90vh-2rem)]">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold font-argesta tracking-tight">
+              <h2 className="text-lg font-bold  tracking-tight">
                 NEW HABIT
               </h2>
               <button
@@ -102,7 +102,7 @@ export function CreateHabitModal() {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-argesta text-white/80 mb-2">
+                <label className="block text-xs  text-white/80 mb-2">
                   EMOJI
                 </label>
                 <div className="grid grid-cols-10 gap-1 p-3 bg-white/5 rounded-lg border border-white/10">
@@ -124,7 +124,7 @@ export function CreateHabitModal() {
               </div>
 
               <div>
-                <label className="block text-xs font-argesta text-white/80 mb-2">
+                <label className="block text-xs  text-white/80 mb-2">
                   TITLE
                 </label>
                 <div className="relative">
@@ -144,7 +144,7 @@ export function CreateHabitModal() {
               </div>
 
               <div>
-                <label className="block text-xs font-argesta text-white/80 mb-2">
+                <label className="block text-xs  text-white/80 mb-2">
                   DESCRIPTION (OPTIONAL)
                 </label>
                 <textarea
@@ -157,7 +157,7 @@ export function CreateHabitModal() {
               </div>
 
               <div>
-                <label className="block text-xs font-argesta text-white/80 mb-2">
+                <label className="block text-xs  text-white/80 mb-2">
                   ACCENT COLOR
                 </label>
                 <div className="grid grid-cols-10 gap-1 p-3 bg-white/5 rounded-lg border border-white/10">
@@ -181,7 +181,7 @@ export function CreateHabitModal() {
                 <div className="flex items-center space-x-2">
                   <div className="text-lg">{emoji}</div>
                   <div className="flex-1">
-                    <h4 className="font-argesta font-medium text-white text-sm">
+                    <h4 className=" font-medium text-white text-sm">
                       {title || "Habit title"}
                     </h4>
                     {description && (
@@ -199,14 +199,14 @@ export function CreateHabitModal() {
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="flex-1 px-3 py-2 border border-white/20 rounded-lg text-white/80 hover:text-white hover:bg-white/5 transition-all duration-300 font-argesta text-sm"
+                  className="flex-1 px-3 py-2 border border-white/20 rounded-lg text-white/80 hover:text-white hover:bg-white/5 transition-all duration-300  text-sm"
                 >
                   CANCEL
                 </button>
                 <button
                   type="submit"
                   disabled={!title.trim() || createHabitMutation.isPending}
-                  className="flex-1 px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 rounded-lg text-white font-argesta transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  className="flex-1 px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 rounded-lg text-white  transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                 >
                   {createHabitMutation.isPending ? "CREATING..." : "CREATE"}
                 </button>

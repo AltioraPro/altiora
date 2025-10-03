@@ -113,23 +113,23 @@ export function ProfileForm() {
         </div>
         
         <div className="flex-1">
-          <h3 className="text-2xl font-argesta font-bold text-white mb-1">
+          <h3 className="text-2xl font-bold text-white mb-1">
             {user.name}
           </h3>
-          <p className="text-white/60 font-argesta tracking-wide">
+          <p className="text-white/60 tracking-wide">
             {user.email}
           </p>
           <div className="flex items-center space-x-4 mt-2">
             <div className="flex items-center space-x-2">
               <div className={`w-2 h-2 rounded-full ${user.emailVerified ? "bg-green-400" : "bg-red-400"}`} />
-              <span className="text-sm text-white/60 font-argesta">
+              <span className="text-sm text-white/60">
                 {user.emailVerified ? "Email Verified" : "Email Not Verified"}
               </span>
             </div>
             {user.discordConnected && (
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 rounded-full bg-[#5865F2]" />
-                <span className="text-sm text-[#5865F2] font-argesta">
+                <span className="text-sm text-[#5865F2]">
                   Discord Connected
                 </span>
               </div>
@@ -154,9 +154,9 @@ export function ProfileForm() {
             <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center">
               <Mail className="w-4 h-4 text-white/60" />
             </div>
-            <span className="text-sm font-argesta text-white/60 tracking-wide">EMAIL ADDRESS</span>
+            <span className="text-sm text-white/60 tracking-wide">EMAIL ADDRESS</span>
           </div>
-          <p className="text-white font-argesta">{user.email}</p>
+          <p className="text-white">{user.email}</p>
         </div>
 
         <div className="p-6 bg-white/5 rounded-xl border border-white/10">
@@ -164,9 +164,9 @@ export function ProfileForm() {
             <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center">
               <Calendar className="w-4 h-4 text-white/60" />
             </div>
-            <span className="text-sm font-argesta text-white/60 tracking-wide">MEMBER SINCE</span>
+            <span className="text-sm text-white/60 tracking-wide">MEMBER SINCE</span>
           </div>
-          <p className="text-white font-argesta">{formatDate(user.createdAt)}</p>
+          <p className="text-white">{formatDate(user.createdAt)}</p>
         </div>
 
         <div className="p-6 bg-white/5 rounded-xl border border-white/10">
@@ -174,11 +174,11 @@ export function ProfileForm() {
             <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center">
               <Shield className="w-4 h-4 text-white/60" />
             </div>
-            <span className="text-sm font-argesta text-white/60 tracking-wide">ACCOUNT STATUS</span>
+            <span className="text-sm text-white/60 tracking-wide">ACCOUNT STATUS</span>
           </div>
           <div className="flex items-center space-x-2">
             <div className={`w-2 h-2 rounded-full ${user.emailVerified ? "bg-green-400" : "bg-red-400"}`} />
-            <span className={`font-argesta ${user.emailVerified ? "text-green-400" : "text-red-400"}`}>
+            <span className={`${user.emailVerified ? "text-green-400" : "text-red-400"}`}>
               {user.emailVerified ? "Active" : "Pending Verification"}
             </span>
           </div>
@@ -189,9 +189,9 @@ export function ProfileForm() {
             <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center">
               <User className="w-4 h-4 text-white/60" />
             </div>
-            <span className="text-sm font-argesta text-white/60 tracking-wide">DISPLAY NAME</span>
+            <span className="text-sm text-white/60 tracking-wide">DISPLAY NAME</span>
           </div>
-          <p className="text-white font-argesta">{user.name}</p>
+          <p className="text-white">{user.name}</p>
         </div>
       </div>
 
@@ -199,7 +199,7 @@ export function ProfileForm() {
       {isEditing && (
         <div className="bg-white/10 rounded-xl p-6 border border-white/20">
           <div className="flex items-center justify-between mb-6">
-            <h4 className="text-lg font-argesta font-bold text-white">EDIT PROFILE</h4>
+            <h4 className="text-lg font-bold text-white">EDIT PROFILE</h4>
             <button
               onClick={() => {
                 setIsEditing(false);
@@ -213,7 +213,7 @@ export function ProfileForm() {
           
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="name" className="block text-sm font-argesta text-white/60 mb-3 tracking-wide">
+              <label htmlFor="name" className="block text-sm text-white/60 mb-3 tracking-wide">
                 DISPLAY NAME
               </label>
               <input
@@ -221,7 +221,7 @@ export function ProfileForm() {
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all duration-300 font-argesta"
+                className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all duration-300"
                 placeholder="Enter your display name"
                 required
               />
@@ -231,7 +231,7 @@ export function ProfileForm() {
               <button
                 type="submit"
                 disabled={updateProfile.isPending}
-                className="flex-1 px-6 py-3 bg-white text-black font-argesta font-bold rounded-xl hover:bg-white/90 disabled:opacity-50 transition-all duration-300 flex items-center justify-center space-x-2"
+                className="flex-1 px-6 py-3 bg-white text-black font-bold rounded-xl hover:bg-white/90 disabled:opacity-50 transition-all duration-300 flex items-center justify-center space-x-2"
               >
                 <Save className="w-4 h-4" />
                 <span>{updateProfile.isPending ? "SAVING..." : "SAVE CHANGES"}</span>
@@ -243,7 +243,7 @@ export function ProfileForm() {
                   setIsEditing(false);
                   setName(user.name);
                 }}
-                className="px-6 py-3 bg-white/10 text-white font-argesta font-bold rounded-xl hover:bg-white/20 transition-all duration-300"
+                className="px-6 py-3 bg-white/10 text-white font-bold rounded-xl hover:bg-white/20 transition-all duration-300"
               >
                 CANCEL
               </button>

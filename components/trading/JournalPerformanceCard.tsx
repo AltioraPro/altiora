@@ -119,7 +119,7 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
         }}
       >
         <div className="text-center mb-4">
-          <h2 className="text-xl font-argesta text-white mb-1">{journal.name}</h2>
+          <h2 className="text-xl  text-white mb-1">{journal.name}</h2>
           <p className="text-white/60 text-xs">Trading Performance</p>
         </div>
 
@@ -238,7 +238,7 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
           <div className="flex justify-between items-start">
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2 mb-1">
-                <CardTitle className="text-lg font-argesta text-white line-clamp-1">{journal.name}</CardTitle>
+                <CardTitle className="text-lg  text-white line-clamp-1">{journal.name}</CardTitle>
               </div>
               <CardDescription className="text-white/60 line-clamp-2">
                 {journal.description || "No description"}
@@ -360,7 +360,7 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-3">
-              <h3 className="text-lg font-argesta text-white mb-1">Performance Preview</h3>
+              <h3 className="text-lg  text-white mb-1">Performance Preview</h3>
               <p className="text-white/60 text-xs">Review your trading statistics before sharing</p>
             </div>
 

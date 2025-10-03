@@ -56,7 +56,7 @@ export function UsageStats() {
       <div className="space-y-6">
         <div className="flex items-center space-x-3 mb-4">
           <BarChart3 className="w-5 h-5 text-white/60" />
-          <h3 className="text-lg font-argesta font-bold text-white tracking-wide">
+          <h3 className="text-lg  font-bold text-white tracking-wide">
             PLAN USAGE
           </h3>
         </div>
@@ -76,7 +76,7 @@ export function UsageStats() {
     <div className="space-y-6">
       <div className="flex items-center space-x-3 mb-4">
         <BarChart3 className="w-5 h-5 text-white/60" />
-        <h3 className="text-lg font-argesta font-bold text-white tracking-wide">
+        <h3 className="text-lg  font-bold text-white tracking-wide">
           PLAN USAGE
         </h3>
         {error && (
@@ -92,9 +92,9 @@ export function UsageStats() {
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center space-x-3">
               <Target className="w-5 h-5 text-white/60" />
-              <span className="text-sm font-argesta text-white/80 tracking-wide">HABITS</span>
+              <span className="text-sm  text-white/80 tracking-wide">HABITS</span>
             </div>
-            <span className={`text-sm font-argesta font-bold ${getUsageColor(getUsagePercentage(usage.currentHabits, limits.maxHabits))}`}>
+            <span className={`text-sm  font-bold ${getUsageColor(getUsagePercentage(usage.currentHabits, limits.maxHabits))}`}>
               {usage.currentHabits}/{limits.maxHabits === 999 ? "∞" : limits.maxHabits}
             </span>
           </div>
@@ -114,9 +114,9 @@ export function UsageStats() {
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center space-x-3">
               <BookOpen className="w-5 h-5 text-white/60" />
-              <span className="text-sm font-argesta text-white/80 tracking-wide">TRADING ENTRIES</span>
+              <span className="text-sm  text-white/80 tracking-wide">TRADING ENTRIES</span>
             </div>
-            <span className={`text-sm font-argesta font-bold ${getUsageColor(getUsagePercentage(usage.monthlyTradingEntries, limits.maxTradingEntries))}`}>
+            <span className={`text-sm  font-bold ${getUsageColor(getUsagePercentage(usage.monthlyTradingEntries, limits.maxTradingEntries))}`}>
               {usage.monthlyTradingEntries}/{limits.maxTradingEntries === 999 ? "∞" : limits.maxTradingEntries}
             </span>
           </div>
@@ -136,9 +136,9 @@ export function UsageStats() {
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center space-x-3">
               <Trophy className="w-5 h-5 text-white/60" />
-              <span className="text-sm font-argesta text-white/80 tracking-wide">GOALS</span>
+              <span className="text-sm  text-white/80 tracking-wide">GOALS</span>
             </div>
-            <span className={`text-sm font-argesta font-bold ${getUsageColor(getUsagePercentage(usage.currentAnnualGoals + usage.currentQuarterlyGoals, limits.maxAnnualGoals + limits.maxQuarterlyGoals))}`}>
+            <span className={`text-sm  font-bold ${getUsageColor(getUsagePercentage(usage.currentAnnualGoals + usage.currentQuarterlyGoals, limits.maxAnnualGoals + limits.maxQuarterlyGoals))}`}>
               {usage.currentAnnualGoals + usage.currentQuarterlyGoals}/{limits.maxAnnualGoals + limits.maxQuarterlyGoals === 999 ? "∞" : limits.maxAnnualGoals + limits.maxQuarterlyGoals}
             </span>
           </div>
@@ -163,11 +163,11 @@ export function UsageStats() {
       <div className="p-4 bg-gradient-to-r from-white/5 to-white/10 rounded-xl border border-white/20">
         <div className="flex items-center space-x-3 mb-2">
           <Crown className="w-5 h-5 text-white/60" />
-          <span className="text-sm font-argesta font-bold text-white tracking-wide">
+          <span className="text-sm  font-bold text-white tracking-wide">
             CURRENT PLAN
           </span>
         </div>
-        <p className="text-sm text-white/80 font-argesta">
+        <p className="text-sm text-white/80 ">
           {getPlanName()}
         </p>
       </div>

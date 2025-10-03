@@ -72,12 +72,12 @@
                         
                         {/* Header Section */}
                         <div className="text-center mb-16">
-                            <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 font-argesta">
+                            <h1 className="text-5xl lg:text-6xl font-bold font-argesta text-white mb-6">
                             Choose Your Path.
                             </h1>
                             <ShinyText 
                             text="Start your journey to discipline and success with our proven platform"
-                            className="text-xl text-neutral-400 max-w-2xl mx-auto font-argesta"
+                            className="text-xl text-neutral-400 max-w-2xl mx-auto"
                             speed={8}
                             />
                         </div>
