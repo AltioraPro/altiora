@@ -43,7 +43,6 @@ const dbProxy = new Proxy(db, {
                   values.emailVerified = null;
                 }
                 
-                // Fix timestamps manquants pour Better Auth
                 const now = new Date();
                 if (values.createdAt === undefined || values.createdAt === null) {
                   console.log('[DB PROXY INSERT] Adding missing createdAt');

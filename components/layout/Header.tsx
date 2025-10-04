@@ -143,6 +143,14 @@ export const Header = ({ className = "" }: HeaderProps) => {
                 /* User Profile - Connecté */
                 <div className="flex items-center space-x-3">
                   <Link
+                    href="/settings"
+                    className="flex items-center space-x-2 text-white/80 hover:text-white px-3 py-2 rounded-xl border border-white/20 hover:bg-white/5 hover:border-white/40 transition-all duration-300 group"
+                  >
+                    <Settings className="w-4 h-4" />
+                    <span className="text-sm font-medium">Settings</span>
+                  </Link>
+                  
+                  <Link
                     href="/profile"
                     className="flex items-center space-x-2 text-white/80 hover:text-white px-3 py-2 rounded-xl border border-white/20 hover:bg-white/5 hover:border-white/40 transition-all duration-300 group"
                   >
@@ -346,6 +354,15 @@ export const Header = ({ className = "" }: HeaderProps) => {
                       className="text-white/60 hover:text-white transition-all duration-300 font-medium  tracking-wide text-sm group"
                     >
                       PROFILE
+                      <div className="w-0 h-px bg-white/60 group-hover:w-full transition-all duration-300 mt-1" />
+                    </Link>
+                    <div className="w-px h-4 bg-white/20" />
+                    <Link
+                      href="/settings"
+                      onClick={toggleMenu}
+                      className="text-white/60 hover:text-white transition-all duration-300 font-medium  tracking-wide text-sm group"
+                    >
+                      SETTINGS
                       <div className="w-0 h-px bg-white/60 group-hover:w-full transition-all duration-300 mt-1" />
                     </Link>
                     <div className="w-px h-4 bg-white/20" />

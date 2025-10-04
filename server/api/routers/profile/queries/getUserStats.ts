@@ -1,7 +1,7 @@
 import { eq, and, count, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
-import { users, habits, trades } from "@/server/db/schema";
+import { users, habits, trades, discordPomodoroSessions } from "@/server/db/schema";
 import { type AuthQueryContext } from "../../auth/queries/types";
 
 export async function getUserStats({ db, session }: AuthQueryContext) {
@@ -53,6 +53,16 @@ export async function getUserStats({ db, session }: AuthQueryContext) {
       (Date.now() - user.createdAt.getTime()) / (1000 * 60 * 60 * 24)
     );
 
+    // Statistiques Pomodoro
+    const pomodoroStats = await db
+      .select({
+        totalSessions: count(discordPomodoroSessions.id),
+        completedSessions: sql<number>`COUNT(CASE WHEN ${discordPomodoroSessions.status} = 'completed' THEN 1 END)`,
+        totalWorkTime: sql<number>`COALESCE(SUM(${discordPomodoroSessions.totalWorkTime}), 0)`,
+      })
+      .from(discordPomodoroSessions)
+      .where(eq(discordPomodoroSessions.userId, session.userId));
+
     return {
       habits: {
         total: habitsStats[0]?.totalHabits || 0,
@@ -60,6 +70,11 @@ export async function getUserStats({ db, session }: AuthQueryContext) {
       },
       trades: {
         total: tradesStats[0]?.totalTrades || 0,
+      },
+      pomodoro: {
+        totalSessions: pomodoroStats[0]?.totalSessions || 0,
+        completedSessions: Number(pomodoroStats[0]?.completedSessions) || 0,
+        totalWorkTime: Number(pomodoroStats[0]?.totalWorkTime) || 0,
       },
       user: {
         rank: user.rank,

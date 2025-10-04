@@ -35,7 +35,7 @@ export default function GoalsPage() {
     }
   );
 
-  const canCreateAnyGoal = goalLimits?.canCreateAny ?? true;
+  const canCreateAnyGoal = goalLimits?.canCreateAny ?? true
 
   useEffect(() => {
     if (!goalStats) return;
@@ -80,9 +80,9 @@ export default function GoalsPage() {
   return (
     <>
       <Header />
-      <div className="min-h-screen mt-8 bg-pure-black text-pure-white">
+      <div className="min-h-screen bg-pure-black text-pure-white">
         {/* Main Content */}
-        <div className="relative max-w-7xl mx-auto px-6 py-8">
+        <div className="relative w-full mx-auto">
           {/* Header */}
           <div className="relative border-b border-white/10 mb-8">
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
@@ -134,67 +134,69 @@ export default function GoalsPage() {
             </div>
           </div>
 
-           {/* Quick Stats Cards */}
-           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-             {/* Active Goals */}
-             <div className="bg-black/20 border border-white/10 rounded-lg p-6 relative">
-               <div className="absolute top-4 right-4">
-                 <Target className="w-4 h-4 text-white" />
-               </div>
-               <div>
-                 <p className="text-white/60 text-sm font-medium mb-2">Active Goals</p>
-                 <p className="text-3xl font-bold text-green-400">
-                   {animatedStats.active}
-                 </p>
-               </div>
-             </div>
-             
-             {/* Completed Goals */}
-             <div className="bg-black/20 border border-white/10 rounded-lg p-6 relative">
-               <div className="absolute top-4 right-4">
-                 <TrendingUp className="w-4 h-4 text-white" />
-               </div>
-               <div>
-                 <p className="text-white/60 text-sm font-medium mb-2">Completed</p>
-                 <p className="text-3xl font-bold text-green-400">
-                   {animatedStats.completed}
-                 </p>
-               </div>
-             </div>
-             
-             {/* Overdue Goals */}
-             <div className="bg-black/20 border border-white/10 rounded-lg p-6 relative">
-               <div className="absolute top-4 right-4">
-                 <Calendar className="w-4 h-4 text-white" />
-               </div>
-               <div>
-                 <p className="text-white/60 text-sm font-medium mb-2">Overdue</p>
-                 <p className="text-3xl font-bold text-red-400">
-                   {animatedStats.overdue}
-                 </p>
-               </div>
-             </div>
-             
-             {/* Success Rate */}
-             <div className="bg-black/20 border border-white/10 rounded-lg p-6 relative">
-               <div className="absolute top-4 right-4">
-                 <Sparkles className="w-4 h-4 text-white" />
-               </div>
-               <div>
-                 <p className="text-white/60 text-sm font-medium mb-2">Success Rate</p>
-                 <p className="text-3xl font-bold text-white">
-                   {animatedStats.successRate}%
-                 </p>
-               </div>
-             </div>
-           </div>
+          {/* Quick Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12 max-w-7xl mx-auto">
+            {/* Active Goals */}
+            <div className="bg-black/20 border border-white/10 rounded-lg p-6 relative">
+              <div className="absolute top-4 right-4">
+                <Target className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <p className="text-white/60 text-sm font-medium mb-2">Active Goals</p>
+                <p className="text-3xl font-bold text-green-400">
+                  {animatedStats.active}
+                </p>
+              </div>
+            </div>
+            
+            {/* Completed Goals */}
+            <div className="bg-black/20 border border-white/10 rounded-lg p-6 relative">
+              <div className="absolute top-4 right-4">
+                <TrendingUp className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <p className="text-white/60 text-sm font-medium mb-2">Completed</p>
+                <p className="text-3xl font-bold text-green-400">
+                  {animatedStats.completed}
+                </p>
+              </div>
+            </div>
+            
+            {/* Overdue Goals */}
+            <div className="bg-black/20 border border-white/10 rounded-lg p-6 relative">
+              <div className="absolute top-4 right-4">
+                <Calendar className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <p className="text-white/60 text-sm font-medium mb-2">Overdue</p>
+                <p className="text-3xl font-bold text-red-400">
+                  {animatedStats.overdue}
+                </p>
+              </div>
+            </div>
+            
+            {/* Success Rate */}
+            <div className="bg-black/20 border border-white/10 rounded-lg p-6 relative">
+              <div className="absolute top-4 right-4">
+                <Sparkles className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <p className="text-white/60 text-sm font-medium mb-2">Success Rate</p>
+                <p className="text-3xl font-bold text-white">
+                  {animatedStats.successRate}%
+                </p>
+              </div>
+            </div>
+          </div>
 
           {/* Goals Dashboard */}
-          <GoalsDashboard />
+          <div className="max-w-7xl mx-auto">
+            <GoalsDashboard />
+          </div>
 
           {/* Create Goal Modal */}
           <CreateGoalModal
-            isOpen={isCreateModalOpen}
+            isOpen={isCreateModalOpen}    
             onClose={() => setIsCreateModalOpen(false)}
           />
         </div>
