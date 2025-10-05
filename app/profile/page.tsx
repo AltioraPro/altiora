@@ -160,7 +160,7 @@ return (
         </div>
 
         {/* Activity Stats */}
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto mb-8">
             <h2 className="text-2xl font-argesta text-white font-bold mb-6">Activity Overview</h2>
             <Suspense fallback={
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
