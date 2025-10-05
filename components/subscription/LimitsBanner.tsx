@@ -11,11 +11,15 @@ export function LimitsBanner() {
 
   if (!isVisible || !limitsSummary) return null;
 
-  const { limits, usage } = limitsSummary;
+  const { limits, usage, planName } = limitsSummary as typeof limitsSummary & { planName?: string };
+  const isAltiorans = planName === "ALTIORANS";
 
-  const isHabitsLimitReached = usage.currentHabits >= limits.maxHabits && limits.maxHabits !== 999;
-  const isTradingLimitReached = usage.monthlyTradingEntries >= limits.maxTradingEntries && limits.maxTradingEntries !== 999;
-  const isGoalsLimitReached = (usage.currentAnnualGoals + usage.currentQuarterlyGoals) >= (limits.maxAnnualGoals + limits.maxQuarterlyGoals) && (limits.maxAnnualGoals + limits.maxQuarterlyGoals) !== 999;
+  // Ne pas afficher la bannière pour les ALTIORANS
+  if (isAltiorans) return null;
+
+  const isHabitsLimitReached = usage.currentHabits >= limits.maxHabits && limits.maxHabits < 999999;
+  const isTradingLimitReached = usage.monthlyTradingEntries >= limits.maxTradingEntries && limits.maxTradingEntries < 999999;
+  const isGoalsLimitReached = (usage.currentAnnualGoals + usage.currentQuarterlyGoals) >= (limits.maxAnnualGoals + limits.maxQuarterlyGoals) && (limits.maxAnnualGoals + limits.maxQuarterlyGoals) < 999999;
 
   if (!isHabitsLimitReached && !isTradingLimitReached && !isGoalsLimitReached) {
     return null;
@@ -82,7 +86,7 @@ export function LimitsBanner() {
             
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs text-white/60 ">
-                Usage: {limitInfo.current}/{limitInfo.max === 999 ? "∞" : limitInfo.max}
+                Usage: {limitInfo.current}/{limitInfo.max >= 999999 ? "∞" : limitInfo.max}
               </span>
             </div>
             

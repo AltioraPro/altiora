@@ -60,6 +60,7 @@ export function SubscriptionStatus() {
   }
 
   const isPro = (user.subscriptionPlan === "PRO" && user.stripeSubscriptionStatus === "active") || user.subscriptionPlan === "ALTIORANS";
+  const isAltiorans = user.subscriptionPlan === "ALTIORANS";
 
   return (
     <div className="space-y-8">
@@ -149,25 +150,23 @@ export function SubscriptionStatus() {
                   <span className="text-sm text-white/80">Trading Journal</span>
                 </div>
                 <span className="text-sm text-white/60">
-                  {usage.monthlyTradingEntries} / {limits.maxTradingEntries === -1 || limits.maxTradingEntries > 999999 ? "∞" : limits.maxTradingEntries}
+                  {usage.monthlyTradingEntries} / {isAltiorans ? "∞" : limits.maxTradingEntries}
                 </span>
               </div>
-              <div className="w-full bg-white/10 rounded-full h-2">
-                <div 
-                  className={`h-2 rounded-full transition-all duration-300 ${
-                    limits.maxTradingEntries === -1 || limits.maxTradingEntries > 999999
-                      ? "bg-green-400" 
-                      : usage.monthlyTradingEntries >= limits.maxTradingEntries 
+              {!isAltiorans && (
+                <div className="w-full bg-white/10 rounded-full h-2">
+                  <div 
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      usage.monthlyTradingEntries >= limits.maxTradingEntries 
                         ? "bg-red-400" 
                         : "bg-white/60"
-                  }`}
-                  style={{ 
-                    width: limits.maxTradingEntries === -1 || limits.maxTradingEntries > 999999
-                      ? "100%" 
-                      : `${Math.min((usage.monthlyTradingEntries / limits.maxTradingEntries) * 100, 100)}%` 
-                  }}
-                />
-              </div>
+                    }`}
+                    style={{ 
+                      width: `${Math.min((usage.monthlyTradingEntries / limits.maxTradingEntries) * 100, 100)}%` 
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
             {/* Habits Usage */}
@@ -178,25 +177,23 @@ export function SubscriptionStatus() {
                   <span className="text-sm text-white/80">Habits</span>
                 </div>
                 <span className="text-sm text-white/60">
-                  {usage.currentHabits} / {limits.maxHabits === -1 || limits.maxHabits > 999999 ? "∞" : limits.maxHabits}
+                  {usage.currentHabits} / {isAltiorans ? "∞" : limits.maxHabits}
                 </span>
               </div>
-              <div className="w-full bg-white/10 rounded-full h-2">
-                <div 
-                  className={`h-2 rounded-full transition-all duration-300 ${
-                    limits.maxHabits === -1 || limits.maxHabits > 999999
-                      ? "bg-green-400" 
-                      : usage.currentHabits >= limits.maxHabits 
+              {!isAltiorans && (
+                <div className="w-full bg-white/10 rounded-full h-2">
+                  <div 
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      usage.currentHabits >= limits.maxHabits 
                         ? "bg-red-400" 
                         : "bg-white/60"
-                  }`}
-                  style={{ 
-                    width: limits.maxHabits === -1 || limits.maxHabits > 999999
-                      ? "100%" 
-                      : `${Math.min((usage.currentHabits / limits.maxHabits) * 100, 100)}%` 
-                  }}
-                />
-              </div>
+                    }`}
+                    style={{ 
+                      width: `${Math.min((usage.currentHabits / limits.maxHabits) * 100, 100)}%` 
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
             {/* Goals Usage */}
@@ -207,21 +204,23 @@ export function SubscriptionStatus() {
                   <span className="text-sm text-white/80">Goals</span>
                 </div>
                 <span className="text-sm text-white/60">
-                  {usage.currentAnnualGoals + usage.currentQuarterlyGoals} / {limits.maxAnnualGoals + limits.maxQuarterlyGoals}
+                  {usage.currentAnnualGoals + usage.currentQuarterlyGoals} / {isAltiorans ? "∞" : limits.maxAnnualGoals + limits.maxQuarterlyGoals}
                 </span>
               </div>
-              <div className="w-full bg-white/10 rounded-full h-2">
-                <div 
-                  className={`h-2 rounded-full transition-all duration-300 ${
-                    (usage.currentAnnualGoals + usage.currentQuarterlyGoals) >= (limits.maxAnnualGoals + limits.maxQuarterlyGoals)
-                      ? "bg-red-400" 
-                      : "bg-white/60"
-                  }`}
-                  style={{ 
-                    width: `${Math.min(((usage.currentAnnualGoals + usage.currentQuarterlyGoals) / (limits.maxAnnualGoals + limits.maxQuarterlyGoals)) * 100, 100)}%` 
-                  }}
-                />
-              </div>
+              {!isAltiorans && (
+                <div className="w-full bg-white/10 rounded-full h-2">
+                  <div 
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      (usage.currentAnnualGoals + usage.currentQuarterlyGoals) >= (limits.maxAnnualGoals + limits.maxQuarterlyGoals)
+                        ? "bg-red-400" 
+                        : "bg-white/60"
+                    }`}
+                    style={{ 
+                      width: `${Math.min(((usage.currentAnnualGoals + usage.currentQuarterlyGoals) / (limits.maxAnnualGoals + limits.maxQuarterlyGoals)) * 100, 100)}%` 
+                    }}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>
