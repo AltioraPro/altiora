@@ -66,7 +66,7 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
         {/* Cumulative Performance */}
         <Card className="border border-white/10 bg-black/20">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg text-white font-argesta">Cumulative Performance (%)</CardTitle>
+            <CardTitle className="text-lg text-white ">Cumulative Performance (%)</CardTitle>
             <CardDescription className="text-white/60">Performance evolution</CardDescription>
           </CardHeader>
           <CardContent>
@@ -112,8 +112,8 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
         {/* Monthly Performance */}
         <Card className="border border-white/20 bg-gradient-to-br from-black/40 to-black/60 backdrop-blur-sm">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg text-white font-argesta tracking-wide">MONTHLY PERFORMANCE</CardTitle>
-            <CardDescription className="text-white/70 font-argesta">
+            <CardTitle className="text-lg text-white  tracking-wide">MONTHLY PERFORMANCE</CardTitle>
+            <CardDescription className="text-white/70 ">
               Performance by month
             </CardDescription>
           </CardHeader>

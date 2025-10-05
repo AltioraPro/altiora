@@ -23,21 +23,21 @@ export function QuickStats() {
     return (
       <div className="hidden md:flex items-center space-x-6">
         <div className="text-center">
-          <div className="text-2xl font-bold font-argesta">
+          <div className="text-2xl font-bold ">
             <span className="bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
               --
             </span>
           </div>
-          <div className="text-xs text-white/50 font-argesta">Today</div>
+          <div className="text-xs text-white/50 ">Today</div>
         </div>
         <div className="w-px h-8 bg-white/20" />
         <div className="text-center">
-          <div className="text-2xl font-bold font-argesta">
+          <div className="text-2xl font-bold ">
             <span className="bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
               --
             </span>
           </div>
-          <div className="text-xs text-white/50 font-argesta">SÉRIE</div>
+          <div className="text-xs text-white/50 ">SÉRIE</div>
         </div>
       </div>
     );
@@ -46,21 +46,21 @@ export function QuickStats() {
   return (
     <div className="hidden md:flex items-center space-x-6">
       <div className="text-center">
-        <div className="text-2xl font-bold font-argesta">
+        <div className="text-2xl font-bold ">
           <span className="bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
             {todayTotal > 0 ? `${todayCompleted}/${todayTotal}` : "--"}
           </span>
         </div>
-        <div className="text-xs text-white/50 font-argesta">Today</div>
+        <div className="text-xs text-white/50 ">Today</div>
       </div>
       <div className="w-px h-8 bg-white/20" />
       <div className="text-center">
-        <div className="text-2xl font-bold font-argesta">
+        <div className="text-2xl font-bold ">
           <span className="bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
             {currentStreak > 0 ? currentStreak : "--"}
           </span>
         </div>
-        <div className="text-xs text-white/50 font-argesta">SÉRIE</div>
+        <div className="text-xs text-white/50 ">SÉRIE</div>
       </div>
     </div>
   );

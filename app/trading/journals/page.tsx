@@ -68,7 +68,7 @@ export default function JournalsPage() {
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-argesta text-white mb-2">Trading Journals</h1>
+          <h1 className="text-3xl font-argesta text-white mb-2 font-bold">Trading Journals</h1>
           <p className="text-white/60">
             Manage your trading journals and track performance
           </p>
@@ -104,7 +104,7 @@ export default function JournalsPage() {
               <BookOpen className="w-8 h-8 text-white/60" />
             </div>
             
-            <h3 className="text-xl font-argesta text-white mb-4">No Journals Created</h3>
+            <h3 className="text-xl text-white mb-4">No Journals Created</h3>
             <p className="text-white/60 mb-8">
               Create your first trading journal to start tracking your performance.
             </p>
@@ -134,7 +134,7 @@ export default function JournalsPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="font-argesta text-white">All Journals</CardTitle>
+                  <CardTitle className="text-white">All Journals</CardTitle>
                   <CardDescription className="text-white/60">
                     {journals.length} journal{journals.length > 1 ? 's' : ''}
                   </CardDescription>

@@ -151,7 +151,7 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
 
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-xl font-bold font-argesta tracking-tight">
+            <h3 className="text-xl font-bold  tracking-tight">
               PROGRESS ({viewMode === 'today' ? 'TODAY' : viewMode === 'week' ? 'LAST 7 DAYS' : 'LAST 30 DAYS'})
             </h3>
             <p className="text-white/60 text-sm mt-1">
@@ -162,10 +162,10 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
 
           <div className="flex items-center space-x-6 text-sm">
             <div className="text-center">
-              <div className="text-lg font-bold font-argesta">
+              <div className="text-lg font-bold ">
                 {Math.round(stats.average)}%
               </div>
-              <div className="text-white/60 font-argesta">AVERAGE</div>
+              <div className="text-white/60 ">AVERAGE</div>
             </div>
             
             <div className="w-px h-8 bg-white/20" />
@@ -178,7 +178,7 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
               ) : (
                 <Minus className="w-4 h-4 text-white/60" />
               )}
-              <span className={`font-argesta ${
+              <span className={` ${
                 stats.trend > 0 ? "text-green-400" : 
                 stats.trend < 0 ? "text-red-400" : "text-white/60"
               }`}>
@@ -226,7 +226,7 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
                   }`}>
                     <div className={`${
                       viewMode === 'month' ? 'text-[10px]' : 'text-xs'
-                    } font-argesta ${
+                    }  ${
                       isToday ? "text-green-400 font-bold" : "text-white/60"
                     }`}>
                       {viewMode === 'month' ? item.dayNumber : item.dayName}
@@ -246,7 +246,7 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
                   }`}>
                     <div className={`${
                       viewMode === 'month' ? 'text-[10px]' : 'text-xs'
-                    } font-argesta ${
+                    }  ${
                       isToday ? "text-green-400" : "text-white/50"
                     }`}>
                       {Math.round(item.completionPercentage)}%
@@ -261,15 +261,15 @@ export function HabitsProgressChart({ data, viewMode = 'week', habits }: HabitsP
 
         <div className="mt-6 pt-6 border-t border-white/10 grid grid-cols-2 gap-4 text-sm">
           <div className="text-center">
-            <div className="text-white/60 font-argesta">BEST DAY</div>
-            <div className="text-lg font-bold font-argesta text-green-400">
+            <div className="text-white/60 ">BEST DAY</div>
+            <div className="text-lg font-bold  text-green-400">
               {Math.round(stats.bestDay)}%
             </div>
           </div>
           
           <div className="text-center">
-            <div className="text-white/60 font-argesta">WORST DAY</div>
-            <div className="text-lg font-bold font-argesta text-red-400">
+            <div className="text-white/60 ">WORST DAY</div>
+            <div className="text-lg font-bold  text-red-400">
               {Math.round(stats.worstDay)}%
             </div>
           </div>

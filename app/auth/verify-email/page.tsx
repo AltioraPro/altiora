@@ -78,8 +78,8 @@ function VerifyEmailContent() {
     }
   };
 
-  const handleNavigateToLogin = () => {
-    window.location.href = "/auth/login";
+  const handleNavigateToDashboard = () => {
+    window.location.href = "/dashboard";
   };
 
   const handleNavigateToRegister = () => {
@@ -180,7 +180,7 @@ function VerifyEmailContent() {
             </h1>
             
             <div className="space-y-4 text-gray-300">
-              <p className="text-xl font-argesta">
+              <p className="text-xl">
                 {status === "success" ? "Welcome." : "Verification."}
               </p>
               <p className="text-base opacity-80">
@@ -240,7 +240,7 @@ function VerifyEmailContent() {
             {/* Decorative line */}
             <div className="mt-12 flex items-center space-x-4">
               <div className="w-20 h-px bg-gradient-to-r from-white to-transparent" />
-              <span className="text-xs text-white/60 font-argesta tracking-widest">
+              <span className="text-xs text-white/60 tracking-widest">
                 {status === "success" ? "COMPLETE" : "VERIFY"}
               </span>
               <div className="w-20 h-px bg-gradient-to-l from-white to-transparent" />
@@ -262,7 +262,7 @@ function VerifyEmailContent() {
             <div className="text-center mb-8">
               {getStatusIcon()}
               
-              <h2 className="text-2xl font-bold text-white mb-2 font-argesta">
+              <h2 className="text-2xl font-bold text-white mb-2">
                 {getStatusTitle()}
               </h2>
               <p className="text-gray-400">
@@ -294,13 +294,13 @@ function VerifyEmailContent() {
             {/* Status-specific instructions */}
             {status === "success" && (
               <div className="mb-8 p-4 border border-white/10 bg-white/5 backdrop-blur-sm rounded-lg">
-                <h3 className="text-white font-medium mb-3 text-sm font-argesta tracking-wide">
+                <h3 className="text-white font-medium mb-3 text-sm tracking-wide">
                   NEXT STEPS
                 </h3>
                 <ul className="space-y-2 text-gray-300 text-sm">
                   <li className="flex items-start space-x-3">
                     <span className="text-white/40 font-mono text-xs mt-0.5">01</span>
-                    <span>Sign in to your account</span>
+                    <span>Access your dashboard</span>
                   </li>
                   <li className="flex items-start space-x-3">
                     <span className="text-white/40 font-mono text-xs mt-0.5">02</span>
@@ -316,7 +316,7 @@ function VerifyEmailContent() {
 
             {(status === "expired" || status === "error") && (
               <div className="mb-8 p-4 border border-white/10 bg-white/5 backdrop-blur-sm rounded-lg">
-                <h3 className="text-white font-medium mb-3 text-sm font-argesta tracking-wide">
+                <h3 className="text-white font-medium mb-3 text-sm tracking-wide">
                   WHAT TO DO?
                 </h3>
                 <ul className="space-y-2 text-gray-300 text-sm">
@@ -355,13 +355,13 @@ function VerifyEmailContent() {
             <div className="space-y-4">
               {status === "success" && (
                 <button
-                  onClick={handleNavigateToLogin}
+                  onClick={handleNavigateToDashboard}
                   className="group relative w-full py-4 bg-transparent border border-white/30 rounded-lg overflow-hidden transition-all duration-300 hover:border-white"
                 >
                   <div className="absolute inset-0 bg-white/10 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                   
                   <div className="relative flex items-center justify-center space-x-3">
-                    <span className="font-argesta tracking-widest">SIGN IN</span>
+                    <span className="tracking-widest">GO TO DASHBOARD</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                   </div>
                 </button>
@@ -380,11 +380,11 @@ function VerifyEmailContent() {
                       {isRetrying ? (
                         <>
                           <RefreshCw className="w-5 h-5 animate-spin" />
-                          <span className="font-argesta tracking-widest">RETRYING...</span>
+                          <span className="tracking-widest">RETRYING...</span>
                         </>
                       ) : (
                         <>
-                          <span className="font-argesta tracking-widest">TRY AGAIN</span>
+                          <span className="tracking-widest">TRY AGAIN</span>
                           <RefreshCw className="w-5 h-5 group-hover:rotate-180 transition-transform duration-300" />
                         </>
                       )}

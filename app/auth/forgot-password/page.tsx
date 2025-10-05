@@ -88,7 +88,7 @@ export default function ForgotPasswordPage() {
 
             {/* Success message */}
             <div className="mb-8">
-              <h1 className="text-2xl font-bold text-white mb-4 font-argesta">
+              <h1 className="text-2xl font-bold text-white mb-4">
                 Check Your Email
               </h1>
               <p className="text-gray-400 mb-2">
@@ -121,7 +121,7 @@ export default function ForgotPasswordPage() {
               >
                 <div className="flex items-center justify-center space-x-3">
                   <ArrowLeft className="w-4 h-4" />
-                  <span className="font-argesta tracking-widest">BACK TO LOGIN</span>
+                  <span className="tracking-widest">BACK TO LOGIN</span>
                 </div>
               </Link>
             </div>
@@ -173,7 +173,7 @@ export default function ForgotPasswordPage() {
             </h1>
             
             <div className="space-y-4 text-gray-300">
-              <p className="text-xl font-argesta">
+              <p className="text-xl">
                 Reset your password.
               </p>
               <p className="text-base opacity-80">
@@ -185,7 +185,7 @@ export default function ForgotPasswordPage() {
             {/* Decorative line */}
             <div className="mt-12 flex items-center space-x-4">
               <div className="w-20 h-px bg-gradient-to-r from-white to-transparent" />
-              <span className="text-xs text-white/60 font-argesta tracking-widest">
+              <span className="text-xs text-white/60 tracking-widest">
                 RESET
               </span>
               <div className="w-20 h-px bg-gradient-to-l from-white to-transparent" />
@@ -267,11 +267,11 @@ export default function ForgotPasswordPage() {
                   {isSubmitting || isLoading ? (
                     <>
                       <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                      <span className="font-argesta tracking-widest">SENDING...</span>
+                      <span className="tracking-widest">SENDING...</span>
                     </>
                   ) : (
                     <>
-                      <span className="font-argesta tracking-widest">SEND RESET LINK</span>
+                      <span className="tracking-widest">SEND RESET LINK</span>
                       <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                     </>
                   )}

@@ -22,18 +22,150 @@ const computedBaseUrl = (() => {
   return "http://localhost:3000";
 })();
 
+// Proxy pour déboguer et corriger les timestamps Better Auth
+const dbProxy = new Proxy(db, {
+  get(target, prop) {
+    const original = (target as any)[prop];
+    
+    if (prop === 'insert') {
+      return (table: any) => {
+        const insertBuilder = original.call(target, table);
+        return new Proxy(insertBuilder, {
+          get(insertTarget, insertProp) {
+            const insertOriginal = (insertTarget as any)[insertProp];
+            if (insertProp === 'values') {
+              return (values: any) => {
+                console.log('[DB PROXY INSERT] Values before fix:', values);
+                
+                // Fix emailVerified boolean -> null
+                if (values.emailVerified === false || values.emailVerified === true) {
+                  console.log('[DB PROXY INSERT] Converting emailVerified boolean to null');
+                  values.emailVerified = null;
+                }
+                
+                const now = new Date();
+                if (values.createdAt === undefined || values.createdAt === null) {
+                  console.log('[DB PROXY INSERT] Adding missing createdAt');
+                  values.createdAt = now;
+                }
+                if (values.updatedAt === undefined || values.updatedAt === null) {
+                  console.log('[DB PROXY INSERT] Adding missing updatedAt');
+                  values.updatedAt = now;
+                }
+                
+                console.log('[DB PROXY INSERT] Values after fix:', values);
+                return insertOriginal.call(insertTarget, values);
+              };
+            }
+            return typeof insertOriginal === 'function' ? insertOriginal.bind(insertTarget) : insertOriginal;
+          }
+        });
+      };
+    }
+    
+    if (prop === 'update') {
+      return (table: any) => {
+        const updateBuilder = original.call(target, table);
+        return new Proxy(updateBuilder, {
+          get(updateTarget, updateProp) {
+            const updateOriginal = (updateTarget as any)[updateProp];
+            if (updateProp === 'set') {
+              return (values: any) => {
+                // Fix emailVerified boolean -> null ou Date
+                if (values.emailVerified === false || values.emailVerified === true) {
+                  values.emailVerified = null;
+                }
+                
+                // Fix updatedAt manquant
+                if (values.updatedAt === undefined || values.updatedAt === null) {
+                  values.updatedAt = new Date();
+                }
+                
+                return updateOriginal.call(updateTarget, values);
+              };
+            }
+            return typeof updateOriginal === 'function' ? updateOriginal.bind(updateTarget) : updateOriginal;
+          }
+        });
+      };
+    }
+    
+    return typeof original === 'function' ? original.bind(target) : original;
+  }
+});
+
+const baseAdapter = drizzleAdapter(dbProxy as any, {
+  provider: "pg",
+  schema: {
+    user: users,
+    session: sessions,
+    account: accounts,
+    verification: verifications,
+  },
+});
+
+// Wrapper de l'adapter pour corriger les timestamps
+const wrappedAdapter = (options: any) => {
+  const adapter = baseAdapter(options);
+  
+  const originalCreate = adapter.create;
+  adapter.create = async <T extends Record<string, unknown>, R = T>(
+    data: { model: string; data: Omit<T, "id">; select?: string[] | undefined; forceAllowId?: boolean | undefined; }
+  ): Promise<R> => {
+    console.log(`[ADAPTER CREATE] Model: ${data.model}, Data:`, data.data);
+    
+    const payload = { ...data, data: { ...data.data } };
+    
+    // Fix timestamps pour TOUS les modèles
+    const now = new Date();
+    if ((payload.data as any).createdAt === undefined || (payload.data as any).createdAt === null) {
+      console.log('[ADAPTER CREATE] Adding createdAt');
+      (payload.data as any).createdAt = now;
+    }
+    if ((payload.data as any).updatedAt === undefined || (payload.data as any).updatedAt === null) {
+      console.log('[ADAPTER CREATE] Adding updatedAt');
+      (payload.data as any).updatedAt = now;
+    }
+    
+    // Fix emailVerified
+    if ((payload.data as any).emailVerified === false || (payload.data as any).emailVerified === true) {
+      console.log('[ADAPTER CREATE] Converting emailVerified boolean to null');
+      (payload.data as any).emailVerified = null;
+    }
+    
+    console.log(`[ADAPTER CREATE] Final data:`, payload.data);
+    return originalCreate.call(adapter, payload) as Promise<R>;
+  };
+  
+  const originalUpdate = adapter.update;
+  adapter.update = async <T extends Record<string, unknown>, R = T>(
+    data: { model: string; where: any; update: Partial<T>; select?: string[] | undefined; }
+  ): Promise<R> => {
+    console.log(`[ADAPTER UPDATE] Model: ${data.model}, Update:`, data.update);
+    
+    const payload = { ...data, update: { ...data.update } };
+    
+    if ((payload.update as any).updatedAt === undefined || (payload.update as any).updatedAt === null) {
+      console.log('[ADAPTER UPDATE] Adding updatedAt');
+      (payload.update as any).updatedAt = new Date();
+    }
+    
+    if ((payload.update as any).emailVerified === false || (payload.update as any).emailVerified === true) {
+      console.log('[ADAPTER UPDATE] Converting emailVerified boolean to null');
+      (payload.update as any).emailVerified = null;
+    }
+    
+    console.log(`[ADAPTER UPDATE] Final update:`, payload.update);
+    return originalUpdate.call(adapter, payload) as Promise<R>;
+  };
+  
+  return adapter;
+};
+
 export const auth = betterAuth({
   baseURL: computedBaseUrl,
   secret: process.env.BETTER_AUTH_SECRET,
-  database: drizzleAdapter(db, {
-    provider: "pg",
-    schema: {
-      user: users,
-      session: sessions,
-      account: accounts,
-      verification: verifications,
-    },
-  }),
+  database: wrappedAdapter,
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
       if (ctx.path === "/sign-up/email") {
@@ -46,33 +178,6 @@ export const auth = betterAuth({
             },
           }
         };
-      }
-      
-      if (ctx.path === "/callback/:id") {
-        try {
-          const adapter = ctx.context.adapter;
-          if (adapter && adapter.create) {
-            const originalCreate = adapter.create;
-            adapter.create = async <T extends Record<string, unknown>, R = T>(data: { model: string; data: Omit<T, "id">; select?: string[] | undefined; forceAllowId?: boolean | undefined; }): Promise<R> => {
-              const payload = structuredClone(data);
-
-              if (payload.model === "user") {
-                if ((payload.data as any).emailVerified && (payload.data as any).emailVerified !== "UNVERIFIED") {
-                  (payload.data as any).emailVerified =
-                    (payload.data as any).emailVerified instanceof Date
-                      ? (payload.data as any).emailVerified
-                      : new Date();
-                } else {
-                  (payload.data as any).emailVerified = null;
-                }
-              }
-
-              return originalCreate.call(adapter, payload) as Promise<R>;
-            };
-          }
-        } catch (error) {
-          console.error("Error intercepting adapter:", error);
-        }
       }
     }),
     

@@ -97,10 +97,13 @@ export function GoalCard({ goal, viewMode, onGoalChange, onEditGoal }: GoalCardP
             </button>
             
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3 mb-2">
-                <h3 className={`text-lg font-semibold ${goal.isCompleted ? 'line-through text-green-400/60' : 'text-white'} transition-all duration-300`}>
-                  {goal.title}
-                </h3>
+              <h3 
+                className={`text-lg font-semibold break-words line-clamp-2 mb-2 ${goal.isCompleted ? 'line-through text-green-400/60' : 'text-white'} transition-all duration-300`}
+                title={goal.title}
+              >
+                {goal.title}
+              </h3>
+              <div className="flex items-center gap-2 mb-2">
                 <Badge className={`text-xs ${getStatusColor()}`}>
                   {goal.isCompleted ? 'Completed' : isOverdue ? 'Overdue' : 'Active'}
                 </Badge>
@@ -187,11 +190,17 @@ export function GoalCard({ goal, viewMode, onGoalChange, onEditGoal }: GoalCardP
         </div>
 
         <div className="mb-4">
-          <h3 className={`text-lg font-semibold mb-2 ${goal.isCompleted ? 'line-through text-green-400/60' : 'text-white'} transition-all duration-300`}>
+          <h3 
+            className={`text-lg font-semibold mb-2 break-words line-clamp-3 ${goal.isCompleted ? 'line-through text-green-400/60' : 'text-white'} transition-all duration-300`}
+            title={goal.title}
+          >
             {goal.title}
           </h3>
           {goal.description && (
-            <p className={`text-sm ${goal.isCompleted ? 'text-green-400/40' : 'text-white/60'} line-clamp-2`}>
+            <p 
+              className={`text-sm break-words ${goal.isCompleted ? 'text-green-400/40' : 'text-white/60'} line-clamp-2`}
+              title={goal.description}
+            >
               {goal.description}
             </p>
           )}

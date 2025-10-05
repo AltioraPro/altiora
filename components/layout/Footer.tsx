@@ -152,14 +152,14 @@
                     />
                 </div>
                 
-                <p className="text-white/70 text-sm leading-relaxed font-argesta">
+                <p className="text-white/70 text-sm leading-relaxed ">
                     Transform your discipline with our comprehensive platform for trading, habits, and goals. 
                     Build the mindset of a champion.
                 </p>
                 
                 {/* Newsletter Signup */}
                 <div className="space-y-4">
-                    <h4 className="text-white font-argesta font-bold tracking-wider text-sm">
+                    <h4 className="text-white  font-bold tracking-wider text-sm">
                     STAY UPDATED
                     </h4>
                     <form onSubmit={handleNewsletterSubmit} className="flex space-x-2">
@@ -186,7 +186,7 @@
 
                 {/* Navigation Links */}
                 <div className="space-y-6">
-                <h4 className="text-white font-argesta font-bold tracking-wider text-sm flex items-center space-x-2">
+                <h4 className="text-white  font-bold tracking-wider text-sm flex items-center space-x-2">
                     <div className="w-1 h-1 bg-white/60 rounded-full" />
                     <span>NAVIGATION</span>
                 </h4>
@@ -200,7 +200,7 @@
                             className="flex items-center space-x-3 text-white/60 hover:text-white transition-all duration-300 group"
                         >
                             <Icon className="w-4 h-4 transition-transform duration-300 group-hover:scale-110" />
-                            <span className="text-sm font-argesta">{link.label}</span>
+                            <span className="text-sm ">{link.label}</span>
                             <div className="w-0 h-px bg-white/60 group-hover:w-6 transition-all duration-300" />
                         </Link>
                         </li>
@@ -211,7 +211,7 @@
 
                 {/* Legal & Support */}
                 <div className="space-y-6">
-                <h4 className="text-white font-argesta font-bold tracking-wider text-sm flex items-center space-x-2">
+                <h4 className="text-white  font-bold tracking-wider text-sm flex items-center space-x-2">
                     <div className="w-1 h-1 bg-white/60 rounded-full" />
                     <span>LEGAL & SUPPORT</span>
                 </h4>
@@ -225,7 +225,7 @@
                             className="flex items-center space-x-3 text-white/60 hover:text-white transition-all duration-300 group"
                         >
                             <Icon className="w-4 h-4 transition-transform duration-300 group-hover:scale-110" />
-                            <span className="text-sm font-argesta">{link.label}</span>
+                            <span className="text-sm ">{link.label}</span>
                             <div className="w-0 h-px bg-white/60 group-hover:w-6 transition-all duration-300" />
                         </Link>
                         </li>
@@ -236,7 +236,7 @@
 
                 {/* Contact & Social */}
                 <div className="space-y-6">
-                <h4 className="text-white font-argesta font-bold tracking-wider text-sm flex items-center space-x-2">
+                <h4 className="text-white  font-bold tracking-wider text-sm flex items-center space-x-2">
                     <div className="w-1 h-1 bg-white/60 rounded-full" />
                     <span>CONNECT</span>
                 </h4>
@@ -245,17 +245,17 @@
                 <div className="space-y-3 text-sm text-white/60">
                     <div className="flex items-center space-x-3">
                     <Mail className="w-4 h-4" />
-                    <span className="font-argesta">contact@altiora.app</span>
+                    <span className="">contact@altiora.app</span>
                     </div>
                     <div className="flex items-center space-x-3">
                     <MapPin className="w-4 h-4" />
-                    <span className="font-argesta">Paris, France</span>
+                    <span className="">Paris, France</span>
                     </div>
                 </div>
 
                 {/* Social Links */}
                 <div className="space-y-4">
-                    <h5 className="text-white/80 font-argesta text-xs tracking-wider">FOLLOW US</h5>
+                    <h5 className="text-white/80  text-xs tracking-wider">FOLLOW US</h5>
                     <div className="flex space-x-4">
                     {socialLinks.map((social) => {
                         const Icon = social.icon;
@@ -283,7 +283,7 @@
                 
                 {/* Copyright */}
                 <div className="text-center md:text-left">
-                    <p className="text-white/50 text-sm font-argesta">
+                    <p className="text-white/50 text-sm ">
                     &copy; {new Date().getFullYear()} Altiora. All rights reserved.
                     </p>
                 </div>
@@ -292,11 +292,11 @@
                 <div className="flex items-center space-x-6 text-xs text-white/50">
                     <span className="flex items-center space-x-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                    <span className="font-argesta">System Status</span>
+                    <span className="">System Status</span>
                     </span>
                     <Link 
                     href="/changelog" 
-                    className="hover:text-white/70 transition-colors duration-300 font-argesta"
+                    className="hover:text-white/70 transition-colors duration-300 "
                     >
                     Changelog
                     </Link>

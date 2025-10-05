@@ -65,7 +65,7 @@ export function LimitsBanner() {
           
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-argesta font-bold text-white">
+              <h3 className="text-sm  font-bold text-white">
                 LIMIT REACHED
               </h3>
               <button
@@ -76,12 +76,12 @@ export function LimitsBanner() {
               </button>
             </div>
             
-            <p className="text-sm text-white/80 mb-3 font-argesta">
+            <p className="text-sm text-white/80 mb-3 ">
               {limitInfo.message}
             </p>
             
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs text-white/60 font-argesta">
+              <span className="text-xs text-white/60 ">
                 Usage: {limitInfo.current}/{limitInfo.max === 999 ? "∞" : limitInfo.max}
               </span>
             </div>
@@ -89,14 +89,14 @@ export function LimitsBanner() {
             <div className="flex space-x-2">
               <Link
                 href="/pricing"
-                className="flex-1 px-4 py-2 bg-gradient-to-r from-amber-500 to-red-500 text-white text-sm font-argesta font-bold rounded-lg text-center hover:from-amber-600 hover:to-red-600 transition-all duration-300 flex items-center justify-center space-x-2"
+                className="flex-1 px-4 py-2 bg-gradient-to-r from-amber-500 to-red-500 text-white text-sm  font-bold rounded-lg text-center hover:from-amber-600 hover:to-red-600 transition-all duration-300 flex items-center justify-center space-x-2"
               >
                 <Crown className="w-4 h-4" />
                 <span>UPGRADE</span>
               </Link>
             </div>
             
-            <p className="text-xs text-white/60 mt-2 font-argesta">
+            <p className="text-xs text-white/60 mt-2 ">
               {limitInfo.upgradeMessage}
             </p>
           </div>

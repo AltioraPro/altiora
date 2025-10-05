@@ -376,7 +376,7 @@ export function ImportTradesModal({ isOpen, onClose, journalId }: ImportTradesMo
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="font-argesta text-white">Import Trades</CardTitle>
+              <CardTitle className=" text-white">Import Trades</CardTitle>
               <CardDescription className="text-white/60">
                 Import trades from Excel file
               </CardDescription>

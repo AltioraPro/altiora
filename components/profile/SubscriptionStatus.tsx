@@ -73,12 +73,12 @@ export function SubscriptionStatus() {
           {isPro ? (
             <>
               <Crown className="w-5 h-5" />
-              <span className="font-argesta font-bold tracking-wide">ALTIORAN</span>
+              <span className="font-bold tracking-wide">ALTIORAN</span>
             </>
           ) : (
             <>
               <Shield className="w-5 h-5" />
-              <span className="font-argesta font-bold tracking-wide">FREE PLAN</span>
+              <span className="font-bold tracking-wide">FREE PLAN</span>
             </>
           )}
         </div>
@@ -88,8 +88,8 @@ export function SubscriptionStatus() {
       <div className="space-y-4">
         <div className="p-4 bg-white/5 rounded-xl border border-white/10">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-argesta text-white/60 tracking-wide">PLAN TYPE</span>
-            <span className={`font-argesta font-bold ${isPro ? "text-green-400" : "text-white"}`}>
+            <span className="text-sm text-white/60 tracking-wide">PLAN TYPE</span>
+            <span className={`font-bold ${isPro ? "text-green-400" : "text-white"}`}>
               {user.subscriptionPlan === "ALTIORANS" ? "Altioran" : isPro ? "Professional" : "Free"}
             </span>
           </div>
@@ -97,8 +97,8 @@ export function SubscriptionStatus() {
 
         <div className="p-4 bg-white/5 rounded-xl border border-white/10">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-argesta text-white/60 tracking-wide">STATUS</span>
-            <span className={`font-argesta font-bold ${isPro ? "text-green-400" : "text-white/80"}`}>
+            <span className="text-sm text-white/60 tracking-wide">STATUS</span>
+            <span className={`font-bold ${isPro ? "text-green-400" : "text-white/80"}`}>
               {isPro ? "Active" : "Limited Access"}
             </span>
           </div>
@@ -110,7 +110,7 @@ export function SubscriptionStatus() {
         {!isPro ? (
           <Link
             href="/pricing"
-            className="block w-full px-6 py-4 bg-gradient-to-r from-white to-white/90 text-black font-argesta font-bold rounded-xl text-center hover:from-white/90 hover:to-white transition-all duration-300 group"
+            className="block w-full px-6 py-4 bg-gradient-to-r from-white to-white/90 text-black font-bold rounded-xl text-center hover:from-white/90 hover:to-white transition-all duration-300 group"
           >
             <div className="flex items-center justify-center space-x-3">
               <Crown className="w-5 h-5" />
@@ -121,7 +121,7 @@ export function SubscriptionStatus() {
         ) : (
           <Link
             href="/billing"
-            className="block w-full px-6 py-4 bg-white/10 text-white font-argesta font-bold rounded-xl text-center hover:bg-white/20 transition-all duration-300 group"
+            className="block w-full px-6 py-4 bg-white/10 text-white font-bold rounded-xl text-center hover:bg-white/20 transition-all duration-300 group"
           >
             <div className="flex items-center justify-center space-x-3">
               <Shield className="w-5 h-5" />
@@ -135,7 +135,7 @@ export function SubscriptionStatus() {
       {/* Usage Stats */}
       {limits && usage && (
         <div className="space-y-4">
-          <h4 className="text-base font-argesta font-bold text-white tracking-wide flex items-center space-x-2">
+          <h4 className="text-base font-bold text-white tracking-wide flex items-center space-x-2">
             <BarChart3 className="w-4 h-4" />
             <span>USAGE THIS MONTH</span>
           </h4>
@@ -146,9 +146,9 @@ export function SubscriptionStatus() {
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-2">
                   <BookOpen className="w-4 h-4 text-white/60" />
-                  <span className="text-sm font-argesta text-white/80">Trading Journal</span>
+                  <span className="text-sm text-white/80">Trading Journal</span>
                 </div>
-                <span className="text-sm font-argesta text-white/60">
+                <span className="text-sm text-white/60">
                   {usage.monthlyTradingEntries} / {limits.maxTradingEntries === -1 || limits.maxTradingEntries > 999999 ? "∞" : limits.maxTradingEntries}
                 </span>
               </div>
@@ -175,9 +175,9 @@ export function SubscriptionStatus() {
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-2">
                   <Target className="w-4 h-4 text-white/60" />
-                  <span className="text-sm font-argesta text-white/80">Habits</span>
+                  <span className="text-sm text-white/80">Habits</span>
                 </div>
-                <span className="text-sm font-argesta text-white/60">
+                <span className="text-sm text-white/60">
                   {usage.currentHabits} / {limits.maxHabits === -1 || limits.maxHabits > 999999 ? "∞" : limits.maxHabits}
                 </span>
               </div>
@@ -204,9 +204,9 @@ export function SubscriptionStatus() {
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-2">
                   <Calendar className="w-4 h-4 text-white/60" />
-                  <span className="text-sm font-argesta text-white/80">Goals</span>
+                  <span className="text-sm text-white/80">Goals</span>
                 </div>
-                <span className="text-sm font-argesta text-white/60">
+                <span className="text-sm text-white/60">
                   {usage.currentAnnualGoals + usage.currentQuarterlyGoals} / {limits.maxAnnualGoals + limits.maxQuarterlyGoals}
                 </span>
               </div>
@@ -230,7 +230,7 @@ export function SubscriptionStatus() {
       {/* Features Summary */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h4 className="text-base font-argesta font-bold text-white tracking-wide">FEATURES INCLUDED</h4>
+          <h4 className="text-base font-bold text-white tracking-wide">FEATURES INCLUDED</h4>
           <button
             onClick={() => setShowDetails(!showDetails)}
             className="flex items-center space-x-1 text-sm text-white/60 hover:text-white transition-colors"
@@ -244,15 +244,15 @@ export function SubscriptionStatus() {
         <div className="space-y-2">
           <div className="flex items-center space-x-3">
             <div className="w-2 h-2 bg-white/60 rounded-full" />
-            <span className="text-sm font-argesta text-white/80">Trading journal (10 entries/month)</span>
+            <span className="text-sm text-white/80">Trading journal (10 entries/month)</span>
           </div>
           <div className="flex items-center space-x-3">
             <div className="w-2 h-2 bg-white/60 rounded-full" />
-            <span className="text-sm font-argesta text-white/80">Habit tracking (3 max)</span>
+            <span className="text-sm text-white/80">Habit tracking (3 max)</span>
           </div>
           <div className="flex items-center space-x-3">
             <div className="w-2 h-2 bg-white/60 rounded-full" />
-            <span className="text-sm font-argesta text-white/80">1 annual goal + 1 quarterly</span>
+            <span className="text-sm text-white/80">1 annual goal + 1 quarterly</span>
           </div>
         </div>
 
@@ -265,11 +265,11 @@ export function SubscriptionStatus() {
             <div className="space-y-2">
               <div className="flex items-center space-x-3">
                 <div className="w-2 h-2 bg-white/60 rounded-full" />
-                <span className="text-sm font-argesta text-white/80">Basic analytics</span>
+                <span className="text-sm text-white/80">Basic analytics</span>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-2 h-2 bg-white/60 rounded-full" />
-                <span className="text-sm font-argesta text-white/80">Community access</span>
+                <span className="text-sm text-white/80">Community access</span>
               </div>
             </div>
 
@@ -278,68 +278,68 @@ export function SubscriptionStatus() {
               <div className="space-y-2 pt-4 border-t border-white/10">
                 <div className="flex items-center space-x-3">
                   <div className="w-2 h-2 bg-green-400 rounded-full" />
-                  <span className="text-sm font-argesta text-green-400">Unlimited trading journal</span>
+                  <span className="text-sm text-green-400">Unlimited trading journal</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="w-2 h-2 bg-green-400 rounded-full" />
-                  <span className="text-sm font-argesta text-green-400">Unlimited habit tracking</span>
+                  <span className="text-sm text-green-400">Unlimited habit tracking</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="w-2 h-2 bg-green-400 rounded-full" />
-                  <span className="text-sm font-argesta text-green-400">Unlimited goal planning</span>
+                  <span className="text-sm text-green-400">Unlimited goal planning</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="w-2 h-2 bg-green-400 rounded-full" />
-                  <span className="text-sm font-argesta text-green-400">Virtual assistant & Pomodoro</span>
+                  <span className="text-sm text-green-400">Virtual assistant & Pomodoro</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="w-2 h-2 bg-green-400 rounded-full" />
-                  <span className="text-sm font-argesta text-green-400">Deep work tracking</span>
+                  <span className="text-sm text-green-400">Deep work tracking</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="w-2 h-2 bg-green-400 rounded-full" />
-                  <span className="text-sm font-argesta text-green-400">Discord integration</span>
+                  <span className="text-sm text-green-400">Discord integration</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="w-2 h-2 bg-green-400 rounded-full" />
-                  <span className="text-sm font-argesta text-green-400">Priority support</span>
+                  <span className="text-sm text-green-400">Priority support</span>
                 </div>
               </div>
             ) : (
               <div className="space-y-2 pt-4 border-t border-white/10">
                 <div className="flex items-center space-x-3 opacity-50">
                   <div className="w-2 h-2 bg-white/20 rounded-full" />
-                  <span className="text-sm font-argesta text-white/40">Unlimited trading journal</span>
+                  <span className="text-sm text-white/40">Unlimited trading journal</span>
                   <Star className="w-3 h-3 text-white/20" />
                 </div>
                 <div className="flex items-center space-x-3 opacity-50">
                   <div className="w-2 h-2 bg-white/20 rounded-full" />
-                  <span className="text-sm font-argesta text-white/40">Unlimited habit tracking</span>
+                  <span className="text-sm text-white/40">Unlimited habit tracking</span>
                   <Star className="w-3 h-3 text-white/20" />
                 </div>
                 <div className="flex items-center space-x-3 opacity-50">
                   <div className="w-2 h-2 bg-white/20 rounded-full" />
-                  <span className="text-sm font-argesta text-white/40">Unlimited goal planning</span>
+                  <span className="text-sm text-white/40">Unlimited goal planning</span>
                   <Star className="w-3 h-3 text-white/20" />
                 </div>
                 <div className="flex items-center space-x-3 opacity-50">
                   <div className="w-2 h-2 bg-white/20 rounded-full" />
-                  <span className="text-sm font-argesta text-white/40">Virtual assistant & Pomodoro</span>
+                  <span className="text-sm text-white/40">Virtual assistant & Pomodoro</span>
                   <Star className="w-3 h-3 text-white/20" />
                 </div>
                 <div className="flex items-center space-x-3 opacity-50">
                   <div className="w-2 h-2 bg-white/20 rounded-full" />
-                  <span className="text-sm font-argesta text-white/40">Deep work tracking</span>
+                  <span className="text-sm text-white/40">Deep work tracking</span>
                   <Star className="w-3 h-3 text-white/20" />
                 </div>
                 <div className="flex items-center space-x-3 opacity-50">
                   <div className="w-2 h-2 bg-white/20 rounded-full" />
-                  <span className="text-sm font-argesta text-white/40">Discord integration</span>
+                  <span className="text-sm text-white/40">Discord integration</span>
                   <Star className="w-3 h-3 text-white/20" />
                 </div>
                 <div className="flex items-center space-x-3 opacity-50">
                   <div className="w-2 h-2 bg-white/20 rounded-full" />
-                  <span className="text-sm font-argesta text-white/40">Priority support</span>
+                  <span className="text-sm text-white/40">Priority support</span>
                   <Star className="w-3 h-3 text-white/20" />
                 </div>
               </div>
@@ -353,9 +353,9 @@ export function SubscriptionStatus() {
         <div className="p-4 bg-gradient-to-r from-white/5 to-white/10 rounded-xl border border-white/20">
           <div className="flex items-center space-x-3 mb-3">
             <Zap className="w-5 h-5 text-white/60" />
-            <span className="text-sm font-argesta font-bold text-white tracking-wide">PRO BENEFITS</span>
+            <span className="text-sm font-bold text-white tracking-wide">PRO BENEFITS</span>
           </div>
-          <p className="text-sm text-white/70 font-argesta">
+          <p className="text-sm text-white/70">
             Unlock advanced features, unlimited tracking, and exclusive Discord community access to accelerate your growth.
           </p>
         </div>

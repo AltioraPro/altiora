@@ -87,10 +87,12 @@ export async function updateUserRank(userId: string) {
         await DiscordService.autoSyncUserRank(updatedUser.discordId, newRank);
         
 
+        const now = new Date();
         await db.update(users)
           .set({
             discordRoleSynced: true,
-            lastDiscordSync: new Date(),
+            lastDiscordSync: now,
+            updatedAt: now,
           })
           .where(eq(users.id, userId));
           

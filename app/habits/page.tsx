@@ -5,16 +5,15 @@ import { HabitsProvider } from "@/components/habits/HabitsProvider";
 import { HabitsDashboard } from "@/components/habits/HabitsDashboard";
 import { HabitsLoadingSkeleton } from "@/components/habits/HabitsLoadingSkeleton";
 import { QuickStats } from "@/components/habits/QuickStats";
-import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 
 export default function HabitsPage() {
   return (
     <>
       <Header />
-      <div className="min-h-screen mt-8 bg-pure-black text-pure-white">
+      <div className="min-h-screen bg-pure-black text-pure-white">
       {/* Main Content */}
-      <div className="relative max-w-7xl mx-auto px-6 py-8">
+      <div className="relative w-full mx-auto">
         <HabitsProvider>
           {/* Header */}
           <div className="relative border-b border-white/10 mb-8">
@@ -25,7 +24,7 @@ export default function HabitsPage() {
                   <h1 className="text-3xl font-bold font-argesta tracking-tight">
                     Habits Tracker
                   </h1>
-                  <p className="text-white/60 font-argesta text-sm mt-2">
+                  <p className="text-white/60 text-sm mt-2">
                     Forge your discipline. Build your legacy.
                   </p>
                 </div>
@@ -36,9 +35,11 @@ export default function HabitsPage() {
             </div>
           </div>
 
-          <Suspense fallback={<HabitsLoadingSkeleton />}>
-            <HabitsDashboard />
-          </Suspense>
+          <div className="max-w-7xl mx-auto">
+            <Suspense fallback={<HabitsLoadingSkeleton />}>
+              <HabitsDashboard />
+            </Suspense>
+          </div>
         </HabitsProvider>
       </div>
 
@@ -49,9 +50,6 @@ export default function HabitsPage() {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white/[0.002] rounded-full blur-3xl" />
       </div>
     </div>
-
-    {/* Footer */}
-    <Footer />
   </>
   );
 } 

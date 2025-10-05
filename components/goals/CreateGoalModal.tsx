@@ -8,9 +8,10 @@ import { useOptimizedGoalMutation } from "@/hooks/useOptimizedGoalMutation";
 interface CreateGoalModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
-export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
+export function CreateGoalModal({ isOpen, onClose, onSuccess }: CreateGoalModalProps) {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -52,6 +53,7 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
     createGoal(data, {
       onSuccess: () => {
         handleClose();
+        onSuccess?.();
       },
     });
   };
@@ -90,7 +92,7 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
         <div className="p-4 overflow-y-auto max-h-[calc(90vh-2rem)]">
           {/* Header */}
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold font-argesta tracking-tight">
+            <h2 className="text-lg font-bold  tracking-tight">
               NEW GOAL
             </h2>
             <button
@@ -275,14 +277,14 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-3 py-2 border border-white/20 rounded-lg text-white/80 hover:text-white hover:bg-white/5 transition-all duration-300 font-argesta text-sm"
+                className="flex-1 px-3 py-2 border border-white/20 rounded-lg text-white/80 hover:text-white hover:bg-white/5 transition-all duration-300  text-sm"
               >
                 CANCEL
               </button>
               <button
                 type="submit"
                 disabled={isCreating || !formData.title.trim()}
-                className="flex-1 px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 rounded-lg text-white font-argesta transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                className="flex-1 px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 rounded-lg text-white  transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
               >
                 {isCreating ? "CREATING..." : "CREATE"}
               </button>

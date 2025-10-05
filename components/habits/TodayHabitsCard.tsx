@@ -61,7 +61,7 @@ const HabitItem = memo<HabitItemProps>(({
 
       {/* Habit Info */}
       <div className="flex-1">
-        <h4 className={`font-argesta font-medium transition-all duration-200 ${
+        <h4 className={` font-medium transition-all duration-200 ${
           habit.isCompleted ? "text-green-300 line-through" : "text-white"
         }`}>
           {habit.title}
@@ -210,7 +210,7 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-xl font-bold font-argesta tracking-tight">
+            <h3 className="text-xl font-bold  tracking-tight">
               TODAY&apos;S HABITS
             </h3>
             <p className="text-white/60 text-sm mt-1">
@@ -224,7 +224,7 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
           
           <div className="flex items-center space-x-3">
             <div className="text-right">
-              <div className="text-2xl font-bold font-argesta">
+              <div className="text-2xl font-bold ">
                 <span className={`${
                   completionPercentage === 100 
                     ? "text-green-400" 
@@ -235,7 +235,7 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
                   {completionPercentage}%
                 </span>
               </div>
-              <div className="text-xs text-white/50 font-argesta">
+              <div className="text-xs text-white/50 ">
                 {completedHabits}/{totalHabits} COMPLETED
               </div>
             </div>
@@ -269,7 +269,7 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
                 {completionPercentage === 100 ? (
                   <Check className="w-6 h-6 text-green-400" />
                 ) : (
-                  <span className="text-sm font-bold font-argesta">
+                  <span className="text-sm font-bold ">
                     {Math.round(completionPercentage)}
                   </span>
                 )}
@@ -282,7 +282,7 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
           {habitsList.length === 0 ? (
             <div className="text-center py-8 text-white/50">
               <Circle className="w-12 h-12 mx-auto mb-4 opacity-30" />
-              <p className="font-argesta">No habits configured</p>
+              <p className="">No habits configured</p>
               <p className="text-sm mt-1">Create your first habit to get started</p>
             </div>
           ) : (
@@ -299,7 +299,7 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
 
         {habitsList.length > 0 && (
           <div className="mt-6 pt-6 border-t border-white/10 flex justify-between items-center text-sm text-white/60">
-            <span className="font-argesta">
+            <span className="">
               {completionPercentage === 100 
                 ? "🎉 Perfect! All habits completed" 
                 : completedHabits > 0
@@ -311,7 +311,7 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
             {completionPercentage === 100 && (
               <div className="flex items-center space-x-2 text-green-400">
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                <span className="font-argesta">GOAL ACHIEVED</span>
+                <span className="">GOAL ACHIEVED</span>
               </div>
             )}
           </div>

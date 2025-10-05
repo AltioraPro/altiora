@@ -19,17 +19,13 @@ export const users = pgTable(
     discordAvatar: varchar("discord_avatar", { length: 1024 }),
     discordConnected: boolean("discord_connected").default(false).notNull(),
     discordRoleSynced: boolean("discord_role_synced").default(false).notNull(),
-    lastDiscordSync: timestamp("last_discord_sync", { mode: "date" }),
+    lastDiscordSync: timestamp("last_discord_sync"),
     stripeCustomerId: varchar("stripe_customer_id", { length: 255 }),
     stripeSubscriptionId: varchar("stripe_subscription_id", { length: 255 }),
     stripeSubscriptionStatus: varchar("stripe_subscription_status", { length: 50 }),
-    stripeSubscriptionEndDate: timestamp("stripe_subscription_end_date", { mode: "date" }),
-    createdAt: timestamp("created_at", { mode: "date" })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updated_at", { mode: "date" })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull()
+    stripeSubscriptionEndDate: timestamp("stripe_subscription_end_date"),
+    createdAt: timestamp("created_at").notNull(),
+    updatedAt: timestamp("updated_at").notNull()
   },
   (table) => ({
     emailIdx: index("user_email_idx").on(table.email),
@@ -48,15 +44,11 @@ export const sessions = pgTable(
       .references(() => users.id, { onDelete: "cascade" })
       .notNull(),
     token: varchar("token", { length: 255 }).notNull(),
-    expiresAt: timestamp("expires_at", { mode: "date" }).notNull(),
+    expiresAt: timestamp("expires_at").notNull(),
     ipAddress: varchar("ip_address", { length: 45 }),
     userAgent: varchar("user_agent", { length: 1024 }),
-    createdAt: timestamp("created_at", { mode: "date" })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updated_at", { mode: "date" })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
+    createdAt: timestamp("created_at").notNull(),
+    updatedAt: timestamp("updated_at").notNull(),
   },
   (table) => ({
     userIdIdx: index("session_user_id_idx").on(table.userId),
@@ -75,17 +67,13 @@ export const accounts = pgTable(
     providerId: varchar("provider_id", { length: 255 }).notNull(),
     accessToken: varchar("access_token", { length: 4096 }),
     refreshToken: varchar("refresh_token", { length: 4096 }),
-    accessTokenExpiresAt: timestamp("access_token_expires_at", { mode: "date" }),
-    refreshTokenExpiresAt: timestamp("refresh_token_expires_at", { mode: "date" }),
+    accessTokenExpiresAt: timestamp("access_token_expires_at"),
+    refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
     scope: varchar("scope", { length: 4096 }),
     idToken: varchar("id_token", { length: 4096 }),
     password: varchar("password", { length: 255 }),
-    createdAt: timestamp("created_at", { mode: "date" })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updated_at", { mode: "date" })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
+    createdAt: timestamp("created_at").notNull(),
+    updatedAt: timestamp("updated_at").notNull(),
   },
   (table) => ({
     userIdIdx: index("account_user_id_idx").on(table.userId),
@@ -104,13 +92,9 @@ export const verifications = pgTable(
     id: varchar("id", { length: 255 }).primaryKey().default(sql`gen_random_uuid()`),
     identifier: varchar("identifier", { length: 255 }).notNull(),
     value: varchar("value", { length: 255 }).notNull(),
-    expiresAt: timestamp("expires_at", { mode: "date" }).notNull(),
-    createdAt: timestamp("created_at", { mode: "date" })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updated_at", { mode: "date" })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
+    expiresAt: timestamp("expires_at").notNull(),
+    createdAt: timestamp("created_at").notNull(),
+    updatedAt: timestamp("updated_at").notNull(),
   },
   (table) => ({
     identifierIdx: index("verification_identifier_idx").on(table.identifier),

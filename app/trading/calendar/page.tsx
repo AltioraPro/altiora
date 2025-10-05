@@ -277,7 +277,7 @@ return (
     <div className="container mx-auto px-4 py-8">
     <div className="flex justify-between items-center mb-8">
         <div>
-        <h1 className="text-3xl font-argesta text-white mb-2">Trading Calendar</h1>
+        <h1 className="text-3xl font-argesta text-white mb-2 font-bold">Trading Calendar</h1>
         <p className="text-white/60">
             Track your daily trading performance
         </p>
@@ -471,7 +471,7 @@ return (
             <CardHeader>
             <div className="flex items-center justify-between">
                 <div>
-                <CardTitle className="font-argesta text-white">
+                <CardTitle className="text-white">
                     {getPeriodTitle()}
                 </CardTitle>
                 <CardDescription className="text-white/60">
@@ -560,7 +560,7 @@ return (
         <CardHeader>
             <div className="flex items-center justify-between">
             <div>
-                <CardTitle className="font-argesta text-white">
+                <CardTitle className="text-white">
                 {getPeriodTitle()}
                 </CardTitle>
                 <CardDescription className="text-white/60">

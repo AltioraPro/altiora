@@ -35,37 +35,37 @@ export default function HomePage() {
           <div className="flex flex-col space-y-6">
             <div className="flex items-center space-x-3">
                 <TrendingUp className="w-6 h-6 text-white" />
-              <span className="text-white font-argesta text-sm">TRADING</span>
+              <span className="text-white text-sm">TRADING</span>
             </div>
             <div className="flex items-center space-x-3">
               <Target className="w-6 h-6 text-white" />
-              <span className="text-white font-argesta text-sm">GOALS</span>
+              <span className="text-white text-sm">GOALS</span>
             </div>
             <div className="flex items-center space-x-3">
               <Zap className="w-6 h-6 text-white" />
-              <span className="text-white font-argesta text-sm">HABITS</span>
+              <span className="text-white text-sm">HABITS</span>
             </div>
           </div>
           
           <div className="w-px h-32 bg-gradient-to-b from-transparent via-white to-transparent opacity-30"></div>
           
           <div className="space-y-2">
-            <p className="text-white font-argesta text-xs opacity-70 transform -rotate-90 origin-left">DISCIPLINE</p>
+            <p className="text-white text-xs opacity-70 transform -rotate-90 origin-left">DISCIPLINE</p>
           </div>
         </div>
 
         <div className="absolute right-8 top-1/2 transform -translate-y-1/2 space-y-8 opacity-60 z-20 flex flex-col items-end">
           <div className="flex flex-col items-end space-y-6">
             <div className="flex items-center space-x-3">
-              <span className="text-white font-argesta text-sm">ANALYTICS</span>
+              <span className="text-white text-sm">ANALYTICS</span>
               <BarChart3 className="w-6 h-6 text-white" />
             </div>
             <div className="flex items-center space-x-3">
-              <span className="text-white font-argesta text-sm">TRACKING</span>
+              <span className="text-white text-sm">TRACKING</span>
               <Clock className="w-6 h-6 text-white" />
             </div>
             <div className="flex items-center space-x-3">
-              <span className="text-white font-argesta text-sm">PROGRESS</span>
+              <span className="text-white text-sm">PROGRESS</span>
               <Star className="w-6 h-6 text-white" />
             </div>
           </div>
@@ -73,7 +73,7 @@ export default function HomePage() {
           <div className="w-px h-32 bg-gradient-to-b from-transparent via-white to-transparent opacity-30"></div>
           
           <div className="space-y-2">
-            <p className="text-white font-argesta text-xs opacity-70 transform rotate-90 origin-right">FOCUS</p>
+            <p className="text-white text-xs opacity-70 transform rotate-90 origin-right">FOCUS</p>
           </div>
         </div>
 
@@ -91,13 +91,13 @@ export default function HomePage() {
 
             <ShinyText 
               text="Personal coaching platform: trading, habits, and goals in one place."
-              className="text-[1vw] font-bold text-pure-white opacity-90 select-none pointer-events-none whitespace-nowrap font-argesta -mt-2 mb-2"
+              className="text-[1vw] font-bold text-pure-white opacity-90 select-none pointer-events-none whitespace-nowrap -mt-2 mb-2"
               speed={8}
             />
 
             <BlurText 
               text="Your discipline, our platform."
-              className="text-[1vw] text-pure-white opacity-90 select-none pointer-events-none whitespace-nowrap font-argesta -mt-2"
+              className="text-[1vw] text-pure-white opacity-90 select-none pointer-events-none whitespace-nowrap -mt-2"
             />
           </div>
 
@@ -129,7 +129,7 @@ export default function HomePage() {
         </div>
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30">
           <div className="flex flex-col items-center space-y-2 animate-bounce">
-            <span className="text-white/50 text-xs font-argesta tracking-widest">EXPLORE</span>
+            <span className="text-white/50 text-xs tracking-widest">EXPLORE</span>
             <ChevronDown className="w-5 h-5 text-white/50" />
           </div>
         </div>

@@ -112,7 +112,7 @@ export default function RegisterPage() {
     try {
       const { error } = await signIn.social({
         provider: "google",
-        callbackURL: "/profile",
+        callbackURL: "/dashboard",
       });
 
       if (error) {
@@ -164,7 +164,7 @@ export default function RegisterPage() {
             </h1>
             
             <div className="space-y-4 text-gray-300">
-              <p className="text-xl font-argesta">
+              <p className="text-xl">
                 Start your transformation.
               </p>
               <p className="text-base opacity-80">
@@ -191,7 +191,7 @@ export default function RegisterPage() {
             {/* Decorative line */}
             <div className="mt-12 flex items-center space-x-4">
               <div className="w-20 h-px bg-gradient-to-r from-white to-transparent" />
-              <span className="text-xs text-white/60 font-argesta tracking-widest">
+              <span className="text-xs text-white/60 tracking-widest">
                 SIGN UP
               </span>
               <div className="w-20 h-px bg-gradient-to-l from-white to-transparent" />
@@ -377,11 +377,11 @@ export default function RegisterPage() {
                   {isSubmitting || isLoading ? (
                     <>
                       <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                      <span className="font-argesta tracking-widest">CREATING...</span>
+                      <span className="tracking-widest">CREATING...</span>
                     </>
                   ) : (
                     <>
-                      <span className="font-argesta tracking-widest">CREATE ACCOUNT</span>
+                      <span className="tracking-widest">CREATE ACCOUNT</span>
                       <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                     </>
                   )}
@@ -392,7 +392,7 @@ export default function RegisterPage() {
             {/* Divider */}
             <div className="mt-8 mb-6 flex items-center">
               <div className="flex-1 h-px bg-white/20"></div>
-              <span className="px-4 text-xs text-white/60 font-argesta tracking-widest">OR</span>
+              <span className="px-4 text-xs text-white/60 tracking-widest">OR</span>
               <div className="flex-1 h-px bg-white/20"></div>
             </div>
 

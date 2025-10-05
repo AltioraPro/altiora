@@ -228,7 +228,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
         <div className="p-6">
 
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold font-argesta tracking-tight">
+            <h3 className="text-lg font-bold  tracking-tight">
               STATISTICS
             </h3>
             
@@ -238,7 +238,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
               className={`flex items-center space-x-2 ${currentRank.bgColor} border ${currentRank.borderColor} rounded-lg px-3 py-1 hover:scale-105 transition-all duration-200 group`}
             >
               <currentRank.icon className={`w-4 h-4 ${currentRank.color} group-hover:scale-110 transition-transform`} />
-              <span className={`text-xs font-argesta ${currentRank.color}`}>
+              <span className={`text-xs  ${currentRank.color}`}>
                 {currentRank.name}
               </span>
               <Info className="w-3 h-3 text-white/40 group-hover:text-white/60 transition-colors animate-pulse" />
@@ -274,10 +274,10 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                   </div>
                   
                   <div className="space-y-1">
-                    <div className={`text-2xl font-bold font-argesta ${stat.color} transition-colors`}>
+                    <div className={`text-2xl font-bold  ${stat.color} transition-colors`}>
                       {stat.value}{stat.suffix}
                     </div>
-                    <div className="text-xs text-white/60 font-argesta">
+                    <div className="text-xs text-white/60 ">
                       {stat.label}
                     </div>
                   </div>
@@ -292,7 +292,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
               {optimisticCurrentStreak >= 7 && (
                 <div className="flex items-center space-x-3 text-sm">
                   <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                  <span className="text-green-400 font-argesta">
+                  <span className="text-green-400 ">
                     {optimisticCurrentStreak >= 365 
                       ? `${optimisticCurrentStreak} days consecutive! Immortal consistency!` 
                       : optimisticCurrentStreak >= 180 
@@ -312,7 +312,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
               {averageCompletionRate >= 80 && (
                 <div className="flex items-center space-x-3 text-sm">
                   <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                  <span className="text-green-400 font-argesta">
+                  <span className="text-green-400 ">
                     Excellent completion rate! You&apos;re very consistent.
                   </span>
                 </div>
@@ -321,7 +321,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
               {optimisticCurrentStreak < 3 && totalActiveHabits > 0 && (
                 <div className="flex items-center space-x-3 text-sm">
                   <div className="w-2 h-2 bg-white/60 rounded-full" />
-                  <span className="text-white/60 font-argesta">
+                  <span className="text-white/60 ">
                     Keep going! Validate at least one habit every day to build your streak.
                   </span>
                 </div>
@@ -330,7 +330,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
               {optimisticCurrentStreak === 0 && totalActiveHabits > 0 && (
                 <div className="flex items-center space-x-3 text-sm">
                   <div className="w-2 h-2 bg-blue-400 rounded-full" />
-                  <span className="text-blue-400 font-argesta">
+                  <span className="text-blue-400 ">
                     Validate at least one habit today to start your streak!
                   </span>
                 </div>
@@ -340,7 +340,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
               {willContinueStreak && optimisticCurrentStreak > 0 && (
                 <div className="flex items-center space-x-3 text-sm">
                   <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                  <span className="text-green-400 font-argesta">
+                  <span className="text-green-400 ">
                     ✅ {todayCompletedHabits} validated - Your streak continues!
                   </span>
                 </div>
@@ -350,7 +350,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
               {currentRank.name === "IMMORTAL" && (
                 <div className="flex items-center space-x-3 text-sm">
                   <Sparkles className="w-4 h-4 text-pink-400" />
-                  <span className="text-pink-400 font-argesta">
+                  <span className="text-pink-400 ">
                     You&apos;re an immortal legend! Your discipline transcends time.
                   </span>
                 </div>
@@ -359,7 +359,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
               {currentRank.name === "GRANDMASTER" && (
                 <div className="flex items-center space-x-3 text-sm">
                   <Shield className="w-4 h-4 text-red-400" />
-                  <span className="text-red-400 font-argesta">
+                  <span className="text-red-400 ">
                     Grandmaster status! You&apos;re a master of life and productivity.
                   </span>
                 </div>
@@ -368,7 +368,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
               {currentRank.name === "MASTER" && (
                 <div className="flex items-center space-x-3 text-sm">
                   <Zap className="w-4 h-4 text-orange-400" />
-                  <span className="text-orange-400 font-argesta">
+                  <span className="text-orange-400 ">
                     Master level achieved! Your consistency is legendary.
                   </span>
                 </div>
@@ -377,7 +377,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
               {currentRank.name === "LEGEND" && (
                 <div className="flex items-center space-x-3 text-sm">
                   <Crown className="w-4 h-4 text-yellow-400" />
-                  <span className="text-yellow-400 font-argesta">
+                  <span className="text-yellow-400 ">
                     You&apos;re a true legend! Your discipline is unmatched.
                   </span>
                 </div>
@@ -386,7 +386,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
               {currentRank.name === "EXPERT" && (
                 <div className="flex items-center space-x-3 text-sm">
                   <Star className="w-4 h-4 text-purple-400" />
-                  <span className="text-purple-400 font-argesta">
+                  <span className="text-purple-400 ">
                     Expert level achieved! You&apos;re mastering your habits.
                   </span>
                 </div>
@@ -395,7 +395,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
               {currentRank.name === "CHAMPION" && (
                 <div className="flex items-center space-x-3 text-sm">
                   <Trophy className="w-4 h-4 text-green-400" />
-                  <span className="text-green-400 font-argesta">
+                  <span className="text-green-400 ">
                     Champion status! You&apos;re building lasting habits.
                   </span>
                 </div>
@@ -418,7 +418,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
             <div className="p-6">
               {/* Header */}
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold font-argesta">
+                <h2 className="text-2xl font-bold ">
                   RANK SYSTEM
                 </h2>
                 <button
@@ -433,7 +433,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
               <div className={`${currentRank.bgColor} border ${currentRank.borderColor} rounded-xl p-4 mb-6`}>
                 <div className="flex items-center space-x-3 mb-3">
                   <currentRank.icon className={`w-6 h-6 ${currentRank.color}`} />
-                  <h3 className={`text-lg font-bold font-argesta ${currentRank.color}`}>
+                  <h3 className={`text-lg font-bold  ${currentRank.color}`}>
                     YOUR CURRENT RANK: {currentRank.name}
                   </h3>
                 </div>
@@ -443,7 +443,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2 text-sm">
                     <span className="text-white/60">Discord Role:</span>
-                    <span className={`font-argesta ${currentRank.color}`}>
+                    <span className={` ${currentRank.color}`}>
                       {currentRank.discordRole}
                     </span>
                   </div>
@@ -464,7 +464,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
               {/* Progress to Next Rank */}
               {nextRank && (
                 <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-6">
-                  <h3 className="text-lg font-bold font-argesta mb-3">
+                  <h3 className="text-lg font-bold  mb-3">
                     PROCHAIN RANK: {nextRank.name}
                   </h3>
                   <div className="space-y-3">
@@ -494,7 +494,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
 
               {/* All Ranks */}
               <div>
-                <h3 className="text-lg font-bold font-argesta mb-4">
+                <h3 className="text-lg font-bold  mb-4">
                   ALL RANKS
                 </h3>
                                  <div className="space-y-3">
@@ -517,7 +517,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center space-x-3">
                             <RankIcon className={`w-5 h-5 ${rank.color}`} />
-                            <span className={`font-argesta font-medium ${rank.color}`}>
+                            <span className={` font-medium ${rank.color}`}>
                               {rank.name}
                             </span>
                             {isCurrentRank && (

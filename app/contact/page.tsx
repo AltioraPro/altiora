@@ -126,7 +126,7 @@ export default function ContactPage() {
               <div className="absolute -top-8 -left-8 w-16 h-16 border border-white/20 rounded-full animate-pulse" />
               <div className="absolute -top-4 -left-4 w-8 h-8 bg-white/10 rotate-45" />
               
-              <h1 className="text-[8vw] lg:text-[6vw] leading-none font-bold font-argesta bg-gradient-to-b from-white via-white to-gray-400 bg-clip-text text-transparent mb-8 text-right">
+              <h1 className="text-[8vw] lg:text-[6vw] leading-none font-bold  bg-gradient-to-b from-white via-white to-gray-400 bg-clip-text text-transparent mb-8 text-right">
                 CONTACT<br />
                   <span className="relative inline-block text-white">
                   <span className="absolute -left-96 top-1/2 transform -translate-y-1/2 w-96 h-px bg-gradient-to-r from-transparent to-white/60"></span>
@@ -162,7 +162,7 @@ export default function ContactPage() {
                     onChange={handleInputChange}
                     onFocus={() => setFocusedField('fullName')}
                     onBlur={() => setFocusedField(null)}
-                    className={`w-full pl-10 pr-3 py-3 bg-transparent border-b-2 transition-all duration-300 focus:outline-none font-argesta text-sm ${
+                    className={`w-full pl-10 pr-3 py-3 bg-transparent border-b-2 transition-all duration-300 focus:outline-none  text-sm ${
                       focusedField === 'fullName' 
                         ? 'border-white text-white' 
                         : 'border-white/20 text-white/80'
@@ -190,7 +190,7 @@ export default function ContactPage() {
                       onChange={handleInputChange}
                       onFocus={() => setFocusedField('email')}
                       onBlur={() => setFocusedField(null)}
-                      className={`w-full pl-10 pr-3 py-3 bg-transparent border-b-2 transition-all duration-300 focus:outline-none font-argesta text-sm ${
+                      className={`w-full pl-10 pr-3 py-3 bg-transparent border-b-2 transition-all duration-300 focus:outline-none  text-sm ${
                         focusedField === 'email' 
                           ? 'border-white text-white' 
                           : 'border-white/20 text-white/80'
@@ -217,7 +217,7 @@ export default function ContactPage() {
                       onChange={handleInputChange}
                       onFocus={() => setFocusedField('phone')}
                       onBlur={() => setFocusedField(null)}
-                      className={`w-full pl-10 pr-3 py-3 bg-transparent border-b-2 transition-all duration-300 focus:outline-none font-argesta text-sm ${
+                      className={`w-full pl-10 pr-3 py-3 bg-transparent border-b-2 transition-all duration-300 focus:outline-none  text-sm ${
                         focusedField === 'phone' 
                           ? 'border-white text-white' 
                           : 'border-white/20 text-white/80'
@@ -244,7 +244,7 @@ export default function ContactPage() {
                     onFocus={() => setFocusedField('message')}
                     onBlur={() => setFocusedField(null)}
                     rows={4}
-                    className={`w-full pl-10 pr-3 py-3 bg-transparent border-2 rounded-lg transition-all duration-300 focus:outline-none font-argesta resize-none text-sm ${
+                    className={`w-full pl-10 pr-3 py-3 bg-transparent border-2 rounded-lg transition-all duration-300 focus:outline-none  resize-none text-sm ${
                       focusedField === 'message' 
                         ? 'border-white text-white' 
                         : 'border-white/20 text-white/80'
@@ -277,7 +277,7 @@ export default function ContactPage() {
                         <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
                         <div className="absolute inset-0 w-6 h-6 border border-white/10 rounded-full animate-pulse" />
                       </div>
-                      <span className="font-argesta tracking-[0.2em] text-white/90 transition-all duration-300 text-base">
+                      <span className=" tracking-[0.2em] text-white/90 transition-all duration-300 text-base">
                         SENDING...
                       </span>
                     </>
@@ -289,7 +289,7 @@ export default function ContactPage() {
                           <Send className="w-6 h-6 text-white animate-pulse" />
                         </div>
                       </div>
-                      <span className="font-argesta tracking-[0.2em] text-white transition-all duration-300 text-base group-hover:tracking-[0.3em]">
+                      <span className=" tracking-[0.2em] text-white transition-all duration-300 text-base group-hover:tracking-[0.3em]">
                         SEND MESSAGE
                       </span>
                       <div className="w-2 h-2 bg-white/0 group-hover:bg-white/60 transition-all duration-300 transform group-hover:scale-100 scale-0 rounded-full" />

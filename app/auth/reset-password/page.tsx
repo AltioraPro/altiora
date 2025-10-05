@@ -115,7 +115,7 @@ function ResetPasswordContent() {
 
             {/* Success message */}
             <div className="mb-8">
-              <h1 className="text-2xl font-bold text-white mb-4 font-argesta">
+              <h1 className="text-2xl font-bold text-white mb-4">
                 Password Reset Successful
               </h1>
               <p className="text-gray-400">
@@ -133,7 +133,7 @@ function ResetPasswordContent() {
               <div className="absolute inset-0 bg-white/10 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
               
               <div className="relative flex items-center justify-center space-x-3">
-                <span className="font-argesta tracking-widest">SIGN IN</span>
+                <span className="tracking-widest">SIGN IN</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
               </div>
             </Link>
@@ -169,7 +169,7 @@ function ResetPasswordContent() {
             </h1>
             
             <div className="space-y-4 text-gray-300">
-              <p className="text-xl font-argesta">
+              <p className="text-xl">
                 Create a new password.
               </p>
               <p className="text-base opacity-80">
@@ -178,9 +178,9 @@ function ResetPasswordContent() {
             </div>
 
             {/* Decorative line */}
-            <div className="mt-12 flex items-center space-x-4">
+            <div className="mt-12 flex items-center space-x-4">xxc
               <div className="w-20 h-px bg-gradient-to-r from-white to-transparent" />
-              <span className="text-xs text-white/60 font-argesta tracking-widest">
+              <span className="text-xs text-white/60 tracking-widest">
                 RESET
               </span>
               <div className="w-20 h-px bg-gradient-to-l from-white to-transparent" />
@@ -284,11 +284,11 @@ function ResetPasswordContent() {
                   {isSubmitting || isLoading ? (
                     <>
                       <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                      <span className="font-argesta tracking-widest">RESETTING...</span>
+                      <span className="tracking-widest">RESETTING...</span>
                     </>
                   ) : (
                     <>
-                      <span className="font-argesta tracking-widest">RESET PASSWORD</span>
+                      <span className="tracking-widest">RESET PASSWORD</span>
                       <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                     </>
                   )}

@@ -77,22 +77,25 @@ import { Badge } from "@/components/ui/badge";
             </button>
 
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <h4 className={`text-sm font-medium truncate ${goal.isCompleted ? 'line-through text-green-400/60' : 'text-white'}`}>
-                  {goal.title}
-                </h4>
+              <h4 
+                className={`text-sm font-medium break-words line-clamp-2 mb-2 ${goal.isCompleted ? 'line-through text-green-400/60' : 'text-white'}`}
+                title={goal.title}
+              >
+                {goal.title}
+              </h4>
+              <div className="flex items-center gap-2 flex-wrap">
                 <Badge className={`text-xs ${getStatusColor()}`}>
                   {goal.isCompleted ? 'Done' : isOverdue ? 'Late' : 'Active'}
                 </Badge>
+                {goal.deadline && (
+                  <div className="flex items-center gap-1">
+                    <Calendar className="w-3 h-3 text-white/40" />
+                    <span className="text-xs text-white/40">
+                      {new Date(goal.deadline).toLocaleDateString()}
+                    </span>
+                  </div>
+                )}
               </div>
-              {goal.deadline && (
-                <div className="flex items-center gap-1">
-                  <Calendar className="w-3 h-3 text-white/40" />
-                  <span className="text-xs text-white/40">
-                    {new Date(goal.deadline).toLocaleDateString()}
-                  </span>
-                </div>
-              )}
             </div>
           </div>
 
