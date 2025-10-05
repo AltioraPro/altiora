@@ -42,6 +42,8 @@ export async function syncUser({
         name: input.name || input.email.split('@')[0],
         image: input.image,
         emailVerified: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       const [createdUser] = await db

@@ -12,7 +12,7 @@ export function ActivityStats() {
         {/* General Stats Skeleton */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="p-6 bg-black/20 rounded-lg border border-white/10 animate-pulse">
+            <div key={i} className="p-6 bg-black/20 rounded-lg animate-pulse">
               <div className="h-6 bg-white/10 rounded mb-3" />
               <div className="h-8 bg-white/10 rounded mb-2" />
               <div className="h-4 bg-white/10 rounded" />
@@ -21,8 +21,8 @@ export function ActivityStats() {
         </div>
         
         {/* Pomodoro Section Skeleton */}
-        <div className="bg-black/40 border border-white/20 rounded-xl p-6 animate-pulse">
-          <div className="flex items-center space-x-3 mb-6">
+        <div className="bg-black/40 border border-white/20 rounded-xl animate-pulse">
+          <div className="flex items-center mb-6">
             <div className="w-10 h-10 bg-white/10 rounded-lg" />
             <div className="flex-1">
               <div className="h-5 bg-white/10 rounded w-32 mb-2" />

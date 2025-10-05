@@ -1,7 +1,7 @@
-import { eq, and, count, sql } from "drizzle-orm";
+import { eq, and, count, sql, gte } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
-import { users, habits, trades, discordPomodoroSessions } from "@/server/db/schema";
+import { users, habits, trades, discordPomodoroSessions, habitCompletions } from "@/server/db/schema";
 import { type AuthQueryContext } from "../../auth/queries/types";
 
 export async function getUserStats({ db, session }: AuthQueryContext) {
