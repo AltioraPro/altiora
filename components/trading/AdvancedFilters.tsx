@@ -114,16 +114,14 @@ return (
                 onClick={() => setIsExpanded(!isExpanded)}
                 variant="outline"
                 size="sm"
-                className={`rounded-lg transition-all duration-200 ${
-                    isExpanded 
-                        ? 'bg-white text-black hover:bg-white/90' 
-                        : 'bg-black/50 border-white/20 text-white/70 hover:bg-white/10'
+                className={`h-8 px-3 border-white/15 bg-black/40 text-white/80 hover:bg-white/10 hover:text-white hover:border-white/25 transition-all duration-200 ${
+                    isExpanded ? 'bg-white/15 border-white/25 text-white' : ''
                 }`}
             >
-                <Filter className="h-4 w-4 mr-2" />
-                Filters
+                <Filter className="h-3 w-3 mr-1.5" />
+                <span className="text-xs font-medium">Filters</span>
                 {totalFilters > 0 && (
-                    <span className="ml-1 px-1.5 py-0.5 bg-white/20 text-xs rounded-full">
+                    <span className="ml-1.5 px-1.5 py-0.5 bg-white/25 text-xs rounded-full text-white">
                         {totalFilters}
                     </span>
                 )}
@@ -139,7 +137,7 @@ return (
                     variant="ghost"
                     size="sm"
                     onClick={handleResetAll}
-                    className="h-8 w-8 p-0 text-white/60 hover:text-white hover:bg-white/10 rounded-lg"
+                    className="h-8 w-8 p-0 text-white/60 hover:text-white hover:bg-white/10 rounded-md"
                 >
                     <RotateCcw className="h-3 w-3" />
                 </Button>

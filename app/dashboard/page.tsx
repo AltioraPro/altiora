@@ -170,13 +170,13 @@ function OnboardingContent() {
           <p className="text-white/50 text-base">Create your first journal, habit, or goal to start building your knowledge base.</p>
         </div>
 
-        <div className="mb-12">
-          <div className="flex items-center gap-2 mb-6">
-            <Sparkles className="w-4 h-4 text-white/40" />
-            <h2 className="text-sm font-medium text-white/60 uppercase tracking-wider">Actions</h2>
+        <div className="mb-16">
+          <div className="flex items-center gap-2 mb-8">
+            <Sparkles className="w-5 h-5 text-white/50" />
+            <h2 className="text-lg font-semibold text-white/90">Get Started</h2>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Create Journal Card */}
             <SpotlightCard className="p-0 border border-white/10 group">
               <div className="p-6 h-full flex flex-col">
@@ -235,24 +235,24 @@ function OnboardingContent() {
                     </div>
                   </div>
                 </div>
-                <h3 className="text-white font-semibold text-lg mb-2">Create a Journal</h3>
-                <p className="text-white/50 text-sm mb-6 flex-1">
+                <h3 className="text-white font-semibold text-lg mb-3">Create a Journal</h3>
+                <p className="text-white/60 text-sm mb-6 flex-1 leading-relaxed">
                   Create your first trading journal to start building your performance knowledge base.
                 </p>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col gap-3">
                   <Button 
                     onClick={() => setIsCreateJournalModalOpen(true)}
-                    className="bg-white text-black hover:bg-white/90 text-sm px-4 py-2 h-auto"
+                    className="bg-white text-black hover:bg-gray-100 font-medium shadow-lg"
                     disabled={isGeneratingJournal}
                   >
-                    + Create
+                    + Create Journal
                   </Button>
                   <button 
                     onClick={handleGenerateJournalExample}
                     disabled={isGeneratingJournal}
-                    className="text-white/40 hover:text-white/60 text-sm flex items-center gap-1 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="text-white/50 hover:text-white/70 text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed py-2"
                   >
-                    <Sparkles className="w-3 h-3" />
+                    <Sparkles className="w-4 h-4" />
                     {isGeneratingJournal ? 'Generating...' : 'Generate example'}
                   </button>
                 </div>
@@ -318,24 +318,24 @@ function OnboardingContent() {
                     </div>
                   </div>
                 </div>
-                <h3 className="text-white font-semibold text-lg mb-2">Create a Goal</h3>
-                <p className="text-white/50 text-sm mb-6 flex-1">
+                <h3 className="text-white font-semibold text-lg mb-3">Create a Goal</h3>
+                <p className="text-white/60 text-sm mb-6 flex-1 leading-relaxed">
                   Create your first goal to start building your objectives knowledge base.
                 </p>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col gap-3">
                   <Button 
                     onClick={() => setIsCreateGoalModalOpen(true)}
-                    className="bg-white text-black hover:bg-white/90 text-sm px-4 py-2 h-auto"
+                    className="bg-white text-black hover:bg-gray-100 font-medium shadow-lg"
                     disabled={isGeneratingGoal}
                   >
-                    + Create
+                    + Create Goal
                   </Button>
                   <button 
                     onClick={handleGenerateGoalExample}
                     disabled={isGeneratingGoal}
-                    className="text-white/40 hover:text-white/60 text-sm flex items-center gap-1 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="text-white/50 hover:text-white/70 text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed py-2"
                   >
-                    <Sparkles className="w-3 h-3" />
+                    <Sparkles className="w-4 h-4" />
                     {isGeneratingGoal ? 'Generating...' : 'Generate example'}
                   </button>
                 </div>
@@ -345,12 +345,16 @@ function OnboardingContent() {
         </div>
 
         {/* Discord Connection */}
-        <p className="text-center text-white/40 text-sm">
-          <Link href="/profile" className="hover:text-white/60 transition-colors underline decoration-white/20 hover:decoration-white/40">
-            Connect your Discord account
+        <div className="text-center">
+          <p className="text-white/50 text-sm mb-2">
+            Connect your Discord account for notifications and reminders
+          </p>
+          <Link href="/profile">
+            <Button variant="outline" size="sm" className="border-white/20 bg-transparent text-white/70 hover:bg-white/10 hover:text-white hover:border-white/30">
+              Connect Discord
+            </Button>
           </Link>
-          {" "}for notifications and reminders
-        </p>
+        </div>
       </div>
 
       {/* Modals */}
@@ -520,24 +524,24 @@ function HabitCard({ isGenerating, onGenerateExample }: { isGenerating: boolean;
             </div>
           </div>
         </div>
-        <h3 className="text-white font-semibold text-lg mb-2">Create a Habit</h3>
-        <p className="text-white/50 text-sm mb-6 flex-1">
+        <h3 className="text-white font-semibold text-lg mb-3">Create a Habit</h3>
+        <p className="text-white/60 text-sm mb-6 flex-1 leading-relaxed">
           Create your first habit to start building your daily routine knowledge base.
         </p>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-3">
           <Button 
             onClick={openCreateModal}
-            className="bg-white text-black hover:bg-white/90 text-sm px-4 py-2 h-auto"
+            className="bg-white text-black hover:bg-gray-100 font-medium shadow-lg"
             disabled={isGenerating}
           >
-            + Create
+            + Create Habit
           </Button>
           <button 
             onClick={onGenerateExample}
             disabled={isGenerating}
-            className="text-white/40 hover:text-white/60 text-sm flex items-center gap-1 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="text-white/50 hover:text-white/70 text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed py-2"
           >
-            <Sparkles className="w-3 h-3" />
+            <Sparkles className="w-4 h-4" />
             {isGenerating ? 'Generating...' : 'Generate example'}
           </button>
         </div>
@@ -617,60 +621,63 @@ export default function GlobalDashboardPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-        <div className="flex items-center space-x-4">
-          <Link className="text-pure-black" href="/trading/journals">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Journals
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-3xl font-argesta text-white font-bold">Global Dashboard</h1>
-            <p className="text-white/60">Overview of all your statistics. Select a journal to filter.</p>
-          </div>
+      {/* Header Navigation */}
+      <div className="flex items-center space-x-4 mb-6">
+        <Link href="/trading/journals">
+          <Button variant="ghost" size="sm" className="text-white/70 hover:text-white hover:bg-white/10">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Journals
+          </Button>
+        </Link>
+        <div className="flex-1">
+          <h1 className="text-3xl font-argesta text-white font-bold">Global Dashboard</h1>
+          <p className="text-white/60">
+            Overview of all your statistics. Select journals to filter.
+          </p>
         </div>
+      </div>
 
-        <div className="flex items-center gap-3">
-          <div className="w-64 relative" ref={dropdownRef}>
+      {/* Filter Section */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="w-full flex items-center justify-between px-3 py-2 border border-white/20 bg-black/20 text-white rounded-md hover:bg-black/30 transition-colors"
+              className="flex items-center justify-between px-4 py-2 border border-white/15 bg-black/40 text-white/80 rounded-lg hover:bg-white/10 hover:text-white hover:border-white/25 transition-all duration-200 min-w-[200px]"
             >
-              <span>
+              <span className="text-sm font-medium">
                 {selectedJournalIds.length === 0 && "All journals"}
                 {selectedJournalIds.length === 1 && journals?.find(j => j.id === selectedJournalIds[0])?.name}
                 {selectedJournalIds.length > 1 && `${selectedJournalIds.length} journals selected`}
               </span>
-              <ChevronDown className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
             
             {isDropdownOpen && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-black/90 border border-white/20 rounded-md shadow-lg z-50 max-h-60 overflow-y-auto">
-                <div className="p-2">
+              <div className="absolute top-full left-0 right-0 mt-2 bg-black/90 border border-white/10 rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto backdrop-blur-sm">
+                <div className="p-3 space-y-1">
                   <div
                     onClick={handleSelectAll}
-                    className="flex items-center space-x-2 p-2 hover:bg-white/10 rounded cursor-pointer"
+                    className="flex items-center space-x-3 p-2 hover:bg-white/10 rounded-md cursor-pointer transition-colors"
                   >
                     <Checkbox
                       checked={selectedJournalIds.length === journals?.length}
                       className="bg-black/50 border-white/30 data-[state=checked]:bg-white data-[state=checked]:text-black"
                     />
-                    <span className="text-white">All journals</span>
+                    <span className="text-white text-sm font-medium">All journals</span>
                   </div>
                   
                   {journals?.map((journal) => (
                     <div
                       key={journal.id}
                       onClick={() => handleJournalToggle(journal.id)}
-                      className="flex items-center space-x-2 p-2 hover:bg-white/10 rounded cursor-pointer"
+                      className="flex items-center space-x-3 p-2 hover:bg-white/10 rounded-md cursor-pointer transition-colors"
                     >
                       <Checkbox
                         checked={selectedJournalIds.includes(journal.id)}
                         className="bg-black/50 border-white/30 data-[state=checked]:bg-white data-[state=checked]:text-black"
                       />
-                      <span className="text-white">{journal.name}</span>
+                      <span className="text-white text-sm">{journal.name}</span>
                     </div>
                   ))}
                 </div>
@@ -679,8 +686,10 @@ export default function GlobalDashboardPage() {
           </div>
           
           {selectedJournalIds.length > 0 && (
-            <div className="text-white/60 text-sm">
-              {selectedJournalIds.length} journal{selectedJournalIds.length > 1 ? 's' : ''} selected
+            <div className="px-3 py-1 bg-white/10 rounded-lg border border-white/20">
+              <span className="text-white/80 text-sm font-medium">
+                {selectedJournalIds.length} journal{selectedJournalIds.length > 1 ? 's' : ''} selected
+              </span>
             </div>
           )}
         </div>
