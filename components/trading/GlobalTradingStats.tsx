@@ -1,7 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, Target, BarChart3, Activity, CheckCircle, XCircle, MinusCircle } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 interface GlobalTradingStatsProps {
   stats: {
@@ -29,124 +28,83 @@ export function GlobalTradingStats({ stats }: GlobalTradingStatsProps) {
 
   return (
     <div className="space-y-6">
-      {/* All cards across 2 rows (5 columns from lg) */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        <Card className="border border-white/10 bg-black/20 p-4">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-0 pt-0">
-            <CardTitle className="text-sm text-white/80">Total Performance</CardTitle>
-            <TrendingUp className="h-4 w-4 text-white/60" />
-          </CardHeader>
-          <CardContent className="px-0 pb-0">
-            <div className={`text-2xl font-bold ${totalPnL >= 0 ? "text-green-400" : "text-red-400"}`}>
+      {/* Main Metrics */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="border border-white/10 bg-black/20 p-5 hover:bg-black/30 transition-colors">
+          <div className="space-y-2">
+            <div className="text-sm text-white/70">Performance</div>
+            <div className="text-2xl font-bold text-white">
               {totalPnL >= 0 ? "+" : ""}
-              {totalPnL.toFixed(2)}%
+              {totalPnL.toFixed(1)}%
             </div>
-            <p className="text-sm text-white/60">Cumulative PnL</p>
-          </CardContent>
+          </div>
         </Card>
 
-        <Card className="border border-white/10 bg-black/20 p-4">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-0 pt-0">
-            <CardTitle className="text-sm text-white/80">Win Rate</CardTitle>
-            <Target className="h-4 w-4 text-white/60" />
-          </CardHeader>
-          <CardContent className="px-0 pb-0">
+        <Card className="border border-white/10 bg-black/20 p-5 hover:bg-black/30 transition-colors">
+          <div className="space-y-2">
+            <div className="text-sm text-white/70">Win Rate</div>
             <div className="text-2xl font-bold text-white">{stats.winRate.toFixed(1)}%</div>
-            <p className="text-sm text-white/60">{stats.winningTrades}/{stats.totalTrades} trades</p>
-          </CardContent>
+          </div>
         </Card>
 
-        <Card className="border border-white/10 bg-black/20 p-4">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-0 pt-0">
-            <CardTitle className="text-sm text-white/80">Total Trades</CardTitle>
-            <BarChart3 className="h-4 w-4 text-white/60" />
-          </CardHeader>
-          <CardContent className="px-0 pb-0">
+        <Card className="border border-white/10 bg-black/20 p-5 hover:bg-black/30 transition-colors">
+          <div className="space-y-2">
+            <div className="text-sm text-white/70">Trades</div>
             <div className="text-2xl font-bold text-white">{stats.totalTrades}</div>
-            <p className="text-sm text-white/60">{stats.closedTrades} closed</p>
-          </CardContent>
+          </div>
         </Card>
 
-        <Card className="border border-white/10 bg-black/20 p-4">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-0 pt-0">
-            <CardTitle className="text-sm text-white/80">Avg PnL/Trade</CardTitle>
-            <Activity className="h-4 w-4 text-white/60" />
-          </CardHeader>
-          <CardContent className="px-0 pb-0">
-            <div className="text-2xl font-bold text-white">{avgPnL.toFixed(2)}%</div>
-            <p className="text-sm text-white/60">Average per trade</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border border-white/10 bg-black/20 p-4">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-0 pt-0">
-            <CardTitle className="text-sm text-white/80">Profit Factor</CardTitle>
-            <Activity className="h-4 w-4 text-white/60" />
-          </CardHeader>
-          <CardContent className="px-0 pb-0">
+        <Card className="border border-white/10 bg-black/20 p-5 hover:bg-black/30 transition-colors">
+          <div className="space-y-2">
+            <div className="text-sm text-white/70">Profit Factor</div>
             <div className="text-2xl font-bold text-white">{profitFactor.toFixed(2)}</div>
-            <p className="text-sm text-white/60">Win/loss ratio</p>
-          </CardContent>
+          </div>
+        </Card>
+      </div>
+
+      {/* Secondary Metrics */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <Card className="border border-white/10 bg-black/20 p-4 hover:bg-black/30 transition-colors">
+          <div className="space-y-1">
+            <div className="text-xs text-white/60">Avg Gain</div>
+            <div className="text-lg font-semibold text-white">{avgWin.toFixed(1)}%</div>
+          </div>
         </Card>
 
-        {/* Ligne 2 */}
-        <Card className="border border-white/10 bg-black/20 p-4">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-0 pt-0">
-            <CardTitle className="text-sm text-white/80">Average Gain</CardTitle>
-            <TrendingUp className="h-4 w-4 text-green-400" />
-          </CardHeader>
-          <CardContent className="px-0 pb-0">
-            <div className="text-2xl font-bold text-green-400">{avgWin.toFixed(2)}%</div>
-            <p className="text-sm text-white/60">Per winning trade</p>
-          </CardContent>
+        <Card className="border border-white/10 bg-black/20 p-4 hover:bg-black/30 transition-colors">
+          <div className="space-y-1">
+            <div className="text-xs text-white/60">Avg Loss</div>
+            <div className="text-lg font-semibold text-white">{avgLoss.toFixed(1)}%</div>
+          </div>
         </Card>
 
-        <Card className="border border-white/10 bg-black/20 p-4">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-0 pt-0">
-            <CardTitle className="text-sm text-white/80">Average Loss</CardTitle>
-            <XCircle className="h-4 w-4 text-red-400" />
-          </CardHeader>
-          <CardContent className="px-0 pb-0">
-            <div className="text-2xl font-bold text-red-400">{avgLoss.toFixed(2)}%</div>
-            <p className="text-sm text-white/60">Per losing trade</p>
-          </CardContent>
+        <Card className="border border-white/10 bg-black/20 p-4 hover:bg-black/30 transition-colors">
+          <div className="space-y-1">
+            <div className="text-xs text-white/60">Avg P&L</div>
+            <div className="text-lg font-semibold text-white">{avgPnL.toFixed(1)}%</div>
+          </div>
         </Card>
+      </div>
 
-        <Card className="border border-white/10 bg-black/20 p-4">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-0 pt-0">
-            <CardTitle className="text-sm text-white/80">Winners (TP)</CardTitle>
-            <CheckCircle className="h-4 w-4 text-green-400" />
-          </CardHeader>
-          <CardContent className="px-0 pb-0">
-            <div className="text-2xl font-bold text-green-400">{stats.tpTrades}</div>
-            <p className="text-sm text-white/60">TP trades</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border border-white/10 bg-black/20 p-4">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-0 pt-0">
-            <CardTitle className="text-sm text-white/80">Break Even (BE)</CardTitle>
-            <MinusCircle className="h-4 w-4 text-white/60" />
-          </CardHeader>
-          <CardContent className="px-0 pb-0">
-            <div className="text-2xl font-bold text-white">{stats.beTrades}</div>
-            <p className="text-sm text-white/60">BE trades</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border border-white/10 bg-black/20 p-4">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-0 pt-0">
-            <CardTitle className="text-sm text-white/80">Losers (SL)</CardTitle>
-            <XCircle className="h-4 w-4 text-red-400" />
-          </CardHeader>
-          <CardContent className="px-0 pb-0">
-            <div className="text-2xl font-bold text-red-400">{stats.slTrades}</div>
-            <p className="text-sm text-white/60">SL trades</p>
-          </CardContent>
+      {/* Exit Strategy */}
+      <div className="flex justify-center">
+        <Card className="border border-white/10 bg-black/20 p-2 hover:bg-black/30 transition-colors w-1/5 mx-auto flex justify-center items-center">
+          <div className="flex items-center gap-4">
+            <div className="text-center">
+              <div className="text-xs text-green-400/60">TP</div>
+              <div className="text-xs font-medium text-green-400/80">{stats.tpTrades}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-xs text-white/40">BE</div>
+              <div className="text-xs font-medium text-white/60">{stats.beTrades}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-xs text-red-400/60">SL</div>
+              <div className="text-xs font-medium text-red-400/80">{stats.slTrades}</div>
+            </div>
+          </div>
         </Card>
       </div>
     </div>
   );
 }
-
-

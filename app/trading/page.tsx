@@ -282,46 +282,54 @@ export default function TradingPage() {
       <Suspense fallback={null}>
         <JournalParamSync onFound={handleJournalFound} />
       </Suspense>
-      <div className="flex justify-between items-center mb-8">
-        <div className="flex items-center space-x-4">
-          <Link className="text-pure-black" href="/trading/journals">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Journals
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-3xl font-argesta text-white font-bold">
-              {selectedJournal ? selectedJournal.name : "Trading Dashboard"}
-            </h1>
-            <p className="text-white/60">
-              {selectedJournal ? selectedJournal.description || "Performance analytics & trade management" : "Performance analytics & trade management"}
-            </p>
+      {/* Header Navigation */}
+      <div className="flex items-center space-x-4 mb-6">
+        <Link href="/trading/journals">
+          <Button variant="ghost" size="sm" className="text-white/70 hover:text-white hover:bg-white/10">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Journals
+          </Button>
+        </Link>
+        <div className="flex-1">
+          <h1 className="text-3xl font-argesta text-white font-bold">
+            {selectedJournal ? selectedJournal.name : "Trading Dashboard"}
+          </h1>
+          <p className="text-white/60">
+            {selectedJournal ? selectedJournal.description || "Performance analytics & trade management" : "Performance analytics & trade management"}
+          </p>
+        </div>
+      </div>
+
+      {/* Filters and Actions Bar */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
+        {/* Filters Section */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="flex items-center gap-4">
+            <DateFilter onFilterChange={setDateFilter} />
+            {selectedJournalId && (
+              <AdvancedFilters 
+                journalId={selectedJournalId}
+                onFiltersChange={setAdvancedFilters}
+              />
+            )}
           </div>
         </div>
         
-        <div className="flex items-center space-x-4">
-          <DateFilter onFilterChange={setDateFilter} />
-          {selectedJournalId && (
-            <AdvancedFilters 
-              journalId={selectedJournalId}
-              onFiltersChange={setAdvancedFilters}
-            />
-          )}
-        </div>
-        
-                <div className="flex items-center space-x-2">
+        {/* Actions Section */}
+        <div className="flex items-center gap-3">
           <Button 
             onClick={() => setIsImportModalOpen(true)}
             variant="outline"
-            className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white"
+            size="sm"
+            className="border-white/20 bg-transparent text-white/80 hover:bg-white/10 hover:text-white hover:border-white/30"
           >
             <Upload className="w-4 h-4 mr-2" />
             Import Excel
           </Button>
           <Button 
             onClick={() => setIsCreateModalOpen(true)}
-            className="bg-white text-black hover:bg-gray-200"
+            size="sm"
+            className="bg-white text-black hover:bg-gray-100 font-medium shadow-lg"
           >
             <Plus className="w-4 h-4 mr-2" />
             New Trade
@@ -338,8 +346,8 @@ export default function TradingPage() {
       )}
 
       {selectedJournalId && (
-        <div className="mb-6">
-          <div className="flex space-x-1 bg-black/20 p-1 rounded-lg border border-white/10">
+        <div className="mb-8">
+          <div className="flex space-x-1 bg-black/20 p-1.5 rounded-xl border border-white/10">
             {[
               { id: 'trades', label: 'Trades', icon: BarChart3 },
               { id: 'assets', label: 'Assets', icon: Plus },
@@ -349,10 +357,10 @@ export default function TradingPage() {
               <button
                 key={id}
                 onClick={() => setActiveTab(id as 'trades' | 'assets' | 'sessions' | 'setups')}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`flex items-center space-x-2 px-5 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
                   activeTab === id
-                    ? 'bg-white text-black'
-                    : 'text-white/60 hover:text-white hover:bg-white/10'
+                    ? 'bg-white text-black shadow-sm'
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
                 }`}
               >
                 <Icon className="w-4 h-4" />

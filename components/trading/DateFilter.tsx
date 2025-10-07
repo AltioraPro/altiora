@@ -57,78 +57,83 @@ export function DateFilter({ onFilterChange, className = "" }: DateFilterProps) 
   };
 
   return (
-    <div className={`flex items-center space-x-4 ${className}`}>
+    <div className={`flex flex-col sm:flex-row items-start sm:items-center gap-3 ${className}`}>
+      {/* Filter Label */}
       <div className="flex items-center space-x-2">
-        <Calendar className="h-4 w-6 text-white/60" />
-        <span className="text-white/80 w-32">Filter by period:</span>
+        <Calendar className="h-4 w-4 text-white/60" />
+        <span className="text-white/70 text-sm font-medium">Period:</span>
       </div>
 
-      {filter.view === 'monthly' && (
-        <Select value={filter.month} onValueChange={handleMonthChange}>
-          <SelectTrigger className="w-32 bg-black/50 border-white/20 text-white rounded-lg">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent className="bg-black/90 border-white/20">
-            {months.map((month) => (
-              <SelectItem key={month} value={month} className="text-white hover:bg-white/10">
-                {month}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      )}
+      {/* Date Selectors */}
+      <div className="flex items-center gap-2">
+        {filter.view === 'monthly' && (
+          <Select value={filter.month} onValueChange={handleMonthChange}>
+            <SelectTrigger className="w-28 bg-black/40 border-white/15 text-white rounded-md h-8">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-black/90 border-white/20">
+              {months.map((month) => (
+                <SelectItem key={month} value={month} className="text-white hover:bg-white/10">
+                  {month}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
 
-      {(filter.view === 'monthly' || filter.view === 'yearly') && (
-        <Select value={filter.year} onValueChange={handleYearChange}>
-          <SelectTrigger className="w-20 bg-black/50 border-white/20 text-white rounded-lg">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent className="bg-black/90 border-white/20">
-            {years.map((year) => (
-              <SelectItem key={year} value={year} className="text-white hover:bg-white/10">
-                {year}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      )}
+        {(filter.view === 'monthly' || filter.view === 'yearly') && (
+          <Select value={filter.year} onValueChange={handleYearChange}>
+            <SelectTrigger className="w-16 bg-black/40 border-white/15 text-white rounded-md h-8">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-black/90 border-white/20">
+              {years.map((year) => (
+                <SelectItem key={year} value={year} className="text-white hover:bg-white/10">
+                  {year}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+      </div>
 
-      <div className="flex space-x-1">
+      {/* View Toggle Buttons */}
+      <div className="flex bg-black/30 rounded-lg p-1 border border-white/10">
         <Button
           onClick={() => handleViewChange('monthly')}
-          variant={filter.view === 'monthly' ? 'default' : 'outline'}
+          variant="ghost"
           size="sm"
-          className={`rounded-lg ${
+          className={`h-7 px-3 text-xs rounded-md transition-all ${
             filter.view === 'monthly' 
-              ? 'bg-white text-black hover:bg-white/90' 
-              : 'bg-black/50 border-white/20 text-white/70 hover:bg-white/10'
+              ? 'bg-white/20 text-white shadow-sm' 
+              : 'text-white/60 hover:text-white hover:bg-white/10'
           }`}
         >
-          Monthly View
+          Monthly
         </Button>
         <Button
           onClick={() => handleViewChange('yearly')}
-          variant={filter.view === 'yearly' ? 'default' : 'outline'}
+          variant="ghost"
           size="sm"
-          className={`rounded-lg ${
+          className={`h-7 px-3 text-xs rounded-md transition-all ${
             filter.view === 'yearly' 
-              ? 'bg-white text-black hover:bg-white/90' 
-              : 'bg-black/50 border-white/20 text-white/70 hover:bg-white/10'
+              ? 'bg-white/20 text-white shadow-sm' 
+              : 'text-white/60 hover:text-white hover:bg-white/10'
           }`}
         >
-          Yearly View
+          Yearly
         </Button>
         <Button
           onClick={() => handleViewChange('all')}
-          variant={filter.view === 'all' ? 'default' : 'outline'}
+          variant="ghost"
           size="sm"
-          className={`rounded-lg ${
+          className={`h-7 px-3 text-xs rounded-md transition-all ${
             filter.view === 'all' 
-              ? 'bg-white text-black hover:bg-white/90' 
-              : 'bg-black/50 border-white/20 text-white/70 hover:bg-white/10'
+              ? 'bg-white/20 text-white shadow-sm' 
+              : 'text-white/60 hover:text-white hover:bg-white/10'
           }`}
         >
-          All Trades
+          All
         </Button>
       </div>
     </div>

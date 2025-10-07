@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { X } from "lucide-react";
+import { X, Plus } from "lucide-react";
 
 const createTradeSchema = z.object({
   tradeDate: z.string().min(1, "Date is required"),
@@ -37,6 +37,11 @@ interface CreateTradeModalProps {
 
 export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModalProps) {
   const utils = api.useUtils();
+  const [showQuickCreate, setShowQuickCreate] = useState<{
+    asset: boolean;
+    session: boolean;
+    setup: boolean;
+  }>({ asset: false, session: false, setup: false });
 
   const form = useForm<CreateTradeForm>({
     resolver: zodResolver(createTradeSchema),
@@ -59,9 +64,9 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
     }
   }, [journalId, form]);
 
-  const { data: assets } = api.trading.getAssets.useQuery({ journalId: "" });
-  const { data: sessions } = api.trading.getSessions.useQuery({ journalId: "" });
-  const { data: setups } = api.trading.getSetups.useQuery({ journalId: "" });
+  const { data: assets } = api.trading.getAssets.useQuery({ journalId: journalId || "" });
+  const { data: sessions } = api.trading.getSessions.useQuery({ journalId: journalId || "" });
+  const { data: setups } = api.trading.getSetups.useQuery({ journalId: journalId || "" });
   
   
   const { data: journal } = api.trading.getJournalById.useQuery(
@@ -108,6 +113,79 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
     },
   });
 
+  // Quick create mutations
+  const createAssetMutation = api.trading.createAsset.useMutation({
+    onSuccess: () => {
+      utils.trading.getAssets.invalidate();
+      setShowQuickCreate(prev => ({ ...prev, asset: false }));
+    },
+  });
+
+  const createSessionMutation = api.trading.createSession.useMutation({
+    onSuccess: () => {
+      utils.trading.getSessions.invalidate();
+      setShowQuickCreate(prev => ({ ...prev, session: false }));
+    },
+  });
+
+  const createSetupMutation = api.trading.createSetup.useMutation({
+    onSuccess: () => {
+      utils.trading.getSetups.invalidate();
+      setShowQuickCreate(prev => ({ ...prev, setup: false }));
+    },
+  });
+
+
+  // Quick create handlers
+  const handleQuickCreateAsset = async (name: string, symbol: string) => {
+    if (!journalId || !name.trim() || !symbol.trim()) return;
+    
+    try {
+      const newAsset = await createAssetMutation.mutateAsync({
+        journalId,
+        name: name.trim(),
+        symbol: symbol.trim().toUpperCase(),
+      });
+      
+      // Auto-select the newly created asset
+      form.setValue("symbol", newAsset.symbol);
+    } catch (error) {
+      console.error("Error creating asset:", error);
+    }
+  };
+
+  const handleQuickCreateSession = async (name: string) => {
+    if (!journalId || !name.trim()) return;
+    
+    try {
+      const newSession = await createSessionMutation.mutateAsync({
+        journalId,
+        name: name.trim(),
+        timezone: "UTC"
+      });
+      
+      // Auto-select the newly created session
+      form.setValue("sessionId", newSession.id);
+    } catch (error) {
+      console.error("Error creating session:", error);
+    }
+  };
+
+  const handleQuickCreateSetup = async (name: string) => {
+    if (!journalId || !name.trim()) return;
+    
+    try {
+      const newSetup = await createSetupMutation.mutateAsync({
+        journalId,
+        name: name.trim(),
+      });
+      
+      // Auto-select the newly created setup
+      form.setValue("setupId", newSetup.id);
+    } catch (error) {
+      console.error("Error creating setup:", error);
+    }
+  };
 
   const handleSubmit = async (data: CreateTradeForm) => {
     try {
@@ -169,22 +247,44 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
             </div>
 
              <div>
-               <Label htmlFor="symbol" className="text-white/80">Asset</Label>
-               <Select
-                 value={form.watch("symbol")}
-                 onValueChange={(value) => form.setValue("symbol", value)}
-               >
-                 <SelectTrigger className="bg-black border-white/30 text-white focus:border-white focus:ring-1 focus:ring-white">
-                   <SelectValue placeholder="Select an asset" />
-                 </SelectTrigger>
-                 <SelectContent>
-                   {assets?.map((asset) => (
-                     <SelectItem key={asset.id} value={asset.symbol}>
-                       {asset.name} ({asset.symbol})
-                     </SelectItem>
-                   ))}
-                 </SelectContent>
-               </Select>
+               <div className="flex items-center justify-between mb-2">
+                 <Label htmlFor="symbol" className="text-white/80">Asset</Label>
+                 <Button
+                   type="button"
+                   variant="ghost"
+                   size="sm"
+                   onClick={() => setShowQuickCreate(prev => ({ ...prev, asset: !prev.asset }))}
+                   className="h-6 px-2 text-xs text-white/60 hover:text-white hover:bg-white/10"
+                 >
+                   <Plus className="w-3 h-3 mr-1" />
+                   Quick create
+                 </Button>
+               </div>
+               
+               {showQuickCreate.asset ? (
+                 <QuickCreateAsset
+                   onCreate={handleQuickCreateAsset}
+                   onCancel={() => setShowQuickCreate(prev => ({ ...prev, asset: false }))}
+                   isLoading={createAssetMutation.isPending}
+                 />
+               ) : (
+                 <Select
+                   value={form.watch("symbol")}
+                   onValueChange={(value) => form.setValue("symbol", value)}
+                 >
+                   <SelectTrigger className="bg-black border-white/30 text-white focus:border-white focus:ring-1 focus:ring-white">
+                     <SelectValue placeholder="Select an asset" />
+                   </SelectTrigger>
+                   <SelectContent>
+                     {assets?.map((asset) => (
+                       <SelectItem key={asset.id} value={asset.symbol}>
+                         {asset.name} ({asset.symbol})
+                       </SelectItem>
+                     ))}
+                   </SelectContent>
+                 </Select>
+               )}
+               
                {form.formState.errors.symbol && (
                  <p className="text-red-500 text-sm mt-1">
                    {form.formState.errors.symbol.message}
@@ -193,41 +293,83 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
             </div>
 
             <div>
-              <Label htmlFor="sessionId" className="text-white/80">Session</Label>
-              <Select
-                value={form.watch("sessionId") || ""}
-                onValueChange={(value) => form.setValue("sessionId", value)}
-              >
-                <SelectTrigger className="bg-black/30 border-white/20 text-white">
-                  <SelectValue placeholder="Select a session" />
-                </SelectTrigger>
-                <SelectContent>
-                  {sessions?.map((session) => (
-                    <SelectItem key={session.id} value={session.id}>
-                      {session.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex items-center justify-between mb-2">
+                <Label htmlFor="sessionId" className="text-white/80">Session</Label>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowQuickCreate(prev => ({ ...prev, session: !prev.session }))}
+                  className="h-6 px-2 text-xs text-white/60 hover:text-white hover:bg-white/10"
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  Quick create
+                </Button>
+              </div>
+              
+              {showQuickCreate.session ? (
+                <QuickCreateSession
+                  onCreate={handleQuickCreateSession}
+                  onCancel={() => setShowQuickCreate(prev => ({ ...prev, session: false }))}
+                  isLoading={createSessionMutation.isPending}
+                />
+              ) : (
+                <Select
+                  value={form.watch("sessionId") || ""}
+                  onValueChange={(value) => form.setValue("sessionId", value)}
+                >
+                  <SelectTrigger className="bg-black/30 border-white/20 text-white">
+                    <SelectValue placeholder="Select a session" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sessions?.map((session) => (
+                      <SelectItem key={session.id} value={session.id}>
+                        {session.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
 
             <div>
-              <Label htmlFor="setupId" className="text-white/80">Setup</Label>
-              <Select
-                value={form.watch("setupId") || ""}
-                onValueChange={(value) => form.setValue("setupId", value)}
-              >
-                <SelectTrigger className="bg-black/30 border-white/20 text-white">
-                  <SelectValue placeholder="Select a setup" />
-                </SelectTrigger>
-                <SelectContent>
-                  {setups?.map((setup) => (
-                    <SelectItem key={setup.id} value={setup.id}>
-                      {setup.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex items-center justify-between mb-2">
+                <Label htmlFor="setupId" className="text-white/80">Setup</Label>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowQuickCreate(prev => ({ ...prev, setup: !prev.setup }))}
+                  className="h-6 px-2 text-xs text-white/60 hover:text-white hover:bg-white/10"
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  Quick create
+                </Button>
+              </div>
+              
+              {showQuickCreate.setup ? (
+                <QuickCreateSetup
+                  onCreate={handleQuickCreateSetup}
+                  onCancel={() => setShowQuickCreate(prev => ({ ...prev, setup: false }))}
+                  isLoading={createSetupMutation.isPending}
+                />
+              ) : (
+                <Select
+                  value={form.watch("setupId") || ""}
+                  onValueChange={(value) => form.setValue("setupId", value)}
+                >
+                  <SelectTrigger className="bg-black/30 border-white/20 text-white">
+                    <SelectValue placeholder="Select a setup" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {setups?.map((setup) => (
+                      <SelectItem key={setup.id} value={setup.id}>
+                        {setup.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
 
             <div>
@@ -389,6 +531,146 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
           </form>
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+// Quick Create Components
+interface QuickCreateAssetProps {
+  onCreate: (name: string, symbol: string) => void;
+  onCancel: () => void;
+  isLoading: boolean;
+}
+
+function QuickCreateAsset({ onCreate, onCancel, isLoading }: QuickCreateAssetProps) {
+  const [name, setName] = useState("");
+  const [symbol, setSymbol] = useState("");
+
+  const handleSubmit = () => {
+    if (name.trim() && symbol.trim()) {
+      onCreate(name, symbol);
+      setName("");
+      setSymbol("");
+    }
+  };
+
+  return (
+    <div className="space-y-3 p-3 bg-black/20 rounded-lg border border-white/10">
+      <div className="flex items-center justify-between">
+        <span className="text-sm text-white/70">Create new asset</span>
+        <Button type="button" variant="ghost" size="sm" onClick={onCancel} className="h-6 w-6 p-0 text-white/60">
+          <X className="w-3 h-3" />
+        </Button>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <Input
+          placeholder="Asset name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="h-8 text-xs bg-black/40 border-white/15 text-white placeholder:text-white/50"
+        />
+        <Input
+          placeholder="Symbol"
+          value={symbol}
+          onChange={(e) => setSymbol(e.target.value.toUpperCase())}
+          className="h-8 text-xs bg-black/40 border-white/15 text-white placeholder:text-white/50"
+        />
+      </div>
+      <Button
+        type="button"
+        onClick={handleSubmit}
+        disabled={isLoading || !name.trim() || !symbol.trim()}
+        size="sm"
+        className="h-7 w-full text-xs bg-white/20 hover:bg-white/30 text-white"
+      >
+        {isLoading ? "Creating..." : "Create"}
+      </Button>
+    </div>
+  );
+}
+
+interface QuickCreateSessionProps {
+  onCreate: (name: string) => void;
+  onCancel: () => void;
+  isLoading: boolean;
+}
+
+function QuickCreateSession({ onCreate, onCancel, isLoading }: QuickCreateSessionProps) {
+  const [name, setName] = useState("");
+
+  const handleSubmit = () => {
+    if (name.trim()) {
+      onCreate(name);
+      setName("");
+    }
+  };
+
+  return (
+    <div className="space-y-3 p-3 bg-black/20 rounded-lg border border-white/10">
+      <div className="flex items-center justify-between">
+        <span className="text-sm text-white/70">Create new session</span>
+        <Button type="button" variant="ghost" size="sm" onClick={onCancel} className="h-6 w-6 p-0 text-white/60">
+          <X className="w-3 h-3" />
+        </Button>
+      </div>
+      <Input
+        placeholder="Session name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        className="h-8 text-xs bg-black/40 border-white/15 text-white placeholder:text-white/50"
+      />
+      <Button
+        type="button"
+        onClick={handleSubmit}
+        disabled={isLoading || !name.trim()}
+        size="sm"
+        className="h-7 w-full text-xs bg-white/20 hover:bg-white/30 text-white"
+      >
+        {isLoading ? "Creating..." : "Create"}
+      </Button>
+    </div>
+  );
+}
+
+interface QuickCreateSetupProps {
+  onCreate: (name: string) => void;
+  onCancel: () => void;
+  isLoading: boolean;
+}
+
+function QuickCreateSetup({ onCreate, onCancel, isLoading }: QuickCreateSetupProps) {
+  const [name, setName] = useState("");
+
+  const handleSubmit = () => {
+    if (name.trim()) {
+      onCreate(name);
+      setName("");
+    }
+  };
+
+  return (
+    <div className="space-y-3 p-3 bg-black/20 rounded-lg border border-white/10">
+      <div className="flex items-center justify-between">
+        <span className="text-sm text-white/70">Create new setup</span>
+        <Button type="button" variant="ghost" size="sm" onClick={onCancel} className="h-6 w-6 p-0 text-white/60">
+          <X className="w-3 h-3" />
+        </Button>
+      </div>
+      <Input
+        placeholder="Setup name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        className="h-8 text-xs bg-black/40 border-white/15 text-white placeholder:text-white/50"
+      />
+      <Button
+        type="button"
+        onClick={handleSubmit}
+        disabled={isLoading || !name.trim()}
+        size="sm"
+        className="h-7 w-full text-xs bg-white/20 hover:bg-white/30 text-white"
+      >
+        {isLoading ? "Creating..." : "Create"}
+      </Button>
     </div>
   );
 } 
