@@ -1,17 +1,10 @@
-import { eq, and, count, sql, gte } from "drizzle-orm";
+import { eq, and, count, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
-import { users, habits, trades, discordPomodoroSessions, habitCompletions } from "@/server/db/schema";
+import { users, habits, trades, discordPomodoroSessions } from "@/server/db/schema";
 import { type AuthQueryContext } from "../../auth/queries/types";
 
 export async function getUserStats({ db, session }: AuthQueryContext) {
-  if (!session?.userId) {
-    throw new TRPCError({
-      code: "UNAUTHORIZED",
-      message: "You must be logged in to access this resource",
-    });
-  }
-
   try {
     const habitsStats = await db
       .select({
