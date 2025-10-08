@@ -31,7 +31,6 @@ export default function StripeCheckout({ priceId, children, className }: StripeC
       const { url } = await response.json();
 
       if (url) {
-        // Redirection directe vers l'URL Stripe
         window.location.href = url;
       } else {
         console.error('No checkout URL returned');

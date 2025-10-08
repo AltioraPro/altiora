@@ -30,7 +30,6 @@ const getQueryClient = () => {
       },
     });
   }
-  // Browser: use a singleton to avoid re-creations
   return (clientQueryClientSingleton ??= new QueryClient({
     defaultOptions: {
       queries: {

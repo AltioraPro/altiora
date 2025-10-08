@@ -78,7 +78,6 @@ export const accounts = pgTable(
   (table) => ({
     userIdIdx: index("account_user_id_idx").on(table.userId),
     providerAccountIdx: index("account_provider_account_idx").on(table.providerId, table.accountId),
-    // Contrainte unique pour éviter les doublons de comptes OAuth
     providerAccountUnique: unique("account_provider_account_unique").on(table.providerId, table.accountId),
   })
 );
@@ -483,20 +482,17 @@ export const discordPomodoroSessions = createTable(
     discordId: varchar("discord_id", { length: 255 }).notNull(),
     channelId: varchar("channel_id", { length: 255 }).notNull(),
     
-    // Configuration de la session
-    duration: integer("duration").notNull(), // Durée en minutes
-    workTime: integer("work_time").notNull(), // Temps de travail en minutes
-    breakTime: integer("break_time").notNull(), // Temps de pause en minutes
-    format: varchar("format", { length: 20 }).notNull(), // "25/5", "50/10", etc.
+    duration: integer("duration").notNull(),
+    workTime: integer("work_time").notNull(),
+    breakTime: integer("break_time").notNull(),
+    format: varchar("format", { length: 20 }).notNull(),
     
-    // État de la session
-    status: varchar("status", { length: 20 }).default("active").notNull(), // active, paused, completed, cancelled
-    currentPhase: varchar("current_phase", { length: 20 }).default("work").notNull(), // work, break
+    status: varchar("status", { length: 20 }).default("active").notNull(),
+    currentPhase: varchar("current_phase", { length: 20 }).default("work").notNull(),
     phaseStartTime: timestamp("phase_start_time", { withTimezone: true }),
-    totalWorkTime: integer("total_work_time").default(0).notNull(), // Temps total de travail en minutes
-    totalBreakTime: integer("total_break_time").default(0).notNull(), // Temps total de pause en minutes
+    totalWorkTime: integer("total_work_time").default(0).notNull(),
+    totalBreakTime: integer("total_break_time").default(0).notNull(),
     
-    // Timestamps
     startedAt: timestamp("started_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),

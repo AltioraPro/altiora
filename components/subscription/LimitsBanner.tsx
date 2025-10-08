@@ -14,7 +14,6 @@ export function LimitsBanner() {
   const { limits, usage, planName } = limitsSummary as typeof limitsSummary & { planName?: string };
   const isAltiorans = planName === "ALTIORANS";
 
-  // Ne pas afficher la bannière pour les ALTIORANS
   if (isAltiorans) return null;
 
   const isHabitsLimitReached = usage.currentHabits >= limits.maxHabits && limits.maxHabits < 999999;

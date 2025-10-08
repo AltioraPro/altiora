@@ -113,7 +113,6 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
     },
   });
 
-  // Quick create mutations
   const createAssetMutation = api.trading.createAsset.useMutation({
     onSuccess: () => {
       utils.trading.getAssets.invalidate();
@@ -136,7 +135,6 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
   });
 
 
-  // Quick create handlers
   const handleQuickCreateAsset = async (name: string, symbol: string) => {
     if (!journalId || !name.trim() || !symbol.trim()) return;
     
@@ -147,7 +145,6 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
         symbol: symbol.trim().toUpperCase(),
       });
       
-      // Auto-select the newly created asset
       form.setValue("symbol", newAsset.symbol);
     } catch (error) {
       console.error("Error creating asset:", error);
@@ -164,7 +161,6 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
         timezone: "UTC"
       });
       
-      // Auto-select the newly created session
       form.setValue("sessionId", newSession.id);
     } catch (error) {
       console.error("Error creating session:", error);
@@ -180,7 +176,6 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
         name: name.trim(),
       });
       
-      // Auto-select the newly created setup
       form.setValue("setupId", newSetup.id);
     } catch (error) {
       console.error("Error creating setup:", error);
@@ -246,50 +241,50 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
               )}
             </div>
 
-             <div>
-               <div className="flex items-center justify-between mb-2">
-                 <Label htmlFor="symbol" className="text-white/80">Asset</Label>
-                 <Button
-                   type="button"
-                   variant="ghost"
-                   size="sm"
-                   onClick={() => setShowQuickCreate(prev => ({ ...prev, asset: !prev.asset }))}
-                   className="h-6 px-2 text-xs text-white/60 hover:text-white hover:bg-white/10"
-                 >
-                   <Plus className="w-3 h-3 mr-1" />
-                   Quick create
-                 </Button>
-               </div>
-               
-               {showQuickCreate.asset ? (
-                 <QuickCreateAsset
-                   onCreate={handleQuickCreateAsset}
-                   onCancel={() => setShowQuickCreate(prev => ({ ...prev, asset: false }))}
-                   isLoading={createAssetMutation.isPending}
-                 />
-               ) : (
-                 <Select
-                   value={form.watch("symbol")}
-                   onValueChange={(value) => form.setValue("symbol", value)}
-                 >
-                   <SelectTrigger className="bg-black border-white/30 text-white focus:border-white focus:ring-1 focus:ring-white">
-                     <SelectValue placeholder="Select an asset" />
-                   </SelectTrigger>
-                   <SelectContent>
-                     {assets?.map((asset) => (
-                       <SelectItem key={asset.id} value={asset.symbol}>
-                         {asset.name} ({asset.symbol})
-                       </SelectItem>
-                     ))}
-                   </SelectContent>
-                 </Select>
-               )}
-               
-               {form.formState.errors.symbol && (
-                 <p className="text-red-500 text-sm mt-1">
-                   {form.formState.errors.symbol.message}
-                 </p>
-               )}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <Label htmlFor="symbol" className="text-white/80">Asset</Label>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowQuickCreate(prev => ({ ...prev, asset: !prev.asset }))}
+                  className="h-6 px-2 text-xs text-white/60 hover:text-white hover:bg-white/10"
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  Quick create
+                </Button>
+              </div>
+              
+              {showQuickCreate.asset ? (
+                <QuickCreateAsset
+                  onCreate={handleQuickCreateAsset}
+                  onCancel={() => setShowQuickCreate(prev => ({ ...prev, asset: false }))}
+                  isLoading={createAssetMutation.isPending}
+                />
+              ) : (
+                <Select
+                  value={form.watch("symbol")}
+                  onValueChange={(value) => form.setValue("symbol", value)}
+                >
+                  <SelectTrigger className="bg-black border-white/30 text-white focus:border-white focus:ring-1 focus:ring-white">
+                    <SelectValue placeholder="Select an asset" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {assets?.map((asset) => (
+                      <SelectItem key={asset.id} value={asset.symbol}>
+                        {asset.name} ({asset.symbol})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              
+              {form.formState.errors.symbol && (
+                <p className="text-red-500 text-sm mt-1">
+                  {form.formState.errors.symbol.message}
+                </p>
+              )}
             </div>
 
             <div>
@@ -535,7 +530,6 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
   );
 }
 
-// Quick Create Components
 interface QuickCreateAssetProps {
   onCreate: (name: string, symbol: string) => void;
   onCancel: () => void;

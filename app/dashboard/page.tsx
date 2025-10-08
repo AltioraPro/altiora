@@ -45,7 +45,6 @@ function OnboardingContent() {
   const handleGenerateJournalExample = async () => {
     setIsGeneratingJournal(true);
     try {
-      // Create demo journal
       const journal = await createJournalMutation.mutateAsync({
         name: "Demo Trading Journal",
         description: "Example journal with sample trades to help you get started",
@@ -53,7 +52,6 @@ function OnboardingContent() {
         usePercentageCalculation: true,
       });
 
-      // Create sample trades
       const sampleTrades = [
         {
           tradeDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -101,14 +99,12 @@ function OnboardingContent() {
         await createTradeMutation.mutateAsync(trade);
       }
 
-      // Invalidate all trading-related queries
       await Promise.all([
         utils.trading.getJournals.invalidate(),
         utils.trading.getTrades.invalidate(),
         utils.trading.getStats.invalidate(),
       ]);
 
-      // Wait a bit for cache to update
       await new Promise(resolve => setTimeout(resolve, 300));
 
       router.push('/trading/journals');
@@ -143,7 +139,6 @@ function OnboardingContent() {
         await createGoalMutation.mutateAsync(goal);
       }
 
-      // Invalidate all goal-related queries
       await Promise.all([
         utils.goals.getAll.invalidate(),
         utils.goals.getPaginated.invalidate(),
@@ -151,7 +146,6 @@ function OnboardingContent() {
         utils.goals.getAllGoalLimits.invalidate(),
       ]);
 
-      // Wait a bit for cache to update
       await new Promise(resolve => setTimeout(resolve, 300));
       
       router.push('/goals');
@@ -177,20 +171,15 @@ function OnboardingContent() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Create Journal Card */}
             <SpotlightCard className="p-0 border border-white/10 group">
               <div className="p-6 h-full flex flex-col">
                 <div className="mb-6 h-48 border border-white/5 rounded-lg flex items-center justify-center overflow-hidden relative">
-                  {/* Background pattern */}
                   <div className="absolute inset-0 bg-grid-white/[0.02]" />
                   
-                  {/* Floating journal cards */}
                   <div className="absolute inset-0 flex items-center justify-center p-6">
                     <div className="relative w-full h-full">
-                      {/* Back card */}
                       <div className="absolute top-2 left-4 w-32 h-40 bg-gradient-to-br from-white/10 to-white/5 rounded-lg border border-white/20 shadow-xl transform rotate-[-8deg] transition-all duration-500 group-hover:rotate-[-12deg] group-hover:translate-x-[-4px]" />
                       
-                      {/* Middle card */}
                       <div className="absolute top-1 left-12 w-32 h-40 bg-gradient-to-br from-white/15 to-white/5 rounded-lg border border-white/30 shadow-xl transform rotate-[-2deg] transition-all duration-500 group-hover:rotate-[-4deg] group-hover:translate-y-[-2px]">
                         <div className="p-3 space-y-2">
                           <div className="flex items-center gap-2">
@@ -207,7 +196,6 @@ function OnboardingContent() {
                         </div>
                       </div>
                       
-                      {/* Front card */}
                       <div className="absolute top-0 left-20 w-32 h-40 bg-gradient-to-br from-white/20 to-white/10 rounded-lg border border-white/40 shadow-2xl transform rotate-[4deg] transition-all duration-500 group-hover:rotate-[8deg] group-hover:translate-x-[4px] group-hover:translate-y-[-4px] group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)]">
                         <div className="p-3 space-y-2">
                           <div className="flex items-center justify-between">
@@ -259,20 +247,16 @@ function OnboardingContent() {
               </div>
             </SpotlightCard>
 
-            {/* Create Habit Card */}
             <HabitCardWithProvider />
 
             {/* Create Goal Card */}
             <SpotlightCard className="p-0 border border-white/10 group">
               <div className="p-6 h-full flex flex-col">
                 <div className="mb-6 h-48 border border-white/5 rounded-lg flex items-center justify-center overflow-hidden relative">
-                  {/* Background pattern */}
                   <div className="absolute inset-0 bg-grid-white/[0.02]" />
                   
-                  {/* Goal list mockup */}
                   <div className="absolute inset-0 flex items-center justify-center p-6">
                     <div className="w-full max-w-[200px] space-y-3">
-                      {/* Goal item 1 - Completed */}
                       <div className="bg-gradient-to-br from-white/15 to-white/5 rounded-lg p-3 border border-white/30 shadow-lg transition-all duration-500 group-hover:translate-x-[-2px] group-hover:shadow-xl">
                         <div className="flex items-start gap-2">
                           <div className="w-4 h-4 rounded border-2 border-green-400 bg-green-400/20 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_8px_rgba(74,222,128,0.6)]">
@@ -289,7 +273,6 @@ function OnboardingContent() {
                         </div>
                       </div>
                       
-                      {/* Goal item 2 - In Progress */}
                       <div className="bg-gradient-to-br from-white/20 to-white/10 rounded-lg p-3 border border-white/40 shadow-xl transform scale-105 transition-all duration-500 group-hover:scale-110 group-hover:shadow-2xl group-hover:border-blue-400/50">
                         <div className="flex items-start gap-2">
                           <div className="w-4 h-4 rounded border-2 border-blue-400 flex-shrink-0 mt-0.5 transition-all duration-300 group-hover:bg-blue-400/20 group-hover:shadow-[0_0_8px_rgba(96,165,250,0.6)]" />
@@ -304,8 +287,6 @@ function OnboardingContent() {
                           </div>
                         </div>
                       </div>
-                      
-                      {/* Goal item 3 - Not Started */}
                       <div className="bg-gradient-to-br from-white/10 to-white/5 rounded-lg p-3 border border-white/25 shadow-md transition-all duration-500 group-hover:translate-x-[2px] group-hover:border-white/35">
                         <div className="flex items-start gap-2">
                           <div className="w-4 h-4 rounded border-2 border-white/40 flex-shrink-0 mt-0.5 transition-all duration-300 group-hover:border-white/60" />
@@ -344,7 +325,6 @@ function OnboardingContent() {
           </div>
         </div>
 
-        {/* Discord Connection */}
         <div className="text-center">
           <p className="text-white/50 text-sm mb-2">
             Connect your Discord account for notifications and reminders
@@ -357,7 +337,6 @@ function OnboardingContent() {
         </div>
       </div>
 
-      {/* Modals */}
       <CreateJournalModal
         isOpen={isCreateJournalModalOpen}
         onClose={() => setIsCreateJournalModalOpen(false)}
@@ -412,14 +391,12 @@ function HabitCardWithProvider() {
         await createHabitMutation.mutateAsync(habit);
       }
 
-      // Invalidate all habit-related queries
       await Promise.all([
         utils.habits.getAll.invalidate(),
         utils.habits.getDashboard.invalidate(),
         utils.subscription.getLimitsSummary.invalidate(),
       ]);
 
-      // Wait a bit for cache to update
       await new Promise(resolve => setTimeout(resolve, 300));
 
       router.push('/habits');
@@ -448,13 +425,10 @@ function HabitCard({ isGenerating, onGenerateExample }: { isGenerating: boolean;
     <SpotlightCard className="p-0 border border-white/10 group">
       <div className="p-6 h-full flex flex-col">
         <div className="mb-6 h-48 border border-white/5 rounded-lg flex items-center justify-center overflow-hidden relative">
-          {/* Background pattern */}
           <div className="absolute inset-0 bg-grid-white/[0.02]" />
           
-          {/* Habit tracker calendar */}
           <div className="absolute inset-0 flex items-center justify-center p-6">
             <div className="space-y-3">
-              {/* Week days header */}
               <div className="flex gap-1 justify-center mb-2">
                 {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, i) => (
                   <div key={i} className="w-7 h-5 flex items-center justify-center">
@@ -463,7 +437,6 @@ function HabitCard({ isGenerating, onGenerateExample }: { isGenerating: boolean;
                 ))}
               </div>
               
-              {/* Week 1 */}
               <div className="flex gap-1 justify-center">
                 <div className="w-7 h-7 rounded bg-gradient-to-br from-green-400/30 to-green-500/30 border border-green-400/50 flex items-center justify-center shadow-lg transition-all duration-300 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)] group-hover:scale-110">
                   <CheckSquare className="w-3 h-3 text-green-400" />
@@ -484,7 +457,6 @@ function HabitCard({ isGenerating, onGenerateExample }: { isGenerating: boolean;
                 </div>
               </div>
               
-              {/* Week 2 */}
               <div className="flex gap-1 justify-center">
                 <div className="w-7 h-7 rounded bg-gradient-to-br from-green-400/30 to-green-500/30 border border-green-400/50 flex items-center justify-center shadow-lg transition-all duration-300 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)] group-hover:scale-110">
                   <CheckSquare className="w-3 h-3 text-green-400" />
