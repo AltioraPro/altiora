@@ -55,7 +55,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
       notes: "",
       journalId: journalId || "",
     },
-    mode: "onChange", 
+    mode: "onChange",
   });
 
   React.useEffect(() => {
@@ -67,40 +67,40 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
   const { data: assets } = api.trading.getAssets.useQuery({ journalId: journalId || "" });
   const { data: sessions } = api.trading.getSessions.useQuery({ journalId: journalId || "" });
   const { data: setups } = api.trading.getSetups.useQuery({ journalId: journalId || "" });
-  
-  
+
+
   const { data: journal } = api.trading.getJournalById.useQuery(
-    { id: journalId! }, 
+    { id: journalId! },
     { enabled: !!journalId }
   );
 
   const { data: capitalData } = api.trading.getCurrentCapital.useQuery(
-    { journalId: journalId! }, 
+    { journalId: journalId! },
     { enabled: !!journalId && !!journal?.usePercentageCalculation }
   ) as { data: { currentCapital: string | null; startingCapital: string | null } | undefined };
 
   const profitLossAmount = form.watch("profitLossAmount");
   const profitLossPercentage = form.watch("profitLossPercentage");
-  
+
   const calculations = useMemo(() => {
     if (!journal?.usePercentageCalculation || !capitalData?.currentCapital) {
       return { calculatedAmount: null, calculatedPercentage: null };
     }
 
     const currentCapital = parseFloat(capitalData.currentCapital);
-    
+
     if (profitLossPercentage && !profitLossAmount) {
       const percentage = parseFloat(profitLossPercentage);
       const amount = (percentage / 100) * currentCapital;
       return { calculatedAmount: amount.toFixed(2), calculatedPercentage: null };
     }
-    
+
     if (profitLossAmount && !profitLossPercentage) {
       const amount = parseFloat(profitLossAmount);
       const percentage = (amount / currentCapital) * 100;
       return { calculatedAmount: null, calculatedPercentage: percentage.toFixed(2) };
     }
-    
+
     return { calculatedAmount: null, calculatedPercentage: null };
   }, [profitLossAmount, profitLossPercentage, journal?.usePercentageCalculation, capitalData?.currentCapital]);
 
@@ -139,15 +139,14 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
   // Quick create handlers
   const handleQuickCreateAsset = async (name: string, symbol: string) => {
     if (!journalId || !name.trim() || !symbol.trim()) return;
-    
+
     try {
       const newAsset = await createAssetMutation.mutateAsync({
         journalId,
         name: name.trim(),
         symbol: symbol.trim().toUpperCase(),
       });
-      
-      // Auto-select the newly created asset
+
       form.setValue("symbol", newAsset.symbol);
     } catch (error) {
       console.error("Error creating asset:", error);
@@ -156,15 +155,14 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
 
   const handleQuickCreateSession = async (name: string) => {
     if (!journalId || !name.trim()) return;
-    
+
     try {
       const newSession = await createSessionMutation.mutateAsync({
         journalId,
         name: name.trim(),
         timezone: "UTC"
       });
-      
-      // Auto-select the newly created session
+
       form.setValue("sessionId", newSession.id);
     } catch (error) {
       console.error("Error creating session:", error);
@@ -173,14 +171,13 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
 
   const handleQuickCreateSetup = async (name: string) => {
     if (!journalId || !name.trim()) return;
-    
+
     try {
       const newSetup = await createSetupMutation.mutateAsync({
         journalId,
         name: name.trim(),
       });
-      
-      // Auto-select the newly created setup
+
       form.setValue("setupId", newSetup.id);
     } catch (error) {
       console.error("Error creating setup:", error);
@@ -193,16 +190,16 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
         alert("Please provide either amount or percentage");
         return;
       }
-      
+
       const tradeData = {
         ...data,
         tradeDate: data.tradeDate,
         journalId: journalId!,
         isClosed: true,
       };
-      
+
       await createTradeMutation.mutateAsync(tradeData);
-      
+
       onClose();
       form.reset();
     } catch (error) {
@@ -214,7 +211,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
       <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-white/20 bg-black">
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -230,15 +227,15 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
           </div>
         </CardHeader>
         <CardContent className="text-white">
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 sm:space-y-6">
             <div>
               <Label htmlFor="tradeDate" className="text-white/80">Date</Label>
-                <Input
-                  id="tradeDate"
-                  type="date"
-                  {...form.register("tradeDate")}
-                  className="bg-black border-white/30 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
-                />
+              <Input
+                id="tradeDate"
+                type="date"
+                {...form.register("tradeDate")}
+                className="bg-black border-white/30 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
+              />
               {form.formState.errors.tradeDate && (
                 <p className="text-red-500 text-sm mt-1">
                   {form.formState.errors.tradeDate.message}
@@ -246,50 +243,50 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
               )}
             </div>
 
-             <div>
-               <div className="flex items-center justify-between mb-2">
-                 <Label htmlFor="symbol" className="text-white/80">Asset</Label>
-                 <Button
-                   type="button"
-                   variant="ghost"
-                   size="sm"
-                   onClick={() => setShowQuickCreate(prev => ({ ...prev, asset: !prev.asset }))}
-                   className="h-6 px-2 text-xs text-white/60 hover:text-white hover:bg-white/10"
-                 >
-                   <Plus className="w-3 h-3 mr-1" />
-                   Quick create
-                 </Button>
-               </div>
-               
-               {showQuickCreate.asset ? (
-                 <QuickCreateAsset
-                   onCreate={handleQuickCreateAsset}
-                   onCancel={() => setShowQuickCreate(prev => ({ ...prev, asset: false }))}
-                   isLoading={createAssetMutation.isPending}
-                 />
-               ) : (
-                 <Select
-                   value={form.watch("symbol")}
-                   onValueChange={(value) => form.setValue("symbol", value)}
-                 >
-                   <SelectTrigger className="bg-black border-white/30 text-white focus:border-white focus:ring-1 focus:ring-white">
-                     <SelectValue placeholder="Select an asset" />
-                   </SelectTrigger>
-                   <SelectContent>
-                     {assets?.map((asset) => (
-                       <SelectItem key={asset.id} value={asset.symbol}>
-                         {asset.name} ({asset.symbol})
-                       </SelectItem>
-                     ))}
-                   </SelectContent>
-                 </Select>
-               )}
-               
-               {form.formState.errors.symbol && (
-                 <p className="text-red-500 text-sm mt-1">
-                   {form.formState.errors.symbol.message}
-                 </p>
-               )}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <Label htmlFor="symbol" className="text-white/80">Asset</Label>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowQuickCreate(prev => ({ ...prev, asset: !prev.asset }))}
+                  className="h-6 px-2 text-xs text-white/60 hover:text-white hover:bg-white/10"
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  Quick create
+                </Button>
+              </div>
+
+              {showQuickCreate.asset ? (
+                <QuickCreateAsset
+                  onCreate={handleQuickCreateAsset}
+                  onCancel={() => setShowQuickCreate(prev => ({ ...prev, asset: false }))}
+                  isLoading={createAssetMutation.isPending}
+                />
+              ) : (
+                <Select
+                  value={form.watch("symbol")}
+                  onValueChange={(value) => form.setValue("symbol", value)}
+                >
+                  <SelectTrigger className="bg-black border-white/30 text-white focus:border-white focus:ring-1 focus:ring-white">
+                    <SelectValue placeholder="Select an asset" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {assets?.map((asset) => (
+                      <SelectItem key={asset.id} value={asset.symbol}>
+                        {asset.name} ({asset.symbol})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+
+              {form.formState.errors.symbol && (
+                <p className="text-red-500 text-sm mt-1">
+                  {form.formState.errors.symbol.message}
+                </p>
+              )}
             </div>
 
             <div>
@@ -306,7 +303,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                   Quick create
                 </Button>
               </div>
-              
+
               {showQuickCreate.session ? (
                 <QuickCreateSession
                   onCreate={handleQuickCreateSession}
@@ -346,7 +343,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                   Quick create
                 </Button>
               </div>
-              
+
               {showQuickCreate.setup ? (
                 <QuickCreateSetup
                   onCreate={handleQuickCreateSetup}
@@ -531,7 +528,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
           </form>
         </CardContent>
       </Card>
-    </div>
+    </div >
   );
 }
 

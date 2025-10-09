@@ -38,7 +38,7 @@ export default function TradingPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'trades' | 'assets' | 'sessions' | 'setups'>('trades');
-  const [dateFilter, setDateFilter] = useState<DateFilterState>({ 
+  const [dateFilter, setDateFilter] = useState<DateFilterState>({
     view: 'all'
   });
   const [advancedFilters, setAdvancedFilters] = useState<{
@@ -49,7 +49,7 @@ export default function TradingPage() {
 
   const dateRange = useMemo(() => {
     if (dateFilter.view === 'all') return { startDate: undefined, endDate: undefined };
-    
+
     if (dateFilter.view === 'monthly' && dateFilter.month && dateFilter.year) {
       const monthNames = [
         'January', 'February', 'March', 'April', 'May', 'June',
@@ -57,36 +57,36 @@ export default function TradingPage() {
       ];
       const monthIndex = monthNames.indexOf(dateFilter.month);
       const year = parseInt(dateFilter.year);
-      
+
       const startDate = new Date(year, monthIndex, 1);
       const endDate = new Date(year, monthIndex + 1, 0);
-      
+
       return {
         startDate: startDate.toISOString().split('T')[0],
         endDate: endDate.toISOString().split('T')[0]
       };
     }
-    
+
     if (dateFilter.view === 'yearly' && dateFilter.year) {
       const year = parseInt(dateFilter.year);
       const startDate = new Date(year, 0, 1);
       const endDate = new Date(year, 11, 31);
-      
+
       return {
         startDate: startDate.toISOString().split('T')[0],
         endDate: endDate.toISOString().split('T')[0]
       };
     }
-    
+
     return { startDate: undefined, endDate: undefined };
   }, [dateFilter]);
 
   const filterTradesByDate = (trades: AdvancedTrade[] | undefined) => {
     if (!trades || dateFilter.view === 'all') return trades;
-    
+
     return trades.filter(trade => {
       const tradeDate = new Date(trade.tradeDate);
-      
+
       switch (dateFilter.view) {
         case 'monthly':
           if (!dateFilter.month || !dateFilter.year) return true;
@@ -95,13 +95,13 @@ export default function TradingPage() {
             'July', 'August', 'September', 'October', 'November', 'December'
           ];
           const monthIndex = monthNames.indexOf(dateFilter.month);
-          return tradeDate.getFullYear() === parseInt(dateFilter.year) && 
-                tradeDate.getMonth() === monthIndex;
-                
+          return tradeDate.getFullYear() === parseInt(dateFilter.year) &&
+            tradeDate.getMonth() === monthIndex;
+
         case 'yearly':
           if (!dateFilter.year) return true;
           return tradeDate.getFullYear() === parseInt(dateFilter.year);
-          
+
         default:
           return true;
       }
@@ -109,11 +109,11 @@ export default function TradingPage() {
   };
 
   const { data: journals, isLoading: journalsLoading } = api.trading.getJournals.useQuery();
-  
+
   const selectedJournal = journals?.find(j => j.id === selectedJournalId);
-  
+
   const { data: allTrades } = api.trading.getTrades.useQuery(
-    { 
+    {
       journalId: selectedJournalId || undefined,
       sessionIds: advancedFilters.sessions.length > 0 ? advancedFilters.sessions : undefined,
       setupIds: advancedFilters.setups.length > 0 ? advancedFilters.setups : undefined,
@@ -123,7 +123,7 @@ export default function TradingPage() {
     },
     { enabled: !!selectedJournalId }
   );
-  
+
   const filteredTrades = allTrades ? filterTradesByDate(allTrades) : undefined;
 
   const { data: backendStats } = api.trading.getStats.useQuery(
@@ -158,19 +158,19 @@ export default function TradingPage() {
     closedTrades: filteredTrades.length,
     winningTrades: filteredTrades.filter(t => Number(t.profitLossPercentage || 0) > 0).length,
     losingTrades: filteredTrades.filter(t => Number(t.profitLossPercentage || 0) < 0).length,
-    winRate: filteredTrades && filteredTrades.length > 0 ? 
+    winRate: filteredTrades && filteredTrades.length > 0 ?
       (filteredTrades.filter(t => Number(t.profitLossPercentage || 0) > 0).length / filteredTrades.length) * 100 : 0,
     totalPnL: totalPerformance,
-    avgPnL: filteredTrades && filteredTrades.length > 0 ? 
+    avgPnL: filteredTrades && filteredTrades.length > 0 ?
       totalPerformance / filteredTrades.length : 0,
     totalAmountPnL: (() => {
       if (!filteredTrades) return 0;
-      
+
       if (selectedJournal?.usePercentageCalculation && selectedJournal?.startingCapital) {
         const startingCapital = parseFloat(selectedJournal.startingCapital);
         return (totalPerformance / 100) * startingCapital;
       }
-      
+
       return filteredTrades.reduce((sum, t) => sum + Number(t.profitLossAmount || 0), 0);
     })(),
     tradesBySymbol: [],
@@ -197,7 +197,7 @@ export default function TradingPage() {
     },
   });
 
-  
+
 
   const handleJournalFound = useCallback((journalId: string) => {
     setSelectedJournalId(journalId);
@@ -206,7 +206,7 @@ export default function TradingPage() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const journalFromUrl = urlParams.get('journalId') || urlParams.get('journal');
-    
+
     if (!selectedJournalId && !journalFromUrl && journals && journals.length > 0) {
       setSelectedJournalId(journals[0].id);
     }
@@ -253,7 +253,7 @@ export default function TradingPage() {
               Start your trading journey by creating your first journal
             </p>
           </div>
-          
+
           <Card className="p-8 border border-white/10 bg-black/20">
             <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
               <BarChart3 className="w-8 h-8 text-white/60" />
@@ -262,8 +262,8 @@ export default function TradingPage() {
             <p className="text-white/60 mb-8">
               Create your first trading journal to start tracking your performance.
             </p>
-            
-            <Button 
+
+            <Button
               onClick={handleCreateDefaultJournal}
               disabled={createJournalMutation.isPending}
               className="bg-white text-black hover:bg-gray-200"
@@ -283,7 +283,7 @@ export default function TradingPage() {
         <JournalParamSync onFound={handleJournalFound} />
       </Suspense>
       {/* Header Navigation */}
-      <div className="flex items-center space-x-4 mb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
         <Link href="/trading/journals">
           <Button variant="ghost" size="sm" className="text-white/70 hover:text-white hover:bg-white/10">
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -291,45 +291,43 @@ export default function TradingPage() {
           </Button>
         </Link>
         <div className="flex-1">
-          <h1 className="text-3xl font-argesta text-white font-bold">
+          <h1 className="text-2xl sm:text-3xl font-argesta text-white font-bold">
             {selectedJournal ? selectedJournal.name : "Trading Dashboard"}
           </h1>
-          <p className="text-white/60">
+          <p className="text-sm sm:text-base text-white/60">
             {selectedJournal ? selectedJournal.description || "Performance analytics & trade management" : "Performance analytics & trade management"}
           </p>
         </div>
       </div>
 
       {/* Filters and Actions Bar */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
+      <div className="flex flex-col gap-4 mb-8">
         {/* Filters Section */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          <div className="flex items-center gap-4">
-            <DateFilter onFilterChange={setDateFilter} />
-            {selectedJournalId && (
-              <AdvancedFilters 
-                journalId={selectedJournalId}
-                onFiltersChange={setAdvancedFilters}
-              />
-            )}
-          </div>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+          <DateFilter onFilterChange={setDateFilter} />
+          {selectedJournalId && (
+            <AdvancedFilters
+              journalId={selectedJournalId}
+              onFiltersChange={setAdvancedFilters}
+            />
+          )}
         </div>
-        
+
         {/* Actions Section */}
-        <div className="flex items-center gap-3">
-          <Button 
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <Button
             onClick={() => setIsImportModalOpen(true)}
             variant="outline"
             size="sm"
-            className="border-white/20 bg-transparent text-white/80 hover:bg-white/10 hover:text-white hover:border-white/30"
+            className="border-white/20 bg-transparent text-white/80 hover:bg-white/10 hover:text-white hover:border-white/30 w-full sm:w-auto"
           >
             <Upload className="w-4 h-4 mr-2" />
             Import Excel
           </Button>
-          <Button 
+          <Button
             onClick={() => setIsCreateModalOpen(true)}
             size="sm"
-            className="bg-white text-black hover:bg-gray-100 font-medium shadow-lg"
+            className="bg-white text-black hover:bg-gray-100 font-medium shadow-lg w-full sm:w-auto"
           >
             <Plus className="w-4 h-4 mr-2" />
             New Trade
@@ -357,11 +355,10 @@ export default function TradingPage() {
               <button
                 key={id}
                 onClick={() => setActiveTab(id as 'trades' | 'assets' | 'sessions' | 'setups')}
-                className={`flex items-center space-x-2 px-5 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  activeTab === id
+                className={`flex items-center space-x-2 px-5 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${activeTab === id
                     ? 'bg-white text-black shadow-sm'
                     : 'text-white/70 hover:text-white hover:bg-white/10'
-                }`}
+                  }`}
               >
                 <Icon className="w-4 h-4" />
                 <span>{label}</span>
@@ -382,9 +379,9 @@ export default function TradingPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <TradingCharts 
-                stats={stats} 
-                sessions={sessions} 
+              <TradingCharts
+                stats={stats}
+                sessions={sessions}
                 trades={filteredTrades || []}
               />
             </CardContent>
@@ -395,19 +392,19 @@ export default function TradingPage() {
       {selectedJournalId && (
         <>
           {activeTab === 'trades' && (
-            <TradesTable 
+            <TradesTable
               journalId={selectedJournalId}
             />
           )}
-          
+
           {activeTab === 'assets' && (
             <AssetsManager journalId={selectedJournalId} />
           )}
-          
+
           {activeTab === 'sessions' && (
             <SessionsManager journalId={selectedJournalId} />
           )}
-          
+
           {activeTab === 'setups' && (
             <SetupsManager journalId={selectedJournalId} />
           )}
@@ -426,7 +423,7 @@ export default function TradingPage() {
         journalId={selectedJournalId || undefined}
       />
 
-      
+
     </div>
   );
 } 
