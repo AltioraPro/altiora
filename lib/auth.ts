@@ -22,7 +22,7 @@ const computedBaseUrl = (() => {
   return "http://localhost:3000";
 })();
 
-// Proxy pour déboguer et corriger les timestamps Better Auth
+
 const dbProxy = new Proxy(db, {
   get(target, prop) {
     const original = (target as any)[prop];
@@ -37,7 +37,6 @@ const dbProxy = new Proxy(db, {
               return (values: any) => {
                 console.log('[DB PROXY INSERT] Values before fix:', values);
                 
-                // Fix emailVerified boolean -> null
                 if (values.emailVerified === false || values.emailVerified === true) {
                   console.log('[DB PROXY INSERT] Converting emailVerified boolean to null');
                   values.emailVerified = null;
@@ -71,12 +70,10 @@ const dbProxy = new Proxy(db, {
             const updateOriginal = (updateTarget as any)[updateProp];
             if (updateProp === 'set') {
               return (values: any) => {
-                // Fix emailVerified boolean -> null ou Date
                 if (values.emailVerified === false || values.emailVerified === true) {
                   values.emailVerified = null;
                 }
                 
-                // Fix updatedAt manquant
                 if (values.updatedAt === undefined || values.updatedAt === null) {
                   values.updatedAt = new Date();
                 }
@@ -104,7 +101,6 @@ const baseAdapter = drizzleAdapter(dbProxy as any, {
   },
 });
 
-// Wrapper de l'adapter pour corriger les timestamps
 const wrappedAdapter = (options: any) => {
   const adapter = baseAdapter(options);
   
@@ -116,7 +112,6 @@ const wrappedAdapter = (options: any) => {
     
     const payload = { ...data, data: { ...data.data } };
     
-    // Fix timestamps pour TOUS les modèles
     const now = new Date();
     if ((payload.data as any).createdAt === undefined || (payload.data as any).createdAt === null) {
       console.log('[ADAPTER CREATE] Adding createdAt');
@@ -127,7 +122,6 @@ const wrappedAdapter = (options: any) => {
       (payload.data as any).updatedAt = now;
     }
     
-    // Fix emailVerified
     if ((payload.data as any).emailVerified === false || (payload.data as any).emailVerified === true) {
       console.log('[ADAPTER CREATE] Converting emailVerified boolean to null');
       (payload.data as any).emailVerified = null;

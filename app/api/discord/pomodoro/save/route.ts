@@ -28,7 +28,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Mettre à jour la session existante ou créer une nouvelle
     const sessionData = {
       userId,
       discordId,
@@ -44,7 +43,6 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date(),
     };
 
-    // Chercher une session active existante
     const existingSession = await db
       .select()
       .from(discordPomodoroSessions)
@@ -53,14 +51,12 @@ export async function POST(request: NextRequest) {
 
     let result;
     if (existingSession.length > 0) {
-      // Mettre à jour la session existante
       [result] = await db
         .update(discordPomodoroSessions)
         .set(sessionData)
         .where(eq(discordPomodoroSessions.id, existingSession[0].id))
         .returning();
     } else {
-      // Créer une nouvelle session
       [result] = await db
         .insert(discordPomodoroSessions)
         .values({

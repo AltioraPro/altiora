@@ -113,7 +113,6 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
     },
   });
 
-  // Quick create mutations
   const createAssetMutation = api.trading.createAsset.useMutation({
     onSuccess: () => {
       utils.trading.getAssets.invalidate();
@@ -136,7 +135,6 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
   });
 
 
-  // Quick create handlers
   const handleQuickCreateAsset = async (name: string, symbol: string) => {
     if (!journalId || !name.trim() || !symbol.trim()) return;
 
@@ -528,11 +526,10 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
           </form>
         </CardContent>
       </Card>
-    </div >
+    </div>
   );
 }
 
-// Quick Create Components
 interface QuickCreateAssetProps {
   onCreate: (name: string, symbol: string) => void;
   onCancel: () => void;

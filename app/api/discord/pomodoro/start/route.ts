@@ -7,7 +7,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { userId, discordId, channelId, duration, workTime, breakTime, format, status, currentPhase, phaseStartTime } = body;
 
-    // Validation des données requises
     if (!userId || !discordId || !channelId || !duration || !workTime || !breakTime || !format) {
       return NextResponse.json(
         { error: 'Données manquantes requises' },
@@ -15,7 +14,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Créer la session Pomodoro
     const sessionData = {
       id: crypto.randomUUID(),
       userId,

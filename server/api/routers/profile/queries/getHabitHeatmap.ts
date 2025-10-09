@@ -6,7 +6,6 @@ import { type AuthQueryContext } from "../../auth/queries/types";
 
 export async function getHabitHeatmap({ db, session }: AuthQueryContext) {
   try {
-    // Get completions from last 365 days
     const oneYearAgo = new Date();
     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
     const startDate = oneYearAgo.toISOString().split('T')[0];
@@ -25,7 +24,6 @@ export async function getHabitHeatmap({ db, session }: AuthQueryContext) {
         )
       );
 
-    // Group by date and count completions
     const heatmapData = completions.reduce((acc, completion) => {
       const date = completion.completionDate;
       acc[date] = (acc[date] || 0) + 1;

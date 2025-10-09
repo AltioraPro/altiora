@@ -24,10 +24,12 @@ export function UsageStats() {
   };
 
   const data = limitsSummary || fallbackData;
-  const { limits, usage } = data;
+  const { limits, usage, planName } = data as typeof limitsSummary & { planName?: string };
+  
+  const isAltiorans = planName === "ALTIORANS";
 
   const getUsagePercentage = (current: number, max: number) => {
-    if (max === 999) return 0;
+    if (max >= 999999) return 0;
     if (max === 0) return 0; 
     return Math.min((current / max) * 100, 100);
   };
@@ -46,8 +48,7 @@ export function UsageStats() {
 
   const getPlanName = () => {
     if (limits.maxHabits === 3 && limits.maxTradingEntries === 10) return "Free Plan";
-    if (limits.maxHabits === 999 && limits.maxMonthlyGoals === 0) return "Pro Plan";
-    if (limits.maxHabits === 999 && limits.maxMonthlyGoals === 999) return "Altiorans";
+    if (limits.maxHabits >= 999999) return "Altiorans";
     return "Custom Plan";
   };
 
@@ -95,11 +96,11 @@ export function UsageStats() {
               <span className="text-sm  text-white/80 tracking-wide">HABITS</span>
             </div>
             <span className={`text-sm  font-bold ${getUsageColor(getUsagePercentage(usage.currentHabits, limits.maxHabits))}`}>
-              {usage.currentHabits}/{limits.maxHabits === 999 ? "∞" : limits.maxHabits}
+              {usage.currentHabits}/{isAltiorans ? "∞" : limits.maxHabits}
             </span>
           </div>
           
-          {limits.maxHabits !== 999 && limits.maxHabits > 0 && (
+          {!isAltiorans && limits.maxHabits > 0 && (
             <div className="w-full bg-white/10 rounded-full h-2">
               <div 
                 className={`h-2 rounded-full transition-all duration-300 ${getProgressColor(getUsagePercentage(usage.currentHabits, limits.maxHabits))}`}
@@ -117,11 +118,11 @@ export function UsageStats() {
               <span className="text-sm  text-white/80 tracking-wide">TRADING ENTRIES</span>
             </div>
             <span className={`text-sm  font-bold ${getUsageColor(getUsagePercentage(usage.monthlyTradingEntries, limits.maxTradingEntries))}`}>
-              {usage.monthlyTradingEntries}/{limits.maxTradingEntries === 999 ? "∞" : limits.maxTradingEntries}
+              {usage.monthlyTradingEntries}/{isAltiorans ? "∞" : limits.maxTradingEntries}
             </span>
           </div>
           
-          {limits.maxTradingEntries !== 999 && limits.maxTradingEntries > 0 && (
+          {!isAltiorans && limits.maxTradingEntries > 0 && (
             <div className="w-full bg-white/10 rounded-full h-2">
               <div 
                 className={`h-2 rounded-full transition-all duration-300 ${getProgressColor(getUsagePercentage(usage.monthlyTradingEntries, limits.maxTradingEntries))}`}
@@ -139,11 +140,11 @@ export function UsageStats() {
               <span className="text-sm  text-white/80 tracking-wide">GOALS</span>
             </div>
             <span className={`text-sm  font-bold ${getUsageColor(getUsagePercentage(usage.currentAnnualGoals + usage.currentQuarterlyGoals, limits.maxAnnualGoals + limits.maxQuarterlyGoals))}`}>
-              {usage.currentAnnualGoals + usage.currentQuarterlyGoals}/{limits.maxAnnualGoals + limits.maxQuarterlyGoals === 999 ? "∞" : limits.maxAnnualGoals + limits.maxQuarterlyGoals}
+              {usage.currentAnnualGoals + usage.currentQuarterlyGoals}/{isAltiorans ? "∞" : limits.maxAnnualGoals + limits.maxQuarterlyGoals}
             </span>
           </div>
           
-          {limits.maxAnnualGoals + limits.maxQuarterlyGoals !== 999 && limits.maxAnnualGoals + limits.maxQuarterlyGoals > 0 && (
+          {!isAltiorans && limits.maxAnnualGoals + limits.maxQuarterlyGoals > 0 && (
             <div className="w-full bg-white/10 rounded-full h-2">
               <div 
                 className={`h-2 rounded-full transition-all duration-300 ${getProgressColor(getUsagePercentage(usage.currentAnnualGoals + usage.currentQuarterlyGoals, limits.maxAnnualGoals + limits.maxQuarterlyGoals))}`}
@@ -153,8 +154,8 @@ export function UsageStats() {
           )}
           
           <div className="flex justify-between text-xs text-white/60 mt-2">
-            <span>Annual: {usage.currentAnnualGoals}/{limits.maxAnnualGoals === 999 ? "∞" : limits.maxAnnualGoals}</span>
-            <span>Quarterly: {usage.currentQuarterlyGoals}/{limits.maxQuarterlyGoals === 999 ? "∞" : limits.maxQuarterlyGoals}</span>
+            <span>Annual: {usage.currentAnnualGoals}/{isAltiorans ? "∞" : limits.maxAnnualGoals}</span>
+            <span>Quarterly: {usage.currentQuarterlyGoals}/{isAltiorans ? "∞" : limits.maxQuarterlyGoals}</span>
           </div>
         </div>
       </div>

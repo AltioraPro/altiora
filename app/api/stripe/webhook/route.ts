@@ -31,7 +31,6 @@ export async function POST(request: NextRequest) {
         const userId = session.metadata?.userId;
 
         if (userId) {
-          // TODO: Update user subscription status in database
           console.log(`Subscription created for user ${userId}`);
         }
         break;
@@ -42,7 +41,6 @@ export async function POST(request: NextRequest) {
         const userId = subscription.metadata?.userId;
 
         if (userId) {
-          // TODO: Update user subscription status in database
           console.log(`Subscription updated for user ${userId}`);
         }
         break;
@@ -53,7 +51,6 @@ export async function POST(request: NextRequest) {
         const userId = subscription.metadata?.userId;
 
         if (userId) {
-          // TODO: Update user subscription status in database
           console.log(`Subscription canceled for user ${userId}`);
         }
         break;

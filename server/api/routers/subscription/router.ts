@@ -68,14 +68,19 @@ export const subscriptionRouter = createTRPCRouter({
    */
   getLimitsSummary: protectedProcedure
     .query(async ({ ctx }) => {
-      const [limits, usage] = await Promise.all([
+      const [limits, usage, userPlan] = await Promise.all([
         SubscriptionLimitsService.getUserPlanLimits(ctx.session.userId),
         SubscriptionLimitsService.getUserUsageStats(ctx.session.userId),
+        ctx.db.query.users.findFirst({
+          where: (users, { eq }) => eq(users.id, ctx.session.userId),
+          columns: { subscriptionPlan: true },
+        }),
       ]);
 
       return {
         limits,
         usage,
+        planName: userPlan?.subscriptionPlan || "FREE",
         canCreateHabit: usage.currentHabits < limits.maxHabits,
         canCreateTradingEntry: usage.monthlyTradingEntries < limits.maxTradingEntries,
         canCreateAnnualGoal: usage.currentAnnualGoals < limits.maxAnnualGoals,

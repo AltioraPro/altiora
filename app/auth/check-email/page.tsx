@@ -42,7 +42,6 @@
       
       if (emailStatusQuery.data.emailVerified) {
         setIsAlreadyVerified(true);
-        // Vérifier si l'utilisateur a déjà vu la popup Discord
         const hasSeenDiscordPopup = localStorage.getItem('discord-welcome-seen');
         if (!hasSeenDiscordPopup) {
           setShowDiscordPopup(true);

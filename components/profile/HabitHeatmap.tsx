@@ -14,7 +14,6 @@ if (isLoading || !heatmapData) {
     );
 }
 
-// Generate last 365 days
 const generateDays = () => {
     const days = [];
     const today = new Date();
@@ -32,7 +31,6 @@ const generateDays = () => {
 
 const days = generateDays();
 
-// Group by weeks
 const weeks: Array<Array<{ date: string; count: number }>> = [];
 let currentWeek: Array<{ date: string; count: number }> = [];
 
@@ -40,7 +38,6 @@ days.forEach((day, index) => {
     const date = new Date(day.date);
     const dayOfWeek = date.getDay();
     
-    // Fill empty days at start of first week
     if (index === 0 && dayOfWeek !== 0) {
     for (let i = 0; i < dayOfWeek; i++) {
         currentWeek.push({ date: '', count: 0 });

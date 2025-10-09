@@ -6,7 +6,6 @@ import { users } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
 
 export const discordRouter = createTRPCRouter({
-  // Récupérer le statut de connexion Discord
   getConnectionStatus: protectedProcedure.query(async ({ ctx }) => {
     const { db, session } = ctx;
     
@@ -34,7 +33,6 @@ export const discordRouter = createTRPCRouter({
     };
   }),
 
-  // Déconnecter Discord
   disconnect: protectedProcedure.mutation(async ({ ctx }) => {
     const { db, session } = ctx;
     
@@ -54,7 +52,6 @@ export const discordRouter = createTRPCRouter({
     return { success: true };
   }),
 
-  // Synchroniser manuellement le rank
   syncRank: protectedProcedure.mutation(async ({ ctx }) => {
     const { db, session } = ctx;
     
@@ -73,7 +70,6 @@ export const discordRouter = createTRPCRouter({
     try {
       await DiscordService.syncUserRank(user.discordId, user.rank);
       
-      // Mettre à jour le statut de synchronisation
       const now = new Date();
       await db.update(users)
         .set({
@@ -90,7 +86,6 @@ export const discordRouter = createTRPCRouter({
     }
   }),
 
-  // Synchroniser automatiquement le rank
   autoSyncRank: protectedProcedure.mutation(async ({ ctx }) => {
     const { db, session } = ctx;
     
@@ -109,7 +104,6 @@ export const discordRouter = createTRPCRouter({
     try {
       await DiscordService.autoSyncUserRank(user.discordId, user.rank);
       
-      // Mettre à jour le statut de synchronisation
       const now = new Date();
       await db.update(users)
         .set({
@@ -126,7 +120,6 @@ export const discordRouter = createTRPCRouter({
     }
   }),
 
-  // Synchroniser tous les utilisateurs connectés (admin)
   syncAllUsers: protectedProcedure.mutation(async () => {
     try {
       const result = await DiscordService.syncAllConnectedUsers();
@@ -137,7 +130,6 @@ export const discordRouter = createTRPCRouter({
     }
   }),
 
-  // Vérifier le statut du bot Discord
   checkBotStatus: protectedProcedure.query(async () => {
     try {
       const botUrl = process.env.DISCORD_BOT_WEBHOOK_URL || 'http://localhost:3001';
@@ -168,7 +160,6 @@ export const discordRouter = createTRPCRouter({
     }
   }),
 
-  // Générer l'URL de connexion Discord
   getAuthUrl: protectedProcedure.mutation(async () => {
     const state = crypto.randomUUID();
     const authUrl = DiscordService.getAuthUrl(state);
