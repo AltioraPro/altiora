@@ -55,7 +55,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
       notes: "",
       journalId: journalId || "",
     },
-    mode: "onChange", 
+    mode: "onChange",
   });
 
   React.useEffect(() => {
@@ -67,40 +67,40 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
   const { data: assets } = api.trading.getAssets.useQuery({ journalId: journalId || "" });
   const { data: sessions } = api.trading.getSessions.useQuery({ journalId: journalId || "" });
   const { data: setups } = api.trading.getSetups.useQuery({ journalId: journalId || "" });
-  
-  
+
+
   const { data: journal } = api.trading.getJournalById.useQuery(
-    { id: journalId! }, 
+    { id: journalId! },
     { enabled: !!journalId }
   );
 
   const { data: capitalData } = api.trading.getCurrentCapital.useQuery(
-    { journalId: journalId! }, 
+    { journalId: journalId! },
     { enabled: !!journalId && !!journal?.usePercentageCalculation }
   ) as { data: { currentCapital: string | null; startingCapital: string | null } | undefined };
 
   const profitLossAmount = form.watch("profitLossAmount");
   const profitLossPercentage = form.watch("profitLossPercentage");
-  
+
   const calculations = useMemo(() => {
     if (!journal?.usePercentageCalculation || !capitalData?.currentCapital) {
       return { calculatedAmount: null, calculatedPercentage: null };
     }
 
     const currentCapital = parseFloat(capitalData.currentCapital);
-    
+
     if (profitLossPercentage && !profitLossAmount) {
       const percentage = parseFloat(profitLossPercentage);
       const amount = (percentage / 100) * currentCapital;
       return { calculatedAmount: amount.toFixed(2), calculatedPercentage: null };
     }
-    
+
     if (profitLossAmount && !profitLossPercentage) {
       const amount = parseFloat(profitLossAmount);
       const percentage = (amount / currentCapital) * 100;
       return { calculatedAmount: null, calculatedPercentage: percentage.toFixed(2) };
     }
-    
+
     return { calculatedAmount: null, calculatedPercentage: null };
   }, [profitLossAmount, profitLossPercentage, journal?.usePercentageCalculation, capitalData?.currentCapital]);
 
@@ -137,14 +137,14 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
 
   const handleQuickCreateAsset = async (name: string, symbol: string) => {
     if (!journalId || !name.trim() || !symbol.trim()) return;
-    
+
     try {
       const newAsset = await createAssetMutation.mutateAsync({
         journalId,
         name: name.trim(),
         symbol: symbol.trim().toUpperCase(),
       });
-      
+
       form.setValue("symbol", newAsset.symbol);
     } catch (error) {
       console.error("Error creating asset:", error);
@@ -153,14 +153,14 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
 
   const handleQuickCreateSession = async (name: string) => {
     if (!journalId || !name.trim()) return;
-    
+
     try {
       const newSession = await createSessionMutation.mutateAsync({
         journalId,
         name: name.trim(),
         timezone: "UTC"
       });
-      
+
       form.setValue("sessionId", newSession.id);
     } catch (error) {
       console.error("Error creating session:", error);
@@ -169,13 +169,13 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
 
   const handleQuickCreateSetup = async (name: string) => {
     if (!journalId || !name.trim()) return;
-    
+
     try {
       const newSetup = await createSetupMutation.mutateAsync({
         journalId,
         name: name.trim(),
       });
-      
+
       form.setValue("setupId", newSetup.id);
     } catch (error) {
       console.error("Error creating setup:", error);
@@ -188,16 +188,16 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
         alert("Please provide either amount or percentage");
         return;
       }
-      
+
       const tradeData = {
         ...data,
         tradeDate: data.tradeDate,
         journalId: journalId!,
         isClosed: true,
       };
-      
+
       await createTradeMutation.mutateAsync(tradeData);
-      
+
       onClose();
       form.reset();
     } catch (error) {
@@ -228,12 +228,12 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
             <div>
               <Label htmlFor="tradeDate" className="text-white/80">Date</Label>
-                <Input
-                  id="tradeDate"
-                  type="date"
-                  {...form.register("tradeDate")}
-                  className="bg-black border-white/30 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
-                />
+              <Input
+                id="tradeDate"
+                type="date"
+                {...form.register("tradeDate")}
+                className="bg-black border-white/30 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
+              />
               {form.formState.errors.tradeDate && (
                 <p className="text-red-500 text-sm mt-1">
                   {form.formState.errors.tradeDate.message}
@@ -255,7 +255,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                   Quick create
                 </Button>
               </div>
-              
+
               {showQuickCreate.asset ? (
                 <QuickCreateAsset
                   onCreate={handleQuickCreateAsset}
@@ -279,7 +279,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                   </SelectContent>
                 </Select>
               )}
-              
+
               {form.formState.errors.symbol && (
                 <p className="text-red-500 text-sm mt-1">
                   {form.formState.errors.symbol.message}
@@ -301,7 +301,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                   Quick create
                 </Button>
               </div>
-              
+
               {showQuickCreate.session ? (
                 <QuickCreateSession
                   onCreate={handleQuickCreateSession}
@@ -341,7 +341,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
                   Quick create
                 </Button>
               </div>
-              
+
               {showQuickCreate.setup ? (
                 <QuickCreateSetup
                   onCreate={handleQuickCreateSetup}
