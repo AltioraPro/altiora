@@ -27,7 +27,7 @@ export default function GoalsPage() {
 
   const { data: goalLimits, isLoading: limitsLoading } = api.goals.getAllGoalLimits.useQuery(
     undefined,
-    { 
+    {
       staleTime: 60000, // 1 minute
       refetchOnWindowFocus: false,
       refetchOnMount: false,
@@ -54,7 +54,7 @@ export default function GoalsPage() {
     const animateValue = (start: number, end: number, setter: (value: number) => void) => {
       const increment = (end - start) / steps;
       let current = start;
-      
+
       const timer = setInterval(() => {
         current += increment;
         if (current >= end) {
@@ -86,8 +86,8 @@ export default function GoalsPage() {
           {/* Header */}
           <div className="relative border-b border-white/10 mb-8">
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
-            <div className="relative max-w-7xl mx-auto px-6 py-8">
-              <div className="flex items-center justify-between">
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-8">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
                   <h1 className="text-3xl font-bold font-argesta tracking-tight">
                     Goals Tracker
@@ -96,7 +96,7 @@ export default function GoalsPage() {
                     Define your vision. Achieve your destiny.
                   </p>
                 </div>
-                
+
                 {limitsLoading ? (
                   <Button
                     disabled
@@ -135,7 +135,7 @@ export default function GoalsPage() {
           </div>
 
           {/* Quick Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-12 max-w-7xl mx-auto px-4 sm:px-6">
             {/* Active Goals */}
             <div className="bg-black/20 border border-white/10 rounded-lg p-6 relative">
               <div className="absolute top-4 right-4">
@@ -148,7 +148,7 @@ export default function GoalsPage() {
                 </p>
               </div>
             </div>
-            
+
             {/* Completed Goals */}
             <div className="bg-black/20 border border-white/10 rounded-lg p-6 relative">
               <div className="absolute top-4 right-4">
@@ -161,7 +161,7 @@ export default function GoalsPage() {
                 </p>
               </div>
             </div>
-            
+
             {/* Overdue Goals */}
             <div className="bg-black/20 border border-white/10 rounded-lg p-6 relative">
               <div className="absolute top-4 right-4">
@@ -174,7 +174,7 @@ export default function GoalsPage() {
                 </p>
               </div>
             </div>
-            
+
             {/* Success Rate */}
             <div className="bg-black/20 border border-white/10 rounded-lg p-6 relative">
               <div className="absolute top-4 right-4">
@@ -196,7 +196,7 @@ export default function GoalsPage() {
 
           {/* Create Goal Modal */}
           <CreateGoalModal
-            isOpen={isCreateModalOpen}    
+            isOpen={isCreateModalOpen}
             onClose={() => setIsCreateModalOpen(false)}
           />
         </div>

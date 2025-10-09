@@ -5,13 +5,6 @@ import { habitCompletions } from "@/server/db/schema";
 import { type AuthQueryContext } from "../../auth/queries/types";
 
 export async function getHabitHeatmap({ db, session }: AuthQueryContext) {
-  if (!session?.userId) {
-    throw new TRPCError({
-      code: "UNAUTHORIZED",
-      message: "You must be logged in to access this resource",
-    });
-  }
-
   try {
     const oneYearAgo = new Date();
     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);

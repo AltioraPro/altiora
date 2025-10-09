@@ -147,7 +147,7 @@ function OnboardingContent() {
       ]);
 
       await new Promise(resolve => setTimeout(resolve, 300));
-      
+
       router.push('/goals');
     } catch (error) {
       console.error('Error generating goal example:', error);
@@ -169,7 +169,7 @@ function OnboardingContent() {
             <Sparkles className="w-5 h-5 text-white/50" />
             <h2 className="text-lg font-semibold text-white/90">Get Started</h2>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <SpotlightCard className="p-0 border border-white/10 group">
               <div className="p-6 h-full flex flex-col">
@@ -228,14 +228,14 @@ function OnboardingContent() {
                   Create your first trading journal to start building your performance knowledge base.
                 </p>
                 <div className="flex flex-col gap-3">
-                  <Button 
+                  <Button
                     onClick={() => setIsCreateJournalModalOpen(true)}
                     className="bg-white text-black hover:bg-gray-100 font-medium shadow-lg"
                     disabled={isGeneratingJournal}
                   >
                     + Create Journal
                   </Button>
-                  <button 
+                  <button
                     onClick={handleGenerateJournalExample}
                     disabled={isGeneratingJournal}
                     className="text-white/50 hover:text-white/70 text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed py-2"
@@ -304,14 +304,14 @@ function OnboardingContent() {
                   Create your first goal to start building your objectives knowledge base.
                 </p>
                 <div className="flex flex-col gap-3">
-                  <Button 
+                  <Button
                     onClick={() => setIsCreateGoalModalOpen(true)}
                     className="bg-white text-black hover:bg-gray-100 font-medium shadow-lg"
                     disabled={isGeneratingGoal}
                   >
                     + Create Goal
                   </Button>
-                  <button 
+                  <button
                     onClick={handleGenerateGoalExample}
                     disabled={isGeneratingGoal}
                     className="text-white/50 hover:text-white/70 text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed py-2"
@@ -356,7 +356,7 @@ function HabitCardWithProvider() {
   const router = useRouter();
   const utils = api.useUtils();
   const [isGeneratingHabit, setIsGeneratingHabit] = useState(false);
-  
+
   const createHabitMutation = api.habits.create.useMutation();
 
   const handleHabitSuccess = () => {
@@ -409,7 +409,7 @@ function HabitCardWithProvider() {
 
   return (
     <HabitsProvider>
-      <HabitCard 
+      <HabitCard
         isGenerating={isGeneratingHabit}
         onGenerateExample={handleGenerateHabitExample}
       />
@@ -478,7 +478,7 @@ function HabitCard({ isGenerating, onGenerateExample }: { isGenerating: boolean;
                   <CheckSquare className="w-3 h-3 text-green-400" />
                 </div>
               </div>
-              
+
               {/* Week 3 */}
               <div className="flex gap-1 justify-center">
                 <div className="w-7 h-7 rounded bg-gradient-to-br from-green-400/30 to-green-500/30 border border-green-400/50 flex items-center justify-center shadow-lg transition-all duration-300 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)] group-hover:scale-110">
@@ -501,14 +501,14 @@ function HabitCard({ isGenerating, onGenerateExample }: { isGenerating: boolean;
           Create your first habit to start building your daily routine knowledge base.
         </p>
         <div className="flex flex-col gap-3">
-          <Button 
+          <Button
             onClick={openCreateModal}
             className="bg-white text-black hover:bg-gray-100 font-medium shadow-lg"
             disabled={isGenerating}
           >
             + Create Habit
           </Button>
-          <button 
+          <button
             onClick={onGenerateExample}
             disabled={isGenerating}
             className="text-white/50 hover:text-white/70 text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed py-2"
@@ -532,15 +532,15 @@ export default function GlobalDashboardPage() {
 
   const effectiveJournalIds = selectedJournalIds.length > 0 ? selectedJournalIds : undefined;
 
-  const { data: stats } = api.trading.getStats.useQuery({ 
-    journalIds: effectiveJournalIds 
+  const { data: stats } = api.trading.getStats.useQuery({
+    journalIds: effectiveJournalIds
   });
-  const { data: allTrades } = api.trading.getTrades.useQuery({ 
+  const { data: allTrades } = api.trading.getTrades.useQuery({
     journalIds: effectiveJournalIds
   });
 
-  const { data: sessions } = api.trading.getSessions.useQuery({ 
-    journalIds: effectiveJournalIds 
+  const { data: sessions } = api.trading.getSessions.useQuery({
+    journalIds: effectiveJournalIds
   });
 
   useEffect(() => {
@@ -594,7 +594,7 @@ export default function GlobalDashboardPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header Navigation */}
-      <div className="flex items-center space-x-4 mb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
         <Link href="/trading/journals">
           <Button variant="ghost" size="sm" className="text-white/70 hover:text-white hover:bg-white/10">
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -602,20 +602,20 @@ export default function GlobalDashboardPage() {
           </Button>
         </Link>
         <div className="flex-1">
-          <h1 className="text-3xl font-argesta text-white font-bold">Global Dashboard</h1>
-          <p className="text-white/60">
+          <h1 className="text-2xl sm:text-3xl font-argesta text-white font-bold">Global Dashboard</h1>
+          <p className="text-sm sm:text-base text-white/60">
             Overview of all your statistics. Select journals to filter.
           </p>
         </div>
       </div>
 
       {/* Filter Section */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
-        <div className="flex items-center gap-4">
-          <div className="relative" ref={dropdownRef}>
+      <div className="flex flex-col gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+          <div className="relative w-full sm:w-auto" ref={dropdownRef}>
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center justify-between px-4 py-2 border border-white/15 bg-black/40 text-white/80 rounded-lg hover:bg-white/10 hover:text-white hover:border-white/25 transition-all duration-200 min-w-[200px]"
+              className="flex items-center justify-between px-4 py-2 border border-white/15 bg-black/40 text-white/80 rounded-lg hover:bg-white/10 hover:text-white hover:border-white/25 transition-all duration-200 w-full sm:min-w-[200px]"
             >
               <span className="text-sm font-medium">
                 {selectedJournalIds.length === 0 && "All journals"}
@@ -624,7 +624,7 @@ export default function GlobalDashboardPage() {
               </span>
               <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
-            
+
             {isDropdownOpen && (
               <div className="absolute top-full left-0 right-0 mt-2 bg-black/90 border border-white/10 rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto backdrop-blur-sm">
                 <div className="p-3 space-y-1">
@@ -638,7 +638,7 @@ export default function GlobalDashboardPage() {
                     />
                     <span className="text-white text-sm font-medium">All journals</span>
                   </div>
-                  
+
                   {journals?.map((journal) => (
                     <div
                       key={journal.id}
@@ -656,7 +656,7 @@ export default function GlobalDashboardPage() {
               </div>
             )}
           </div>
-          
+
           {selectedJournalIds.length > 0 && (
             <div className="px-3 py-1 bg-white/10 rounded-lg border border-white/20">
               <span className="text-white/80 text-sm font-medium">
@@ -692,9 +692,8 @@ export default function GlobalDashboardPage() {
       )}
 
       {/* Trade creation/import modals removed on global dashboard */}
-      
+
       <DiscordWelcomeChecker />
     </div>
   );
 }
- 

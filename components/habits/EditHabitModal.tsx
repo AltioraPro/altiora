@@ -30,7 +30,7 @@ export function EditHabitModal() {
   const [targetFrequency, setTargetFrequency] = useState<"daily" | "weekly" | "monthly">("daily");
   const [isActive, setIsActive] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false);
-  
+
   const utils = api.useUtils();
 
   const { data: habits } = api.habits.getAll.useQuery(undefined, {
@@ -42,16 +42,16 @@ export function EditHabitModal() {
       await utils.habits.getDashboard.cancel();
       await utils.habits.getPaginated.cancel();
       const previousData = utils.habits.getDashboard.getData();
-      
+
       closeEditModal();
-      
+
       if (previousData) {
         const updatedHabits = previousData.habits.map(habit =>
           habit.id === updatedHabit.id
             ? { ...habit, ...updatedHabit, updatedAt: new Date() }
             : habit
         );
-        
+
         const updatedTodayStats = {
           ...previousData.todayStats,
           habits: previousData.todayStats.habits.map(habit =>
@@ -60,31 +60,31 @@ export function EditHabitModal() {
               : habit
           )
         };
-        
+
         const oldHabit = previousData.habits.find(h => h.id === updatedHabit.id);
         let totalActiveHabits = previousData.stats.totalActiveHabits;
-        
+
         if (oldHabit && updatedHabit.isActive !== undefined) {
           if (oldHabit.isActive && !updatedHabit.isActive) {
             totalActiveHabits -= 1;
-            
+
             const updatedTodayStatsForDeactivation = {
               ...updatedTodayStats,
               habits: updatedTodayStats.habits.filter(h => h.id !== updatedHabit.id)
             };
-            
+
             updatedTodayStatsForDeactivation.totalHabits = updatedTodayStatsForDeactivation.habits.length;
             const completedHabits = updatedTodayStatsForDeactivation.habits.filter(h => h.isCompleted).length;
             updatedTodayStatsForDeactivation.completedHabits = completedHabits;
-            updatedTodayStatsForDeactivation.completionPercentage = updatedTodayStatsForDeactivation.totalHabits > 0 
-              ? Math.round((completedHabits / updatedTodayStatsForDeactivation.totalHabits) * 100) 
+            updatedTodayStatsForDeactivation.completionPercentage = updatedTodayStatsForDeactivation.totalHabits > 0
+              ? Math.round((completedHabits / updatedTodayStatsForDeactivation.totalHabits) * 100)
               : 0;
-              
+
             Object.assign(updatedTodayStats, updatedTodayStatsForDeactivation);
-            
+
           } else if (!oldHabit.isActive && updatedHabit.isActive) {
             totalActiveHabits += 1;
-            
+
             const newTodayHabit = {
               id: updatedHabit.id,
               title: updatedHabit.title || oldHabit.title,
@@ -92,30 +92,30 @@ export function EditHabitModal() {
               isCompleted: false,
               notes: undefined,
             };
-            
+
             updatedTodayStats.habits.push(newTodayHabit);
             updatedTodayStats.totalHabits = updatedTodayStats.habits.length;
             const completedHabits = updatedTodayStats.habits.filter(h => h.isCompleted).length;
             updatedTodayStats.completedHabits = completedHabits;
-            updatedTodayStats.completionPercentage = updatedTodayStats.totalHabits > 0 
-              ? Math.round((completedHabits / updatedTodayStats.totalHabits) * 100) 
+            updatedTodayStats.completionPercentage = updatedTodayStats.totalHabits > 0
+              ? Math.round((completedHabits / updatedTodayStats.totalHabits) * 100)
               : 0;
           }
         }
-        
+
         const today = new Date().toISOString().split('T')[0]!;
-        const updatedRecentActivity = previousData.recentActivity.map(activity => 
-          activity.date === today 
+        const updatedRecentActivity = previousData.recentActivity.map(activity =>
+          activity.date === today
             ? { ...activity, completionPercentage: updatedTodayStats.completionPercentage }
             : activity
         );
-        
-        const updatedWeeklyStats = previousData.stats.weeklyStats.map(stat => 
-          stat.date === today 
+
+        const updatedWeeklyStats = previousData.stats.weeklyStats.map(stat =>
+          stat.date === today
             ? { ...stat, ...updatedTodayStats }
             : stat
         );
-        
+
         utils.habits.getDashboard.setData(undefined, {
           ...previousData,
           habits: updatedHabits,
@@ -128,7 +128,7 @@ export function EditHabitModal() {
           }
         });
       }
-      
+
       return { previousData };
     },
     onSuccess: () => {
@@ -142,11 +142,11 @@ export function EditHabitModal() {
       if (context?.previousData) {
         utils.habits.getDashboard.setData(undefined, context.previousData);
       }
-      
+
       if (variables.id) {
         openEditModal(variables.id);
       }
-      
+
       console.error("Error updating habit:", error);
       addToast({
         type: "error",
@@ -189,7 +189,7 @@ export function EditHabitModal() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!title.trim() || !editingHabit) return;
 
     updateHabit.mutate({
@@ -231,17 +231,17 @@ export function EditHabitModal() {
   return (
     <>
       {/* Backdrop */}
-      <div 
+      <div
         className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999]"
         onClick={handleClose}
       />
-      
+
       {/* Modal */}
       <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 pointer-events-none">
         <div className="bg-pure-black border border-white/20 rounded-2xl w-full max-w-md max-h-[90vh] relative overflow-hidden pointer-events-auto">
           {/* Gradient accent */}
           <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-          
+
           <div className="p-4 overflow-y-auto max-h-[calc(90vh-2rem)]">
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
@@ -269,14 +269,12 @@ export function EditHabitModal() {
                 <button
                   type="button"
                   onClick={() => setIsActive(!isActive)}
-                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-300 ${
-                    isActive ? "bg-green-500" : "bg-white/20"
-                  }`}
+                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-300 ${isActive ? "bg-green-500" : "bg-white/20"
+                    }`}
                 >
                   <span
-                    className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform duration-300 ${
-                      isActive ? "translate-x-5" : "translate-x-1"
-                    }`}
+                    className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform duration-300 ${isActive ? "translate-x-5" : "translate-x-1"
+                      }`}
                   />
                 </button>
               </div>
@@ -286,17 +284,16 @@ export function EditHabitModal() {
                 <label className="block text-xs  text-white/80 mb-2">
                   EMOJI
                 </label>
-                <div className="grid grid-cols-10 gap-1 p-3 bg-white/5 rounded-lg border border-white/10">
+                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-1 p-3 bg-white/5 rounded-lg border border-white/10">
                   {HABIT_EMOJIS.map((emojiOption) => (
                     <button
                       key={emojiOption}
                       type="button"
                       onClick={() => setEmoji(emojiOption)}
-                      className={`w-6 h-6 rounded flex items-center justify-center text-lg transition-all duration-200 ${
-                        emoji === emojiOption
+                      className={`w-6 h-6 rounded flex items-center justify-center text-lg transition-all duration-200 ${emoji === emojiOption
                           ? "bg-white/20 border-2 border-white/40"
                           : "hover:bg-white/10 border-2 border-transparent"
-                      }`}
+                        }`}
                     >
                       {emojiOption}
                     </button>
@@ -344,17 +341,16 @@ export function EditHabitModal() {
                 <label className="block text-xs  text-white/80 mb-2">
                   ACCENT COLOR
                 </label>
-                <div className="grid grid-cols-10 gap-1 p-3 bg-white/5 rounded-lg border border-white/10">
+                <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-1 p-3 bg-white/5 rounded-lg border border-white/10">
                   {HABIT_COLORS.map((colorOption) => (
                     <button
                       key={colorOption}
                       type="button"
                       onClick={() => setColor(colorOption)}
-                      className={`w-5 h-5 rounded border-2 transition-all duration-200 ${
-                        color === colorOption
+                      className={`w-5 h-5 rounded border-2 transition-all duration-200 ${color === colorOption
                           ? "border-white/60 scale-110"
                           : "border-white/20 hover:border-white/40"
-                      }`}
+                        }`}
                       style={{ backgroundColor: colorOption }}
                     />
                   ))}
@@ -374,8 +370,8 @@ export function EditHabitModal() {
                     )}
                     <div className="flex items-center space-x-2 mt-1">
                       <span className="text-xs text-white/40 ">
-                        {targetFrequency === "daily" ? "DAILY" : 
-                         targetFrequency === "weekly" ? "WEEKLY" : "MONTHLY"}
+                        {targetFrequency === "daily" ? "DAILY" :
+                          targetFrequency === "weekly" ? "WEEKLY" : "MONTHLY"}
                       </span>
                       {!isActive && (
                         <span className="text-xs text-red-400/80 ">INACTIVE</span>

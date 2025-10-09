@@ -209,7 +209,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
       <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-white/20 bg-black">
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -225,7 +225,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
           </div>
         </CardHeader>
         <CardContent className="text-white">
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 sm:space-y-6">
             <div>
               <Label htmlFor="tradeDate" className="text-white/80">Date</Label>
               <Input

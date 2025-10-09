@@ -81,15 +81,15 @@ export function CreateHabitModal({ onSuccess }: CreateHabitModalProps = {}) {
 
   return (
     <>
-      <div 
+      <div
         className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999]"
         onClick={handleClose}
       />
-      
+
       <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 pointer-events-none">
         <div className="bg-pure-black border border-white/20 rounded-2xl w-full max-w-md max-h-[90vh] relative overflow-hidden pointer-events-auto">
           <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-          
+
           <div className="p-4 overflow-y-auto max-h-[calc(90vh-2rem)]">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold  tracking-tight">
@@ -110,17 +110,16 @@ export function CreateHabitModal({ onSuccess }: CreateHabitModalProps = {}) {
                 <label className="block text-xs  text-white/80 mb-2">
                   EMOJI
                 </label>
-                <div className="grid grid-cols-10 gap-1 p-3 bg-white/5 rounded-lg border border-white/10">
+                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-1 p-3 bg-white/5 rounded-lg border border-white/10">
                   {HABIT_EMOJIS.map((emojiOption) => (
                     <button
                       key={emojiOption}
                       type="button"
                       onClick={() => setEmoji(emojiOption)}
-                      className={`w-6 h-6 rounded flex items-center justify-center text-lg transition-all duration-200 ${
-                        emoji === emojiOption
+                      className={`w-6 h-6 rounded flex items-center justify-center text-lg transition-all duration-200 ${emoji === emojiOption
                           ? "bg-white/20 border-2 border-white/40"
                           : "hover:bg-white/10 border-2 border-transparent"
-                      }`}
+                        }`}
                     >
                       {emojiOption}
                     </button>
@@ -165,17 +164,16 @@ export function CreateHabitModal({ onSuccess }: CreateHabitModalProps = {}) {
                 <label className="block text-xs  text-white/80 mb-2">
                   ACCENT COLOR
                 </label>
-                <div className="grid grid-cols-10 gap-1 p-3 bg-white/5 rounded-lg border border-white/10">
+                <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-1 p-3 bg-white/5 rounded-lg border border-white/10">
                   {HABIT_COLORS.map((colorOption) => (
                     <button
                       key={colorOption}
                       type="button"
                       onClick={() => setColor(colorOption)}
-                      className={`w-5 h-5 rounded border-2 transition-all duration-200 ${
-                        color === colorOption
+                      className={`w-5 h-5 rounded border-2 transition-all duration-200 ${color === colorOption
                           ? "border-white/60 scale-110"
                           : "border-white/20 hover:border-white/40"
-                      }`}
+                        }`}
                       style={{ backgroundColor: colorOption }}
                     />
                   ))}
