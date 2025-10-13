@@ -1,16 +1,16 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  PieChart, 
-  Pie, 
-  Cell, 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   AreaChart,
   Area,
@@ -62,35 +62,45 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
 
   const sessionPerformanceData = (() => {
     if (!trades || !sessions) return [];
-    
-    const sessionStats = new Map<string, { name: string; totalPnL: number; count: number }>();
-    
+
+    const sessionStats = new Map<string, {
+      name: string;
+      totalPnL: number;
+      count: number;
+      winningTrades: number;
+    }>();
+
     trades.forEach(trade => {
       if (trade.sessionId) {
         const session = sessions.find(s => s.id === trade.sessionId);
         if (session) {
           const pnl = trade.profitLossPercentage ? parseFloat(trade.profitLossPercentage) || 0 : 0;
           const existing = sessionStats.get(trade.sessionId);
-          
+
           if (existing) {
             existing.totalPnL += pnl;
             existing.count += 1;
+            if (pnl > 0) {
+              existing.winningTrades += 1;
+            }
           } else {
             sessionStats.set(trade.sessionId, {
               name: session.name,
               totalPnL: pnl,
-              count: 1
+              count: 1,
+              winningTrades: pnl > 0 ? 1 : 0
             });
           }
         }
       }
     });
-    
+
     return Array.from(sessionStats.values())
       .map((item, index) => ({
         name: item.name,
         pnl: item.totalPnL,
         count: item.count,
+        winRate: item.count > 0 ? (item.winningTrades / item.count) * 100 : 0,
         color: COLORS[index % COLORS.length]
       }))
       .sort((a, b) => b.pnl - a.pnl);
@@ -101,16 +111,16 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
     .reduce((acc, trade, index) => {
       const pnl = trade.profitLossPercentage ? parseFloat(trade.profitLossPercentage) || 0 : 0;
       const previousCumulative = acc.length > 0 ? acc[acc.length - 1].cumulative : 0;
-      
+
       const cumulative = previousCumulative + pnl;
-      
+
       acc.push({
         date: new Date(trade.tradeDate).toLocaleDateString('en-US'),
         pnl: pnl,
         cumulative: cumulative,
         tradeNumber: index + 1
       });
-      
+
       return acc;
     }, [] as Array<{ date: string; pnl: number; cumulative: number; tradeNumber: number }>) || [];
 
@@ -132,12 +142,12 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                 <PieChart>
                   <defs>
                     <linearGradient id="winnerGradient" x1="0" y1="0" x2="1" y2="1">
-                      <stop offset="0%" stopColor="#ffffff" stopOpacity={1}/>
-                      <stop offset="100%" stopColor="#ffffff" stopOpacity={0.6}/>
+                      <stop offset="0%" stopColor="#ffffff" stopOpacity={1} />
+                      <stop offset="100%" stopColor="#ffffff" stopOpacity={0.6} />
                     </linearGradient>
                     <linearGradient id="loserGradient" x1="0" y1="0" x2="1" y2="1">
-                      <stop offset="0%" stopColor="#404040" stopOpacity={1}/>
-                      <stop offset="100%" stopColor="#404040" stopOpacity={0.6}/>
+                      <stop offset="0%" stopColor="#404040" stopOpacity={1} />
+                      <stop offset="100%" stopColor="#404040" stopOpacity={0.6} />
                     </linearGradient>
                   </defs>
                   <Pie
@@ -154,17 +164,17 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                     animationDuration={1200}
                   >
                     {winRateData.map((entry, index) => (
-                      <Cell 
-                        key={`cell-${index}`} 
+                      <Cell
+                        key={`cell-${index}`}
                         fill={entry.color === '#ffffff' ? 'url(#winnerGradient)' : 'url(#loserGradient)'}
                         stroke="rgba(255,255,255,0.2)"
                         strokeWidth={2}
                       />
                     ))}
                   </Pie>
-                  <Tooltip 
+                  <Tooltip
                     formatter={(value: number, name: string) => [
-                      `${name === 'Winners' ? stats.winRate.toFixed(1) : (100 - stats.winRate).toFixed(1)}%`, 
+                      `${name === 'Winners' ? stats.winRate.toFixed(1) : (100 - stats.winRate).toFixed(1)}%`,
                       name
                     ]}
                     labelFormatter={(label: string) => label}
@@ -191,7 +201,7 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                 </div>
               </div>
             </div>
-            
+
             <div className="flex justify-center space-x-8 mt-6">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 rounded-full bg-white"></div>
@@ -219,14 +229,14 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                   <defs>
                     {COLORS.map((color, index) => (
                       <linearGradient key={`gradient-${index}`} id={`barGradient${index}`} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor={color} stopOpacity={0.9}/>
-                        <stop offset="100%" stopColor={color} stopOpacity={0.3}/>
+                        <stop offset="0%" stopColor={color} stopOpacity={0.9} />
+                        <stop offset="100%" stopColor={color} stopOpacity={0.3} />
                       </linearGradient>
                     ))}
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" strokeOpacity={0.1} />
-                  <XAxis 
-                    dataKey="name" 
+                  <XAxis
+                    dataKey="name"
                     stroke="#ffffff"
                     strokeOpacity={0.4}
                     fontSize={10}
@@ -236,39 +246,38 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                     tickLine={false}
                     axisLine={false}
                   />
-                  <YAxis 
-                    stroke="#ffffff" 
-                    strokeOpacity={0.4} 
+                  <YAxis
+                    stroke="#ffffff"
+                    strokeOpacity={0.4}
                     fontSize={10}
                     tickFormatter={(value) => `${value.toFixed(1)}%`}
                     domain={['dataMin - 5', 'dataMax + 5']}
                     tickLine={false}
                     axisLine={false}
                   />
-                  <Tooltip 
-                    formatter={(value: number) => [
-                      `${value.toFixed(1)}%`, 
-                      'PnL Total'
-                    ]}
-                    labelFormatter={(label: string) => label}
-                    contentStyle={{
-                      backgroundColor: 'rgba(0, 0, 0, 0.85)',
-                      border: '1px solid rgba(255, 255, 255, 0.2)',
-                      borderRadius: '8px',
-                      color: '#ffffff',
-                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                    }}
-                    itemStyle={{
-                      color: '#ffffff'
-                    }}
-                    labelStyle={{
-                      color: '#ffffff'
+                  <Tooltip
+                    content={({ active, payload, label }) => {
+                      if (active && payload && payload.length) {
+                        const data = payload[0].payload;
+                        return (
+                          <div className="bg-black/85 border border-white/20 rounded-lg p-3 shadow-lg">
+                            <p className="text-white font-medium mb-1">{label}</p>
+                            <p className="text-white text-sm">
+                              PnL: <span className="font-semibold">{data.pnl.toFixed(1)}%</span>
+                            </p>
+                            <p className="text-white text-sm">
+                              Win Rate: <span className="font-semibold">{data.winRate.toFixed(1)}%</span>
+                            </p>
+                          </div>
+                        );
+                      }
+                      return null;
                     }}
                   />
                   <Bar dataKey="pnl" radius={[4, 4, 4, 4]}>
                     {sessionPerformanceData.map((entry, index) => (
-                      <Cell 
-                        key={`cell-${index}`} 
+                      <Cell
+                        key={`cell-${index}`}
                         fill={`url(#barGradient${index % COLORS.length})`}
                         stroke="rgba(255,255,255,0.1)"
                         strokeWidth={1}
@@ -293,73 +302,73 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
           <div className="space-y-6">
             <div className="w-full h-[250px] pr-4">
               <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={cumulativeData} margin={{ right: 20 }}>
-                <defs>
-                  <linearGradient id="performanceGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#10B981" stopOpacity={0.8}/>
-                    <stop offset="100%" stopColor="#10B981" stopOpacity={0.1}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" strokeOpacity={0.1} />
-                <XAxis 
-                  dataKey="tradeNumber" 
-                  stroke="#ffffff"
-                  strokeOpacity={0.4}
-                  fontSize={10}
-                  tickLine={false}
-                  axisLine={false}
-                  interval={4}
-                  tickFormatter={(value) => value % 5 === 0 ? value : ''}
-                />
-                <YAxis 
-                  stroke="#ffffff" 
-                  strokeOpacity={0.4} 
-                  fontSize={10}
-                  tickFormatter={(value) => `${value.toFixed(1)}%`}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <Tooltip 
-                  formatter={(value: number) => [
-                    `${value.toFixed(1)}%`, 
-                    'Cumulative PnL'
-                  ]}
-                  labelFormatter={(label: string) => `Trade #${label}`}
-                  contentStyle={{
-                    backgroundColor: 'rgba(0,0,0,0.95)',
-                    border: '1px solid rgba(255,255,255,0.2)',
-                    borderRadius: '10px',
-                    color: '#ffffff',
-                    backdropFilter: 'blur(10px)',
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.5)'
-                  }}
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="cumulative" 
-                  stroke="#10B981" 
-                  fill="url(#performanceGradient)"
-                  strokeWidth={3}
-                  dot={false}
-                />
-                {cumulativeData.length > 0 && (
-                  <ReferenceDot
-                    x={cumulativeData.length}
-                    y={totalPerformance}
-                    r={6}
-                    fill="#10B981"
-                    stroke="#10B981"
-                    strokeWidth={2}
-                    style={{
-                      filter: 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.6)) drop-shadow(0 0 16px rgba(16, 185, 129, 0.3))',
-                      animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                <AreaChart data={cumulativeData} margin={{ right: 20 }}>
+                  <defs>
+                    <linearGradient id="performanceGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#10B981" stopOpacity={0.8} />
+                      <stop offset="100%" stopColor="#10B981" stopOpacity={0.1} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" strokeOpacity={0.1} />
+                  <XAxis
+                    dataKey="tradeNumber"
+                    stroke="#ffffff"
+                    strokeOpacity={0.4}
+                    fontSize={10}
+                    tickLine={false}
+                    axisLine={false}
+                    interval={4}
+                    tickFormatter={(value) => value % 5 === 0 ? value : ''}
+                  />
+                  <YAxis
+                    stroke="#ffffff"
+                    strokeOpacity={0.4}
+                    fontSize={10}
+                    tickFormatter={(value) => `${value.toFixed(1)}%`}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <Tooltip
+                    formatter={(value: number) => [
+                      `${value.toFixed(1)}%`,
+                      'Cumulative PnL'
+                    ]}
+                    labelFormatter={(label: string) => `Trade #${label}`}
+                    contentStyle={{
+                      backgroundColor: 'rgba(0,0,0,0.95)',
+                      border: '1px solid rgba(255,255,255,0.2)',
+                      borderRadius: '10px',
+                      color: '#ffffff',
+                      backdropFilter: 'blur(10px)',
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.5)'
                     }}
                   />
-                )}
-              </AreaChart>
+                  <Area
+                    type="monotone"
+                    dataKey="cumulative"
+                    stroke="#10B981"
+                    fill="url(#performanceGradient)"
+                    strokeWidth={3}
+                    dot={false}
+                  />
+                  {cumulativeData.length > 0 && (
+                    <ReferenceDot
+                      x={cumulativeData.length}
+                      y={totalPerformance}
+                      r={6}
+                      fill="#10B981"
+                      stroke="#10B981"
+                      strokeWidth={2}
+                      style={{
+                        filter: 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.6)) drop-shadow(0 0 16px rgba(16, 185, 129, 0.3))',
+                        animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                      }}
+                    />
+                  )}
+                </AreaChart>
               </ResponsiveContainer>
             </div>
-            
+
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-sm text-white/70  tracking-wide">TOTAL PERFORMANCE</div>
