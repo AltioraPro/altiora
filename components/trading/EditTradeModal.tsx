@@ -94,14 +94,14 @@ export function EditTradeModal({ isOpen, onClose, tradeId, onSuccess }: EditTrad
       await updateTradeMutation.mutateAsync({
         id: tradeId,
         tradeDate: formData.tradeDate,
-        assetId: formData.assetId || "",
-        sessionId: formData.sessionId || "",
-        setupId: formData.setupId || "",
-        riskInput: formData.riskPercentage || "",
-        profitLossPercentage: formData.resultPercentage || "",
-        exitReason: (formData.exitReason as "TP" | "BE" | "SL" | "Manual") || "Manual",
-        tradingviewLink: formData.tradingViewLink || "",
-        notes: formData.notes || "",
+        assetId: formData.assetId || undefined,
+        sessionId: formData.sessionId || undefined,
+        setupId: formData.setupId || undefined,
+        riskInput: formData.riskPercentage || undefined,
+        profitLossPercentage: formData.resultPercentage || undefined,
+        exitReason: (formData.exitReason as "TP" | "BE" | "SL" | "Manual") || undefined,
+        tradingviewLink: formData.tradingViewLink || undefined,
+        notes: formData.notes || undefined,
       });
     } catch (error) {
       console.error("Error updating trade:", error);

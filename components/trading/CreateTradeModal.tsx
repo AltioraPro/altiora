@@ -106,10 +106,19 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
 
   const createTradeMutation = api.trading.createTrade.useMutation({
     onSuccess: () => {
-      form.reset();
-      onClose();
       utils.trading.getTrades.invalidate();
       utils.trading.getStats.invalidate();
+      form.reset({
+        tradeDate: new Date().toISOString().split('T')[0],
+        symbol: "",
+        riskInput: "",
+        profitLossAmount: "",
+        profitLossPercentage: "",
+        tradingviewLink: "",
+        notes: "",
+        journalId: journalId || "",
+      });
+      onClose();
     },
   });
 
@@ -197,9 +206,6 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
       };
 
       await createTradeMutation.mutateAsync(tradeData);
-
-      onClose();
-      form.reset();
     } catch (error) {
       console.error("Error creating trade:", error);
     }
