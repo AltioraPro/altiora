@@ -20,10 +20,10 @@ export interface GoalReminder {
 export class GoalRemindersService {
   static async sendOverdueReminders() {
     console.log("Checking for overdue reminders...");
-    
+
     try {
       const now = new Date();
-      
+
       const overdueGoals = await db
         .select({
           id: goals.id,
@@ -36,15 +36,15 @@ export class GoalRemindersService {
           lastReminderSent: goals.lastReminderSent,
         })
         .from(goals)
-                 .where(
-           and(
-             eq(goals.isActive, true),
-             eq(goals.isCompleted, false),
-             lte(goals.nextReminderDate, now),
-             isNotNull(goals.reminderFrequency),
-             isNotNull(goals.nextReminderDate)
-           )
-         );
+        .where(
+          and(
+            eq(goals.isActive, true),
+            eq(goals.isCompleted, false),
+            lte(goals.nextReminderDate, now),
+            isNotNull(goals.reminderFrequency),
+            isNotNull(goals.nextReminderDate)
+          )
+        );
 
       console.log(`Found ${overdueGoals.length} overdue reminders`);
 
@@ -56,9 +56,15 @@ export class GoalRemindersService {
             title: goal.title,
             description: goal.description || undefined,
             deadline: goal.deadline || undefined,
-            reminderFrequency: goal.reminderFrequency as "daily" | "weekly" | "monthly",
+            reminderFrequency: goal.reminderFrequency as
+              | "daily"
+              | "weekly"
+              | "monthly",
           });
-          await this.updateNextReminderDate(goal.id, goal.reminderFrequency as "daily" | "weekly" | "monthly");
+          await this.updateNextReminderDate(
+            goal.id,
+            goal.reminderFrequency as "daily" | "weekly" | "monthly"
+          );
         }
       }
 
@@ -110,48 +116,51 @@ export class GoalRemindersService {
   /**
    * Envoyer un rappel Discord
    */
-  static async sendDiscordReminder(discordId: string, goal: {
-    title: string;
-    description?: string;
-    deadline?: Date;
-    reminderFrequency: "daily" | "weekly" | "monthly";
-  }) {
+  static async sendDiscordReminder(
+    discordId: string,
+    goal: {
+      title: string;
+      description?: string;
+      deadline?: Date;
+      reminderFrequency: "daily" | "weekly" | "monthly";
+    }
+  ) {
     try {
-
-
       const frequencyText = {
-        daily: "quotidien",
-        weekly: "hebdomadaire", 
-        monthly: "mensuel"
+        daily: "Daily",
+        weekly: "Weekly",
+        monthly: "Monthly",
       }[goal.reminderFrequency];
 
       const message = {
-        embeds: [{
-          title: "🎯 Rappel d'Objectif",
-          description: `Il est temps de travailler sur votre objectif !`,
-          color: 0x00ff00,
-          fields: [
-            {
-              name: "📋 Objectif",
-              value: goal.title,
-              inline: false
+        embeds: [
+          {
+            title: "⏰ Goal Reminder",
+            description: `Time to work on your goal!`,
+            color: 0x3498db, // Blue color
+            fields: [
+              {
+                name: "🎯 Goal",
+                value: goal.title,
+                inline: false,
+              },
+              {
+                name: "📝 Description",
+                value: goal.description || "No description provided",
+                inline: false,
+              },
+              {
+                name: "⏰ Frequency",
+                value: `${frequencyText} reminder`,
+                inline: true,
+              },
+            ],
+            footer: {
+              text: "Altiora - Your productivity assistant",
             },
-            {
-              name: "📝 Description", 
-              value: goal.description || "Aucune description",
-              inline: false
-            },
-            {
-              name: "⏰ Fréquence",
-              value: `Rappel ${frequencyText}`,
-              inline: true
-            }
-          ],
-          footer: {
-            text: "Altiora - Votre assistant de productivité"
+            timestamp: new Date().toISOString(),
           },
-          timestamp: new Date().toISOString()
-        }]
+        ],
       };
 
       await DiscordService.sendDirectMessage(discordId, message);
@@ -164,7 +173,10 @@ export class GoalRemindersService {
   /**
    * Mettre à jour la prochaine date de rappel
    */
-  static async updateNextReminderDate(goalId: string, frequency: "daily" | "weekly" | "monthly") {
+  static async updateNextReminderDate(
+    goalId: string,
+    frequency: "daily" | "weekly" | "monthly"
+  ) {
     try {
       const now = new Date();
       const nextDate = new Date(now);
@@ -194,17 +206,24 @@ export class GoalRemindersService {
 
       console.log(`Next reminder date updated for goal ${goalId}: ${nextDate}`);
     } catch (error) {
-      console.error(`Error updating next reminder date for goal ${goalId}:`, error);
+      console.error(
+        `Error updating next reminder date for goal ${goalId}:`,
+        error
+      );
     }
   }
 
   /**
    * Enregistrer qu'un rappel a été envoyé
    */
-  static async recordReminderSent(goalId: string, userId: string, reminderType: "discord" | "email" | "push") {
+  static async recordReminderSent(
+    goalId: string,
+    userId: string,
+    reminderType: "discord" | "email" | "push"
+  ) {
     try {
       const reminderId = createId();
-      
+
       await db.insert(goalReminders).values({
         id: reminderId,
         goalId,
@@ -223,7 +242,10 @@ export class GoalRemindersService {
   /**
    * Programmer un rappel pour un goal
    */
-  static async scheduleReminder(goalId: string, frequency: "daily" | "weekly" | "monthly") {
+  static async scheduleReminder(
+    goalId: string,
+    frequency: "daily" | "weekly" | "monthly"
+  ) {
     try {
       const now = new Date();
       const nextDate = new Date(now);
@@ -275,7 +297,13 @@ export class GoalRemindersService {
       const totalReminders = await db
         .select()
         .from(goals)
-        .where(and(eq(goals.userId, userId), eq(goals.isActive, true), isNotNull(goals.reminderFrequency)));
+        .where(
+          and(
+            eq(goals.userId, userId),
+            eq(goals.isActive, true),
+            isNotNull(goals.reminderFrequency)
+          )
+        );
 
       const sentReminders = await db
         .select()
@@ -283,7 +311,10 @@ export class GoalRemindersService {
         .where(
           and(
             eq(goalReminders.userId, userId),
-            gte(goalReminders.sentAt, new Date(new Date().getFullYear(), new Date().getMonth(), 1))
+            gte(
+              goalReminders.sentAt,
+              new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+            )
           )
         );
 
@@ -313,4 +344,4 @@ export class GoalRemindersService {
       };
     }
   }
-} 
+}
