@@ -7,7 +7,7 @@ export async function middleware(request: NextRequest) {
   const publicRoutes = [
     "/",
     "/demo",
-    "/setup", 
+    "/setup",
     "/contact",
     "/pricing",
     "/auth",
@@ -16,8 +16,8 @@ export async function middleware(request: NextRequest) {
     "/static",
   ];
 
-  const isPublicRoute = publicRoutes.some(route => 
-    pathname.startsWith(route) || pathname.includes(".")
+  const isPublicRoute = publicRoutes.some(
+    (route) => pathname.startsWith(route) || pathname.includes(".")
   );
 
   if (isPublicRoute) {
@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest) {
 
   const protectedPrefixes = [
     "/dashboard",
-    "/trading", 
+    "/trading",
     "/habits",
     "/goals",
     "/settings",
@@ -34,7 +34,7 @@ export async function middleware(request: NextRequest) {
     "/app",
   ];
 
-  const isProtectedRoute = protectedPrefixes.some(prefix => 
+  const isProtectedRoute = protectedPrefixes.some((prefix) =>
     pathname.startsWith(prefix)
   );
 
@@ -69,4 +69,4 @@ export const config = {
      */
     "/((?!api|_next/static|_next/image|favicon.ico).*)",
   ],
-}; 
+};
