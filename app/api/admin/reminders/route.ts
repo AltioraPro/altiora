@@ -19,6 +19,14 @@ function basicAuth(request: NextRequest): boolean {
   const expectedUsername = process.env.ADMIN_API_USERNAME;
   const expectedPassword = process.env.ADMIN_API_PASSWORD;
 
+  console.log("🔍 Production Auth Debug:", {
+    hasUsername: !!expectedUsername,
+    hasPassword: !!expectedPassword,
+    usernameLength: expectedUsername?.length || 0,
+    passwordLength: expectedPassword?.length || 0,
+    environment: process.env.NODE_ENV,
+  });
+
   if (!expectedUsername || !expectedPassword) {
     console.error("❌ Admin API credentials not configured");
     return false;
