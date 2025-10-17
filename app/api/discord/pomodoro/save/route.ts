@@ -1,29 +1,37 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/server/db';
-import { discordPomodoroSessions } from '@/server/db/schema';
-import { eq } from 'drizzle-orm';
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/server/db";
+import { discordPomodoroSessions } from "@/server/db/schema";
+import { eq } from "drizzle-orm";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { 
-      userId, 
-      discordId, 
-      channelId, 
-      duration, 
-      workTime, 
-      breakTime, 
-      format, 
-      status, 
-      totalWorkTime, 
-      totalBreakTime, 
-      endedAt 
+    const {
+      userId,
+      discordId,
+      channelId,
+      duration,
+      workTime,
+      breakTime,
+      format,
+      status,
+      totalWorkTime,
+      totalBreakTime,
+      endedAt,
     } = body;
 
     // Validation des données requises
-    if (!userId || !discordId || !channelId || !duration || !workTime || !breakTime || !format) {
+    if (
+      !userId ||
+      !discordId ||
+      !channelId ||
+      duration === undefined ||
+      workTime === undefined ||
+      breakTime === undefined ||
+      !format
+    ) {
       return NextResponse.json(
-        { error: 'Données manquantes requises' },
+        { error: "Données manquantes requises" },
         { status: 400 }
       );
     }
@@ -36,7 +44,7 @@ export async function POST(request: NextRequest) {
       workTime: parseInt(workTime),
       breakTime: parseInt(breakTime),
       format,
-      status: status || 'completed',
+      status: status || "completed",
       totalWorkTime: parseInt(totalWorkTime) || 0,
       totalBreakTime: parseInt(totalBreakTime) || 0,
       endedAt: endedAt ? new Date(endedAt) : new Date(),
@@ -69,15 +77,16 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       sessionId: result.id,
-      message: 'Session Pomodoro sauvegardée avec succès'
+      message: "Session Pomodoro sauvegardée avec succès",
     });
-
   } catch (error) {
-    console.error('Erreur lors de la sauvegarde de la session Pomodoro:', error);
+    console.error(
+      "Erreur lors de la sauvegarde de la session Pomodoro:",
+      error
+    );
     return NextResponse.json(
-      { error: 'Erreur interne du serveur' },
+      { error: "Erreur interne du serveur" },
       { status: 500 }
     );
   }
 }
-
