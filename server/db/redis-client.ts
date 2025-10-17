@@ -10,12 +10,18 @@ class RedisHTTPClient {
 
   async get<T>(key: string): Promise<T | null> {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
+
       const response = await fetch(`${this.baseUrl}/api/redis/${key}`, {
         method: "GET",
         headers: {
           "x-api-key": this.apiKey,
         },
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -24,13 +30,15 @@ class RedisHTTPClient {
       const result = await response.json();
       return result.success ? result.data : null;
     } catch (error) {
-      console.warn("Redis GET error:", error);
       return null;
     }
   }
 
   async set(key: string, value: any, ttl: number = 300): Promise<void> {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
+
       const response = await fetch(`${this.baseUrl}/api/redis/${key}`, {
         method: "POST",
         headers: {
@@ -38,24 +46,33 @@ class RedisHTTPClient {
           "x-api-key": this.apiKey,
         },
         body: JSON.stringify({ value, ttl }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
     } catch (error) {
-      console.warn("Redis SET error:", error);
+      // Silencieux - le cache n'est pas critique
     }
   }
 
   async del(pattern: string): Promise<number> {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
+
       const response = await fetch(`${this.baseUrl}/api/redis/${pattern}`, {
         method: "DELETE",
         headers: {
           "x-api-key": this.apiKey,
         },
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -64,7 +81,6 @@ class RedisHTTPClient {
       const result = await response.json();
       return result.count || 0;
     } catch (error) {
-      console.warn("Redis DEL error:", error);
       return 0;
     }
   }
