@@ -55,7 +55,7 @@ function QuarterlyGoalItem({
   };
 
   return (
-    <div className="group relative bg-white/[0.02] border border-white/5 rounded-lg p-5 hover:border-white/10 hover:bg-white/[0.04] transition-all duration-200 mb-20">
+    <div className="group relative bg-white/[0.02] border border-white/5 rounded-lg p-5 hover:border-white/10 hover:bg-white/[0.04] transition-all duration-200 mb-4">
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 mb-2">
@@ -250,7 +250,7 @@ export function GoalsDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-8 space-y-12">
           {isLoading ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div
                   key={i}
@@ -297,12 +297,12 @@ export function GoalsDashboard() {
                     </div>
                   </div>
 
-                  <div className="space-y-8">
+                  <div className="space-y-4">
                     {Object.keys(annualByYear)
                       .map(Number)
                       .sort((a, b) => a - b)
                       .map(year => (
-                        <div key={year} className="space-y-6">
+                        <div key={year} className="space-y-4">
                           <div className="flex items-center gap-4">
                             <h3 className="text-2xl font-bold text-white/90">
                               {year}
@@ -312,7 +312,7 @@ export function GoalsDashboard() {
                               {annualByYear[year].length} goals
                             </div>
                           </div>
-                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             {annualByYear[year]
                               .sort((a, b) => {
                                 if (a.isCompleted !== b.isCompleted) {
@@ -352,7 +352,7 @@ export function GoalsDashboard() {
                     </div>
                   </div>
 
-                  <div className="space-y-8">
+                  <div className="space-y-4">
                     {Object.keys(quarterlyByQuarter)
                       .sort((a, b) => {
                         const [yearA, quarterA] = a.split('-Q').map(Number);
@@ -371,7 +371,7 @@ export function GoalsDashboard() {
                         };
 
                         return (
-                          <div key={quarterKey} className="space-y-6">
+                          <div key={quarterKey} className="space-y-4">
                             <div className="flex items-center gap-4">
                               <h3 className="text-2xl font-bold text-white/90">
                                 {year} - {quarterNames[quarter as keyof typeof quarterNames]}
@@ -382,7 +382,7 @@ export function GoalsDashboard() {
                               </div>
                             </div>
 
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                               {quarterlyByQuarter[quarterKey]
                                 .sort((a, b) => {
                                   if (a.isCompleted !== b.isCompleted) {
@@ -423,12 +423,12 @@ export function GoalsDashboard() {
                     </div>
                   </div>
 
-                  <div className="space-y-8">
+                  <div className="space-y-4">
                     {Object.keys(monthlyByYear)
                       .map(Number)
                       .sort((a, b) => a - b)
                       .map(year => (
-                        <div key={year} className="space-y-6">
+                        <div key={year} className="space-y-4">
                           <div className="flex items-center gap-4">
                             <h3 className="text-2xl font-bold text-white/90">
                               {year}
@@ -438,7 +438,7 @@ export function GoalsDashboard() {
                               {monthlyByYear[year].length} goals
                             </div>
                           </div>
-                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             {monthlyByYear[year]
                               .sort((a, b) => {
                                 if (a.isCompleted !== b.isCompleted) {
