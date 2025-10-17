@@ -1,7 +1,13 @@
 import { eq, and, count, sql, gte } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
-import { users, habits, trades, discordPomodoroSessions, habitCompletions } from "@/server/db/schema";
+import {
+  users,
+  habits,
+  trades,
+  discordPomodoroSessions,
+  habitCompletions,
+} from "@/server/db/schema";
 import { type AuthQueryContext } from "../../auth/queries/types";
 
 export async function getUserStats({ db, session }: AuthQueryContext) {
@@ -19,12 +25,7 @@ export async function getUserStats({ db, session }: AuthQueryContext) {
         activeHabits: count(habits.id),
       })
       .from(habits)
-      .where(
-        and(
-          eq(habits.userId, session.userId),
-          eq(habits.isActive, true)
-        )
-      );
+      .where(and(eq(habits.userId, session.userId), eq(habits.isActive, true)));
 
     const tradesStats = await db
       .select({
@@ -53,7 +54,24 @@ export async function getUserStats({ db, session }: AuthQueryContext) {
       (Date.now() - user.createdAt.getTime()) / (1000 * 60 * 60 * 24)
     );
 
-    // Statistiques Pomodoro
+    // Statistiques Deepwork (sessions avec format = 'deepwork')
+    const deepworkStats = await db
+      .select({
+        totalSessions: count(discordPomodoroSessions.id),
+        completedSessions: sql<number>`COUNT(CASE WHEN ${discordPomodoroSessions.status} = 'completed' THEN 1 END)`,
+        totalWorkTime: sql<number>`COALESCE(SUM(${discordPomodoroSessions.totalWorkTime}), 0)`,
+        averageSessionDuration: sql<number>`COALESCE(AVG(${discordPomodoroSessions.workTime}), 0)`,
+        longestSession: sql<number>`COALESCE(MAX(${discordPomodoroSessions.workTime}), 0)`,
+      })
+      .from(discordPomodoroSessions)
+      .where(
+        and(
+          eq(discordPomodoroSessions.userId, session.userId),
+          eq(discordPomodoroSessions.format, "deepwork")
+        )
+      );
+
+    // Statistiques Pomodoro (sessions avec format != 'deepwork' ou format null)
     const pomodoroStats = await db
       .select({
         totalSessions: count(discordPomodoroSessions.id),
@@ -61,7 +79,12 @@ export async function getUserStats({ db, session }: AuthQueryContext) {
         totalWorkTime: sql<number>`COALESCE(SUM(${discordPomodoroSessions.totalWorkTime}), 0)`,
       })
       .from(discordPomodoroSessions)
-      .where(eq(discordPomodoroSessions.userId, session.userId));
+      .where(
+        and(
+          eq(discordPomodoroSessions.userId, session.userId),
+          sql`${discordPomodoroSessions.format} != 'deepwork' OR ${discordPomodoroSessions.format} IS NULL`
+        )
+      );
 
     return {
       habits: {
@@ -70,6 +93,15 @@ export async function getUserStats({ db, session }: AuthQueryContext) {
       },
       trades: {
         total: tradesStats[0]?.totalTrades || 0,
+      },
+      deepwork: {
+        totalSessions: deepworkStats[0]?.totalSessions || 0,
+        completedSessions: Number(deepworkStats[0]?.completedSessions) || 0,
+        totalWorkTime: Number(deepworkStats[0]?.totalWorkTime) || 0,
+        averageSessionDuration: Math.round(
+          Number(deepworkStats[0]?.averageSessionDuration) || 0
+        ),
+        longestSession: Number(deepworkStats[0]?.longestSession) || 0,
       },
       pomodoro: {
         totalSessions: pomodoroStats[0]?.totalSessions || 0,
@@ -86,11 +118,11 @@ export async function getUserStats({ db, session }: AuthQueryContext) {
     if (error instanceof TRPCError) {
       throw error;
     }
-    
+
     console.error("Error retrieving statistics:", error);
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
       message: "Error retrieving statistics",
     });
   }
-} 
+}
