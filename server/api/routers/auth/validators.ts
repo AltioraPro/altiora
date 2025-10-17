@@ -1,4 +1,4 @@
- import { z } from "zod";
+import { z } from "zod";
 
 export const syncUserSchema = z.object({
   id: z.string().min(1, "ID requis"),
@@ -27,6 +27,10 @@ export const updateRankSchema = z.object({
   rank: z.enum(["NEW", "BEGINNER", "RISING", "CHAMPION", "EXPERT", "LEGEND"]),
 });
 
+export const updateLeaderboardVisibilitySchema = z.object({
+  isPublic: z.boolean(),
+});
+
 export const userCreateSchema = z.object({
   email: z.string().email(),
   name: z.string().min(1, "Name is required"),
@@ -40,4 +44,4 @@ export const userLoginSchema = z.object({
 
 export type SyncUserInput = z.infer<typeof syncUserSchema>;
 export type UserCreateInput = z.infer<typeof userCreateSchema>;
-export type UserLoginInput = z.infer<typeof userLoginSchema>; 
+export type UserLoginInput = z.infer<typeof userLoginSchema>;

@@ -3,16 +3,18 @@ import { Header } from "@/components/layout/Header";
 import { SubscriptionStatus } from "@/components/profile/SubscriptionStatus";
 import { DiscordConnection } from "@/components/profile/DiscordConnection";
 import { ProfileForm } from "@/components/profile/ProfileForm";
+import { LeaderboardVisibility } from "@/components/settings/LeaderboardVisibility";
 import { DiscordWelcomeChecker } from "@/components/auth/DiscordWelcomeChecker";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, MessageCircle, CreditCard } from "lucide-react";
+import { User, MessageCircle, CreditCard, Shield } from "lucide-react";
+import { api } from "@/trpc/server";
 
-
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const user = await api.auth.getCurrentUser();
   return (
     <>
       <Header />
-      
+
       <div className="min-h-screen bg-pure-black text-pure-white">
         <div className="relative w-full mx-auto">
           {/* Header */}
@@ -68,7 +70,7 @@ export default function SettingsPage() {
                 </Card>
               </div>
 
-              {/* Right Column - Subscription */}
+              {/* Right Column - Subscription & Privacy */}
               <div className="space-y-6">
                 <Card className="border border-white/10 bg-black/20">
                   <CardHeader>
@@ -81,6 +83,18 @@ export default function SettingsPage() {
                     <Suspense fallback={<div className="h-32 bg-white/5 rounded-lg animate-pulse" />}>
                       <SubscriptionStatus />
                     </Suspense>
+                  </CardContent>
+                </Card>
+
+                <Card className="border border-white/10 bg-black/20">
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2 text-white">
+                      <Shield className="w-5 h-5" />
+                      <span>Privacy</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <LeaderboardVisibility initialIsPublic={(user as any).isLeaderboardPublic ?? false} />
                   </CardContent>
                 </Card>
               </div>

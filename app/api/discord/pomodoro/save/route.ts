@@ -18,6 +18,7 @@ export async function POST(request: NextRequest) {
       totalWorkTime,
       totalBreakTime,
       endedAt,
+      sessionId, // ID de la session à mettre à jour (si existe)
     } = body;
 
     // Validation des données requises
@@ -51,20 +52,24 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date(),
     };
 
-    const existingSession = await db
-      .select()
-      .from(discordPomodoroSessions)
-      .where(eq(discordPomodoroSessions.discordId, discordId))
-      .limit(1);
-
     let result;
-    if (existingSession.length > 0) {
+
+    // Si on a un sessionId, on met à jour la session existante
+    if (sessionId) {
       [result] = await db
         .update(discordPomodoroSessions)
         .set(sessionData)
-        .where(eq(discordPomodoroSessions.id, existingSession[0].id))
+        .where(eq(discordPomodoroSessions.id, sessionId))
         .returning();
+
+      if (!result) {
+        return NextResponse.json(
+          { error: "Session not found" },
+          { status: 404 }
+        );
+      }
     } else {
+      // Sinon, on crée une nouvelle session
       [result] = await db
         .insert(discordPomodoroSessions)
         .values({

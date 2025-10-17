@@ -127,6 +127,13 @@
       "when": 1759488618941,
       "tag": "0017_nosy_scarecrow",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1760702356272,
+      "tag": "0018_legal_shockwave",
+      "breakpoints": true
     }
   ]
 }

@@ -23,6 +23,7 @@ export async function getCurrentUser({ db, session }: AuthQueryContext) {
         emailVerified: true,
         rank: true,
         subscriptionPlan: true,
+        isLeaderboardPublic: true,
         stripeCustomerId: true,
         stripeSubscriptionId: true,
         stripeSubscriptionStatus: true,
@@ -51,11 +52,11 @@ export async function getCurrentUser({ db, session }: AuthQueryContext) {
     if (error instanceof TRPCError) {
       throw error;
     }
-    
+
     console.error("Error retrieving user:", error);
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
       message: "Error retrieving user",
     });
   }
-} 
+}
