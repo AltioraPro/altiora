@@ -198,11 +198,29 @@ export function GoalsDashboard() {
       return grouped;
     };
 
+    const groupQuarterlyGoalsByQuarter = (goals: Goal[]) => {
+      const grouped: Record<string, Goal[]> = {};
+      goals.forEach(goal => {
+        if (goal.deadline) {
+          const date = new Date(goal.deadline);
+          const year = date.getFullYear();
+          const month = date.getMonth();
+          const quarter = Math.floor(month / 3) + 1;
+          const key = `${year}-Q${quarter}`;
+          if (!grouped[key]) {
+            grouped[key] = [];
+          }
+          grouped[key].push(goal);
+        }
+      });
+      return grouped;
+    };
+
     const annualByYear = groupGoalsByYear(annualGoals);
-    const quarterlyByYear = groupGoalsByYear(quarterlyGoals);
+    const quarterlyByQuarter = groupQuarterlyGoalsByQuarter(quarterlyGoals);
     const monthlyByYear = groupGoalsByYear(monthlyGoals);
 
-    return { annualByYear, quarterlyByYear, monthlyByYear };
+    return { annualByYear, quarterlyByQuarter, monthlyByYear };
   };
 
   if (error) {
@@ -216,7 +234,7 @@ export function GoalsDashboard() {
     );
   }
 
-  const { annualByYear, quarterlyByYear, monthlyByYear } = organizeGoalsByType(goalsData?.goals || []);
+  const { annualByYear, quarterlyByQuarter, monthlyByYear } = organizeGoalsByType(goalsData?.goals || []);
 
   return (
     <div className="space-y-8">
@@ -325,58 +343,73 @@ export function GoalsDashboard() {
                 </div>
               )}
 
-              {Object.keys(quarterlyByYear).length > 0 && (
+              {Object.keys(quarterlyByQuarter).length > 0 && (
                 <div className="space-y-8">
                   <div className="flex items-center justify-between">
                     <h2 className="text-3xl font-bold text-white">Quarterly Goals</h2>
                     <div className="text-sm text-white/60">
-                      {Object.values(quarterlyByYear).flat().length} goals
+                      {Object.values(quarterlyByQuarter).flat().length} goals
                     </div>
                   </div>
 
                   <div className="space-y-8">
-                    {Object.keys(quarterlyByYear)
-                      .map(Number)
-                      .sort((a, b) => a - b)
-                      .map(year => (
-                        <div key={year} className="space-y-6">
-                          <div className="flex items-center gap-4">
-                            <h3 className="text-2xl font-bold text-white/90">
-                              {year}
-                            </h3>
-                            <div className="h-px bg-gradient-to-r from-white/20 to-transparent flex-1"></div>
-                            <div className="text-sm text-white/60 bg-white/5 px-3 py-1 rounded-full">
-                              {quarterlyByYear[year].length} goals
+                    {Object.keys(quarterlyByQuarter)
+                      .sort((a, b) => {
+                        const [yearA, quarterA] = a.split('-Q').map(Number);
+                        const [yearB, quarterB] = b.split('-Q').map(Number);
+                        if (yearA !== yearB) return yearA - yearB;
+                        return quarterA - quarterB;
+                      })
+                      .map(quarterKey => {
+                        const [year, quarterStr] = quarterKey.split('-Q');
+                        const quarter = parseInt(quarterStr, 10);
+                        const quarterNames = {
+                          1: "Q1 (Jan-Mar)",
+                          2: "Q2 (Apr-Jun)",
+                          3: "Q3 (Jul-Sep)",
+                          4: "Q4 (Oct-Dec)"
+                        };
+
+                        return (
+                          <div key={quarterKey} className="space-y-6">
+                            <div className="flex items-center gap-4">
+                              <h3 className="text-2xl font-bold text-white/90">
+                                {year} - {quarterNames[quarter as keyof typeof quarterNames]}
+                              </h3>
+                              <div className="h-px bg-gradient-to-r from-white/20 to-transparent flex-1"></div>
+                              <div className="text-sm text-white/60 bg-white/5 px-3 py-1 rounded-full">
+                                {quarterlyByQuarter[quarterKey].length} goals
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                              {quarterlyByQuarter[quarterKey]
+                                .sort((a, b) => {
+                                  if (a.isCompleted !== b.isCompleted) {
+                                    return a.isCompleted ? 1 : -1;
+                                  }
+                                  if (a.deadline && b.deadline) {
+                                    return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+                                  }
+                                  return 0;
+                                })
+                                .map((goal, index) => (
+                                  <div
+                                    key={goal.id}
+                                    className="animate-in fade-in-0 slide-in-from-bottom-4"
+                                    style={{ animationDelay: `${index * 100}ms` }}
+                                  >
+                                    <QuarterlyGoalItem
+                                      goal={goal}
+                                      onGoalChange={() => forceUpdateStats()}
+                                      onEditGoal={() => handleEditGoal(goal)}
+                                    />
+                                  </div>
+                                ))}
                             </div>
                           </div>
-
-                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            {quarterlyByYear[year]
-                              .sort((a, b) => {
-                                if (a.isCompleted !== b.isCompleted) {
-                                  return a.isCompleted ? 1 : -1;
-                                }
-                                if (a.deadline && b.deadline) {
-                                  return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
-                                }
-                                return 0;
-                              })
-                              .map((goal, index) => (
-                                <div
-                                  key={goal.id}
-                                  className="animate-in fade-in-0 slide-in-from-bottom-4"
-                                  style={{ animationDelay: `${index * 100}ms` }}
-                                >
-                                  <QuarterlyGoalItem
-                                    goal={goal}
-                                    onGoalChange={() => forceUpdateStats()}
-                                    onEditGoal={() => handleEditGoal(goal)}
-                                  />
-                                </div>
-                              ))}
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                   </div>
                 </div>
               )}

@@ -30,6 +30,7 @@ class RedisHTTPClient {
       const result = await response.json();
       return result.success ? result.data : null;
     } catch (error) {
+      console.error("Redis get error:", error);
       return null;
     }
   }

@@ -2,7 +2,6 @@ import BlurText from "@/components/landing/BlurText";
 import ShinyText from "@/components/landing/ShinyText";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { Header } from "@/components/layout/Header";
-import { ArrowLeft, Home, Search, AlertTriangle, Compass } from "lucide-react";
 import Link from "next/link";
 import Silk from "@/components/Silk/Silk";
 
