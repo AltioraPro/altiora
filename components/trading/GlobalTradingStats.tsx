@@ -23,7 +23,11 @@ export function GlobalTradingStats({ stats }: GlobalTradingStatsProps) {
   const totalPnL = typeof stats.totalPnL === "string" ? parseFloat(stats.totalPnL) || 0 : stats.totalPnL;
   const avgPnL = typeof stats.avgPnL === "string" ? parseFloat(stats.avgPnL) || 0 : stats.avgPnL;
 
-  // Calculate total gains and total losses separately
+  // Calculate average win and loss
+  const avgWin = stats.winningTrades > 0 ? totalPnL / stats.winningTrades : 0;
+  const avgLoss = stats.losingTrades > 0 ? Math.abs(totalPnL) / stats.losingTrades : 0;
+
+  // Calculate total gains and total losses separately for profit factor
   const totalGains = stats.winningTrades > 0 ? totalPnL : 0;
   const totalLosses = stats.losingTrades > 0 ? Math.abs(totalPnL) : 0;
   const profitFactor = totalLosses > 0 ? totalGains / totalLosses : 0;
