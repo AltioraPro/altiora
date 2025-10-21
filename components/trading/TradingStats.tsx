@@ -48,9 +48,11 @@ interface TradingStatsProps {
 
 export function TradingStats({ stats }: TradingStatsProps) {
   const totalPnL = typeof stats.totalPnL === 'string' ? parseFloat(stats.totalPnL) || 0 : stats.totalPnL;
-  const avgWin = stats.winningTrades > 0 ? totalPnL / stats.winningTrades : 0;
-  const avgLoss = stats.losingTrades > 0 ? Math.abs(totalPnL) / stats.losingTrades : 0;
-  const profitFactor = avgLoss > 0 ? avgWin / avgLoss : 0;
+
+  // Calculate total gains and total losses separately
+  const totalGains = stats.winningTrades > 0 ? totalPnL : 0;
+  const totalLosses = stats.losingTrades > 0 ? Math.abs(totalPnL) : 0;
+  const profitFactor = totalLosses > 0 ? totalGains / totalLosses : 0;
 
   return (
     <div className="space-y-8">
