@@ -1,15 +1,16 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
   ResponsiveContainer,
   AreaChart,
-  Area
+  Area,
+  Tooltip
 } from "recharts";
 
 interface GlobalTradingChartsProps {
@@ -25,7 +26,13 @@ interface GlobalTradingChartsProps {
 export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
   const monthlyPerformanceData = (() => {
     if (!trades) return [];
-      const monthStats = new Map<string, { key: string; label: string; totalPnL: number }>();
+    const monthStats = new Map<string, {
+      key: string;
+      label: string;
+      totalPnL: number;
+      count: number;
+      winningTrades: number;
+    }>();
     trades.forEach((trade) => {
       const date = new Date(trade.tradeDate);
       const year = date.getFullYear();
@@ -34,23 +41,43 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
       const label = `${date.toLocaleString('en-US', { month: 'short' })}. ${String(year).slice(-2)}`;
       const pnl = trade.profitLossPercentage ? parseFloat(trade.profitLossPercentage) || 0 : 0;
       const existing = monthStats.get(key);
-      if (existing) existing.totalPnL += pnl; else monthStats.set(key, { key, label, totalPnL: pnl });
+
+      if (existing) {
+        existing.totalPnL += pnl;
+        existing.count += 1;
+        if (pnl > 0) {
+          existing.winningTrades += 1;
+        }
+      } else {
+        monthStats.set(key, {
+          key,
+          label,
+          totalPnL: pnl,
+          count: 1,
+          winningTrades: pnl > 0 ? 1 : 0
+        });
+      }
     });
     return Array.from(monthStats.values())
       .sort((a, b) => (a.key < b.key ? -1 : 1))
-      .map((item) => ({ name: item.label, pnl: item.totalPnL }));
+      .map((item) => ({
+        name: item.label,
+        pnl: item.totalPnL,
+        count: item.count,
+        winRate: item.count > 0 ? (item.winningTrades / item.count) * 100 : 0
+      }));
   })();
 
-    
+
   const cumulativeData = trades
     ?.sort((a, b) => new Date(a.tradeDate).getTime() - new Date(b.tradeDate).getTime())
     .reduce((acc, trade, index) => {
       const pnl = trade.profitLossPercentage ? parseFloat(trade.profitLossPercentage) || 0 : 0;
       const previousCumulative = acc.length > 0 ? acc[acc.length - 1].cumulative : 0;
-      
-        
+
+
       const cumulative = previousCumulative + pnl;
-      
+
       acc.push({
         date: new Date(trade.tradeDate).toLocaleDateString('en-US'),
         pnl: pnl,
@@ -123,13 +150,13 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
                 <BarChart data={monthlyPerformanceData} margin={{ right: 20 }}>
                   <defs>
                     <linearGradient id="monthlyGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#10B981" stopOpacity={0.9}/>
-                      <stop offset="100%" stopColor="#10B981" stopOpacity={0.3}/>
+                      <stop offset="0%" stopColor="#10B981" stopOpacity={0.9} />
+                      <stop offset="100%" stopColor="#10B981" stopOpacity={0.3} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" strokeOpacity={0.1} />
-                  <XAxis 
-                    dataKey="name" 
+                  <XAxis
+                    dataKey="name"
                     stroke="#ffffff"
                     strokeOpacity={0.4}
                     fontSize={10}
@@ -139,14 +166,33 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
                     tickLine={false}
                     axisLine={false}
                   />
-                  <YAxis 
-                    stroke="#ffffff" 
-                    strokeOpacity={0.4} 
+                  <YAxis
+                    stroke="#ffffff"
+                    strokeOpacity={0.4}
                     fontSize={10}
                     tickFormatter={(value) => `${value.toFixed(1)}%`}
                     domain={['dataMin - 5', 'dataMax + 5']}
                     tickLine={false}
                     axisLine={false}
+                  />
+                  <Tooltip
+                    content={({ active, payload, label }) => {
+                      if (active && payload && payload.length) {
+                        const data = payload[0].payload;
+                        return (
+                          <div className="bg-black/85 border border-white/20 rounded-lg p-3 shadow-lg">
+                            <p className="text-white font-medium mb-1">{label}</p>
+                            <p className="text-white text-sm">
+                              PnL: <span className="font-semibold">{data.pnl.toFixed(1)}%</span>
+                            </p>
+                            <p className="text-white text-sm">
+                              Win Rate: <span className="font-semibold">{data.winRate.toFixed(1)}%</span>
+                            </p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
                   />
                   <Bar dataKey="pnl" radius={[4, 4, 4, 4]} fill="url(#monthlyGradient)" stroke="rgba(255,255,255,0.1)" strokeWidth={1} />
                 </BarChart>

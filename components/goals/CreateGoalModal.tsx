@@ -17,13 +17,14 @@ export function CreateGoalModal({ isOpen, onClose, onSuccess }: CreateGoalModalP
     description: "",
     type: "annual" as "annual" | "quarterly" | "monthly",
     deadline: "",
+    quarter: "Q1" as "Q1" | "Q2" | "Q3" | "Q4",
     remindersEnabled: false,
     reminderFrequency: "weekly" as "daily" | "weekly" | "monthly",
   });
 
   const { data: goalLimits } = api.goals.getAllGoalLimits.useQuery(
     undefined,
-    { 
+    {
       staleTime: 60000, // 1 minute
       refetchOnWindowFocus: false,
       refetchOnMount: false,
@@ -64,19 +65,40 @@ export function CreateGoalModal({ isOpen, onClose, onSuccess }: CreateGoalModalP
       description: "",
       type: "annual",
       deadline: "",
+      quarter: "Q1",
       remindersEnabled: false,
       reminderFrequency: "weekly",
     });
     onClose();
   };
 
+  const getQuarterDate = (quarter: string, year: number = new Date().getFullYear()) => {
+    const quarterMap = {
+      "Q1": new Date(year, 2, 31), // March 31
+      "Q2": new Date(year, 5, 30), // June 30
+      "Q3": new Date(year, 8, 30), // September 30
+      "Q4": new Date(year, 11, 31), // December 31
+    };
+    return quarterMap[quarter as keyof typeof quarterMap];
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.title.trim()) return;
-    
+
+    let deadline: Date | undefined;
+
+    if (formData.type === "quarterly") {
+      deadline = getQuarterDate(formData.quarter);
+    } else if (formData.deadline) {
+      deadline = new Date(formData.deadline);
+    }
+
     handleCreateGoal({
-      ...formData,
-      deadline: formData.deadline ? new Date(formData.deadline) : undefined,
+      title: formData.title,
+      description: formData.description,
+      type: formData.type,
+      deadline,
       reminderFrequency: formData.remindersEnabled ? formData.reminderFrequency : undefined,
     });
   };
@@ -88,7 +110,7 @@ export function CreateGoalModal({ isOpen, onClose, onSuccess }: CreateGoalModalP
       <div className="bg-pure-black border border-white/20 rounded-2xl w-full max-w-md max-h-[90vh] relative overflow-hidden">
         {/* Gradient accent */}
         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-        
+
         <div className="p-4 overflow-y-auto max-h-[calc(90vh-2rem)]">
           {/* Header */}
           <div className="flex items-center justify-between mb-4">
@@ -153,29 +175,29 @@ export function CreateGoalModal({ isOpen, onClose, onSuccess }: CreateGoalModalP
                   paddingRight: '2.5rem'
                 }}
               >
-                <option 
-                  value="annual" 
+                <option
+                  value="annual"
                   className="bg-neutral-900 text-white"
                   disabled={!goalLimits?.annual.canCreate}
                 >
                   Annual {!goalLimits?.annual.canCreate && `(${goalLimits?.annual.current}/${goalLimits?.annual.max})`}
                 </option>
-                <option 
-                  value="quarterly" 
+                <option
+                  value="quarterly"
                   className="bg-neutral-900 text-white"
                   disabled={!goalLimits?.quarterly.canCreate}
                 >
                   Quarterly {!goalLimits?.quarterly.canCreate && `(${goalLimits?.quarterly.current}/${goalLimits?.quarterly.max})`}
                 </option>
-                <option 
-                  value="monthly" 
+                <option
+                  value="monthly"
                   className="bg-neutral-900 text-white"
                   disabled={!goalLimits?.monthly.canCreate}
                 >
                   Monthly {!goalLimits?.monthly.canCreate && `(${goalLimits?.monthly.current}/${goalLimits?.monthly.max})`}
                 </option>
               </select>
-              
+
               {/* Afficher les restrictions */}
               {(!goalLimits?.annual.canCreate || !goalLimits?.quarterly.canCreate || !goalLimits?.monthly.canCreate) && (
                 <div className="mt-3 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
@@ -184,13 +206,13 @@ export function CreateGoalModal({ isOpen, onClose, onSuccess }: CreateGoalModalP
                     <div className="text-sm">
                       <p className="text-yellow-400 font-medium mb-1">Plan Limitations</p>
                       <p className="text-yellow-300/80 text-xs">
-                        You&apos;ve reached the limit for some goal types. 
-                        <button 
+                        You&apos;ve reached the limit for some goal types.
+                        <button
                           onClick={() => window.open('/pricing', '_blank')}
                           className="text-yellow-400 hover:text-yellow-300 underline ml-1 mr-1"
                         >
                           Upgrade your plan
-                        </button> 
+                        </button>
                         to create unlimited goals.
                       </p>
                     </div>
@@ -199,21 +221,42 @@ export function CreateGoalModal({ isOpen, onClose, onSuccess }: CreateGoalModalP
               )}
             </div>
 
-            {/* Date limite */}
+            {/* Date limite ou Trimestre */}
             <div>
               <label htmlFor="deadline" className="block text-sm font-medium text-white mb-2">
-                Deadline
+                {formData.type === "quarterly" ? "Quarter" : "Deadline"}
               </label>
-              <input
-                type="date"
-                id="deadline"
-                value={formData.deadline}
-                onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent"
-                style={{
-                  colorScheme: 'dark'
-                }}
-              />
+              {formData.type === "quarterly" ? (
+                <select
+                  id="quarter"
+                  value={formData.quarter}
+                  onChange={(e) => setFormData({ ...formData, quarter: e.target.value as "Q1" | "Q2" | "Q3" | "Q4" })}
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent appearance-none"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
+                    backgroundPosition: 'right 0.5rem center',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundSize: '1.5em 1.5em',
+                    paddingRight: '2.5rem'
+                  }}
+                >
+                  <option value="Q1" className="bg-neutral-900 text-white">Q1 (Jan - Mar)</option>
+                  <option value="Q2" className="bg-neutral-900 text-white">Q2 (Apr - Jun)</option>
+                  <option value="Q3" className="bg-neutral-900 text-white">Q3 (Jul - Sep)</option>
+                  <option value="Q4" className="bg-neutral-900 text-white">Q4 (Oct - Dec)</option>
+                </select>
+              ) : (
+                <input
+                  type="date"
+                  id="deadline"
+                  value={formData.deadline}
+                  onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent"
+                  style={{
+                    colorScheme: 'dark'
+                  }}
+                />
+              )}
             </div>
 
             {/* Rappels */}

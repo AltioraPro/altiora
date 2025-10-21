@@ -7,6 +7,7 @@ import { subscriptionRouter } from "./routers/subscription/router";
 import { goalsRouter } from "./routers/goals/router";
 import { remindersRouter } from "./routers/reminders/router";
 import { tradingRouter } from "./routers/trading/router";
+import { leaderboardRouter } from "./routers/leaderboard/router";
 
 export const appRouter = createTRPCRouter({
   auth: authRouter,
@@ -17,6 +18,7 @@ export const appRouter = createTRPCRouter({
   goals: goalsRouter,
   reminders: remindersRouter,
   trading: tradingRouter,
+  leaderboard: leaderboardRouter,
 });
 
 export type AppRouter = typeof appRouter;
@@ -24,4 +26,4 @@ export type AppRouter = typeof appRouter;
 /**
  * Create a server-side caller for the tRPC API
  */
-export const createCaller = createCallerFactory(appRouter); 
+export const createCaller = createCallerFactory(appRouter);

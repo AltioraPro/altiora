@@ -106,10 +106,19 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
 
   const createTradeMutation = api.trading.createTrade.useMutation({
     onSuccess: () => {
-      form.reset();
-      onClose();
       utils.trading.getTrades.invalidate();
       utils.trading.getStats.invalidate();
+      form.reset({
+        tradeDate: new Date().toISOString().split('T')[0],
+        symbol: "",
+        riskInput: "",
+        profitLossAmount: "",
+        profitLossPercentage: "",
+        tradingviewLink: "",
+        notes: "",
+        journalId: journalId || "",
+      });
+      onClose();
     },
   });
 
@@ -197,9 +206,6 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
       };
 
       await createTradeMutation.mutateAsync(tradeData);
-
-      onClose();
-      form.reset();
     } catch (error) {
       console.error("Error creating trade:", error);
     }
@@ -209,7 +215,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
       <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-white/20 bg-black">
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -225,7 +231,7 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
           </div>
         </CardHeader>
         <CardContent className="text-white">
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 sm:space-y-6">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
             <div>
               <Label htmlFor="tradeDate" className="text-white/80">Date</Label>
               <Input

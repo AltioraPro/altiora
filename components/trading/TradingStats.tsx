@@ -115,18 +115,18 @@ export function TradingStats({ stats }: TradingStatsProps) {
       {/* Exit Strategy */}
       <div className="flex justify-center">
         <Card className="border border-white/10 bg-black/20 p-2 hover:bg-black/30 transition-colors w-fit">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
             <div className="text-center">
-              <div className="text-xs text-green-400/60">TP</div>
-              <div className="text-xs font-medium text-green-400/80">{stats.tpTrades}</div>
+              <div className="text-sm text-green-400/60">TP</div>
+              <div className="text-lg font-bold text-green-400">{stats.tpTrades}</div>
             </div>
             <div className="text-center">
-              <div className="text-xs text-white/40">BE</div>
-              <div className="text-xs font-medium text-white/60">{stats.beTrades}</div>
+              <div className="text-sm text-white/40">BE</div>
+              <div className="text-lg font-bold text-white">{stats.beTrades}</div>
             </div>
             <div className="text-center">
-              <div className="text-xs text-red-400/60">SL</div>
-              <div className="text-xs font-medium text-red-400/80">{stats.slTrades}</div>
+              <div className="text-sm text-red-400/60">SL</div>
+              <div className="text-lg font-bold text-red-400">{stats.slTrades}</div>
             </div>
           </div>
         </Card>

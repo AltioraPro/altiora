@@ -1,4 +1,4 @@
-import { db, cacheUtils } from "@/server/db";
+import { db } from "@/server/db";
 import { goals, subGoals, goalTasks } from "@/server/db/schema";
 import { eq, and, desc, asc, like, gte, lte, sql } from "drizzle-orm";
 import { type Goal } from "@/server/db/schema";
@@ -24,7 +24,8 @@ export async function getGoalsPaginated(
     showInactive?: boolean;
   }
 ) {
-  const { page, limit, sortBy, sortOrder, search, type, status, showInactive } = input;
+  const { page, limit, sortBy, sortOrder, search, type, status, showInactive } =
+    input;
   const offset = page * limit;
 
   console.log("Filter params:", { search, type, status, showInactive });
@@ -58,27 +59,34 @@ export async function getGoalsPaginated(
         break;
       case "active":
         whereConditions.push(eq(goals.isCompleted, false));
-        whereConditions.push(sql`${goals.deadline} > NOW() OR ${goals.deadline} IS NULL`);
+        whereConditions.push(
+          sql`${goals.deadline} > NOW() OR ${goals.deadline} IS NULL`
+        );
         console.log("🔍 [Goals API] Applied active filter");
         break;
     }
   }
 
-  const whereClause = whereConditions.length === 1 ? whereConditions[0] : and(...whereConditions);
+  const whereClause =
+    whereConditions.length === 1 ? whereConditions[0] : and(...whereConditions);
 
   let orderByClause;
   switch (sortBy) {
     case "title":
-      orderByClause = sortOrder === "asc" ? asc(goals.title) : desc(goals.title);
+      orderByClause =
+        sortOrder === "asc" ? asc(goals.title) : desc(goals.title);
       break;
     case "createdAt":
-      orderByClause = sortOrder === "asc" ? asc(goals.createdAt) : desc(goals.createdAt);
+      orderByClause =
+        sortOrder === "asc" ? asc(goals.createdAt) : desc(goals.createdAt);
       break;
     case "deadline":
-      orderByClause = sortOrder === "asc" ? asc(goals.deadline) : desc(goals.deadline);
+      orderByClause =
+        sortOrder === "asc" ? asc(goals.deadline) : desc(goals.deadline);
       break;
     case "sortOrder":
-      orderByClause = sortOrder === "asc" ? asc(goals.sortOrder) : desc(goals.sortOrder);
+      orderByClause =
+        sortOrder === "asc" ? asc(goals.sortOrder) : desc(goals.sortOrder);
       break;
     default:
       orderByClause = asc(goals.sortOrder);
@@ -108,7 +116,10 @@ export async function getGoalsPaginated(
   };
 }
 
-export async function getGoalById(goalId: string, userId: string): Promise<Goal | null> {
+export async function getGoalById(
+  goalId: string,
+  userId: string
+): Promise<Goal | null> {
   const results = await db
     .select()
     .from(goals)
@@ -141,54 +152,71 @@ export async function getGoalWithDetails(goalId: string, userId: string) {
   };
 }
 
-export async function getGoalStats(
-  userId: string
-) {
-  const cached = await cacheUtils.getStats(userId, 'goals-stats');
-  if (cached) {
-    return cached;
-  }
-
+export async function getGoalStats(userId: string) {
   const now = new Date();
 
-  const allGoals = await db
-    .select()
-    .from(goals)
-    .where(
-      and(
-        eq(goals.userId, userId),
-        eq(goals.isActive, true) 
-      )
-    );
+  const [totalResult, completedResult, overdueResult, activeResult] =
+    await Promise.all([
+      db
+        .select({ count: sql<number>`count(*)` })
+        .from(goals)
+        .where(and(eq(goals.userId, userId), eq(goals.isActive, true))),
 
-  const total = allGoals.length;
-  const completed = allGoals.filter(goal => goal.isCompleted).length;
-  const overdue = allGoals.filter(goal => 
-    !goal.isCompleted && 
-    goal.deadline && 
-    new Date(goal.deadline) < now
-  ).length;
-  const active = allGoals.filter(goal => 
-    !goal.isCompleted && 
-    (!goal.deadline || new Date(goal.deadline) >= now)
-  ).length;
+      db
+        .select({ count: sql<number>`count(*)` })
+        .from(goals)
+        .where(
+          and(
+            eq(goals.userId, userId),
+            eq(goals.isActive, true),
+            eq(goals.isCompleted, true)
+          )
+        ),
 
+      db
+        .select({ count: sql<number>`count(*)` })
+        .from(goals)
+        .where(
+          and(
+            eq(goals.userId, userId),
+            eq(goals.isActive, true),
+            eq(goals.isCompleted, false),
+            lte(goals.deadline, now)
+          )
+        ),
+
+      db
+        .select({ count: sql<number>`count(*)` })
+        .from(goals)
+        .where(
+          and(
+            eq(goals.userId, userId),
+            eq(goals.isActive, true),
+            eq(goals.isCompleted, false),
+            sql`(${goals.deadline} > NOW() OR ${goals.deadline} IS NULL)`
+          )
+        ),
+    ]);
+
+  const total = Number(totalResult[0]?.count || 0);
+  const completed = Number(completedResult[0]?.count || 0);
+  const overdue = Number(overdueResult[0]?.count || 0);
+  const active = Number(activeResult[0]?.count || 0);
   const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
 
-  const stats = {
+  return {
     total,
     completed,
     overdue,
     active,
     completionRate,
   };
-
-  await cacheUtils.setStats(userId, 'goals-stats', stats, {}, 300);
-
-  return stats;
 }
 
-export async function getGoalsByType(userId: string, type: "annual" | "quarterly" | "monthly") {
+export async function getGoalsByType(
+  userId: string,
+  type: "annual" | "quarterly" | "monthly"
+) {
   return await db
     .select()
     .from(goals)
@@ -213,4 +241,4 @@ export async function getUpcomingDeadlines(userId: string, days: number = 7) {
       )
     )
     .orderBy(asc(goals.deadline));
-} 
+}

@@ -64,6 +64,7 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
 
 
   const finalCumulative = cumulativeData.length > 0 ? cumulativeData[cumulativeData.length - 1].cumulative : Number(stats?.totalPnL || 0);
+  const isPositive = finalCumulative >= 0;
 
   const handleFlexCapture = async () => {
     if (!flexCardRef.current) return;
@@ -139,18 +140,18 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
                 <div className="text-white/60 text-xs mt-1">Trades</div>
               </div>
               <div className="text-center">
-                 <div className="text-2xl font-bold text-white">
-                   {(() => {
-                     if (!stats) return "0.00";
-                     
-                     const totalPnL = typeof stats.totalPnL === 'string' ? parseFloat(stats.totalPnL) || 0 : stats.totalPnL;
-                     const avgWin = stats.winningTrades > 0 ? totalPnL / stats.winningTrades : 0;
-                     const avgLoss = stats.losingTrades > 0 ? Math.abs(totalPnL) / stats.losingTrades : 0;
-                     const profitFactor = avgLoss > 0 ? avgWin / avgLoss : 0;
-                     
-                     return profitFactor.toFixed(2);
-                   })()}
-                 </div>
+                <div className="text-2xl font-bold text-white">
+                  {(() => {
+                    if (!stats) return "0.00";
+
+                    const totalPnL = typeof stats.totalPnL === 'string' ? parseFloat(stats.totalPnL) || 0 : stats.totalPnL;
+                    const avgWin = stats.winningTrades > 0 ? totalPnL / stats.winningTrades : 0;
+                    const avgLoss = stats.losingTrades > 0 ? Math.abs(totalPnL) / stats.losingTrades : 0;
+                    const profitFactor = avgLoss > 0 ? avgWin / avgLoss : 0;
+
+                    return profitFactor.toFixed(2);
+                  })()}
+                </div>
                 <div className="text-white/60 text-xs mt-1">Profit Factor</div>
               </div>
             </div>
@@ -159,16 +160,16 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
 
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center">
-                <div className="text-lg font-bold text-green-400">{stats.tpTrades}</div>
-                <div className="text-white/60 text-xs mt-1">TP</div>
+                <div className="text-2xl font-bold text-green-400">{stats.tpTrades}</div>
+                <div className="text-white/60 text-sm mt-1">TP</div>
               </div>
               <div className="text-center">
-                <div className="text-lg font-bold text-white">{stats.beTrades}</div>
-                <div className="text-white/60 text-xs mt-1">BE</div>
+                <div className="text-2xl font-bold text-white">{stats.beTrades}</div>
+                <div className="text-white/60 text-sm mt-1">BE</div>
               </div>
               <div className="text-center">
-                <div className="text-lg font-bold text-red-400">{stats.slTrades}</div>
-                <div className="text-white/60 text-xs mt-1">SL</div>
+                <div className="text-2xl font-bold text-red-400">{stats.slTrades}</div>
+                <div className="text-white/60 text-sm mt-1">SL</div>
               </div>
             </div>
           </div>
@@ -178,15 +179,17 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
           <div className="bg-black/20 rounded border border-white/10 p-4">
             <div className="flex justify-between items-center text-white/60 text-xs mb-2">
               <span>Cumulative Performance (%)</span>
-              <span className="text-white text-sm font-semibold">{finalCumulative >= 0 ? '+' : ''}{finalCumulative.toFixed(2)}%</span>
+              <span className={`text-sm font-semibold ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+                {finalCumulative >= 0 ? '+' : ''}{finalCumulative.toFixed(2)}%
+              </span>
             </div>
             <div className="h-32">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData} margin={{ top: 10, right: 16, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id={`journal-cumulative-${journal.id}`} x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#10b981" stopOpacity={0.3} />
-                      <stop offset="100%" stopColor="#10b981" stopOpacity={0.05} />
+                      <stop offset="0%" stopColor={isPositive ? "#10b981" : "#ef4444"} stopOpacity={0.3} />
+                      <stop offset="100%" stopColor={isPositive ? "#10b981" : "#ef4444"} stopOpacity={0.05} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid stroke="rgba(255,255,255,0.1)" vertical={false} />
@@ -209,7 +212,7 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
                   <Area
                     type="monotone"
                     dataKey="cumulative"
-                    stroke="#10b981"
+                    stroke={isPositive ? "#10b981" : "#ef4444"}
                     strokeWidth={2}
                     fill={`url(#journal-cumulative-${journal.id})`}
                     dot={false}
@@ -273,25 +276,25 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
 
           {bestTrade && (
             <div className={`mb-4 p-3 rounded-lg border ${Number(bestTrade.profitLossPercentage || 0) >= 0
-                ? 'bg-green-500/10 border-green-500/20'
-                : 'bg-red-500/10 border-red-500/20'
+              ? 'bg-green-500/10 border-green-500/20'
+              : 'bg-red-500/10 border-red-500/20'
               }`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <TrendingUp className={`w-4 h-4 ${Number(bestTrade.profitLossPercentage || 0) >= 0
-                      ? 'text-green-400'
-                      : 'text-red-400'
+                    ? 'text-green-400'
+                    : 'text-red-400'
                     }`} />
                   <span className={`text-sm ${Number(bestTrade.profitLossPercentage || 0) >= 0
-                      ? 'text-green-400'
-                      : 'text-red-400'
+                    ? 'text-green-400'
+                    : 'text-red-400'
                     }`}>
                     Best trade
                   </span>
                 </div>
                 <Badge className={`${Number(bestTrade.profitLossPercentage || 0) >= 0
-                    ? 'bg-green-500/20 text-green-400 border-green-500/30'
-                    : 'bg-red-500/20 text-red-400 border-red-500/30'
+                  ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                  : 'bg-red-500/20 text-red-400 border-red-500/30'
                   }`}>
                   {Number(bestTrade.profitLossPercentage || 0) >= 0 ? '+' : ''}{bestTrade.profitLossPercentage}%
                 </Badge>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Home, Target, TrendingUp, Users, Settings, Phone, LogOut, User } from "lucide-react";
+import { Home, Target, TrendingUp, Users, Settings, Phone, LogOut, User, Trophy } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSession, signOut } from "@/lib/auth-client";
@@ -67,12 +67,13 @@ export const Header = ({ className = "" }: HeaderProps) => {
   }, [isMenuOpen, toggleMenu]);
 
   const menuItems = [
-    { href: "/", label: "HOME", icon: Home, angle: -60 },
-    { href: "/trading/journals", label: "TRADING", icon: TrendingUp, angle: -30 },
-    { href: "/habits", label: "HABITS", icon: Target, angle: 0 },
-    { href: "/goals", label: "GOALS", icon: Users, angle: 30 },
-    { href: "/settings", label: "SETTINGS", icon: Settings, angle: 60 },
-    { href: "/contact", label: "CONTACT", icon: Phone, angle: 90 },
+    { href: "/", label: "HOME", icon: Home, angle: -70 },
+    { href: "/trading/journals", label: "TRADING", icon: TrendingUp, angle: -45 },
+    { href: "/habits", label: "HABITS", icon: Target, angle: -20 },
+    { href: "/goals", label: "GOALS", icon: Users, angle: 5 },
+    { href: "/leaderboard", label: "LEADERBOARD", icon: Trophy, angle: 30 },
+    { href: "/settings", label: "SETTINGS", icon: Settings, angle: 55 },
+    { href: "/contact", label: "CONTACT", icon: Phone, angle: 80 },
   ];
 
   return (
@@ -94,23 +95,23 @@ export const Header = ({ className = "" }: HeaderProps) => {
 
                   <div className="absolute inset-0 flex flex-col justify-center items-center">
                     <span className={`block h-0.5 bg-white transition-all duration-500 ease-out ${isMenuOpen
-                        ? 'w-4 rotate-45 translate-y-[1px] shadow-[0_0_10px_rgba(255,255,255,0.5)]'
-                        : 'w-4 rotate-0 translate-y-[-3px] group-hover:w-5'
+                      ? 'w-4 rotate-45 translate-y-[1px] shadow-[0_0_10px_rgba(255,255,255,0.5)]'
+                      : 'w-4 rotate-0 translate-y-[-3px] group-hover:w-5'
                       }`} />
                     <span className={`block h-0.5 bg-white transition-all duration-300 ${isMenuOpen
-                        ? 'w-0 opacity-0'
-                        : 'w-3 opacity-100 group-hover:w-4'
+                      ? 'w-0 opacity-0'
+                      : 'w-3 opacity-100 group-hover:w-4'
                       }`} />
                     <span className={`block h-0.5 bg-white transition-all duration-500 ease-out ${isMenuOpen
-                        ? 'w-4 -rotate-45 translate-y-[-1px] shadow-[0_0_10px_rgba(255,255,255,0.5)]'
-                        : 'w-4 rotate-0 translate-y-[3px] group-hover:w-5'
+                      ? 'w-4 -rotate-45 translate-y-[-1px] shadow-[0_0_10px_rgba(255,255,255,0.5)]'
+                      : 'w-4 rotate-0 translate-y-[3px] group-hover:w-5'
                       }`} />
                   </div>
 
                   {/* Pulse Effect */}
                   <div className={`absolute inset-0 transition-all duration-300 ${isMenuOpen
-                      ? 'opacity-0'
-                      : 'opacity-0 group-hover:opacity-100 bg-white/5 animate-ping'
+                    ? 'opacity-0'
+                    : 'opacity-0 group-hover:opacity-100 bg-white/5 animate-ping'
                     }`} />
                 </div>
               </button>
@@ -131,28 +132,28 @@ export const Header = ({ className = "" }: HeaderProps) => {
             </div>
 
             {/* Auth Section - Right */}
-            <div className="flex items-center space-x-2 sm:space-x-3 ml-auto z-10">
+            <div className="flex items-center space-x-3 ml-auto z-10">
               {isPending ? (
                 <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
               ) : session?.user ? (
                 /* User Profile - Connecté */
-                <div className="flex items-center space-x-1 sm:space-x-3">
+                <div className="flex items-center space-x-3">
                   <Link
                     href="/settings"
-                    className="flex items-center space-x-2 text-white/80 hover:text-white p-2 sm:px-3 sm:py-2 rounded-xl border border-white/20 hover:bg-white/5 hover:border-white/40 transition-all duration-300 group"
+                    className="flex items-center space-x-2 text-white/80 hover:text-white px-3 py-2 rounded-xl border border-white/20 hover:bg-white/5 hover:border-white/40 transition-all duration-300 group"
                   >
                     <Settings className="w-4 h-4" />
-                    <span className="text-sm font-medium hidden md:inline">Settings</span>
+                    <span className="text-sm font-medium">Settings</span>
                   </Link>
 
                   <Link
                     href="/profile"
-                    className="flex items-center space-x-2 text-white/80 hover:text-white p-2 sm:px-3 sm:py-2 rounded-xl border border-white/20 hover:bg-white/5 hover:border-white/40 transition-all duration-300 group"
+                    className="flex items-center space-x-2 text-white/80 hover:text-white px-3 py-2 rounded-xl border border-white/20 hover:bg-white/5 hover:border-white/40 transition-all duration-300 group"
                   >
                     <div className="w-6 h-6 bg-white/10 rounded-full flex items-center justify-center">
                       <User className="w-3 h-3" />
                     </div>
-                    <span className="text-sm font-medium hidden lg:inline">
+                    <span className="text-sm font-medium">
                       {session.user.name?.split(' ')[0] || session.user.email.split('@')[0]}
                     </span>
                   </Link>
@@ -173,7 +174,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
                 <>
                   <Link
                     href="/auth/login"
-                    className="text-white/80 hover:text-white px-3 sm:px-4 py-2 rounded-xl border border-white/20 hover:bg-white/5 hover:border-white/40 transition-all duration-300 text-xs sm:text-sm font-semibold backdrop-blur-sm tracking-wider group"
+                    className="text-white/80 hover:text-white px-4 py-2 rounded-xl border border-white/20 hover:bg-white/5 hover:border-white/40 transition-all duration-300 text-sm font-semibold backdrop-blur-sm tracking-wider group"
                   >
                     <span className="relative">
                       Login
@@ -183,7 +184,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
 
                   <Link
                     href="/auth/register"
-                    className="text-white px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-white/10 border border-white/30 hover:bg-white/20 hover:border-white/50 transition-all duration-300 text-xs sm:text-sm font-semibold backdrop-blur-md tracking-wider shadow-lg hover:shadow-white/20 hover:scale-[1.02] transform"
+                    className="text-white px-5 py-2.5 rounded-xl bg-white/10 border border-white/30 hover:bg-white/20 hover:border-white/50 transition-all duration-300 text-sm font-semibold backdrop-blur-md tracking-wider shadow-lg hover:shadow-white/20 hover:scale-[1.02] transform"
                   >
                     Register
                   </Link>
@@ -197,8 +198,8 @@ export const Header = ({ className = "" }: HeaderProps) => {
       {/* Revolutionary Full-Screen Menu */}
       <div
         className={`fixed inset-0 z-50 transition-all duration-700 ease-out ${isMenuOpen
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
+          ? "opacity-100 pointer-events-auto"
+          : "opacity-0 pointer-events-none"
           }`}
       >
         {/* Dynamic Background with Mouse Follow Effect */}
@@ -221,11 +222,10 @@ export const Header = ({ className = "" }: HeaderProps) => {
               <div className="w-20 h-px bg-gradient-to-r from-transparent via-white to-transparent mx-auto opacity-50" />
             </div>
 
-            {/* Revolutionary Circular Menu */}
-            <div className="relative w-72 h-72 sm:w-80 sm:h-80 md:w-96 md:h-96 mx-auto mb-8">
+            <div className="relative w-[450px] h-[450px] mx-auto mb-8">
               {menuItems.map((item, index) => {
                 const Icon = item.icon;
-                const radius = typeof window !== 'undefined' && window.innerWidth < 640 ? 120 : window.innerWidth < 768 ? 140 : 160;
+                const radius = 180;
                 const angleRad = (item.angle * Math.PI) / 180;
                 const x = Math.cos(angleRad) * radius;
                 const y = Math.sin(angleRad) * radius;
@@ -236,8 +236,8 @@ export const Header = ({ className = "" }: HeaderProps) => {
                     href={item.href}
                     onClick={toggleMenu}
                     className={`absolute group transition-all duration-700 ease-out z-10 ${isMenuOpen
-                        ? 'opacity-100 translate-x-0 translate-y-0'
-                        : 'opacity-0 translate-x-0 translate-y-0'
+                      ? 'opacity-100 translate-x-0 translate-y-0'
+                      : 'opacity-0 translate-x-0 translate-y-0'
                       }`}
                     style={{
                       left: `calc(50% + ${x}px)`,
