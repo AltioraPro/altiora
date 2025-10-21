@@ -158,7 +158,11 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
 
             <div style={{ borderTop: "1px solid rgba(255, 255, 255, 0.2)" }}></div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-5 gap-2">
+              <div className="text-center">
+                <div className="text-lg font-bold text-green-400">{stats.maxWinningStreak}</div>
+                <div className="text-white/60 text-xs mt-1">Max Win</div>
+              </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-400">{stats.tpTrades}</div>
                 <div className="text-white/60 text-sm mt-1">TP</div>
@@ -170,6 +174,10 @@ export function JournalPerformanceCard({ journal, onEdit, onDelete }: JournalPer
               <div className="text-center">
                 <div className="text-2xl font-bold text-red-400">{stats.slTrades}</div>
                 <div className="text-white/60 text-sm mt-1">SL</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-bold text-red-400">{stats.maxLosingStreak}</div>
+                <div className="text-white/60 text-xs mt-1">Max Loss</div>
               </div>
             </div>
           </div>
