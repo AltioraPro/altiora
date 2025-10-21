@@ -53,7 +53,7 @@ export function HabitHeatmap() {
   });
 
   const getIntensityClass = (count: number) => {
-    if (count === 0) return "bg-green-500/5";
+    if (count === 0) return "bg-white/5";
     if (count === 1) return "bg-green-500/20";
     if (count === 2) return "bg-green-500/40";
     if (count >= 3) return "bg-green-500/60";
