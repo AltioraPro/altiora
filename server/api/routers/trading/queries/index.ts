@@ -474,10 +474,11 @@ export const tradingQueriesRouter = createTRPCRouter({
         .select({
           profitLossPercentage: advancedTrades.profitLossPercentage,
           profitLossAmount: advancedTrades.profitLossAmount,
+          tradeDate: advancedTrades.tradeDate,
         })
         .from(advancedTrades)
         .where(and(...whereConditions, eq(advancedTrades.isClosed, true)))
-        .orderBy(asc(advancedTrades.tradeDate));
+        .orderBy(asc(advancedTrades.tradeDate), asc(advancedTrades.createdAt));
 
       if (closedTradesData.length > 0) {
         totalPnLPercentage = closedTradesData.reduce((sum, trade) => {
@@ -510,7 +511,15 @@ export const tradingQueriesRouter = createTRPCRouter({
       let maxLosingStreak = 0;
 
       if (closedTradesData.length > 0) {
-        for (const trade of closedTradesData) {
+        // Trier par date puis par heure de création pour s'assurer de l'ordre chronologique
+        const sortedTrades = closedTradesData.sort((a, b) => {
+          const dateA = new Date(a.tradeDate).getTime();
+          const dateB = new Date(b.tradeDate).getTime();
+          if (dateA !== dateB) return dateA - dateB;
+          return 0; // Si même date, garder l'ordre de création
+        });
+
+        for (const trade of sortedTrades) {
           const pnl = parseFloat(trade.profitLossPercentage || "0");
 
           if (pnl > 0) {

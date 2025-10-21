@@ -10,7 +10,8 @@ import {
   ResponsiveContainer,
   AreaChart,
   Area,
-  Tooltip
+  Tooltip,
+  Cell
 } from "recharts";
 
 interface GlobalTradingChartsProps {
@@ -87,6 +88,9 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
       return acc;
     }, [] as Array<{ date: string; pnl: number; cumulative: number; tradeNumber: number }>) || [];
 
+  const finalCumulative = cumulativeData.length > 0 ? cumulativeData[cumulativeData.length - 1]?.cumulative : 0;
+  const isPositive = finalCumulative >= 0;
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -102,8 +106,8 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
                 <AreaChart data={cumulativeData} margin={{ top: 10, right: 16, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="global-cumulative-gradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#10b981" stopOpacity={0.3} />
-                      <stop offset="100%" stopColor="#10b981" stopOpacity={0.05} />
+                      <stop offset="0%" stopColor={isPositive ? "#10b981" : "#ef4444"} stopOpacity={0.3} />
+                      <stop offset="100%" stopColor={isPositive ? "#10b981" : "#ef4444"} stopOpacity={0.05} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid stroke="rgba(255,255,255,0.1)" vertical={false} />
@@ -126,7 +130,7 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
                   <Area
                     type="monotone"
                     dataKey="cumulative"
-                    stroke="#10b981"
+                    stroke={isPositive ? "#10b981" : "#ef4444"}
                     fill="url(#global-cumulative-gradient)"
                     strokeWidth={2}
                   />
@@ -194,7 +198,14 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
                       return null;
                     }}
                   />
-                  <Bar dataKey="pnl" radius={[4, 4, 4, 4]} fill="url(#monthlyGradient)" stroke="rgba(255,255,255,0.1)" strokeWidth={1} />
+                  <Bar dataKey="pnl" radius={[4, 4, 4, 4]} stroke="rgba(255,255,255,0.1)" strokeWidth={1}>
+                    {monthlyPerformanceData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={entry.pnl >= 0 ? "#10B981" : "#ef4444"}
+                      />
+                    ))}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </div>

@@ -125,6 +125,7 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
     }, [] as Array<{ date: string; pnl: number; cumulative: number; tradeNumber: number }>) || [];
 
   const totalPerformance = cumulativeData.length > 0 ? cumulativeData[cumulativeData.length - 1]?.cumulative : 0;
+  const isPositive = totalPerformance >= 0;
 
   return (
     <div className="space-y-6">
@@ -278,7 +279,7 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                     {sessionPerformanceData.map((entry, index) => (
                       <Cell
                         key={`cell-${index}`}
-                        fill={`url(#barGradient${index % COLORS.length})`}
+                        fill={entry.pnl >= 0 ? `url(#barGradient${index % COLORS.length})` : "#ef4444"}
                         stroke="rgba(255,255,255,0.1)"
                         strokeWidth={1}
                       />
@@ -305,8 +306,8 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                 <AreaChart data={cumulativeData} margin={{ right: 20 }}>
                   <defs>
                     <linearGradient id="performanceGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#10B981" stopOpacity={0.8} />
-                      <stop offset="100%" stopColor="#10B981" stopOpacity={0.1} />
+                      <stop offset="0%" stopColor={isPositive ? "#10B981" : "#ef4444"} stopOpacity={0.8} />
+                      <stop offset="100%" stopColor={isPositive ? "#10B981" : "#ef4444"} stopOpacity={0.1} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" strokeOpacity={0.1} />
@@ -346,7 +347,7 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                   <Area
                     type="monotone"
                     dataKey="cumulative"
-                    stroke="#10B981"
+                    stroke={isPositive ? "#10B981" : "#ef4444"}
                     fill="url(#performanceGradient)"
                     strokeWidth={3}
                     dot={false}
@@ -356,11 +357,13 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                       x={cumulativeData.length}
                       y={totalPerformance}
                       r={6}
-                      fill="#10B981"
-                      stroke="#10B981"
+                      fill={isPositive ? "#10B981" : "#ef4444"}
+                      stroke={isPositive ? "#10B981" : "#ef4444"}
                       strokeWidth={2}
                       style={{
-                        filter: 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.6)) drop-shadow(0 0 16px rgba(16, 185, 129, 0.3))',
+                        filter: isPositive
+                          ? 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.6)) drop-shadow(0 0 16px rgba(16, 185, 129, 0.3))'
+                          : 'drop-shadow(0 0 8px rgba(239, 68, 68, 0.6)) drop-shadow(0 0 16px rgba(239, 68, 68, 0.3))',
                         animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                       }}
                     />

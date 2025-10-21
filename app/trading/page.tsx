@@ -162,7 +162,13 @@ export default function TradingPage() {
 
     const sortedTrades = trades
       .filter(t => t.isClosed)
-      .sort((a, b) => new Date(a.tradeDate).getTime() - new Date(b.tradeDate).getTime());
+      .sort((a, b) => {
+        const dateA = new Date(a.tradeDate).getTime();
+        const dateB = new Date(b.tradeDate).getTime();
+        if (dateA !== dateB) return dateA - dateB;
+        // Si même date, trier par createdAt
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      });
 
     for (const trade of sortedTrades) {
       const pnl = parseFloat(trade.profitLossPercentage || '0');
