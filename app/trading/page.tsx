@@ -203,6 +203,18 @@ export default function TradingPage() {
     totalPnL: totalPerformance,
     avgPnL: filteredTrades && filteredTrades.length > 0 ?
       totalPerformance / filteredTrades.length : 0,
+    avgGain: (() => {
+      const tp = filteredTrades.filter(t => t.exitReason === 'TP');
+      if (tp.length === 0) return 0;
+      const sum = tp.reduce((s, t) => s + (t.profitLossPercentage ? parseFloat(t.profitLossPercentage) || 0 : 0), 0);
+      return sum / tp.length;
+    })(),
+    avgLoss: (() => {
+      const sl = filteredTrades.filter(t => t.exitReason === 'SL');
+      if (sl.length === 0) return 0;
+      const sum = sl.reduce((s, t) => s + (t.profitLossPercentage ? parseFloat(t.profitLossPercentage) || 0 : 0), 0);
+      return Math.abs(sum / sl.length);
+    })(),
     totalAmountPnL: (() => {
       if (!filteredTrades) return 0;
 

@@ -426,6 +426,38 @@ export const tradingQueriesRouter = createTRPCRouter({
           )
         );
 
+      const [tpAggregation] = await db
+        .select({
+          total: sum(
+            sql`CAST(${advancedTrades.profitLossPercentage} AS DECIMAL)`
+          ),
+          count: count(),
+        })
+        .from(advancedTrades)
+        .where(
+          and(
+            ...whereConditions,
+            eq(advancedTrades.isClosed, true),
+            eq(advancedTrades.exitReason, "TP")
+          )
+        );
+
+      const [slAggregation] = await db
+        .select({
+          total: sum(
+            sql`CAST(${advancedTrades.profitLossPercentage} AS DECIMAL)`
+          ),
+          count: count(),
+        })
+        .from(advancedTrades)
+        .where(
+          and(
+            ...whereConditions,
+            eq(advancedTrades.isClosed, true),
+            eq(advancedTrades.exitReason, "SL")
+          )
+        );
+
       const tradesBySymbol = await db
         .select({
           symbol: advancedTrades.symbol,
@@ -548,6 +580,18 @@ export const tradingQueriesRouter = createTRPCRouter({
         totalAmountPnL: Number(totalAmountPnL) || undefined,
         winningTrades: winningTrades.count,
         losingTrades: losingTrades.count,
+        avgGain:
+          tpAggregation &&
+          tpAggregation.count > 0 &&
+          tpAggregation.total !== null
+            ? Number(tpAggregation.total) / tpAggregation.count
+            : 0,
+        avgLoss:
+          slAggregation &&
+          slAggregation.count > 0 &&
+          slAggregation.total !== null
+            ? Math.abs(Number(slAggregation.total) / slAggregation.count)
+            : 0,
         winRate: winRate,
         tradesBySymbol,
         tradesBySetup,

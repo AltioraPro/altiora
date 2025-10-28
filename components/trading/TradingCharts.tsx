@@ -385,12 +385,6 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                   {cumulativeData.length}
                 </div>
               </div>
-              <div className="text-right">
-                <div className="text-sm text-white/70  tracking-wide">AVG PnL</div>
-                <div className="text-2xl font-bold text-white ">
-                  {cumulativeData.length > 0 ? `${(totalPerformance / cumulativeData.length).toFixed(1)}%` : '0.0%'}
-                </div>
-              </div>
             </div>
           </div>
         </CardContent>

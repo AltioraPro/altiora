@@ -16,18 +16,21 @@ interface GlobalTradingStatsProps {
     tpTrades: number;
     beTrades: number;
     slTrades: number;
+    avgGain?: number;
+    avgLoss?: number;
   };
 }
 
 export function GlobalTradingStats({ stats }: GlobalTradingStatsProps) {
   const totalPnL = typeof stats.totalPnL === "string" ? parseFloat(stats.totalPnL) || 0 : stats.totalPnL;
-  const avgPnL = typeof stats.avgPnL === "string" ? parseFloat(stats.avgPnL) || 0 : stats.avgPnL;
 
-  // Calculate average win and loss
-  const avgWin = stats.winningTrades > 0 ? totalPnL / stats.winningTrades : 0;
-  const avgLoss = stats.losingTrades > 0 ? Math.abs(totalPnL) / stats.losingTrades : 0;
+  const avgWin = typeof stats.avgGain === 'number'
+    ? stats.avgGain
+    : (stats.winningTrades > 0 ? totalPnL / stats.winningTrades : 0);
+  const avgLoss = typeof stats.avgLoss === 'number'
+    ? stats.avgLoss
+    : (stats.losingTrades > 0 ? Math.abs(totalPnL) / stats.losingTrades : 0);
 
-  // Calculate total gains and total losses separately for profit factor
   const totalGains = stats.winningTrades > 0 ? totalPnL : 0;
   const totalLosses = stats.losingTrades > 0 ? Math.abs(totalPnL) : 0;
   const profitFactor = totalLosses > 0 ? totalGains / totalLosses : 0;
@@ -69,7 +72,7 @@ export function GlobalTradingStats({ stats }: GlobalTradingStatsProps) {
       </div>
 
       {/* Secondary Metrics */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card className="border border-white/10 bg-black/20 p-4 hover:bg-black/30 transition-colors">
           <div className="space-y-1">
             <div className="text-xs text-white/60">Avg Gain</div>
@@ -81,13 +84,6 @@ export function GlobalTradingStats({ stats }: GlobalTradingStatsProps) {
           <div className="space-y-1">
             <div className="text-xs text-white/60">Avg Loss</div>
             <div className="text-lg font-semibold text-white">{avgLoss.toFixed(1)}%</div>
-          </div>
-        </Card>
-
-        <Card className="border border-white/10 bg-black/20 p-4 hover:bg-black/30 transition-colors">
-          <div className="space-y-1">
-            <div className="text-xs text-white/60">Avg P&L</div>
-            <div className="text-lg font-semibold text-white">{avgPnL.toFixed(1)}%</div>
           </div>
         </Card>
       </div>
