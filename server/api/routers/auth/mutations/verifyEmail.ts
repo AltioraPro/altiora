@@ -1,59 +1,66 @@
+import { and, eq, gt } from "drizzle-orm";
 import { db } from "@/server/db";
-import { users, verifications } from "@/server/db/schema";
-import { eq, and, gt } from "drizzle-orm";
+import { user, verification } from "@/server/db/schema";
 
 interface VerifyEmailParams {
-  token: string;
+    token: string;
 }
 
-export async function verifyEmail({ token }: VerifyEmailParams) {   
-  return await db.transaction(async (tx) => {
-    const verification = await tx.select()
-      .from(verifications)
-      .where(
-        and(
-          eq(verifications.value, token),
-          gt(verifications.expiresAt, new Date())
-        )
-      )
-      .limit(1);
+export async function verifyEmail({ token }: VerifyEmailParams) {
+    return await db.transaction(async (tx) => {
+        const [verificationData] = await tx
+            .select()
+            .from(verification)
+            .where(
+                and(
+                    eq(verification.value, token),
+                    gt(verification.expiresAt, new Date())
+                )
+            )
+            .limit(1);
 
-    if (!verification.length) {
-      throw new Error("Invalid or expired verification token");
-    }
+        if (!verificationData) {
+            throw new Error("Invalid or expired verification token");
+        }
 
-    const verificationData = verification[0];
+        const [userData] = await tx
+            .select()
+            .from(user)
+            .where(eq(user.email, verificationData.identifier))
+            .limit(1);
 
-    const user = await tx.select()
-      .from(users)
-      .where(eq(users.email, verificationData.identifier))
-      .limit(1);
+        if (!userData) {
+            throw new Error("User not found");
+        }
 
-    if (!user.length) {
-      throw new Error("User not found");
-    }
+        if (userData.emailVerified) {
+            await tx
+                .delete(verification)
+                .where(eq(verification.id, verificationData.id));
+            return {
+                success: true,
+                message: "Email already verified",
+                alreadyVerified: true,
+            };
+        }
 
-    const userData = user[0];
+        await tx
+            .update(user)
+            .set({
+                emailVerified: true,
+                updatedAt: new Date(),
+            })
+            .where(eq(user.id, userData.id));
 
-    if (userData.emailVerified) {
-      await tx.delete(verifications).where(eq(verifications.id, verificationData.id));
-      return { success: true, message: "Email already verified", alreadyVerified: true };
-    }
+        await tx
+            .delete(verification)
+            .where(eq(verification.id, verificationData.id));
 
-    await tx.update(users)
-      .set({ 
-        emailVerified: new Date(),
-        updatedAt: new Date()
-      })
-      .where(eq(users.id, userData.id));
-
-    await tx.delete(verifications).where(eq(verifications.id, verificationData.id));
-
-    return { 
-      success: true, 
-      message: "Email verified successfully", 
-      alreadyVerified: false,
-      userId: userData.id 
-    };
-  });
-} 
+        return {
+            success: true,
+            message: "Email verified successfully",
+            alreadyVerified: false,
+            userId: userData.id,
+        };
+    });
+}

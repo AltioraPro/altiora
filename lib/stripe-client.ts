@@ -1,8 +1,8 @@
-import { loadStripe } from '@stripe/stripe-js';
+import { loadStripe } from "@stripe/stripe-js";
+import { env } from "@/env";
 
-if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
-  throw new Error('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not defined');
+if (!env.STRIPE_PUBLIC_KEY) {
+    throw new Error("STRIPE_PUBLIC_KEY is not defined");
 }
 
-export const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
-
+export const stripePromise = loadStripe(env.STRIPE_PUBLIC_KEY);

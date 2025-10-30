@@ -1,12 +1,7 @@
-import Stripe from 'stripe';
+import Stripe from "stripe";
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY is not defined');
-}
+import { env } from "@/env";
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2025-08-27.basil',
-  typescript: true,
-});
+const stripeClient = new Stripe(env.STRIPE_SECRET_KEY);
 
-export const STRIPE_PRICE_ID = process.env.STRIPE_PRICE_ID;
+export default stripeClient;

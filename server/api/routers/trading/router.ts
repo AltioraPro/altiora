@@ -3,43 +3,43 @@ import { tradingMutationsRouter } from "./mutations";
 import { tradingQueriesRouter } from "./queries";
 
 export const tradingRouter = createTRPCRouter({
-  createJournal: tradingMutationsRouter.createTradingJournal,
-  updateJournal: tradingMutationsRouter.updateTradingJournal,
-  deleteJournal: tradingMutationsRouter.deleteTradingJournal,
-  reorderJournals: tradingMutationsRouter.reorderJournals,
+    createJournal: tradingMutationsRouter.createTradingJournal,
+    updateJournal: tradingMutationsRouter.updateTradingJournal,
+    deleteJournal: tradingMutationsRouter.deleteTradingJournal,
+    reorderJournals: tradingMutationsRouter.reorderJournals,
 
-  createAsset: tradingMutationsRouter.createTradingAsset,
-  updateAsset: tradingMutationsRouter.updateTradingAsset,
-  deleteAsset: tradingMutationsRouter.deleteTradingAsset,
+    createAsset: tradingMutationsRouter.createTradingAsset,
+    updateAsset: tradingMutationsRouter.updateTradingAsset,
+    deleteAsset: tradingMutationsRouter.deleteTradingAsset,
 
-  createSession: tradingMutationsRouter.createTradingSession,
-  updateSession: tradingMutationsRouter.updateTradingSession,
-  deleteSession: tradingMutationsRouter.deleteTradingSession,
+    createSession: tradingMutationsRouter.createTradingSession,
+    updateSession: tradingMutationsRouter.updateTradingSession,
+    deleteSession: tradingMutationsRouter.deleteTradingSession,
 
-  createSetup: tradingMutationsRouter.createTradingSetup,
-  updateSetup: tradingMutationsRouter.updateTradingSetup,
-  deleteSetup: tradingMutationsRouter.deleteTradingSetup,
+    createSetup: tradingMutationsRouter.createTradingSetup,
+    updateSetup: tradingMutationsRouter.updateTradingSetup,
+    deleteSetup: tradingMutationsRouter.deleteTradingSetup,
 
-  createTrade: tradingMutationsRouter.createAdvancedTrade,
-  updateTrade: tradingMutationsRouter.updateAdvancedTrade,
-  deleteTrade: tradingMutationsRouter.deleteAdvancedTrade,
-  deleteMultipleTrades: tradingMutationsRouter.deleteMultipleTrades,
+    createTrade: tradingMutationsRouter.createAdvancedTrade,
+    updateTrade: tradingMutationsRouter.updateAdvancedTrade,
+    deleteTrade: tradingMutationsRouter.deleteAdvancedTrade,
+    deleteMultipleTrades: tradingMutationsRouter.deleteMultipleTrades,
 
-  getJournals: tradingQueriesRouter.getTradingJournals,
-  getJournalById: tradingQueriesRouter.getTradingJournalById,
+    getJournals: tradingQueriesRouter.getTradingJournals,
+    getJournalById: tradingQueriesRouter.getTradingJournalById,
 
-  getAssets: tradingQueriesRouter.getTradingAssets,
-  getAssetById: tradingQueriesRouter.getTradingAssetById,
+    getAssets: tradingQueriesRouter.getTradingAssets,
+    getAssetById: tradingQueriesRouter.getTradingAssetById,
 
-  getSessions: tradingQueriesRouter.getTradingSessions,
-  getSessionById: tradingQueriesRouter.getTradingSessionById,
+    getSessions: tradingQueriesRouter.getTradingSessions,
+    getSessionById: tradingQueriesRouter.getTradingSessionById,
 
-  getSetups: tradingQueriesRouter.getTradingSetups,
-  getSetupById: tradingQueriesRouter.getTradingSetupById,
+    getSetups: tradingQueriesRouter.getTradingSetups,
+    getSetupById: tradingQueriesRouter.getTradingSetupById,
 
-  getTrades: tradingQueriesRouter.getAdvancedTrades,
-  getTradeById: tradingQueriesRouter.getAdvancedTradeById,
-  getStats: tradingQueriesRouter.getTradingStats,
-  getCurrentCapital: tradingQueriesRouter.getCurrentCapital,
-  getJournalOverview: tradingQueriesRouter.getJournalOverview,
-}); 
+    getTrades: tradingQueriesRouter.getAdvancedTrades,
+    getTradeById: tradingQueriesRouter.getAdvancedTradeById,
+    getStats: tradingQueriesRouter.getTradingStats,
+    getCurrentCapital: tradingQueriesRouter.getCurrentCapital,
+    getJournalOverview: tradingQueriesRouter.getJournalOverview,
+});

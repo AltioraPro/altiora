@@ -1,76 +1,87 @@
+import { eq } from "drizzle-orm";
 import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
+    createTRPCRouter,
+    protectedProcedure,
+    publicProcedure,
 } from "@/server/api/trpc";
+import { discordProfile } from "@/server/db/schema";
 import {
-  syncUserSchema,
-  sendVerificationEmailSchema,
-  getUserEmailStatusSchema,
-  verifyEmailSchema,
-  updateProfileSchema,
-  updateRankSchema,
-  updateLeaderboardVisibilitySchema,
-} from "./validators";
+    sendVerificationEmail,
+    syncUser,
+    updateLeaderboardVisibility,
+    updateProfile,
+    updateRank,
+    verifyEmail,
+} from "./mutations";
 import { getCurrentUser, getUserEmailStatus } from "./queries";
 import {
-  syncUser,
-  sendVerificationEmail,
-  verifyEmail,
-  updateProfile,
-  updateRank,
-  updateLeaderboardVisibility,
-} from "./mutations";
+    getUserEmailStatusSchema,
+    sendVerificationEmailSchema,
+    syncUserSchema,
+    updateLeaderboardVisibilitySchema,
+    updateProfileSchema,
+    updateRankSchema,
+    verifyEmailSchema,
+} from "./validators";
 
 export const authRouter = createTRPCRouter({
-  getCurrentUser: protectedProcedure.query(async ({ ctx }) => {
-    const { db, session } = ctx;
-    return await getCurrentUser({ db, session });
-  }),
-
-  getUserEmailStatus: publicProcedure
-    .input(getUserEmailStatusSchema)
-    .query(async ({ input }) => {
-      return await getUserEmailStatus({ email: input.email });
+    getCurrentUser: protectedProcedure.query(async ({ ctx }) => {
+        const { db, session } = ctx;
+        const userData = await getCurrentUser({ db, session });
+        const discordProfileData = await db.query.discordProfile.findFirst({
+            where: eq(discordProfile.id, session.user.id),
+        });
+        return { ...userData, discordProfile: discordProfileData };
     }),
 
-  syncUser: publicProcedure
-    .input(syncUserSchema)
-    .mutation(async ({ ctx, input }) => {
-      const { db, session } = ctx;
-      return await syncUser({ input, db, session });
-    }),
+    getUserEmailStatus: publicProcedure
+        .input(getUserEmailStatusSchema)
+        .query(
+            async ({ input }) =>
+                await getUserEmailStatus({ email: input.email })
+        ),
 
-  sendVerificationEmail: publicProcedure
-    .input(sendVerificationEmailSchema)
-    .mutation(async ({ input }) => {
-      return await sendVerificationEmail({ email: input.email });
-    }),
+    syncUser: publicProcedure
+        .input(syncUserSchema)
+        .mutation(async ({ ctx, input }) => {
+            const { db, session } = ctx;
+            return await syncUser({ input, db, session });
+        }),
 
-  verifyEmail: publicProcedure
-    .input(verifyEmailSchema)
-    .mutation(async ({ input }) => {
-      return await verifyEmail({ token: input.token });
-    }),
+    sendVerificationEmail: publicProcedure
+        .input(sendVerificationEmailSchema)
+        .mutation(
+            async ({ input }) =>
+                await sendVerificationEmail({ email: input.email })
+        ),
 
-  updateProfile: protectedProcedure
-    .input(updateProfileSchema)
-    .mutation(async ({ ctx, input }) => {
-      const { db, session } = ctx;
-      return await updateProfile({ db, session, input }, input);
-    }),
+    verifyEmail: publicProcedure
+        .input(verifyEmailSchema)
+        .mutation(
+            async ({ input }) => await verifyEmail({ token: input.token })
+        ),
 
-  updateRank: protectedProcedure
-    .input(updateRankSchema)
-    .mutation(async ({ ctx, input }) => {
-      const { db, session } = ctx;
-      return await updateRank({ db, session, input }, input);
-    }),
+    updateProfile: protectedProcedure
+        .input(updateProfileSchema)
+        .mutation(async ({ ctx, input }) => {
+            const { db, session } = ctx;
+            return await updateProfile({ db, session, input }, input);
+        }),
 
-  updateLeaderboardVisibility: protectedProcedure
-    .input(updateLeaderboardVisibilitySchema)
-    .mutation(async ({ ctx, input }) => {
-      const { db, session } = ctx;
-      return await updateLeaderboardVisibility({ db, session, input }, input);
-    }),
+    updateRank: protectedProcedure
+        .input(updateRankSchema)
+        .mutation(async ({ ctx, input }) => {
+            const { db, session } = ctx;
+            return await updateRank({ db, session, input }, input);
+        }),
+
+    updateLeaderboardVisibility: protectedProcedure
+        .input(updateLeaderboardVisibilitySchema)
+        .mutation(async ({ ctx, input }) => {
+            const { db, session } = ctx;
+            return await updateLeaderboardVisibility(
+                { db, session, input },
+                input
+            );
+        }),
 });

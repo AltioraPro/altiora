@@ -1,2 +1,2 @@
 export { getCurrentUser } from "./getCurrentUser";
-export { getUserEmailStatus } from "./getUserEmailStatus"; 
+export { getUserEmailStatus } from "./getUserEmailStatus";

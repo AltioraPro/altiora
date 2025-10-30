@@ -2,7 +2,7 @@
 	Installed from https://reactbits.dev/ts/tailwind/
 */
 
-import React from 'react';
+import type React from "react";
 
 interface ShinyTextProps {
     text: string;
@@ -11,19 +11,22 @@ interface ShinyTextProps {
     className?: string;
 }
 
-const ShinyText: React.FC<ShinyTextProps> = ({ text, disabled = false, speed = 5, className = '' }) => {
-    return (
-        <div
-            className={`inline-block bg-gradient-to-r from-gray-400 via-white to-gray-400 bg-clip-text text-transparent ${!disabled ? 'animate-shine' : ''} ${className}`}
-            style={{
-                backgroundSize: '200% 100%',
-                animationDuration: `${speed}s`,
-            }}
-        >
-            {text}
-        </div>
-    );
-};
+const ShinyText: React.FC<ShinyTextProps> = ({
+    text,
+    disabled = false,
+    speed = 5,
+    className = "",
+}) => (
+    <div
+        className={`inline-block bg-gradient-to-r from-gray-400 via-white to-gray-400 bg-clip-text text-transparent ${disabled ? "" : "animate-shine"} ${className}`}
+        style={{
+            backgroundSize: "200% 100%",
+            animationDuration: `${speed}s`,
+        }}
+    >
+        {text}
+    </div>
+);
 
 export default ShinyText;
 

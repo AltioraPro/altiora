@@ -1,25 +1,29 @@
-import { db } from "@/server/db";
-import { users } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
+import { db } from "@/server/db";
+import { user } from "@/server/db/schema";
 
 interface GetUserEmailStatusParams {
-  email: string;
+    email: string;
 }
 
 export async function getUserEmailStatus({ email }: GetUserEmailStatusParams) {
-  const user = await db.select({
-    id: users.id,
-    email: users.email,
-    emailVerified: users.emailVerified,
-  }).from(users).where(eq(users.email, email)).limit(1);
+    const [userData] = await db
+        .select({
+            id: user.id,
+            email: user.email,
+            emailVerified: user.emailVerified,
+        })
+        .from(user)
+        .where(eq(user.email, email))
+        .limit(1);
 
-  if (!user.length) {
-    return { exists: false, emailVerified: false };
-  }
+    if (!userData) {
+        return { exists: false, emailVerified: false };
+    }
 
-  return {
-    exists: true,
-    emailVerified: user[0].emailVerified,
-    userId: user[0].id,
-  };
-} 
+    return {
+        exists: true,
+        emailVerified: userData.emailVerified,
+        userId: userData.id,
+    };
+}

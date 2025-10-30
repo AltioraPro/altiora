@@ -1,37 +1,56 @@
+import { User } from "lucide-react";
+import Image from "next/image";
 import { Suspense } from "react";
 import { Header } from "@/components/layout/Header";
 import { ActivityStats } from "@/components/profile/ActivityStats";
 import { HabitHeatmap } from "@/components/profile/HabitHeatmap";
 import { Card, CardContent } from "@/components/ui/card";
-import { User } from "lucide-react";
-import Image from "next/image";
 import { api } from "@/trpc/server";
 
 async function DeepworkStats() {
     const stats = await api.profile.getUserStats();
 
     return (
-        <div className="bg-black/5 rounded-lg p-4 h-full flex flex-col justify-center">
-            <p className="text-white/40 text-[10px] uppercase tracking-[0.2em] mb-4 text-center">Deepwork</p>
+        <div className="flex h-full flex-col justify-center rounded-lg bg-black/5 p-4">
+            <p className="mb-4 text-center text-[10px] text-white/40 uppercase tracking-[0.2em]">
+                Deepwork
+            </p>
             <div className="space-y-4">
                 <div className="text-center">
-                    <p className="text-3xl font-light text-white leading-none">{stats.deepwork.totalSessions}</p>
-                    <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1.5">Sessions</p>
+                    <p className="font-light text-3xl text-white leading-none">
+                        {stats.deepwork.totalSessions}
+                    </p>
+                    <p className="mt-1.5 text-[10px] text-white/40 uppercase tracking-widest">
+                        Sessions
+                    </p>
                 </div>
                 <div className="h-px w-full bg-white/10" />
                 <div className="text-center">
-                    <p className="text-3xl font-light text-white leading-none">{stats.deepwork.completedSessions}</p>
-                    <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1.5">Completed</p>
+                    <p className="font-light text-3xl text-white leading-none">
+                        {stats.deepwork.completedSessions}
+                    </p>
+                    <p className="mt-1.5 text-[10px] text-white/40 uppercase tracking-widest">
+                        Completed
+                    </p>
                 </div>
                 <div className="h-px w-full bg-white/10" />
                 <div className="text-center">
-                    <p className="text-3xl font-light text-white leading-none">{Math.floor(stats.deepwork.totalWorkTime / 60)}h</p>
-                    <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1.5">Focus Time</p>
+                    <p className="font-light text-3xl text-white leading-none">
+                        {Math.floor(stats.deepwork.totalWorkTime / 60)}h
+                    </p>
+                    <p className="mt-1.5 text-[10px] text-white/40 uppercase tracking-widest">
+                        Focus Time
+                    </p>
                 </div>
                 <div className="h-px w-full bg-white/10" />
                 <div className="text-center">
-                    <p className="text-3xl font-light text-white leading-none">{Math.floor(stats.deepwork.averageSessionDuration / 60)}h</p>
-                    <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1.5">Avg Duration</p>
+                    <p className="font-light text-3xl text-white leading-none">
+                        {Math.floor(stats.deepwork.averageSessionDuration / 60)}
+                        h
+                    </p>
+                    <p className="mt-1.5 text-[10px] text-white/40 uppercase tracking-widest">
+                        Avg Duration
+                    </p>
                 </div>
             </div>
         </div>
@@ -41,12 +60,39 @@ async function DeepworkStats() {
 export default async function ProfilePage() {
     const user = await api.auth.getCurrentUser();
 
-    const formatDate = (date: Date) => {
-        return new Intl.DateTimeFormat("en-US", {
+    const formatDate = (date: Date) =>
+        new Intl.DateTimeFormat("en-US", {
             year: "numeric",
             month: "long",
             day: "numeric",
         }).format(date);
+
+    const renderAvatar = () => {
+        if (user.discordProfile?.discordAvatar) {
+            return (
+                <Image
+                    alt={user.name}
+                    className="h-full w-full object-cover"
+                    height={128}
+                    src={`https://cdn.discordapp.com/avatars/${user.discordProfile.discordId}/${user.discordProfile.discordAvatar}.png`}
+                    width={128}
+                />
+            );
+        }
+
+        if (user.image) {
+            return (
+                <Image
+                    alt={user.name}
+                    className="h-full w-full object-cover"
+                    height={128}
+                    src={user.image}
+                    width={128}
+                />
+            );
+        }
+
+        return <User className="h-16 w-16 text-white/40" />;
     };
 
     return (
@@ -54,18 +100,19 @@ export default async function ProfilePage() {
             <Header />
 
             <div className="min-h-screen bg-pure-black text-pure-white">
-                <div className="relative w-full mx-auto">
+                <div className="relative mx-auto w-full">
                     {/* Header */}
-                    <div className="relative border-b border-white/10 mb-8">
+                    <div className="relative mb-8 border-white/10 border-b">
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
-                        <div className="relative max-w-7xl mx-auto px-6 py-8">
+                        <div className="relative mx-auto max-w-7xl px-6 py-8">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <h1 className="text-3xl font-bold font-argesta tracking-tight">
+                                    <h1 className="font-argesta font-bold text-3xl tracking-tight">
                                         Profile
                                     </h1>
-                                    <p className="text-white/60 text-sm mt-2">
-                                        Your account information and activity overview.
+                                    <p className="mt-2 text-sm text-white/60">
+                                        Your account information and activity
+                                        overview.
                                     </p>
                                 </div>
                             </div>
@@ -73,42 +120,23 @@ export default async function ProfilePage() {
                     </div>
 
                     {/* Profile Card */}
-                    <div className="mb-8 max-w-7xl mx-auto">
+                    <div className="mx-auto mb-8 max-w-7xl">
                         <Card className="border border-white/10 bg-black/20">
                             <CardContent className="p-8">
-                                <div className="flex gap-8 justify-between">
+                                <div className="flex justify-between gap-8">
                                     {/* Left Side - Avatar + Info + Heatmap */}
                                     <div className="flex-1 space-y-6">
                                         {/* Avatar + Info */}
-                                        <div className="flex items-center md:items-start gap-8">
+                                        <div className="flex items-center gap-8 md:items-start">
                                             {/* Avatar */}
                                             <div className="relative">
-                                                <div className="w-32 h-32 rounded-full border-2 border-white/20 bg-white/5 flex items-center justify-center overflow-hidden">
-                                                    {user.discordConnected && user.discordAvatar ? (
-                                                        <Image
-                                                            src={`https://cdn.discordapp.com/avatars/${user.discordId}/${user.discordAvatar}.png`}
-                                                            alt={user.name}
-                                                            width={128}
-                                                            height={128}
-                                                            className="w-full h-full object-cover"
-                                                            priority
-                                                        />
-                                                    ) : user.image ? (
-                                                        <Image
-                                                            src={user.image}
-                                                            alt={user.name}
-                                                            width={128}
-                                                            height={128}
-                                                            className="w-full h-full object-cover"
-                                                            priority
-                                                        />
-                                                    ) : (
-                                                        <User className="w-16 h-16 text-white/40" />
-                                                    )}
+                                                <div className="flex h-32 w-32 items-center justify-center overflow-hidden rounded-full border-2 border-white/20 bg-white/5">
+                                                    {renderAvatar()}
                                                 </div>
-                                                {user.discordConnected && (
-                                                    <div className="absolute bottom-1 right-1 w-8 h-8 bg-[#5865F2] rounded-full border-2 border-black flex items-center justify-center">
-                                                        <div className="w-3 h-3 bg-white rounded-full" />
+                                                {user.discordProfile
+                                                    ?.discordConnected && (
+                                                    <div className="absolute right-1 bottom-1 flex h-8 w-8 items-center justify-center rounded-full border-2 border-black bg-[#5865F2]">
+                                                        <div className="h-3 w-3 rounded-full bg-white" />
                                                     </div>
                                                 )}
                                             </div>
@@ -116,21 +144,26 @@ export default async function ProfilePage() {
                                             {/* User Info */}
                                             <div className="flex-1">
                                                 <div className="mb-4">
-                                                    <div className="flex items-center gap-3 mb-2">
-                                                        <h2 className="text-3xl font-argesta text-white font-bold">
+                                                    <div className="mb-2 flex items-center gap-3">
+                                                        <h2 className="font-argesta font-bold text-3xl text-white">
                                                             {user.name}
                                                         </h2>
-                                                        <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-md text-xs text-white/60 font-medium uppercase tracking-wider">
+                                                        <span className="rounded-md border border-white/10 bg-white/5 px-3 py-1 font-medium text-white/60 text-xs uppercase tracking-wider">
                                                             {user.rank}
                                                         </span>
                                                     </div>
-                                                    <p className="text-white/60">{user.email}</p>
+                                                    <p className="text-white/60">
+                                                        {user.email}
+                                                    </p>
                                                 </div>
 
                                                 {/* Member Since */}
                                                 <div className="mt-4">
-                                                    <p className="text-white/40 text-sm">
-                                                        Member since {formatDate(user.createdAt)}
+                                                    <p className="text-sm text-white/40">
+                                                        Member since{" "}
+                                                        {formatDate(
+                                                            user.createdAt
+                                                        )}
                                                     </p>
                                                 </div>
                                             </div>
@@ -138,12 +171,14 @@ export default async function ProfilePage() {
 
                                         {/* Habit Heatmap */}
                                         <div>
-                                            <Suspense fallback={
-                                                <div className="animate-pulse">
-                                                    <div className="h-6 bg-white/10 rounded w-40 mb-4" />
-                                                    <div className="h-32 bg-white/10 rounded" />
-                                                </div>
-                                            }>
+                                            <Suspense
+                                                fallback={
+                                                    <div className="animate-pulse">
+                                                        <div className="mb-4 h-6 w-40 rounded bg-white/10" />
+                                                        <div className="h-32 rounded bg-white/10" />
+                                                    </div>
+                                                }
+                                            >
                                                 <HabitHeatmap />
                                             </Suspense>
                                         </div>
@@ -151,11 +186,13 @@ export default async function ProfilePage() {
 
                                     {/* Right Side - Deepwork Stats */}
                                     <div className="w-56">
-                                        <Suspense fallback={
-                                            <div className="bg-black/5 rounded-lg p-4 animate-pulse h-full">
-                                                <div className="h-20 bg-white/5 rounded" />
-                                            </div>
-                                        }>
+                                        <Suspense
+                                            fallback={
+                                                <div className="h-full animate-pulse rounded-lg bg-black/5 p-4">
+                                                    <div className="h-20 rounded bg-white/5" />
+                                                </div>
+                                            }
+                                        >
                                             <DeepworkStats />
                                         </Suspense>
                                     </div>
@@ -165,31 +202,37 @@ export default async function ProfilePage() {
                     </div>
 
                     {/* Activity Stats */}
-                    <div className="max-w-7xl mx-auto mb-8">
-                        <h2 className="text-2xl font-argesta text-white font-bold mb-6">Activity Overview</h2>
-                        <Suspense fallback={
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                {[...Array(6)].map((_, i) => (
-                                    <div key={i} className="p-6 bg-black/20 rounded-lg border border-white/10 animate-pulse">
-                                        <div className="h-6 bg-white/10 rounded mb-3" />
-                                        <div className="h-8 bg-white/10 rounded mb-2" />
-                                        <div className="h-4 bg-white/10 rounded" />
-                                    </div>
-                                ))}
-                            </div>
-                        }>
+                    <div className="mx-auto mb-8 max-w-7xl">
+                        <h2 className="mb-6 font-argesta font-bold text-2xl text-white">
+                            Activity Overview
+                        </h2>
+                        <Suspense
+                            fallback={
+                                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                                    {new Array(6).map((_, i) => (
+                                        <div
+                                            className="animate-pulse rounded-lg border border-white/10 bg-black/20 p-6"
+                                            key={i}
+                                        >
+                                            <div className="mb-3 h-6 rounded bg-white/10" />
+                                            <div className="mb-2 h-8 rounded bg-white/10" />
+                                            <div className="h-4 rounded bg-white/10" />
+                                        </div>
+                                    ))}
+                                </div>
+                            }
+                        >
                             <ActivityStats />
                         </Suspense>
                     </div>
                 </div>
 
                 {/* Background decoration */}
-                <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
-                    <div className="absolute top-20 left-20 w-64 h-64 bg-white/[0.01] rounded-full blur-3xl" />
-                    <div className="absolute bottom-20 right-20 w-96 h-96 bg-white/[0.005] rounded-full blur-3xl" />
+                <div className="-z-10 pointer-events-none fixed inset-0 overflow-hidden">
+                    <div className="absolute top-20 left-20 h-64 w-64 rounded-full bg-white/[0.01] blur-3xl" />
+                    <div className="absolute right-20 bottom-20 h-96 w-96 rounded-full bg-white/[0.005] blur-3xl" />
                 </div>
             </div>
         </>
     );
 }
-

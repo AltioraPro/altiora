@@ -1,52 +1,54 @@
-import { db } from "@/server/db";
-import { users, verifications } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
-import { Resend } from "resend";
 import { nanoid } from "nanoid";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { resend } from "@/lib/resend";
+import { db } from "@/server/db";
+import { user, verification } from "@/server/db/schema";
 
 interface SendVerificationEmailParams {
-  email: string;
+    email: string;
 }
 
-export async function sendVerificationEmail({ email }: SendVerificationEmailParams) {
-  const user = await db.select().from(users).where(eq(users.email, email)).limit(1);
-  
-  if (!user.length) {
-    throw new Error("User not found");
-  }
+export async function sendVerificationEmail({
+    email,
+}: SendVerificationEmailParams) {
+    const [userData] = await db
+        .select()
+        .from(user)
+        .where(eq(user.email, email))
+        .limit(1);
 
-  const userData = user[0];
+    if (!userData) {
+        throw new Error("User not found");
+    }
 
-  if (userData.emailVerified) {
-    throw new Error("Email already verified");
-  }
+    if (userData.emailVerified) {
+        throw new Error("Email already verified");
+    }
 
-  await db.delete(verifications).where(eq(verifications.identifier, email));
+    await db.delete(verification).where(eq(verification.identifier, email));
 
-  const token = nanoid();
-  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 heures
+    const token = nanoid();
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 heures
 
-  const now = new Date();
-  await db.insert(verifications).values({
-    id: nanoid(),
-    identifier: email,
-    value: token,
-    expiresAt,
-    createdAt: now,
-    updatedAt: now,
-  });
+    const now = new Date();
+    await db.insert(verification).values({
+        id: nanoid(),
+        identifier: email,
+        value: token,
+        expiresAt,
+        createdAt: now,
+        updatedAt: now,
+    });
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  const verificationUrl = `${baseUrl}/auth/verify-email?token=${token}`;
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const verificationUrl = `${baseUrl}/auth/verify-email?token=${token}`;
 
-  // Envoyer l'email
-  await resend.emails.send({
-    from: "Altiora <noreply@altiora.pro>",
-    to: email,
-    subject: "Verify your email address",
-    html: `
+    // Envoyer l'email
+    await resend.emails.send({
+        from: "Altiora <noreply@altiora.pro>",
+        to: email,
+        subject: "Verify your email address",
+        html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #000; color: #fff; padding: 40px 20px;">
         <div style="text-align: center; margin-bottom: 40px;">
           <img src="${baseUrl}/img/logo.png" alt="ALTIORA" style="height: 60px; width: auto; margin-bottom: 16px;" />
@@ -76,7 +78,7 @@ export async function sendVerificationEmail({ email }: SendVerificationEmailPara
         </div>
       </div>
     `,
-  });
+    });
 
-  return { success: true, message: "Verification email sent" };
-} 
+    return { success: true, message: "Verification email sent" };
+}

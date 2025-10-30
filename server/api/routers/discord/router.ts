@@ -1,169 +1,185 @@
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import { z } from "zod";
-import { DiscordService } from "@/server/services/discord";
-import { db } from "@/server/db";
-import { users } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { discordProfile, user } from "@/server/db/schema";
+import { DiscordService } from "@/server/services/discord";
 
 export const discordRouter = createTRPCRouter({
-  getConnectionStatus: protectedProcedure.query(async ({ ctx }) => {
-    const { db, session } = ctx;
-    
-    const user = await db.query.users.findFirst({
-      where: eq(users.id, session.user.id),
-      columns: {
-        discordConnected: true,
-        discordRoleSynced: true,
-        discordUsername: true,
-        discordDiscriminator: true,
-        discordAvatar: true,
-        lastDiscordSync: true,
-        rank: true,
-      },
-    });
+    getConnectionStatus: protectedProcedure.query(async ({ ctx }) => {
+        const { db, session } = ctx;
 
-    return {
-      connected: user?.discordConnected ?? false,
-      roleSynced: user?.discordRoleSynced ?? false,
-      username: user?.discordUsername,
-      discriminator: user?.discordDiscriminator,
-      avatar: user?.discordAvatar,
-      lastSync: user?.lastDiscordSync,
-      currentRank: user?.rank,
-    };
-  }),
+        const [userData] = await db
+            .select({
+                discordConnected: discordProfile.discordConnected,
+                discordRoleSynced: discordProfile.discordRoleSynced,
+                discordUsername: discordProfile.discordUsername,
+                discordDiscriminator: discordProfile.discordDiscriminator,
+                discordAvatar: discordProfile.discordAvatar,
+                lastDiscordSync: discordProfile.lastDiscordSync,
+                rank: user.rank,
+            })
+            .from(user)
+            .where(eq(user.id, session.user.id))
+            .limit(1);
 
-  disconnect: protectedProcedure.mutation(async ({ ctx }) => {
-    const { db, session } = ctx;
-    
-    await db.update(users)
-      .set({
-        discordId: null,
-        discordUsername: null,
-        discordDiscriminator: null,
-        discordAvatar: null,
-        discordConnected: false,
-        discordRoleSynced: false,
-        lastDiscordSync: null,
-        updatedAt: new Date(),
-      })
-      .where(eq(users.id, session.user.id));
+        if (!userData) {
+            throw new Error("User not found");
+        }
 
-    return { success: true };
-  }),
+        return {
+            connected: userData.discordConnected ?? false,
+            roleSynced: userData.discordRoleSynced ?? false,
+            username: userData.discordUsername,
+            discriminator: userData.discordDiscriminator,
+            avatar: userData.discordAvatar,
+            lastSync: userData.lastDiscordSync,
+            currentRank: userData.rank,
+        };
+    }),
 
-  syncRank: protectedProcedure.mutation(async ({ ctx }) => {
-    const { db, session } = ctx;
-    
-    const user = await db.query.users.findFirst({
-      where: eq(users.id, session.user.id),
-      columns: {
-        discordId: true,
-        rank: true,
-      },
-    });
+    disconnect: protectedProcedure.mutation(async ({ ctx }) => {
+        const { db, session } = ctx;
 
-    if (!user?.discordId || !user?.rank) {
-      throw new Error('Discord not connected or no rank available');
-    }
+        await db
+            .update(discordProfile)
+            .set({
+                discordId: "",
+                discordUsername: "",
+                discordDiscriminator: "",
+                discordAvatar: "",
+                discordConnected: false,
+                discordRoleSynced: false,
+                lastDiscordSync: null,
+            })
+            .where(eq(discordProfile.id, session.user.id));
 
-    try {
-      await DiscordService.syncUserRank(user.discordId, user.rank);
-      
-      const now = new Date();
-      await db.update(users)
-        .set({
-          discordRoleSynced: true,
-          lastDiscordSync: now,
-          updatedAt: now,
-        })
-        .where(eq(users.id, session.user.id));
+        return { success: true };
+    }),
 
-      return { success: true };
-    } catch (error) {
-      console.error('Failed to sync rank:', error);
-      throw new Error('Failed to sync rank with Discord');
-    }
-  }),
+    syncRank: protectedProcedure.mutation(async ({ ctx }) => {
+        const { db, session } = ctx;
 
-  autoSyncRank: protectedProcedure.mutation(async ({ ctx }) => {
-    const { db, session } = ctx;
-    
-    const user = await db.query.users.findFirst({
-      where: eq(users.id, session.user.id),
-      columns: {
-        discordId: true,
-        rank: true,
-      },
-    });
+        const [userData] = await db
+            .select({
+                discordId: discordProfile.discordId,
+                rank: user.rank,
+            })
+            .from(user)
+            .leftJoin(discordProfile, eq(user.id, discordProfile.userId))
+            .where(eq(user.id, session.user.id))
+            .limit(1);
 
-    if (!user?.discordId || !user?.rank) {
-      throw new Error('Discord not connected or no rank available');
-    }
+        if (!(userData?.discordId && userData?.rank)) {
+            throw new Error("Discord not connected or no rank available");
+        }
 
-    try {
-      await DiscordService.autoSyncUserRank(user.discordId, user.rank);
-      
-      const now = new Date();
-      await db.update(users)
-        .set({
-          discordRoleSynced: true,
-          lastDiscordSync: now,
-          updatedAt: now,
-        })
-        .where(eq(users.id, session.user.id));
+        try {
+            await DiscordService.syncUserRank(
+                userData.discordId,
+                userData.rank
+            );
 
-      return { success: true };
-    } catch (error) {
-      console.error('Failed to auto sync rank:', error);
-      throw new Error('Failed to sync rank with Discord');
-    }
-  }),
+            const now = new Date();
+            await db
+                .update(discordProfile)
+                .set({
+                    discordRoleSynced: true,
+                    lastDiscordSync: now,
+                })
+                .where(eq(discordProfile.id, session.user.id));
 
-  syncAllUsers: protectedProcedure.mutation(async () => {
-    try {
-      const result = await DiscordService.syncAllConnectedUsers();
-      return result;
-    } catch (error) {
-      console.error('Failed to sync all users:', error);
-      throw new Error('Failed to sync all users with Discord');
-    }
-  }),
+            return { success: true };
+        } catch (error) {
+            console.error("Failed to sync rank:", error);
+            throw new Error("Failed to sync rank with Discord");
+        }
+    }),
 
-  checkBotStatus: protectedProcedure.query(async () => {
-    try {
-      const botUrl = process.env.DISCORD_BOT_WEBHOOK_URL || 'http://localhost:3001';
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); 
-      
-      const response = await fetch(`${botUrl}/health`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        signal: controller.signal,
-      });
+    autoSyncRank: protectedProcedure.mutation(async ({ ctx }) => {
+        const { db, session } = ctx;
 
-      clearTimeout(timeoutId);
+        const [userData] = await db
+            .select({
+                discordId: discordProfile.discordId,
+                rank: user.rank,
+            })
+            .from(user)
+            .leftJoin(discordProfile, eq(user.id, discordProfile.userId))
+            .where(eq(user.id, session.user.id))
+            .limit(1);
 
-      return {
-        online: response.ok,
-        status: response.status,
-        url: botUrl,
-      };
-    } catch (error) {
-      return {
-        online: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
-        url: process.env.DISCORD_BOT_WEBHOOK_URL || 'http://localhost:3001',
-      };
-    }
-  }),
+        if (!(userData?.discordId && userData?.rank)) {
+            throw new Error("Discord not connected or no rank available");
+        }
 
-  getAuthUrl: protectedProcedure.mutation(async () => {
-    const state = crypto.randomUUID();
-    const authUrl = DiscordService.getAuthUrl(state);
-    
-    return { authUrl, state };
-  }),
-}); 
+        try {
+            await DiscordService.autoSyncUserRank(
+                userData.discordId,
+                userData.rank
+            );
+
+            const now = new Date();
+            await db
+                .update(discordProfile)
+                .set({
+                    discordRoleSynced: true,
+                    lastDiscordSync: now,
+                })
+                .where(eq(discordProfile.id, session.user.id));
+
+            return { success: true };
+        } catch (error) {
+            console.error("Failed to auto sync rank:", error);
+            throw new Error("Failed to sync rank with Discord");
+        }
+    }),
+
+    syncAllUsers: protectedProcedure.mutation(async () => {
+        try {
+            const result = await DiscordService.syncAllConnectedUsers();
+            return result;
+        } catch (error) {
+            console.error("Failed to sync all users:", error);
+            throw new Error("Failed to sync all users with Discord");
+        }
+    }),
+
+    checkBotStatus: protectedProcedure.query(async () => {
+        try {
+            const botUrl =
+                process.env.DISCORD_BOT_WEBHOOK_URL || "http://localhost:3001";
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+            const response = await fetch(`${botUrl}/health`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                signal: controller.signal,
+            });
+
+            clearTimeout(timeoutId);
+
+            return {
+                online: response.ok,
+                status: response.status,
+                url: botUrl,
+            };
+        } catch (error) {
+            return {
+                online: false,
+                error: error instanceof Error ? error.message : "Unknown error",
+                url:
+                    process.env.DISCORD_BOT_WEBHOOK_URL ||
+                    "http://localhost:3001",
+            };
+        }
+    }),
+
+    getAuthUrl: protectedProcedure.mutation(() => {
+        const state = crypto.randomUUID();
+        const authUrl = DiscordService.getAuthUrl(state);
+
+        return { authUrl, state };
+    }),
+});

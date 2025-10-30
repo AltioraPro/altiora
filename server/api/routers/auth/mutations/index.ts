@@ -1,6 +1,6 @@
-export { syncUser } from "./syncUser";
 export { sendVerificationEmail } from "./sendVerificationEmail";
-export { verifyEmail } from "./verifyEmail";
+export { syncUser } from "./syncUser";
+export { updateLeaderboardVisibility } from "./updateLeaderboardVisibility";
 export { updateProfile } from "./updateProfile";
 export { updateRank } from "./updateRank";
-export { updateLeaderboardVisibility } from "./updateLeaderboardVisibility";
+export { verifyEmail } from "./verifyEmail";
