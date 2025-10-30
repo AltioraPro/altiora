@@ -90,7 +90,9 @@ export function TradesTable({ journalId }: TradesTableProps) {
     };
 
     const handleDeleteSelected = async () => {
-        if (selectedTrades.size === 0) return;
+        if (selectedTrades.size === 0) {
+            return;
+        }
 
         setIsDeleting(true);
         try {

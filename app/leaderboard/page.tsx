@@ -211,6 +211,7 @@ export default function LeaderboardPage() {
                                             Math.max(1, currentPage - 1)
                                         )
                                     }
+                                    type="button"
                                 >
                                     Précédent
                                 </button>
@@ -230,6 +231,7 @@ export default function LeaderboardPage() {
                                             )
                                         )
                                     }
+                                    type="button"
                                 >
                                     Suivant
                                 </button>

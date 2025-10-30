@@ -101,7 +101,7 @@ export default function TradingPage() {
         }
 
         if (dateFilter.view === "yearly" && dateFilter.year) {
-            const year = Number.parseInt(dateFilter.year);
+            const year = Number.parseInt(dateFilter.year, 10);
             const startDate = new Date(year, 0, 1);
             const endDate = new Date(year, 11, 31);
 
@@ -228,7 +228,7 @@ export default function TradingPage() {
                         ? Number.parseFloat(trade.profitLossPercentage) || 0
                         : 0;
                     const previousCumulative =
-                        acc.length > 0 ? acc[acc.length - 1].cumulative : 0;
+                        acc.length > 0 ? acc.at(-1)?.cumulative || 0 : 0;
                     const cumulative = previousCumulative + pnl;
                     acc.push({ cumulative });
                     return acc;
@@ -240,9 +240,7 @@ export default function TradingPage() {
         ? calculateCumulativePerformance(filteredTrades)
         : [];
     const totalPerformance =
-        cumulativeData.length > 0
-            ? cumulativeData[cumulativeData.length - 1]?.cumulative
-            : 0;
+        cumulativeData.length > 0 ? cumulativeData.at(-1)?.cumulative || 0 : 0;
 
     const stats =
         (filteredTrades && filteredTrades.length > 0
@@ -269,7 +267,9 @@ export default function TradingPage() {
                           ? totalPerformance / filteredTrades.length
                           : 0,
                   totalAmountPnL: (() => {
-                      if (!filteredTrades) return 0;
+                      if (!filteredTrades) {
+                          return 0;
+                      }
 
                       if (
                           selectedJournal?.usePercentageCalculation &&
@@ -314,7 +314,9 @@ export default function TradingPage() {
     );
 
     const createJournalMutation = api.trading.createJournal.useMutation({
-        onSuccess: () => {},
+        onSuccess: () => {
+            return;
+        },
     });
 
     const handleJournalFound = useCallback((journalId: string) => {
@@ -336,7 +338,9 @@ export default function TradingPage() {
     }, [journals, selectedJournalId]);
 
     const handleCreateDefaultJournal = async () => {
-        if (!session?.user?.id) return;
+        if (!session?.user?.id) {
+            return;
+        }
 
         try {
             await createJournalMutation.mutateAsync({
@@ -354,7 +358,7 @@ export default function TradingPage() {
                 <div className="animate-pulse">
                     <div className="mb-6 h-8 w-1/4 rounded bg-gray-200" />
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-                        {[...Array(4)].map((_, i) => (
+                        {new Array(4).map((_, i) => (
                             <div className="h-32 rounded bg-gray-200" key={i} />
                         ))}
                     </div>
@@ -505,6 +509,7 @@ export default function TradingPage() {
                                             | "setups"
                                     )
                                 }
+                                type="button"
                             >
                                 <Icon className="h-4 w-4" />
                                 <span>{label}</span>

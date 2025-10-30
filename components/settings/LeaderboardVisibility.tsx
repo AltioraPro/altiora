@@ -47,6 +47,7 @@ export function LeaderboardVisibility({
                     } ${updateVisibility.isPending ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
                     disabled={updateVisibility.isPending}
                     onClick={handleToggle}
+                    type="button"
                 >
                     <div
                         className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full transition-all duration-300 ${

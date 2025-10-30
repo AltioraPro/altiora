@@ -561,12 +561,14 @@ export function JournalPerformanceCard({
                                 <button
                                     className="rounded-xl border border-white/20 px-6 py-3 text-white/70 transition-all duration-200 hover:border-white/40 hover:bg-white/5 hover:text-white"
                                     onClick={handleClosePreview}
+                                    type="button"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     className="rounded-xl bg-white px-6 py-3 font-medium text-black shadow-lg transition-all duration-200 hover:bg-gray-100 hover:shadow-xl"
                                     onClick={handleDownload}
+                                    type="button"
                                 >
                                     Download Image
                                 </button>

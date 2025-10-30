@@ -15,16 +15,28 @@ export function GoalStats({ stats }: GoalStatsProps) {
     const animatedStats = stats;
 
     const getCompletionRateColor = (rate: number) => {
-        if (rate >= 80) return "text-white";
-        if (rate >= 60) return "text-white/90";
-        if (rate >= 40) return "text-white/70";
+        if (rate >= 80) {
+            return "text-white";
+        }
+        if (rate >= 60) {
+            return "text-white/90";
+        }
+        if (rate >= 40) {
+            return "text-white/70";
+        }
         return "text-white/50";
     };
 
     const getCompletionRateMessage = (rate: number) => {
-        if (rate >= 80) return "Exceptional performance!";
-        if (rate >= 60) return "Great momentum!";
-        if (rate >= 40) return "Steady progress.";
+        if (rate >= 80) {
+            return "Exceptional performance!";
+        }
+        if (rate >= 60) {
+            return "Great momentum!";
+        }
+        if (rate >= 40) {
+            return "Steady progress.";
+        }
         return "Room for growth.";
     };
 

@@ -106,6 +106,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
                                 aria-label="Toggle menu"
                                 className="group relative flex h-12 w-12 items-center justify-center"
                                 onClick={toggleMenu}
+                                type="button"
                             >
                                 <div className="relative h-6 w-6 cursor-pointer">
                                     <div
@@ -427,6 +428,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
                                                 toggleMenu();
                                                 window.location.href = "/";
                                             }}
+                                            type="button"
                                         >
                                             LOGOUT
                                             <div className="mt-1 h-px w-0 bg-red-400/60 transition-all duration-300 group-hover:w-full" />
@@ -466,6 +468,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
                                 : "translate-y-[-10px] opacity-0"
                         }`}
                         onClick={toggleMenu}
+                        type="button"
                     >
                         <span className="text-white/40 text-xs tracking-widest transition-colors duration-200 group-hover:text-white/80">
                             ESC TO CLOSE

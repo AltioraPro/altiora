@@ -619,6 +619,11 @@ export const discordAuthSchema = z.object({
 });
 
 export const discordSyncSchema = z.object({
+<<<<<<< HEAD
     discordId: z.string(),
     rank: z.string(),
-});
+=======
+  discordId: z.string(),
+  rank: z.string(),
+>>>>>>> Development
+})

@@ -9,6 +9,8 @@ import { api } from "@/trpc/server";
 
 async function DeepworkStats() {
     const stats = await api.profile.getUserStats();
+async function DeepworkStats() {
+    const stats = await api.profile.getUserStats();
 
     return (
         <div className="flex h-full flex-col justify-center rounded-lg bg-black/5 p-4">
@@ -58,6 +60,7 @@ async function DeepworkStats() {
 }
 
 export default async function ProfilePage() {
+    const user = await api.auth.getCurrentUser();
     const user = await api.auth.getCurrentUser();
 
     const formatDate = (date: Date) =>

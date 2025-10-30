@@ -34,6 +34,10 @@ export const updateLeaderboardVisibilitySchema = z.object({
     isPublic: z.boolean(),
 });
 
+export const updateLeaderboardVisibilitySchema = z.object({
+  isPublic: z.boolean(),
+});
+
 export const userCreateSchema = z.object({
     email: z.string().email(),
     name: z.string().min(1, "Name is required"),

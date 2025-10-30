@@ -1,7 +1,9 @@
 import { and, desc, eq, isNotNull } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/server/db";
-import { discordProfile, goalReminders, goals, user } from "@/server/db/schema";
+import { goalReminders, goals } from "@/server/db/schema";
+import { user } from "@/server/db/schema/auth";
+import { discordProfile } from "@/server/db/schema/discord-profile";
 import { GoalRemindersService } from "@/server/services/goal-reminders";
 
 function basicAuth(request: NextRequest): boolean {

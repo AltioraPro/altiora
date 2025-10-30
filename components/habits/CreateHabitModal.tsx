@@ -128,6 +128,7 @@ export function CreateHabitModal({ onSuccess }: CreateHabitModalProps = {}) {
             <div
                 className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm"
                 onClick={handleClose}
+                type="button"
             />
 
             <div className="pointer-events-none fixed inset-0 z-[10000] flex items-center justify-center p-4">
