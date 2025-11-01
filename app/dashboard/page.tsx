@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { ArrowLeft, CheckSquare, ChevronDown, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -22,20 +23,51 @@ import {
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useSession } from "@/lib/auth-client";
-import { api } from "@/trpc/client";
+import { orpc } from "@/orpc/client";
 
 function OnboardingContent() {
     const router = useRouter();
-    const utils = api.useUtils();
+
     const [isCreateJournalModalOpen, setIsCreateJournalModalOpen] =
         useState(false);
     const [isCreateGoalModalOpen, setIsCreateGoalModalOpen] = useState(false);
     const [isGeneratingJournal, setIsGeneratingJournal] = useState(false);
     const [isGeneratingGoal, setIsGeneratingGoal] = useState(false);
 
-    const createJournalMutation = api.trading.createJournal.useMutation();
-    const createTradeMutation = api.trading.createTrade.useMutation();
-    const createGoalMutation = api.goals.create.useMutation();
+    const createJournalMutation = useMutation(
+        orpc.trading.createJournal.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.trading.getJournals.queryKey({ input: {} }),
+                    orpc.trading.getTrades.queryKey({ input: {} }),
+                    orpc.trading.getStats.queryKey({ input: {} }),
+                ],
+            },
+        })
+    );
+
+    const { mutateAsync: createTrade } = useMutation(
+        orpc.trading.createTrade.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.trading.getTrades.queryKey({ input: {} }),
+                    orpc.trading.getStats.queryKey({ input: {} }),
+                ],
+            },
+        })
+    );
+
+    const { mutateAsync: createGoal } = useMutation(
+        orpc.goals.create.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.goals.getPaginated.queryKey({ input: {} }),
+                    orpc.goals.getStats.queryKey({ input: {} }),
+                    orpc.goals.getAll.queryKey({ input: {} }),
+                ],
+            },
+        })
+    );
 
     const handleJournalSuccess = () => {
         setIsCreateJournalModalOpen(false);
@@ -112,14 +144,8 @@ function OnboardingContent() {
             ];
 
             for (const trade of sampleTrades) {
-                await createTradeMutation.mutateAsync(trade);
+                await createTrade(trade);
             }
-
-            await Promise.all([
-                utils.trading.getJournals.invalidate(),
-                utils.trading.getTrades.invalidate(),
-                utils.trading.getStats.invalidate(),
-            ]);
 
             await new Promise((resolve) => setTimeout(resolve, 300));
 
@@ -154,14 +180,8 @@ function OnboardingContent() {
             ];
 
             for (const goal of sampleGoals) {
-                await createGoalMutation.mutateAsync(goal);
+                await createGoal(goal);
             }
-
-            await Promise.all([
-                utils.goals.getAll.invalidate(),
-                utils.goals.getPaginated.invalidate(),
-                utils.goals.getStats.invalidate(),
-            ]);
 
             await new Promise((resolve) => setTimeout(resolve, 300));
 
@@ -422,10 +442,18 @@ function OnboardingContent() {
 
 function HabitCardWithProvider() {
     const router = useRouter();
-    const utils = api.useUtils();
     const [isGeneratingHabit, setIsGeneratingHabit] = useState(false);
 
-    const createHabitMutation = api.habits.create.useMutation();
+    const { mutateAsync: createHabit } = useMutation(
+        orpc.habits.create.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.habits.getAll.queryKey({ input: {} }),
+                    orpc.habits.getDashboard.queryKey(),
+                ],
+            },
+        })
+    );
 
     const handleHabitSuccess = () => {
         router.push("/habits");
@@ -457,13 +485,8 @@ function HabitCardWithProvider() {
             ];
 
             for (const habit of sampleHabits) {
-                await createHabitMutation.mutateAsync(habit);
+                await createHabit(habit);
             }
-
-            await Promise.all([
-                utils.habits.getAll.invalidate(),
-                utils.habits.getDashboard.invalidate(),
-            ]);
 
             await new Promise((resolve) => setTimeout(resolve, 300));
 
@@ -614,22 +637,36 @@ export default function GlobalDashboardPage() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    const { data: journals, isLoading: journalsLoading } =
-        api.trading.getJournals.useQuery();
+    const { data: journals, isLoading: journalsLoading } = useQuery(
+        orpc.trading.getJournals.queryOptions({ input: {} })
+    );
 
     const effectiveJournalIds =
         selectedJournalIds.length > 0 ? selectedJournalIds : undefined;
 
-    const { data: stats } = api.trading.getStats.useQuery({
-        journalIds: effectiveJournalIds,
-    });
-    const { data: allTrades } = api.trading.getTrades.useQuery({
-        journalIds: effectiveJournalIds,
-    });
+    const { data: stats } = useQuery(
+        orpc.trading.getStats.queryOptions({
+            input: {
+                journalIds: effectiveJournalIds,
+            },
+        })
+    );
 
-    const { data: sessions } = api.trading.getSessions.useQuery({
-        journalIds: effectiveJournalIds,
-    });
+    const { data: allTrades } = useQuery(
+        orpc.trading.getTrades.queryOptions({
+            input: {
+                journalIds: effectiveJournalIds,
+            },
+        })
+    );
+
+    const { data: sessions } = useQuery(
+        orpc.trading.getSessions.queryOptions({
+            input: {
+                journalIds: effectiveJournalIds,
+            },
+        })
+    );
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {

@@ -1,94 +1,76 @@
-import { useMemo } from "react";
-import { api } from "@/trpc/client";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { orpc } from "@/orpc/client";
 
 export function useHabitsDashboard(viewMode: "today" | "week" | "month") {
-    const { data, isLoading, error, refetch } =
-        api.habits.getDashboard.useQuery(
-            {
+    const { data, isLoading, error, refetch } = useQuery(
+        orpc.habits.getDashboard.queryOptions({
+            input: {
                 viewMode,
             },
-            {
-                staleTime: 5 * 60 * 1000,
-                gcTime: 15 * 60 * 1000,
-                refetchOnWindowFocus: false,
-                refetchOnMount: false,
-                refetchOnReconnect: true,
-                retry: (failureCount, error) => {
-                    if (error && typeof error === "object" && "code" in error) {
-                        const code = (error as { code?: string }).code;
-                        if (code === "UNAUTHORIZED" || code === "FORBIDDEN") {
-                            return false;
-                        }
-                    }
-                    return failureCount < 2;
-                },
-            }
-        );
-
-    const memoizedData = useMemo(() => {
-        if (!data) return null;
-
-        return {
-            ...data,
-
-            habitsByStatus: {
-                completed: data.todayStats.habits.filter((h) => h.isCompleted),
-                pending: data.todayStats.habits.filter((h) => !h.isCompleted),
-            },
-        };
-    }, [data]);
+        })
+    );
 
     return {
-        data: memoizedData,
+        data,
         isLoading,
         error,
         refetch,
-
-        isTodayComplete: memoizedData?.todayStats.completionPercentage === 100,
+        isTodayComplete: data?.todayStats.completionPercentage === 100,
         hasHabits:
-            memoizedData?.todayStats.habits.length &&
-            memoizedData.todayStats.habits.length > 0,
+            data?.todayStats.habits.length && data.todayStats.habits.length > 0,
     };
 }
 
 export function useHabitsMutations() {
-    const utils = api.useUtils();
+    const queryClient = useQueryClient();
 
-    const toggleCompletion = api.habits.toggleCompletion.useMutation({
-        onMutate: async ({ habitId, isCompleted }) => {
-            await utils.habits.getDashboard.cancel();
-
-            const previousData = utils.habits.getDashboard.getData();
-
-            if (previousData) {
-                utils.habits.getDashboard.setData(undefined, {
-                    ...previousData,
-                    todayStats: {
-                        ...previousData.todayStats,
-                        habits: previousData.todayStats.habits.map((habit) =>
-                            habit.id === habitId
-                                ? { ...habit, isCompleted }
-                                : habit
-                        ),
-                    },
+    const toggleCompletion = useMutation(
+        orpc.habits.toggleCompletion.mutationOptions({
+            onMutate: async ({ habitId, isCompleted }) => {
+                await queryClient.cancelQueries({
+                    queryKey: orpc.habits.getDashboard.queryKey(),
                 });
-            }
 
-            return { previousData };
-        },
-        onError: (error, variables, context) => {
-            if (context?.previousData) {
-                utils.habits.getDashboard.setData(
-                    undefined,
-                    context.previousData
+                const previousData = queryClient.getQueryData(
+                    orpc.habits.getDashboard.queryKey()
                 );
-            }
-            console.error("Error toggling habit completion:", error);
-        },
-        onSettled: () => {
-            utils.habits.getDashboard.invalidate();
-        },
-    });
+
+                if (previousData) {
+                    queryClient.setQueryData(
+                        orpc.habits.getDashboard.queryKey(),
+                        {
+                            ...previousData,
+                            todayStats: {
+                                ...previousData.todayStats,
+                                habits: previousData.todayStats.habits.map(
+                                    (habit) =>
+                                        habit.id === habitId
+                                            ? { ...habit, isCompleted }
+                                            : habit
+                                ),
+                            },
+                        }
+                    );
+                }
+
+                return { previousData };
+            },
+            onError: (error, _variables, context) => {
+                if (context?.previousData) {
+                    queryClient.setQueryData(
+                        orpc.habits.getDashboard.queryKey(),
+                        context.previousData
+                    );
+                }
+                console.error("Error toggling habit completion:", error);
+            },
+            onSettled: () => {
+                queryClient.invalidateQueries({
+                    queryKey: orpc.habits.getDashboard.queryKey(),
+                });
+            },
+        })
+    );
 
     return {
         toggleCompletion,

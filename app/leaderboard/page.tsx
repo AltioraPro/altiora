@@ -1,11 +1,12 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { Calendar, Clock, User } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
 import { Header } from "@/components/layout/Header";
 import { Card, CardContent } from "@/components/ui/card";
-import { api } from "@/trpc/client";
+import { orpc } from "@/orpc/client";
 
 type Period = "all" | "week" | "month" | "year";
 
@@ -14,14 +15,9 @@ export default function LeaderboardPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 50;
 
-    const { data: leaderboard, isLoading } =
-        api.leaderboard.getLeaderboard.useQuery(
-            { period },
-            {
-                refetchOnWindowFocus: false,
-                staleTime: 30_000,
-            }
-        );
+    const { data: leaderboard, isLoading } = useQuery(
+        orpc.leaderboard.getLeaderboard.queryOptions({ input: { period } })
+    );
 
     // Pagination logic
     const totalItems = leaderboard?.length || 0;
@@ -33,7 +29,7 @@ export default function LeaderboardPage() {
     // Reset to page 1 when period changes
     React.useEffect(() => {
         setCurrentPage(1);
-    }, [period]);
+    }, []);
 
     return (
         <>
@@ -80,7 +76,7 @@ export default function LeaderboardPage() {
                     <div className="mx-auto max-w-7xl px-6">
                         {isLoading ? (
                             <div className="space-y-4">
-                                {[...Array(10)].map((_, i) => (
+                                {new Array(10).map((_, i) => (
                                     <div
                                         className="animate-pulse rounded-lg border border-white/10 bg-black/20 p-6"
                                         key={i}
@@ -96,7 +92,7 @@ export default function LeaderboardPage() {
                                     </div>
                                 ))}
                             </div>
-                        ) : currentItems && currentItems.length > 0 ? (
+                        ) : currentItems.length > 0 ? (
                             <div className="space-y-2">
                                 {currentItems.map((entry) => (
                                     <Card

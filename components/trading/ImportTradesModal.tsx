@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
     AlertCircle,
     CheckCircle,
@@ -19,7 +20,7 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { api } from "@/trpc/client";
+import { orpc } from "@/orpc/client";
 
 interface ImportTradesModalProps {
     isOpen: boolean;
@@ -71,22 +72,52 @@ export function ImportTradesModal({
         setups: new Map(),
     });
 
-    const utils = api.useUtils();
+    const { mutateAsync: createTrade } = useMutation(
+        orpc.trading.createTrade.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.trading.getTrades.queryKey({ input: { journalId } }),
+                ],
+            },
+        })
+    );
+    const { mutateAsync: createAsset } = useMutation(
+        orpc.trading.createAsset.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.trading.getAssets.queryKey({ input: { journalId } }),
+                ],
+            },
+        })
+    );
+    const { mutateAsync: createSession } = useMutation(
+        orpc.trading.createSession.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.trading.getSessions.queryKey({ input: { journalId } }),
+                ],
+            },
+        })
+    );
+    const { mutateAsync: createSetup } = useMutation(
+        orpc.trading.createSetup.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.trading.getSetups.queryKey({ input: { journalId } }),
+                ],
+            },
+        })
+    );
 
-    const createTradeMutation = api.trading.createTrade.useMutation();
-    const createAssetMutation = api.trading.createAsset.useMutation();
-    const createSessionMutation = api.trading.createSession.useMutation();
-    const createSetupMutation = api.trading.createSetup.useMutation();
-
-    const { data: existingAssets } = api.trading.getAssets.useQuery({
-        journalId: journalId || "",
-    });
-    const { data: existingSessions } = api.trading.getSessions.useQuery({
-        journalId: journalId || "",
-    });
-    const { data: existingSetups } = api.trading.getSetups.useQuery({
-        journalId: journalId || "",
-    });
+    const { data: existingAssets } = useQuery(
+        orpc.trading.getAssets.queryOptions({ input: { journalId } })
+    );
+    const { data: existingSessions } = useQuery(
+        orpc.trading.getSessions.queryOptions({ input: { journalId } })
+    );
+    const { data: existingSetups } = useQuery(
+        orpc.trading.getSetups.queryOptions({ input: { journalId } })
+    );
 
     const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -187,7 +218,7 @@ export function ImportTradesModal({
         }
 
         try {
-            const result = await createAssetMutation.mutateAsync({
+            const result = await createAsset({
                 journalId: journalId || "",
                 name: assetToUse,
                 symbol: assetToUse,
@@ -243,7 +274,7 @@ export function ImportTradesModal({
         }
 
         try {
-            const result = await createSessionMutation.mutateAsync({
+            const result = await createSession({
                 journalId: journalId || "",
                 name: sessionToUse,
                 description: `Imported session: ${sessionToUse}`,
@@ -298,7 +329,7 @@ export function ImportTradesModal({
         }
 
         try {
-            const result = await createSetupMutation.mutateAsync({
+            const result = await createSetup({
                 journalId: journalId || "",
                 name: setupToUse,
                 description: `Imported setup: ${setupToUse}`,
@@ -409,7 +440,7 @@ export function ImportTradesModal({
                     throw new Error(`Format de date invalide: ${tradeDate}`);
                 }
 
-                await createTradeMutation.mutateAsync({
+                await createTrade({
                     tradeDate,
                     assetId: assetId || undefined,
                     symbol,
@@ -457,11 +488,6 @@ export function ImportTradesModal({
                 type: "success",
                 message: `Successfully imported ${successCount} trades!${summaryText}`,
             });
-            utils.trading.getTrades.invalidate();
-            utils.trading.getStats.invalidate();
-            utils.trading.getAssets.invalidate();
-            utils.trading.getSessions.invalidate();
-            utils.trading.getSetups.invalidate();
         } else {
             setImportStatus({
                 type: "error",

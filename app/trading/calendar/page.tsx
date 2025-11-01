@@ -1,5 +1,6 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import {
     Calendar as CalendarIcon,
     ChevronLeft,
@@ -17,7 +18,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { api } from "@/trpc/client";
+import { orpc } from "@/orpc/client";
 
 interface DayPerformance {
     date: string;
@@ -34,27 +35,29 @@ export default function TradingCalendarPage() {
     );
     const [selectedJournalIds, setSelectedJournalIds] = useState<string[]>([]);
 
-    const { data: journals } = api.trading.getJournals.useQuery();
+    const { data: journals } = useQuery(
+        orpc.trading.getJournals.queryOptions({ input: {} })
+    );
 
-    const { data: trades, isLoading } = api.trading.getTrades.useQuery({
-        journalId: undefined,
-        journalIds:
-            selectedJournalIds.length > 0 ? selectedJournalIds : undefined,
-        assetId: undefined,
-        sessionId: undefined,
-        setupId: undefined,
-        startDate: undefined,
-        endDate: undefined,
-        isClosed: true,
-    });
+    const { data: trades, isLoading } = useQuery(
+        orpc.trading.getTrades.queryOptions({
+            input: {
+                journalIds: selectedJournalIds,
+            },
+        })
+    );
 
     const dailyPerformance = useMemo(() => {
-        if (!trades) return new Map<string, DayPerformance>();
+        if (!trades) {
+            return new Map<string, DayPerformance>();
+        }
 
         const performanceMap = new Map<string, DayPerformance>();
 
-        trades.forEach((trade) => {
-            if (!(trade.tradeDate && trade.isClosed)) return;
+        for (const trade of trades) {
+            if (!(trade.tradeDate && trade.isClosed)) {
+                continue;
+            }
 
             const tradeDate = new Date(trade.tradeDate)
                 .toISOString()
@@ -74,12 +77,12 @@ export default function TradingCalendarPage() {
                     isNeutral: pnlAmount === 0,
                 });
             }
-        });
+        }
 
-        performanceMap.forEach((day) => {
+        for (const day of performanceMap.values()) {
             day.isPositive = day.totalPnL > 0;
             day.isNeutral = day.totalPnL === 0;
-        });
+        }
 
         return performanceMap;
     }, [trades]);
@@ -274,7 +277,9 @@ export default function TradingCalendarPage() {
     };
 
     const getDayContent = (day: { dayPerformance?: DayPerformance }) => {
-        if (!day.dayPerformance) return null;
+        if (!day.dayPerformance) {
+            return null;
+        }
 
         const percentage =
             day.dayPerformance.totalPnL > 0
@@ -312,7 +317,7 @@ export default function TradingCalendarPage() {
                 <div className="animate-pulse">
                     <div className="mb-6 h-8 w-1/4 rounded bg-gray-200" />
                     <div className="mb-4 grid grid-cols-7 gap-2">
-                        {[...Array(35)].map((_, i) => (
+                        {new Array(35).map((_, i) => (
                             <div className="h-10 rounded bg-gray-200" key={i} />
                         ))}
                     </div>

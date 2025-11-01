@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { BarChart3, BookOpen, Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -14,8 +15,8 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { orpc } from "@/orpc/client";
 import type { TradingJournal } from "@/server/db/schema";
-import { api } from "@/trpc/client";
 
 export default function JournalsPage() {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -29,36 +30,34 @@ export default function JournalsPage() {
         data: journals,
         isLoading: journalsLoading,
         refetch: refetchJournals,
-    } = api.trading.getJournals.useQuery();
+    } = useQuery(orpc.trading.getJournals.queryOptions({ input: {} }));
 
-    const deleteJournalMutation = api.trading.deleteJournal.useMutation({
-        onSuccess: () => {
-            refetchJournals();
-        },
-    });
+    const { mutateAsync: deleteJournal } = useMutation(
+        orpc.trading.deleteJournal.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.trading.getJournals.queryKey({ input: {} }),
+                ],
+            },
+        })
+    );
 
-    const reorderJournalsMutation = api.trading.reorderJournals.useMutation({});
+    const { mutateAsync: reorderJournals } = useMutation(
+        orpc.trading.reorderJournals.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.trading.getJournals.queryKey({ input: {} }),
+                ],
+            },
+        })
+    );
 
     const handleDeleteJournal = async (journalId: string) => {
-        if (
-            confirm(
-                "Are you sure you want to delete this journal? This action is irreversible."
-            )
-        ) {
-            try {
-                await deleteJournalMutation.mutateAsync({ id: journalId });
-            } catch (error) {
-                console.error("Error deleting journal:", error);
-            }
-        }
+        await deleteJournal({ id: journalId });
     };
 
     const handleReorderJournals = async (journalIds: string[]) => {
-        try {
-            await reorderJournalsMutation.mutateAsync({ journalIds });
-        } catch (error) {
-            console.error("Error reordering journals:", error);
-        }
+        await reorderJournals({ journalIds });
     };
 
     if (journalsLoading) {
@@ -67,7 +66,7 @@ export default function JournalsPage() {
                 <div className="animate-pulse">
                     <div className="mb-6 h-8 w-1/4 rounded bg-gray-200" />
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                        {[...Array(8)].map((_, i) => (
+                        {new Array(8).map((_, i) => (
                             <div
                                 className="h-64 rounded-lg bg-gray-200"
                                 key={i}

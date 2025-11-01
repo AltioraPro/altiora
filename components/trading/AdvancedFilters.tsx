@@ -1,11 +1,12 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { ChevronDown, ChevronUp, Filter, RotateCcw, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { api } from "@/trpc/client";
+import { orpc } from "@/orpc/client";
 
 interface AdvancedFiltersProps {
     journalId: string;
@@ -27,9 +28,15 @@ export function AdvancedFilters({
     const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
     const [isExpanded, setIsExpanded] = useState(false);
 
-    const { data: sessions } = api.trading.getSessions.useQuery({ journalId });
-    const { data: setups } = api.trading.getSetups.useQuery({ journalId });
-    const { data: assets } = api.trading.getAssets.useQuery({ journalId });
+    const { data: sessions } = useQuery(
+        orpc.trading.getSessions.queryOptions({ input: { journalId } })
+    );
+    const { data: setups } = useQuery(
+        orpc.trading.getSetups.queryOptions({ input: { journalId } })
+    );
+    const { data: assets } = useQuery(
+        orpc.trading.getAssets.queryOptions({ input: { journalId } })
+    );
 
     useEffect(() => {
         const savedFilters = localStorage.getItem(
@@ -91,24 +98,12 @@ export function AdvancedFilters({
     };
 
     const handleSelectAll = (type: "sessions" | "setups" | "assets") => {
-        const data =
-            type === "sessions"
-                ? sessions
-                : type === "setups"
-                  ? setups
-                  : assets;
-
-        if (!data) {
-            return;
-        }
-
-        const allIds = data.map((item) => item.id);
         if (type === "sessions") {
-            setSelectedSessions(allIds);
+            setSelectedSessions(sessions?.map((item) => item.id) || []);
         } else if (type === "setups") {
-            setSelectedSetups(allIds);
+            setSelectedSetups(setups?.map((item) => item.id) || []);
         } else {
-            setSelectedAssets(allIds);
+            setSelectedAssets(assets?.map((item) => item.id) || []);
         }
     };
 

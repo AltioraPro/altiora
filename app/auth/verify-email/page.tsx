@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
 import {
     AlertTriangle,
     ArrowRight,
@@ -8,11 +9,14 @@ import {
     RefreshCw,
     XCircle,
 } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
-import { api } from "@/trpc/client";
+import { cn } from "@/lib/utils";
+import { orpc } from "@/orpc/client";
 
 function VerifyEmailContent() {
+    const router = useRouter();
     const searchParams = useSearchParams();
     const [status, setStatus] = useState<
         "loading" | "success" | "error" | "expired"
@@ -21,30 +25,36 @@ function VerifyEmailContent() {
     const [isRetrying, setIsRetrying] = useState(false);
     const hasVerified = useRef(false);
 
-    const verifyEmailMutation = api.auth.verifyEmail.useMutation({
-        onSuccess: (data) => {
-            setStatus("success");
-            setMessage(data.message);
-        },
-        onError: (error) => {
-            const errorMessage = error.message || "";
+    const verifyEmailMutation = useMutation(
+        orpc.auth.verifyEmail.mutationOptions({
+            onSuccess: (data) => {
+                setStatus("success");
+                setMessage(data.message);
+            },
+            onError: (error) => {
+                const errorMessage = error.message || "";
 
-            if (
-                errorMessage.includes("expired") ||
-                errorMessage.includes("invalid")
-            ) {
-                setStatus("expired");
-                setMessage("The verification link has expired or is invalid.");
-            } else {
-                setStatus("error");
-                setMessage("Verification failed. Please try again.");
-            }
-        },
-    });
+                if (
+                    errorMessage.includes("expired") ||
+                    errorMessage.includes("invalid")
+                ) {
+                    setStatus("expired");
+                    setMessage(
+                        "The verification link has expired or is invalid."
+                    );
+                } else {
+                    setStatus("error");
+                    setMessage("Verification failed. Please try again.");
+                }
+            },
+        })
+    );
 
     useEffect(() => {
         const verifyEmail = async () => {
-            if (hasVerified.current) return;
+            if (hasVerified.current) {
+                return;
+            }
 
             const token = searchParams.get("token");
 
@@ -132,6 +142,8 @@ function VerifyEmailContent() {
                         </div>
                     </div>
                 );
+            default:
+                return null;
         }
     };
 
@@ -145,6 +157,8 @@ function VerifyEmailContent() {
                 return "Link Expired";
             case "error":
                 return "Verification Failed";
+            default:
+                return "";
         }
     };
 
@@ -158,6 +172,8 @@ function VerifyEmailContent() {
                 return "The verification link is no longer valid";
             case "error":
                 return "An error occurred during verification";
+            default:
+                return "";
         }
     };
 
@@ -211,13 +227,16 @@ function VerifyEmailContent() {
                             </div>
                             <div className="flex items-center space-x-4">
                                 <div
-                                    className={`flex h-6 w-6 items-center justify-center rounded-full ${
-                                        status === "success"
-                                            ? "border-2 border-green-400 bg-green-500/30"
-                                            : status === "loading"
-                                              ? "animate-pulse border-2 border-white bg-white"
-                                              : "border-2 border-white/40 bg-white/20"
-                                    }`}
+                                    className={cn(
+                                        "flex h-6 w-6 items-center justify-center rounded-full",
+                                        status === "success" &&
+                                            "border-2 border-green-400 bg-green-500/30",
+                                        status === "loading" &&
+                                            "animate-pulse border-2 border-white bg-white",
+                                        status !== "success" &&
+                                            "error" &&
+                                            "border-2 border-white/40 bg-white/20"
+                                    )}
                                 >
                                     {status === "success" ? (
                                         <CheckCircle className="h-4 w-4 text-green-400" />
@@ -299,22 +318,25 @@ function VerifyEmailContent() {
 
                         {message && (
                             <div
-                                className={`mb-8 rounded-lg border p-4 ${
-                                    status === "success"
-                                        ? "border-green-500/20 bg-green-500/10"
-                                        : status === "expired"
-                                          ? "border-yellow-500/20 bg-yellow-500/10"
-                                          : "border-red-500/20 bg-red-500/10"
-                                }`}
+                                className={cn(
+                                    "mb-8 rounded-lg border p-4",
+                                    status === "success" &&
+                                        "border-green-500/20 bg-green-500/10",
+                                    status === "expired" &&
+                                        "border-yellow-500/20 bg-yellow-500/10",
+                                    status === "error" &&
+                                        "border-red-500/20 bg-red-500/10"
+                                )}
                             >
                                 <p
-                                    className={`text-sm ${
-                                        status === "success"
-                                            ? "text-green-300"
-                                            : status === "expired"
-                                              ? "text-yellow-300"
-                                              : "text-red-300"
-                                    }`}
+                                    className={cn(
+                                        "text-sm",
+                                        status === "success" &&
+                                            "text-green-300",
+                                        status === "expired" &&
+                                            "text-yellow-300",
+                                        status === "error" && "text-red-300"
+                                    )}
                                 >
                                     {message}
                                 </p>
@@ -414,6 +436,7 @@ function VerifyEmailContent() {
                                 <button
                                     className="group relative w-full overflow-hidden rounded-lg border border-white/30 bg-transparent py-4 transition-all duration-300 hover:border-white"
                                     onClick={handleNavigateToDashboard}
+                                    type="button"
                                 >
                                     <div className="absolute inset-0 translate-y-full transform bg-white/10 transition-transform duration-300 group-hover:translate-y-0" />
 
@@ -432,6 +455,7 @@ function VerifyEmailContent() {
                                         className="group relative w-full overflow-hidden rounded-lg border border-white/30 bg-transparent py-4 transition-all duration-300 hover:border-white disabled:cursor-not-allowed disabled:opacity-50"
                                         disabled={isRetrying}
                                         onClick={handleRetry}
+                                        type="button"
                                     >
                                         <div className="absolute inset-0 translate-y-full transform bg-white/10 transition-transform duration-300 group-hover:translate-y-0" />
 
@@ -457,6 +481,7 @@ function VerifyEmailContent() {
                                     <button
                                         className="w-full rounded-lg border border-white/20 px-4 py-3 text-sm text-white/80 transition-all duration-200 hover:border-white/40 hover:text-white"
                                         onClick={handleNavigateToRegister}
+                                        type="button"
                                     >
                                         Create new account
                                     </button>
@@ -478,21 +503,20 @@ function VerifyEmailContent() {
                         <div className="mt-8 space-y-3 text-center">
                             <button
                                 className="text-sm text-white/60 transition-colors hover:text-white/80"
-                                onClick={() =>
-                                    (window.location.href = "/auth/login")
-                                }
+                                onClick={() => router.push("/auth/login")}
+                                type="button"
                             >
                                 ← Back to login
                             </button>
 
                             <div className="text-white/40 text-xs">
                                 Still having trouble?{" "}
-                                <a
+                                <Link
                                     className="text-white/60 underline hover:text-white"
                                     href="/contact"
                                 >
                                     Contact support
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     </div>

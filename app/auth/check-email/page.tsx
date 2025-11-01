@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
     AlertCircle,
     ArrowLeft,
@@ -8,29 +9,35 @@ import {
     Mail,
     RefreshCw,
 } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { DiscordWelcomePopup } from "@/components/auth/DiscordWelcomePopup";
-import { api } from "@/trpc/client";
+import { orpc } from "@/orpc/client";
 
 function CheckEmailContent() {
+    const router = useRouter();
     const searchParams = useSearchParams();
     const email = searchParams.get("email");
     const [timeLeft, setTimeLeft] = useState(60);
     const [canResend, setCanResend] = useState(false);
-    const [isResending, setIsResending] = useState(false);
+
     const [emailSent, setEmailSent] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isAlreadyVerified, setIsAlreadyVerified] = useState(false);
     const [showDiscordPopup, setShowDiscordPopup] = useState(false);
 
-    const emailStatusQuery = api.auth.getUserEmailStatus.useQuery(
-        { email: email || "" },
-        { enabled: !!email }
+    const { data: emailStatus } = useQuery(
+        orpc.auth.getUserEmailStatus.queryOptions({
+            input: { email: email || "" },
+        })
     );
 
-    const sendVerificationMutation = api.auth.sendVerificationEmail.useMutation(
-        {
+    const {
+        mutateAsync: sendVerificationEmail,
+        isPending: isSendingVerificationEmail,
+    } = useMutation(
+        orpc.auth.sendVerificationEmail.mutationOptions({
             onSuccess: () => {
                 setEmailSent(true);
                 setError(null);
@@ -38,17 +45,17 @@ function CheckEmailContent() {
             onError: (error) => {
                 setError(error.message);
             },
-        }
+        })
     );
 
     useEffect(() => {
-        if (emailStatusQuery.data && email) {
-            if (!emailStatusQuery.data.exists) {
+        if (emailStatus && email) {
+            if (!emailStatus.exists) {
                 setError("User not found. Please create an account first.");
                 return;
             }
 
-            if (emailStatusQuery.data.emailVerified) {
+            if (emailStatus.emailVerified) {
                 setIsAlreadyVerified(true);
                 const hasSeenDiscordPopup = localStorage.getItem(
                     "discord-welcome-seen"
@@ -59,11 +66,11 @@ function CheckEmailContent() {
                 return;
             }
 
-            if (!(emailSent || sendVerificationMutation.isPending)) {
-                sendVerificationMutation.mutate({ email });
+            if (!(emailSent || isSendingVerificationEmail)) {
+                sendVerificationEmail({ email });
             }
         }
-    }, [emailStatusQuery.data, email, emailSent, sendVerificationMutation]);
+    }, [emailStatus, email, emailSent, isSendingVerificationEmail]);
 
     useEffect(() => {
         if (timeLeft > 0) {
@@ -74,19 +81,15 @@ function CheckEmailContent() {
     }, [timeLeft]);
 
     const handleResendEmail = async () => {
-        if (!email) return;
+        if (!email) {
+            return;
+        }
 
-        setIsResending(true);
         setError(null);
 
-        try {
-            await sendVerificationMutation.mutateAsync({ email });
-            setTimeLeft(60);
-            setCanResend(false);
-        } catch {
-        } finally {
-            setIsResending(false);
-        }
+        await sendVerificationEmail({ email });
+        setTimeLeft(60);
+        setCanResend(false);
     };
 
     const openEmailProvider = () => {
@@ -253,6 +256,7 @@ function CheckEmailContent() {
                                         className="text-white/60 transition-colors hover:text-white"
                                         onClick={openEmailProvider}
                                         title="Open email provider"
+                                        type="button"
                                     >
                                         <ExternalLink className="h-4 w-4" />
                                     </button>
@@ -344,9 +348,8 @@ function CheckEmailContent() {
                                 /* Email already verified - Login button */
                                 <button
                                     className="flex w-full items-center justify-center space-x-3 rounded-lg border border-white/20 bg-white px-4 py-3 font-medium text-black text-sm transition-all duration-200 hover:bg-gray-100"
-                                    onClick={() =>
-                                        (window.location.href = "/auth/login")
-                                    }
+                                    onClick={() => router.push("/auth/login")}
+                                    type="button"
                                 >
                                     <ArrowLeft className="h-4 w-4" />
                                     <span>Go to Login</span>
@@ -356,14 +359,19 @@ function CheckEmailContent() {
                                     {/* Resend button */}
                                     <button
                                         className={`flex w-full items-center justify-center space-x-3 rounded-lg border px-4 py-3 font-medium text-sm transition-all duration-200 ${
-                                            canResend && !isResending
+                                            canResend &&
+                                            !isSendingVerificationEmail
                                                 ? "border-white/30 bg-white/10 text-white hover:border-white/50 hover:bg-white/20"
                                                 : "cursor-not-allowed border-white/10 bg-white/5 text-white/50"
                                         }`}
-                                        disabled={!canResend || isResending}
+                                        disabled={
+                                            !canResend ||
+                                            isSendingVerificationEmail
+                                        }
                                         onClick={handleResendEmail}
+                                        type="button"
                                     >
-                                        {isResending ? (
+                                        {isSendingVerificationEmail ? (
                                             <>
                                                 <RefreshCw className="h-4 w-4 animate-spin" />
                                                 <span>Sending...</span>
@@ -385,6 +393,7 @@ function CheckEmailContent() {
                                         <button
                                             className="flex w-full items-center justify-center space-x-3 rounded-lg border border-white/20 bg-white px-4 py-3 font-medium text-black text-sm transition-all duration-200 hover:bg-gray-100"
                                             onClick={openEmailProvider}
+                                            type="button"
                                         >
                                             <Mail className="h-4 w-4" />
                                             <span>Open Email App</span>
@@ -396,9 +405,9 @@ function CheckEmailContent() {
                                     <button
                                         className="flex w-full items-center justify-center space-x-3 rounded-lg border border-white/10 px-4 py-3 font-medium text-sm text-white/70 transition-all duration-200 hover:border-white/20 hover:text-white"
                                         onClick={() =>
-                                            (window.location.href =
-                                                "/auth/login")
+                                            router.push("/auth/login")
                                         }
+                                        type="button"
                                     >
                                         <ArrowLeft className="h-4 w-4" />
                                         <span>Back to Login</span>
@@ -411,12 +420,12 @@ function CheckEmailContent() {
                         <div className="mt-8 text-center">
                             <p className="text-white/40 text-xs">
                                 Still having trouble?{" "}
-                                <a
+                                <Link
                                     className="text-white/60 underline hover:text-white"
                                     href="/contact"
                                 >
                                     Contact support
-                                </a>
+                                </Link>
                             </p>
                         </div>
                     </div>

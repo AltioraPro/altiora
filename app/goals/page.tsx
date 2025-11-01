@@ -1,12 +1,13 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { Calendar, Plus, Sparkles, Target, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CreateGoalModal } from "@/components/goals/CreateGoalModal";
 import { GoalsDashboard } from "@/components/goals/GoalsDashboard";
 import { Header } from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
-import { api } from "@/trpc/client";
+import { orpc } from "@/orpc/client";
 
 export default function GoalsPage() {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -17,22 +18,9 @@ export default function GoalsPage() {
         successRate: 0,
     });
 
-    const { data: goalStats } = api.goals.getStats.useQuery(
-        { period: "year" },
-        {
-            refetchOnWindowFocus: false,
-            staleTime: 30_000, // 30 secondes
-        }
-    ) as {
-        data:
-            | {
-                  active: number;
-                  completed: number;
-                  overdue: number;
-                  completionRate: number;
-              }
-            | undefined;
-    };
+    const { data: goalStats } = useQuery(
+        orpc.goals.getStats.queryOptions({ input: { period: "year" } })
+    );
 
     useEffect(() => {
         if (!goalStats) {

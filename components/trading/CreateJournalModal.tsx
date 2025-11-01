@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -14,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { api } from "@/trpc/client";
+import { orpc } from "@/orpc/client";
 
 interface CreateJournalModalProps {
     isOpen: boolean;
@@ -33,26 +34,35 @@ export function CreateJournalModal({
     const [usePercentageCalculation, setUsePercentageCalculation] =
         useState(false);
 
-    const createJournalMutation = api.trading.createJournal.useMutation({
-        onSuccess: () => {
-            setName("");
-            setDescription("");
-            setStartingCapital("");
-            setUsePercentageCalculation(false);
-            onSuccess?.();
-        },
-    });
+    const { mutateAsync: createJournal, isPending: isCreatingJournal } =
+        useMutation(
+            orpc.trading.createJournal.mutationOptions({
+                meta: {
+                    invalidateQueries: [
+                        orpc.trading.getJournals.queryKey({ input: {} }),
+                    ],
+                },
+
+                onSuccess: () => {
+                    setName("");
+                    setDescription("");
+                    setStartingCapital("");
+                    setUsePercentageCalculation(false);
+                    onSuccess?.();
+                },
+            })
+        );
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!name.trim()) {
-            alert("Journal name is required");
+            console.error("Journal name is required");
             return;
         }
 
         try {
-            await createJournalMutation.mutateAsync({
+            await createJournal({
                 name: name.trim(),
                 description: description.trim(),
                 startingCapital: startingCapital.trim() || undefined,
@@ -64,7 +74,7 @@ export function CreateJournalModal({
     };
 
     const handleClose = () => {
-        if (!createJournalMutation.isPending) {
+        if (!isCreatingJournal) {
             setName("");
             setDescription("");
             setStartingCapital("");
@@ -94,7 +104,7 @@ export function CreateJournalModal({
                             </Label>
                             <Input
                                 className="border-white/30 bg-black text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
-                                disabled={createJournalMutation.isPending}
+                                disabled={isCreatingJournal}
                                 id="name"
                                 onChange={(e) => setName(e.target.value)}
                                 placeholder="Ex: Main Journal"
@@ -110,7 +120,7 @@ export function CreateJournalModal({
                             </Label>
                             <Textarea
                                 className="border-white/30 bg-black text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
-                                disabled={createJournalMutation.isPending}
+                                disabled={isCreatingJournal}
                                 id="description"
                                 onChange={(e) => setDescription(e.target.value)}
                                 placeholder="Optional journal description"
@@ -121,7 +131,7 @@ export function CreateJournalModal({
                         <div className="flex items-center space-x-2">
                             <Checkbox
                                 checked={usePercentageCalculation}
-                                disabled={createJournalMutation.isPending}
+                                disabled={isCreatingJournal}
                                 id="usePercentageCalculation"
                                 onCheckedChange={(checked) =>
                                     setUsePercentageCalculation(
@@ -146,7 +156,7 @@ export function CreateJournalModal({
                                 </Label>
                                 <Input
                                     className="border-white/30 bg-black text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
-                                    disabled={createJournalMutation.isPending}
+                                    disabled={isCreatingJournal}
                                     id="startingCapital"
                                     onChange={(e) =>
                                         setStartingCapital(e.target.value)
@@ -167,7 +177,7 @@ export function CreateJournalModal({
                     <DialogFooter>
                         <Button
                             className="border-white/30 text-black transition-colors hover:bg-white hover:text-black"
-                            disabled={createJournalMutation.isPending}
+                            disabled={isCreatingJournal}
                             onClick={handleClose}
                             type="button"
                             variant="outline"
@@ -176,12 +186,10 @@ export function CreateJournalModal({
                         </Button>
                         <Button
                             className="bg-white text-black transition-colors hover:bg-white/90"
-                            disabled={
-                                createJournalMutation.isPending || !name.trim()
-                            }
+                            disabled={isCreatingJournal || !name.trim()}
                             type="submit"
                         >
-                            {createJournalMutation.isPending
+                            {isCreatingJournal
                                 ? "Creating..."
                                 : "Create journal"}
                         </Button>

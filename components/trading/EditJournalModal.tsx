@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,8 +14,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { orpc } from "@/orpc/client";
 import type { TradingJournal } from "@/server/db/schema";
-import { api } from "@/trpc/client";
 
 interface EditJournalModalProps {
     isOpen: boolean;
@@ -39,22 +40,30 @@ export function EditJournalModal({
         }
     }, [journal]);
 
-    const updateJournalMutation = api.trading.updateJournal.useMutation({
-        onSuccess: () => {
-            onSuccess?.();
-        },
-    });
+    const { mutateAsync: updateJournal, isPending: isUpdatingJournal } =
+        useMutation(
+            orpc.trading.updateJournal.mutationOptions({
+                meta: {
+                    invalidateQueries: [
+                        orpc.trading.getJournals.queryKey({ input: {} }),
+                    ],
+                },
+                onSuccess: () => {
+                    onSuccess?.();
+                },
+            })
+        );
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!name.trim()) {
-            alert("Journal name is required");
+            console.error("Journal name is required");
             return;
         }
 
         try {
-            await updateJournalMutation.mutateAsync({
+            await updateJournal({
                 id: journal.id,
                 name: name.trim(),
                 description: description.trim(),
@@ -65,12 +74,10 @@ export function EditJournalModal({
     };
 
     const handleClose = () => {
-        if (!updateJournalMutation.isPending) {
+        if (!isUpdatingJournal) {
             onClose();
         }
     };
-
-    if (!journal) return null;
 
     return (
         <Dialog onOpenChange={handleClose} open={isOpen}>
@@ -91,7 +98,7 @@ export function EditJournalModal({
                             </Label>
                             <Input
                                 className="border-white/30 bg-black text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
-                                disabled={updateJournalMutation.isPending}
+                                disabled={isUpdatingJournal}
                                 id="name"
                                 onChange={(e) => setName(e.target.value)}
                                 placeholder="Ex: Main Journal"
@@ -107,7 +114,7 @@ export function EditJournalModal({
                             </Label>
                             <Textarea
                                 className="border-white/30 bg-black text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
-                                disabled={updateJournalMutation.isPending}
+                                disabled={isUpdatingJournal}
                                 id="description"
                                 onChange={(e) => setDescription(e.target.value)}
                                 placeholder="Optional journal description"
@@ -119,7 +126,7 @@ export function EditJournalModal({
                     <DialogFooter>
                         <Button
                             className="border-white/30 text-white transition-colors hover:bg-white hover:text-black"
-                            disabled={updateJournalMutation.isPending}
+                            disabled={isUpdatingJournal}
                             onClick={handleClose}
                             type="button"
                             variant="outline"
@@ -128,14 +135,10 @@ export function EditJournalModal({
                         </Button>
                         <Button
                             className="bg-white text-black transition-colors hover:bg-white/90"
-                            disabled={
-                                updateJournalMutation.isPending || !name.trim()
-                            }
+                            disabled={isUpdatingJournal || !name.trim()}
                             type="submit"
                         >
-                            {updateJournalMutation.isPending
-                                ? "Updating..."
-                                : "Update"}
+                            {isUpdatingJournal ? "Updating..." : "Update"}
                         </Button>
                     </DialogFooter>
                 </form>

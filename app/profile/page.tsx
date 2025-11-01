@@ -5,10 +5,8 @@ import { Header } from "@/components/layout/Header";
 import { ActivityStats } from "@/components/profile/ActivityStats";
 import { HabitHeatmap } from "@/components/profile/HabitHeatmap";
 import { Card, CardContent } from "@/components/ui/card";
-import { api } from "@/trpc/server";
+import { api } from "@/orpc/server";
 
-async function DeepworkStats() {
-    const stats = await api.profile.getUserStats();
 async function DeepworkStats() {
     const stats = await api.profile.getUserStats();
 
@@ -60,7 +58,6 @@ async function DeepworkStats() {
 }
 
 export default async function ProfilePage() {
-    const user = await api.auth.getCurrentUser();
     const user = await api.auth.getCurrentUser();
 
     const formatDate = (date: Date) =>
