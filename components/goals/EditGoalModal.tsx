@@ -1,10 +1,11 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
+import { orpc } from "@/orpc/client";
 import type { Goal } from "@/server/db/schema";
-import { api } from "@/trpc/client";
 
 interface EditGoalModalProps {
     goal: Goal;
@@ -28,17 +29,21 @@ export function EditGoalModal({
         reminderFrequency: goal.reminderFrequency || "weekly",
     });
 
-    const utils = api.useUtils();
-
-    const updateGoalMutation = api.goals.update.useMutation({
-        onSuccess: () => {
-            utils.goals.getPaginated.invalidate();
-            utils.goals.getStats.invalidate();
-            utils.goals.getAll.invalidate();
-            onGoalChange?.();
-            onClose();
-        },
-    });
+    const updateGoalMutation = useMutation(
+        orpc.goals.update.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.goals.getPaginated.queryKey({ input: {} }),
+                    orpc.goals.getStats.queryKey({ input: {} }),
+                    orpc.goals.getAll.queryKey({ input: {} }),
+                ],
+            },
+            onSuccess: () => {
+                onGoalChange?.();
+                onClose();
+            },
+        })
+    );
 
     useEffect(() => {
         setFormData({

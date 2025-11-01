@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
+import { Providers } from "@/app/providers";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
-import { Providers } from "@/components/providers/Providers";
 
 import "@/orpc/server"; // for pre-rendering
 import "./globals.css";

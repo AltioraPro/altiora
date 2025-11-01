@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { ArrowLeft, BarChart3, Plus, Upload } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -26,8 +27,8 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { useSession } from "@/lib/auth-client";
+import { orpc } from "@/orpc/client";
 import type { AdvancedTrade } from "@/server/db/schema";
-import { api } from "@/trpc/client";
 
 function JournalParamSync({
     onFound,
@@ -164,55 +165,60 @@ export default function TradingPage() {
         });
     };
 
-    const { data: journals, isLoading: journalsLoading } =
-        api.trading.getJournals.useQuery();
+    const { data: journals, isLoading: journalsLoading } = useQuery(
+        orpc.trading.getJournals.queryOptions()
+    );
 
     const selectedJournal = journals?.find((j) => j.id === selectedJournalId);
 
-    const { data: allTrades } = api.trading.getTrades.useQuery(
-        {
-            journalId: selectedJournalId || undefined,
-            sessionIds:
-                advancedFilters.sessions.length > 0
-                    ? advancedFilters.sessions
-                    : undefined,
-            setupIds:
-                advancedFilters.setups.length > 0
-                    ? advancedFilters.setups
-                    : undefined,
-            assetIds:
-                advancedFilters.assets.length > 0
-                    ? advancedFilters.assets
-                    : undefined,
-            startDate: dateRange.startDate,
-            endDate: dateRange.endDate,
-        },
-        { enabled: !!selectedJournalId }
+    const { data: allTrades } = useQuery(
+        orpc.trading.getTrades.queryOptions({
+            input: {
+                journalId: selectedJournalId || undefined,
+                sessionIds:
+                    advancedFilters.sessions.length > 0
+                        ? advancedFilters.sessions
+                        : undefined,
+                setupIds:
+                    advancedFilters.setups.length > 0
+                        ? advancedFilters.setups
+                        : undefined,
+                assetIds:
+                    advancedFilters.assets.length > 0
+                        ? advancedFilters.assets
+                        : undefined,
+                startDate: dateRange.startDate,
+                endDate: dateRange.endDate,
+            },
+            enabled: !!selectedJournalId,
+        })
     );
 
     const filteredTrades = allTrades
         ? filterTradesByDate(allTrades)
         : undefined;
 
-    const { data: backendStats } = api.trading.getStats.useQuery(
-        {
-            journalId: selectedJournalId || undefined,
-            sessionIds:
-                advancedFilters.sessions.length > 0
-                    ? advancedFilters.sessions
-                    : undefined,
-            setupIds:
-                advancedFilters.setups.length > 0
-                    ? advancedFilters.setups
-                    : undefined,
-            assetIds:
-                advancedFilters.assets.length > 0
-                    ? advancedFilters.assets
-                    : undefined,
-            startDate: dateRange.startDate,
-            endDate: dateRange.endDate,
-        },
-        { enabled: !!selectedJournalId }
+    const { data: backendStats } = useQuery(
+        orpc.trading.getStats.queryOptions({
+            input: {
+                journalId: selectedJournalId || undefined,
+                sessionIds:
+                    advancedFilters.sessions.length > 0
+                        ? advancedFilters.sessions
+                        : undefined,
+                setupIds:
+                    advancedFilters.setups.length > 0
+                        ? advancedFilters.setups
+                        : undefined,
+                assetIds:
+                    advancedFilters.assets.length > 0
+                        ? advancedFilters.assets
+                        : undefined,
+                startDate: dateRange.startDate,
+                endDate: dateRange.endDate,
+            },
+            enabled: !!selectedJournalId,
+        })
     );
 
     const calculateCumulativePerformance = (trades: AdvancedTrade[]) =>
@@ -304,20 +310,24 @@ export default function TradingPage() {
                       : undefined,
               }
             : null) || backendStats;
-    const { data: sessions } = api.trading.getSessions.useQuery(
-        { journalId: selectedJournalId || undefined },
-        { enabled: !!selectedJournalId }
-    );
-    const { data: setups } = api.trading.getSetups.useQuery(
-        { journalId: selectedJournalId || undefined },
-        { enabled: !!selectedJournalId }
+
+    const { data: sessions } = useQuery(
+        orpc.trading.getSessions.queryOptions({
+            input: { journalId: selectedJournalId || undefined },
+            enabled: !!selectedJournalId,
+        })
     );
 
-    const createJournalMutation = api.trading.createJournal.useMutation({
-        onSuccess: () => {
-            return;
-        },
-    });
+    const { data: setups } = useQuery(
+        orpc.trading.getSetups.queryOptions({
+            input: { journalId: selectedJournalId || undefined },
+            enabled: !!selectedJournalId,
+        })
+    );
+
+    const createJournalMutation = useMutation(
+        orpc.trading.createJournal.mutationOptions()
+    );
 
     const handleJournalFound = useCallback((journalId: string) => {
         setSelectedJournalId(journalId);

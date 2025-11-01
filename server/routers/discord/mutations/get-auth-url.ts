@@ -3,7 +3,7 @@ import { DiscordService } from "@/server/services/discord";
 
 export const getAuthUrlBase = protectedProcedure;
 
-export const getAuthUrlHandler = getAuthUrlBase.handler(async () => {
+export const getAuthUrlHandler = getAuthUrlBase.handler(() => {
     const state = crypto.randomUUID();
     const authUrl = DiscordService.getAuthUrl(state);
 

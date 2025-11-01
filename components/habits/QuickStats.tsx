@@ -1,20 +1,24 @@
 "use client";
 
-import { api } from "@/trpc/client";
+import { useQuery } from "@tanstack/react-query";
+import { orpc } from "@/orpc/client";
 import { useHabits } from "./HabitsProvider";
 
 export function QuickStats() {
     const { getOptimisticTodayStats, getOptimisticStats } = useHabits();
 
-    const { data: dashboardData, isLoading } = api.habits.getDashboard.useQuery(
-        {
-            viewMode: "today",
-        }
+    const { data: dashboardData, isLoading } = useQuery(
+        orpc.habits.getDashboard.queryOptions({
+            input: {
+                viewMode: "today",
+            },
+        })
     );
 
     const optimisticTodayStats = getOptimisticTodayStats(
         dashboardData?.todayStats
     );
+
     const optimisticStats = getOptimisticStats(
         dashboardData?.stats,
         dashboardData?.todayStats.habits

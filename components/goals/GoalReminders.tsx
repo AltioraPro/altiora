@@ -1,10 +1,10 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
 import { Bell, BellOff, Clock } from "lucide-react";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
-import { api } from "@/trpc/client";
+import { orpc } from "@/orpc/client";
 
 interface GoalRemindersProps {
     goalId: string;
@@ -19,72 +19,71 @@ export function GoalReminders({
     nextReminderDate,
     isActive,
 }: GoalRemindersProps) {
-    const [isScheduling, setIsScheduling] = useState(false);
-    const [isCancelling, setIsCancelling] = useState(false);
-
-    const utils = api.useUtils();
     const { addToast } = useToast();
 
-    const scheduleReminderMutation = api.reminders.scheduleReminder.useMutation(
-        {
-            onSuccess: () => {
-                addToast({
-                    type: "success",
-                    title: "Rappel programmé",
-                    message:
-                        "Vous recevrez des notifications Discord pour cet objectif.",
-                });
-                utils.goals.getAll.invalidate();
-            },
-            onError: (error) => {
-                addToast({
-                    type: "error",
-                    title: "Erreur",
-                    message: error.message,
-                });
-            },
-        }
-    );
+    const { mutateAsync: scheduleReminder, isPending: isSchedulingReminders } =
+        useMutation(
+            orpc.reminders.scheduleReminder.mutationOptions({
+                meta: {
+                    invalidateQueries: [
+                        orpc.goals.getAll.queryKey({ input: {} }),
+                    ],
+                },
+                onSuccess: () => {
+                    addToast({
+                        type: "success",
+                        title: "Rappel programmé",
+                        message:
+                            "Vous recevrez des notifications Discord pour cet objectif.",
+                    });
+                },
+                onError: (error) => {
+                    addToast({
+                        type: "error",
+                        title: "Erreur",
+                        message: error.message,
+                    });
+                },
+            })
+        );
 
-    const cancelRemindersMutation = api.reminders.cancelReminders.useMutation({
-        onSuccess: () => {
-            addToast({
-                type: "success",
-                title: "Rappels annulés",
-                message: "Les rappels pour cet objectif ont été désactivés.",
-            });
-            utils.goals.getAll.invalidate();
-        },
-        onError: (error) => {
-            addToast({
-                type: "error",
-                title: "Erreur",
-                message: error.message,
-            });
-        },
-    });
+    const { mutateAsync: cancelReminders, isPending: isCancellingReminders } =
+        useMutation(
+            orpc.reminders.cancelReminders.mutationOptions({
+                meta: {
+                    invalidateQueries: [
+                        orpc.goals.getAll.queryKey({ input: {} }),
+                    ],
+                },
+                onSuccess: () => {
+                    addToast({
+                        type: "success",
+                        title: "Rappels annulés",
+                        message:
+                            "Les rappels pour cet objectif ont été désactivés.",
+                    });
+                },
+                onError: (error) => {
+                    addToast({
+                        type: "error",
+                        title: "Erreur",
+                        message: error.message,
+                    });
+                },
+            })
+        );
 
     const handleScheduleReminder = async (
         frequency: "daily" | "weekly" | "monthly"
     ) => {
-        setIsScheduling(true);
-        try {
-            await scheduleReminderMutation.mutateAsync({
-                goalId,
-                frequency,
-            });
-        } finally {
-            setIsScheduling(false);
-        }
+        await scheduleReminder({
+            goalId,
+            frequency,
+        });
     };
 
     const handleCancelReminders = async () => {
-        setIsCancelling(true);
-        try {
-            await cancelRemindersMutation.mutateAsync({ goalId });
-        } finally {
-            setIsCancelling(false);
-        }
+        await cancelReminders({ goalId });
     };
 
     const formatNextReminder = (date: Date) => {
@@ -143,12 +142,12 @@ export function GoalReminders({
 
                     <Button
                         className="w-full"
-                        disabled={isCancelling}
+                        disabled={isCancellingReminders}
                         onClick={handleCancelReminders}
                         size="sm"
                         variant="outline"
                     >
-                        {isCancelling ? (
+                        {isCancellingReminders ? (
                             <>
                                 <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-gray-400 border-t-transparent" />
                                 Annulation...
@@ -171,7 +170,7 @@ export function GoalReminders({
                     <div className="grid grid-cols-3 gap-2">
                         <Button
                             className="text-xs"
-                            disabled={isScheduling}
+                            disabled={isSchedulingReminders}
                             onClick={() => handleScheduleReminder("daily")}
                             size="sm"
                             variant="outline"
@@ -180,7 +179,7 @@ export function GoalReminders({
                         </Button>
                         <Button
                             className="text-xs"
-                            disabled={isScheduling}
+                            disabled={isSchedulingReminders}
                             onClick={() => handleScheduleReminder("weekly")}
                             size="sm"
                             variant="outline"
@@ -189,7 +188,7 @@ export function GoalReminders({
                         </Button>
                         <Button
                             className="text-xs"
-                            disabled={isScheduling}
+                            disabled={isSchedulingReminders}
                             onClick={() => handleScheduleReminder("monthly")}
                             size="sm"
                             variant="outline"
@@ -198,7 +197,7 @@ export function GoalReminders({
                         </Button>
                     </div>
 
-                    {isScheduling && (
+                    {isSchedulingReminders && (
                         <div className="flex items-center gap-2 text-blue-600">
                             <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-400 border-t-transparent" />
                             <span className="text-sm">Programmation...</span>

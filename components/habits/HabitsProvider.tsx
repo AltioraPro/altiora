@@ -10,7 +10,7 @@ import {
 import type {
     DailyHabitStats,
     HabitStatsOverview,
-} from "@/server/api/routers/habits/types";
+} from "@/server/routers/habits/types";
 
 interface HabitsContextValue {
     isCreateModalOpen: boolean;
@@ -63,8 +63,8 @@ export function HabitsProvider({ children }: HabitsProviderProps) {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingHabit, setEditingHabit] = useState<string | null>(null);
-    const [selectedDate] = useState(
-        () => new Date().toISOString().split("T")[0]!
+    const [selectedDate, setSelectedDate] = useState(
+        () => new Date().toISOString().split("T")[0]
     );
     const [viewMode, setViewMode] = useState<"today" | "week" | "month">(
         "today"
@@ -82,10 +82,6 @@ export function HabitsProvider({ children }: HabitsProviderProps) {
     const closeEditModal = () => {
         setEditingHabit(null);
         setIsEditModalOpen(false);
-    };
-
-    const setSelectedDate = (date: string) => {
-        console.log("Selected date:", date);
     };
 
     const setOptimisticUpdate = (habitId: string, isCompleted: boolean) => {
@@ -106,7 +102,9 @@ export function HabitsProvider({ children }: HabitsProviderProps) {
 
     const getOptimisticTodayStats = useMemo(
         () => (data?: DailyHabitStats) => {
-            if (!data) return data;
+            if (!data) {
+                return data;
+            }
 
             const updatedHabits = data.habits.map((habit) => ({
                 ...habit,
@@ -139,7 +137,9 @@ export function HabitsProvider({ children }: HabitsProviderProps) {
                 data?: HabitStatsOverview,
                 todayHabits?: Array<{ id: string; isCompleted: boolean }>
             ) => {
-                if (!data) return data;
+                if (!data) {
+                    return data;
+                }
 
                 if (todayHabits) {
                     const updatedHabits = todayHabits.map((habit) => ({
@@ -160,7 +160,7 @@ export function HabitsProvider({ children }: HabitsProviderProps) {
                     const realTotalActiveHabits = totalHabits;
 
                     const weeklyStats = data.weeklyStats || [];
-                    const today = new Date().toISOString().split("T")[0]!;
+                    const today = new Date().toISOString().split("T")[0];
 
                     const updatedWeeklyStats = weeklyStats.map((stat) =>
                         stat.date === today
@@ -240,9 +240,11 @@ export function HabitsProvider({ children }: HabitsProviderProps) {
                 data?: Array<{ date: string; completionPercentage: number }>,
                 habits?: Array<{ id: string; isCompleted: boolean }>
             ) => {
-                if (!data) return data;
+                if (!data) {
+                    return data;
+                }
 
-                const today = new Date().toISOString().split("T")[0]!;
+                const today = new Date().toISOString().split("T")[0];
 
                 return data.map((activity) => {
                     if (activity.date === today && habits) {

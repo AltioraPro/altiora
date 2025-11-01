@@ -4,7 +4,7 @@ import { AutumnProvider } from "autumn-js/react";
 import type { ReactNode } from "react";
 import { ToastProvider } from "@/components/ui/toast";
 import { env } from "@/env";
-import { TRPCReactProvider } from "@/trpc/client";
+import { ORPCQueryClientProvider } from "@/providers/query-client.provider";
 
 interface ProvidersProps {
     children: ReactNode;
@@ -12,10 +12,10 @@ interface ProvidersProps {
 
 export function Providers({ children }: ProvidersProps) {
     return (
-        <AutumnProvider betterAuthUrl={env.NEXT_PUBLIC_BETTER_AUTH_URL}>
-            <TRPCReactProvider>
+        <ORPCQueryClientProvider>
+            <AutumnProvider betterAuthUrl={env.NEXT_PUBLIC_BETTER_AUTH_URL}>
                 <ToastProvider>{children}</ToastProvider>
-            </TRPCReactProvider>
-        </AutumnProvider>
+            </AutumnProvider>
+        </ORPCQueryClientProvider>
     );
 }

@@ -1,59 +1,71 @@
 "use client";
 
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, Edit, Search, Trash2 } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useToast } from "@/components/ui/toast";
 import { useDebounce } from "@/lib/hooks/useDebounce";
-import { api } from "@/trpc/client";
+import { orpc } from "@/orpc/client";
 import { useHabits } from "./HabitsProvider";
 
 export function HabitsManager() {
     const { openEditModal } = useHabits();
     const { addToast } = useToast();
 
-    const utils = api.useUtils();
-    const deleteHabitMutation = api.habits.delete.useMutation({
-        onSuccess: () => {
-            utils.habits.getPaginated.invalidate();
-            utils.habits.getDashboard.invalidate();
-            addToast({
-                type: "success",
-                title: "Habitude supprimée",
-                message: "L'habitude a été supprimée avec succès",
-            });
-        },
-        onError: (error) => {
-            addToast({
-                type: "error",
-                title: "Erreur",
-                message: error.message || "Impossible de supprimer l'habitude",
-            });
-        },
-    });
+    const deleteHabitMutation = useMutation(
+        orpc.habits.delete.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.habits.getPaginated.queryKey({ input: {} }),
+                    orpc.habits.getDashboard.queryKey({ input: {} }),
+                ],
+            },
+            onSuccess: () => {
+                addToast({
+                    type: "success",
+                    title: "Habitude supprimée",
+                    message: "L'habitude a été supprimée avec succès",
+                });
+            },
+            onError: (error) => {
+                addToast({
+                    type: "error",
+                    title: "Erreur",
+                    message:
+                        error.message || "Impossible de supprimer l'habitude",
+                });
+            },
+        })
+    );
 
-    const updateHabitMutation = api.habits.update.useMutation({
-        onSuccess: () => {
-            utils.habits.getPaginated.invalidate();
-            utils.habits.getDashboard.invalidate();
-            addToast({
-                type: "success",
-                title: "Habitude réactivée",
-                message: "L'habitude a été réactivée avec succès",
-            });
-        },
-        onError: (error) => {
-            addToast({
-                type: "error",
-                title: "Erreur",
-                message: error.message || "Impossible de réactiver l'habitude",
-            });
-        },
-    });
+    const updateHabitMutation = useMutation(
+        orpc.habits.update.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.habits.getPaginated.queryKey({ input: {} }),
+                    orpc.habits.getDashboard.queryKey({ input: {} }),
+                ],
+            },
+            onSuccess: () => {
+                addToast({
+                    type: "success",
+                    title: "Habitude réactivée",
+                    message: "L'habitude a été réactivée avec succès",
+                });
+            },
+            onError: (error) => {
+                addToast({
+                    type: "error",
+                    title: "Erreur",
+                    message:
+                        error.message || "Impossible de réactiver l'habitude",
+                });
+            },
+        })
+    );
 
     const deleteHabit = (habitId: string) => {
-        if (confirm("Are you sure you want to delete this habit?")) {
-            deleteHabitMutation.mutate({ id: habitId });
-        }
+        deleteHabitMutation.mutate({ id: habitId });
     };
 
     const reactivateHabit = (habitId: string) => {
@@ -66,15 +78,17 @@ export function HabitsManager() {
 
     const debouncedSearch = useDebounce(searchInput, 300);
 
-    const { data: paginatedData, isLoading } = api.habits.getPaginated.useQuery(
-        {
-            page,
-            limit,
-            search: debouncedSearch || undefined,
-            sortBy: "sortOrder",
-            sortOrder: "asc",
-            showInactive,
-        }
+    const { data: paginatedData, isLoading } = useQuery(
+        orpc.habits.getPaginated.queryOptions({
+            input: {
+                page,
+                limit,
+                search: debouncedSearch || undefined,
+                sortBy: "sortOrder",
+                sortOrder: "asc",
+                showInactive,
+            },
+        })
     );
 
     const habits = paginatedData?.data || [];
@@ -102,7 +116,7 @@ export function HabitsManager() {
                     <div className="h-8 w-32 animate-pulse rounded-lg bg-white/5" />
                 </div>
                 <div className="space-y-3">
-                    {[...Array(5)].map((_, i) => (
+                    {new Array(5).map((_, i) => (
                         <div
                             className="h-16 animate-pulse rounded-xl bg-white/5"
                             key={i}
@@ -141,6 +155,7 @@ export function HabitsManager() {
                             : "border border-white/20 bg-white/5 text-white/60 hover:border-white/40 hover:text-white/80"
                     }`}
                     onClick={handleToggleInactive}
+                    type="button"
                 >
                     {showInactive ? "HIDE INACTIVE" : "SHOW INACTIVE"}
                 </button>
@@ -166,7 +181,7 @@ export function HabitsManager() {
                                 <div
                                     className="flex h-10 w-10 items-center justify-center rounded-lg text-lg"
                                     style={{
-                                        backgroundColor: habit.color + "20",
+                                        backgroundColor: `${habit.color}20`,
                                     }}
                                 >
                                     {habit.emoji}

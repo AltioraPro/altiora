@@ -1,7 +1,8 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { api } from "@/trpc/client";
+import { orpc } from "@/orpc/client";
 import { DiscordWelcomePopup } from "./DiscordWelcomePopup";
 
 interface DiscordWelcomeCheckerProps {
@@ -13,13 +14,8 @@ export function DiscordWelcomeChecker({
 }: DiscordWelcomeCheckerProps) {
     const [showDiscordPopup, setShowDiscordPopup] = useState(false);
 
-    const { data: connectionStatus } = api.discord.getConnectionStatus.useQuery(
-        undefined,
-        {
-            retry: false,
-            refetchOnWindowFocus: false,
-            refetchOnMount: false,
-        }
+    const { data: connectionStatus } = useQuery(
+        orpc.discord.getConnectionStatus.queryOptions()
     );
 
     useEffect(() => {

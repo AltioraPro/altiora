@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
     AlertCircle,
     CheckCircle,
@@ -16,7 +17,6 @@ import {
     XCircle,
     Zap,
 } from "lucide-react";
-import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,7 +26,8 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { api } from "@/trpc/client";
+import { cn } from "@/lib/utils";
+import { orpc } from "@/orpc/client";
 
 const rankIcons: Record<string, React.ComponentType<{ className?: string }>> = {
     NEW: Target,
@@ -41,67 +42,52 @@ const rankIcons: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 export function DiscordConnection() {
-    const [isConnecting, setIsConnecting] = useState(false);
-    const [isSyncing, setIsSyncing] = useState(false);
-
-    const { data: connectionStatus, refetch } =
-        api.discord.getConnectionStatus.useQuery(undefined, {
+    const { data: connectionStatus, refetch } = useQuery(
+        orpc.discord.getConnectionStatus.queryOptions({
             retry: false,
             refetchOnWindowFocus: false,
             refetchOnMount: false,
-        });
-    const { data: botStatus } = api.discord.checkBotStatus.useQuery(undefined, {
-        retry: false,
-        refetchOnWindowFocus: false,
-        refetchOnMount: false,
-    });
-    const disconnectMutation = api.discord.disconnect.useMutation();
-    const syncRankMutation = api.discord.syncRank.useMutation();
-    const autoSyncRankMutation = api.discord.autoSyncRank.useMutation();
-    const getAuthUrlMutation = api.discord.getAuthUrl.useMutation();
+        })
+    );
+
+    const { data: botStatus } = useQuery(
+        orpc.discord.checkBotStatus.queryOptions({
+            retry: false,
+            refetchOnWindowFocus: false,
+            refetchOnMount: false,
+        })
+    );
+
+    const { mutateAsync: disconnect } = useMutation(
+        orpc.discord.disconnect.mutationOptions()
+    );
+    const { mutateAsync: syncRank, isPending: isSyncingRank } = useMutation(
+        orpc.discord.syncRank.mutationOptions()
+    );
+    const { mutateAsync: autoSyncRank, isPending: isAutoSyncingRank } =
+        useMutation(orpc.discord.autoSyncRank.mutationOptions());
+
+    const { mutateAsync: getAuthUrl, isPending: isGettingAuthUrl } =
+        useMutation(orpc.discord.getAuthUrl.mutationOptions());
 
     const handleConnect = async () => {
-        setIsConnecting(true);
-        try {
-            const { authUrl } = await getAuthUrlMutation.mutateAsync();
-            window.location.href = authUrl;
-        } catch (error) {
-            console.error("Failed to get auth URL:", error);
-            setIsConnecting(false);
-        }
+        const { authUrl } = await getAuthUrl({});
+        window.location.href = authUrl;
     };
 
     const handleDisconnect = async () => {
-        try {
-            await disconnectMutation.mutateAsync();
-            await refetch();
-        } catch (error) {
-            console.error("Failed to disconnect:", error);
-        }
+        await disconnect({});
+        await refetch();
     };
 
     const handleSyncRank = async () => {
-        setIsSyncing(true);
-        try {
-            await syncRankMutation.mutateAsync();
-            await refetch();
-        } catch (error) {
-            console.error("Failed to sync rank:", error);
-        } finally {
-            setIsSyncing(false);
-        }
+        await syncRank({});
+        await refetch();
     };
 
     const handleAutoSyncRank = async () => {
-        setIsSyncing(true);
-        try {
-            await autoSyncRankMutation.mutateAsync();
-            await refetch();
-        } catch (error) {
-            console.error("Failed to auto sync rank:", error);
-        } finally {
-            setIsSyncing(false);
-        }
+        await autoSyncRank({});
+        await refetch();
     };
 
     const RankIcon =
@@ -179,26 +165,40 @@ export function DiscordConnection() {
                         <div className="flex space-x-2">
                             <Button
                                 className="flex items-center space-x-2"
-                                disabled={isSyncing}
+                                disabled={isSyncingRank || isAutoSyncingRank}
                                 onClick={handleSyncRank}
                                 size="sm"
                                 variant="outline"
                             >
                                 <RefreshCw
-                                    className={`h-4 w-4 ${isSyncing ? "animate-spin" : ""}`}
+                                    className={cn(
+                                        "size-4",
+                                        isSyncingRank || isAutoSyncingRank
+                                            ? "animate-spin"
+                                            : ""
+                                    )}
                                 />
                                 <span>Sync</span>
                             </Button>
 
                             <Button
                                 className="flex items-center space-x-2 border-green-500/20 bg-green-500/10 text-green-400 hover:bg-green-500/20"
-                                disabled={isSyncing || !botStatus?.online}
+                                disabled={
+                                    isSyncingRank ||
+                                    isAutoSyncingRank ||
+                                    !botStatus?.online
+                                }
                                 onClick={handleAutoSyncRank}
                                 size="sm"
                                 variant="outline"
                             >
                                 <RefreshCw
-                                    className={`h-4 w-4 ${isSyncing ? "animate-spin" : ""}`}
+                                    className={cn(
+                                        "size-4",
+                                        isSyncingRank || isAutoSyncingRank
+                                            ? "animate-spin"
+                                            : ""
+                                    )}
                                 />
                                 <span>Auto Sync</span>
                             </Button>
@@ -253,11 +253,11 @@ export function DiscordConnection() {
 
                         <Button
                             className="w-full bg-[#5865F2] text-white hover:bg-[#4752C4]"
-                            disabled={isConnecting}
+                            disabled={isGettingAuthUrl}
                             onClick={handleConnect}
                         >
-                            <MessageCircle className="mr-2 h-4 w-4" />
-                            {isConnecting
+                            <MessageCircle className="mr-2 size-4" />
+                            {isGettingAuthUrl
                                 ? "Connecting..."
                                 : "Connect with Discord"}
                         </Button>

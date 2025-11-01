@@ -1,10 +1,13 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { Calendar, Crown, Target, TrendingUp, Trophy } from "lucide-react";
-import { api } from "@/trpc/client";
+import { orpc } from "@/orpc/client";
 
 export function ActivityStats() {
-    const { data: stats, isLoading } = api.profile.getUserStats.useQuery();
+    const { data: stats, isLoading } = useQuery(
+        orpc.profile.getUserStats.queryOptions()
+    );
 
     if (isLoading || !stats) {
         return (

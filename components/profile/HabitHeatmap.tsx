@@ -1,10 +1,12 @@
 "use client";
 
-import { api } from "@/trpc/client";
+import { useQuery } from "@tanstack/react-query";
+import { orpc } from "@/orpc/client";
 
 export function HabitHeatmap() {
-    const { data: heatmapData, isLoading } =
-        api.profile.getHabitHeatmap.useQuery();
+    const { data: heatmapData, isLoading } = useQuery(
+        orpc.profile.getHabitHeatmap.queryOptions({})
+    );
 
     if (isLoading || !heatmapData) {
         return (
@@ -16,7 +18,7 @@ export function HabitHeatmap() {
     }
 
     const generateDays = () => {
-        const days = [];
+        const days: Array<{ date: string; count: number }> = [];
         const today = new Date();
 
         for (let i = 364; i >= 0; i--) {
@@ -54,10 +56,18 @@ export function HabitHeatmap() {
     });
 
     const getIntensityClass = (count: number) => {
-        if (count === 0) return "bg-white/5";
-        if (count === 1) return "bg-white/20";
-        if (count === 2) return "bg-white/40";
-        if (count >= 3) return "bg-white/60";
+        if (count === 0) {
+            return "bg-white/5";
+        }
+        if (count === 1) {
+            return "bg-white/20";
+        }
+        if (count === 2) {
+            return "bg-white/40";
+        }
+        if (count >= 3) {
+            return "bg-white/60";
+        }
         return "bg-white/5";
     };
 

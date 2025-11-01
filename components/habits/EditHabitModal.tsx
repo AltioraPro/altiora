@@ -1,9 +1,10 @@
 "use client";
 
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useToast } from "@/components/ui/toast";
-import { api } from "@/trpc/client";
+import { orpc } from "@/orpc/client";
 import { useHabits } from "./HabitsProvider";
 
 const HABIT_EMOJIS = [
@@ -65,183 +66,203 @@ const HABIT_COLORS = [
 export function EditHabitModal() {
     const { isEditModalOpen, editingHabit, closeEditModal, openEditModal } =
         useHabits();
+    const queryClient = useQueryClient();
     const { addToast } = useToast();
-    const [title, setTitle] = useState("");
     const [emoji, setEmoji] = useState("🎯");
     const [description, setDescription] = useState("");
     const [color, setColor] = useState("#ffffff");
+    const [title, setTitle] = useState("");
     const [targetFrequency, setTargetFrequency] = useState<
         "daily" | "weekly" | "monthly"
     >("daily");
     const [isActive, setIsActive] = useState(true);
     const [isLoaded, setIsLoaded] = useState(false);
 
-    const utils = api.useUtils();
+    const { data: habits } = useQuery(
+        orpc.habits.getAll.queryOptions({
+            input: {},
+            enabled: isEditModalOpen && !!editingHabit,
+        })
+    );
 
-    const { data: habits } = api.habits.getAll.useQuery(undefined, {
-        enabled: isEditModalOpen && !!editingHabit,
-    });
-
-    const updateHabit = api.habits.update.useMutation({
-        onMutate: async (updatedHabit) => {
-            await utils.habits.getDashboard.cancel();
-            await utils.habits.getPaginated.cancel();
-            const previousData = utils.habits.getDashboard.getData();
-
-            closeEditModal();
-
-            if (previousData) {
-                const updatedHabits = previousData.habits.map((habit) =>
-                    habit.id === updatedHabit.id
-                        ? { ...habit, ...updatedHabit, updatedAt: new Date() }
-                        : habit
+    const updateHabit = useMutation(
+        orpc.habits.update.mutationOptions({
+            meta: {
+                invalidateQueries: [orpc.habits.getAll.queryKey({ input: {} })],
+            },
+            onMutate: async (updatedHabit) => {
+                await queryClient.cancelQueries({
+                    queryKey: orpc.habits.getDashboard.queryKey(),
+                });
+                const previousData = queryClient.getQueryData(
+                    orpc.habits.getDashboard.queryKey()
                 );
 
-                const updatedTodayStats = {
-                    ...previousData.todayStats,
-                    habits: previousData.todayStats.habits.map((habit) =>
+                closeEditModal();
+
+                if (previousData) {
+                    const updatedHabits = previousData.habits.map((habit) =>
                         habit.id === updatedHabit.id
                             ? {
                                   ...habit,
-                                  title: updatedHabit.title || habit.title,
-                                  emoji: updatedHabit.emoji || habit.emoji,
+                                  ...updatedHabit,
+                                  updatedAt: new Date(),
                               }
                             : habit
-                    ),
-                };
+                    );
 
-                const oldHabit = previousData.habits.find(
-                    (h) => h.id === updatedHabit.id
-                );
-                let totalActiveHabits = previousData.stats.totalActiveHabits;
+                    const updatedTodayStats = {
+                        ...previousData.todayStats,
+                        habits: previousData.todayStats.habits.map((habit) =>
+                            habit.id === updatedHabit.id
+                                ? {
+                                      ...habit,
+                                      title: updatedHabit.title || habit.title,
+                                      emoji: updatedHabit.emoji || habit.emoji,
+                                  }
+                                : habit
+                        ),
+                    };
 
-                if (oldHabit && updatedHabit.isActive !== undefined) {
-                    if (oldHabit.isActive && !updatedHabit.isActive) {
-                        totalActiveHabits -= 1;
+                    const oldHabit = previousData.habits.find(
+                        (h) => h.id === updatedHabit.id
+                    );
+                    let totalActiveHabits =
+                        previousData.stats.totalActiveHabits;
 
-                        const updatedTodayStatsForDeactivation = {
-                            ...updatedTodayStats,
-                            habits: updatedTodayStats.habits.filter(
-                                (h) => h.id !== updatedHabit.id
-                            ),
-                        };
+                    if (oldHabit && updatedHabit.isActive !== undefined) {
+                        if (oldHabit.isActive && !updatedHabit.isActive) {
+                            totalActiveHabits -= 1;
 
-                        updatedTodayStatsForDeactivation.totalHabits =
-                            updatedTodayStatsForDeactivation.habits.length;
-                        const completedHabits =
-                            updatedTodayStatsForDeactivation.habits.filter(
-                                (h) => h.isCompleted
-                            ).length;
-                        updatedTodayStatsForDeactivation.completedHabits =
-                            completedHabits;
-                        updatedTodayStatsForDeactivation.completionPercentage =
-                            updatedTodayStatsForDeactivation.totalHabits > 0
-                                ? Math.round(
-                                      (completedHabits /
-                                          updatedTodayStatsForDeactivation.totalHabits) *
-                                          100
-                                  )
-                                : 0;
+                            const updatedTodayStatsForDeactivation = {
+                                ...updatedTodayStats,
+                                habits: updatedTodayStats.habits.filter(
+                                    (h) => h.id !== updatedHabit.id
+                                ),
+                            };
 
-                        Object.assign(
-                            updatedTodayStats,
-                            updatedTodayStatsForDeactivation
-                        );
-                    } else if (!oldHabit.isActive && updatedHabit.isActive) {
-                        totalActiveHabits += 1;
+                            updatedTodayStatsForDeactivation.totalHabits =
+                                updatedTodayStatsForDeactivation.habits.length;
+                            const completedHabits =
+                                updatedTodayStatsForDeactivation.habits.filter(
+                                    (h) => h.isCompleted
+                                ).length;
+                            updatedTodayStatsForDeactivation.completedHabits =
+                                completedHabits;
+                            updatedTodayStatsForDeactivation.completionPercentage =
+                                updatedTodayStatsForDeactivation.totalHabits > 0
+                                    ? Math.round(
+                                          (completedHabits /
+                                              updatedTodayStatsForDeactivation.totalHabits) *
+                                              100
+                                      )
+                                    : 0;
 
-                        const newTodayHabit = {
-                            id: updatedHabit.id,
-                            title: updatedHabit.title || oldHabit.title,
-                            emoji: updatedHabit.emoji || oldHabit.emoji,
-                            isCompleted: false,
-                            notes: undefined,
-                        };
+                            Object.assign(
+                                updatedTodayStats,
+                                updatedTodayStatsForDeactivation
+                            );
+                        } else if (
+                            !oldHabit.isActive &&
+                            updatedHabit.isActive
+                        ) {
+                            totalActiveHabits += 1;
 
-                        updatedTodayStats.habits.push(newTodayHabit);
-                        updatedTodayStats.totalHabits =
-                            updatedTodayStats.habits.length;
-                        const completedHabits = updatedTodayStats.habits.filter(
-                            (h) => h.isCompleted
-                        ).length;
-                        updatedTodayStats.completedHabits = completedHabits;
-                        updatedTodayStats.completionPercentage =
-                            updatedTodayStats.totalHabits > 0
-                                ? Math.round(
-                                      (completedHabits /
-                                          updatedTodayStats.totalHabits) *
-                                          100
-                                  )
-                                : 0;
+                            const newTodayHabit = {
+                                id: updatedHabit.id,
+                                title: updatedHabit.title || oldHabit.title,
+                                emoji: updatedHabit.emoji || oldHabit.emoji,
+                                isCompleted: false,
+                                notes: undefined,
+                            };
+
+                            updatedTodayStats.habits.push(newTodayHabit);
+                            updatedTodayStats.totalHabits =
+                                updatedTodayStats.habits.length;
+                            const completedHabits =
+                                updatedTodayStats.habits.filter(
+                                    (h) => h.isCompleted
+                                ).length;
+                            updatedTodayStats.completedHabits = completedHabits;
+                            updatedTodayStats.completionPercentage =
+                                updatedTodayStats.totalHabits > 0
+                                    ? Math.round(
+                                          (completedHabits /
+                                              updatedTodayStats.totalHabits) *
+                                              100
+                                      )
+                                    : 0;
+                        }
                     }
+
+                    const today = new Date().toISOString().split("T")[0];
+
+                    const updatedRecentActivity =
+                        previousData.recentActivity.map((activity) =>
+                            activity.date === today
+                                ? {
+                                      ...activity,
+                                      completionPercentage:
+                                          updatedTodayStats.completionPercentage,
+                                  }
+                                : activity
+                        );
+
+                    const updatedWeeklyStats =
+                        previousData.stats.weeklyStats.map((stat) =>
+                            stat.date === today
+                                ? { ...stat, ...updatedTodayStats }
+                                : stat
+                        );
+
+                    queryClient.setQueryData(
+                        orpc.habits.getDashboard.queryKey(),
+                        {
+                            ...previousData,
+                            habits: updatedHabits,
+                            todayStats: updatedTodayStats,
+                            recentActivity: updatedRecentActivity,
+                            stats: {
+                                ...previousData.stats,
+                                totalActiveHabits,
+                                weeklyStats: updatedWeeklyStats,
+                            },
+                        }
+                    );
                 }
 
-                const today = new Date().toISOString().split("T")[0]!;
-                const updatedRecentActivity = previousData.recentActivity.map(
-                    (activity) =>
-                        activity.date === today
-                            ? {
-                                  ...activity,
-                                  completionPercentage:
-                                      updatedTodayStats.completionPercentage,
-                              }
-                            : activity
-                );
-
-                const updatedWeeklyStats = previousData.stats.weeklyStats.map(
-                    (stat) =>
-                        stat.date === today
-                            ? { ...stat, ...updatedTodayStats }
-                            : stat
-                );
-
-                utils.habits.getDashboard.setData(undefined, {
-                    ...previousData,
-                    habits: updatedHabits,
-                    todayStats: updatedTodayStats,
-                    recentActivity: updatedRecentActivity,
-                    stats: {
-                        ...previousData.stats,
-                        totalActiveHabits,
-                        weeklyStats: updatedWeeklyStats,
-                    },
+                return { previousData };
+            },
+            onSuccess: () => {
+                addToast({
+                    type: "success",
+                    title: "Habitude mise à jour",
+                    message: "Votre habitude a été modifiée avec succès",
                 });
-            }
+            },
+            onError: (error, variables, context) => {
+                if (context?.previousData) {
+                    queryClient.setQueryData(
+                        orpc.habits.getDashboard.queryKey(),
+                        context.previousData
+                    );
+                }
 
-            return { previousData };
-        },
-        onSuccess: () => {
-            addToast({
-                type: "success",
-                title: "Habitude mise à jour",
-                message: "Votre habitude a été modifiée avec succès",
-            });
-        },
-        onError: (error, variables, context) => {
-            if (context?.previousData) {
-                utils.habits.getDashboard.setData(
-                    undefined,
-                    context.previousData
-                );
-            }
+                if (variables.id) {
+                    openEditModal(variables.id);
+                }
 
-            if (variables.id) {
-                openEditModal(variables.id);
-            }
-
-            console.error("Error updating habit:", error);
-            addToast({
-                type: "error",
-                title: "Erreur",
-                message:
-                    error.message || "Impossible de mettre à jour l'habitude",
-            });
-        },
-        onSettled: () => {
-            utils.habits.getDashboard.invalidate();
-            utils.habits.getPaginated.invalidate();
-        },
-    });
+                console.error("Error updating habit:", error);
+                addToast({
+                    type: "error",
+                    title: "Erreur",
+                    message:
+                        error.message ||
+                        "Impossible de mettre à jour l'habitude",
+                });
+            },
+        })
+    );
 
     useEffect(() => {
         if (isEditModalOpen && editingHabit && habits) {

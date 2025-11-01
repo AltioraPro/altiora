@@ -1,33 +1,17 @@
 "use client";
 
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Calendar, Edit3, Mail, Save, Shield, User, X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import { api } from "@/trpc/client";
+import { orpc } from "@/orpc/client";
 
 export function ProfileForm() {
     const {
         data: user,
         isLoading,
         error,
-    } = api.auth.getCurrentUser.useQuery(undefined, {
-        retry: (failureCount, error) => {
-            if (
-                error &&
-                typeof error === "object" &&
-                "data" in error &&
-                error.data &&
-                typeof error.data === "object" &&
-                "code" in error.data &&
-                error.data.code === "UNAUTHORIZED"
-            ) {
-                return false;
-            }
-            return failureCount < 2;
-        },
-        refetchOnWindowFocus: false,
-        refetchOnMount: false,
-    });
+    } = useQuery(orpc.auth.getCurrentUser.queryOptions({}));
 
     const [name, setName] = useState("");
     const [isEditing, setIsEditing] = useState(false);
@@ -36,14 +20,16 @@ export function ProfileForm() {
         setName(user.name);
     }
 
-    const updateProfile = api.auth.updateProfile.useMutation({
-        onSuccess: () => {
-            setIsEditing(false);
-        },
-        onError: (error) => {
-            console.error("Profile update error:", error);
-        },
-    });
+    const updateProfile = useMutation(
+        orpc.auth.updateProfile.mutationOptions({
+            onSuccess: () => {
+                setIsEditing(false);
+            },
+            onError: (error) => {
+                console.error("Profile update error:", error);
+            },
+        })
+    );
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

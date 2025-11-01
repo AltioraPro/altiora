@@ -1,10 +1,11 @@
 "use client";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Check, Circle } from "lucide-react";
 import { memo, useCallback, useMemo, useRef } from "react";
 import { useToast } from "@/components/ui/toast";
-import type { DailyHabitStats } from "@/server/api/routers/habits/types";
-import { api } from "@/trpc/client";
+import { orpc } from "@/orpc/client";
+import type { DailyHabitStats } from "@/server/routers/habits/types";
 import { useHabits } from "./HabitsProvider";
 
 interface TodayHabitsCardProps {
@@ -83,6 +84,7 @@ const HabitItem = memo<HabitItemProps>(({ habit, isOptimistic, onToggle }) => {
                 }`}
                 disabled={isTempHabit}
                 onClick={handleClick}
+                type="button"
             >
                 {isTempHabit ? (
                     <div className="h-3 w-3 animate-spin rounded-full border border-white/40 border-t-transparent" />
@@ -107,72 +109,84 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
     } = useHabits();
     const { addToast } = useToast();
 
-    const lastClickTimes = useRef<Map<string, number>>(new Map());
+    const queryClient = useQueryClient();
 
-    const utils = api.useUtils();
+    const lastClickTimes = useRef<Map<string, number>>(new Map());
 
     const optimisticData = useMemo(
         () => getOptimisticTodayStats(data),
         [data, getOptimisticTodayStats]
     );
 
-    const toggleCompletion = api.habits.toggleCompletion.useMutation({
-        onMutate: async ({ habitId, isCompleted }) => {
-            setOptimisticUpdate(habitId, isCompleted);
+    const toggleCompletion = useMutation(
+        orpc.habits.toggleCompletion.mutationOptions({
+            meta: {
+                invalidateQueries: [orpc.habits.getDashboard.queryKey()],
+            },
+            onMutate: async ({ habitId, isCompleted }) => {
+                setOptimisticUpdate(habitId, isCompleted);
 
-            await utils.habits.getDashboard.cancel();
-
-            const previousData = utils.habits.getDashboard.getData();
-
-            if (previousData) {
-                const optimisticTodayStats = getOptimisticTodayStats(
-                    previousData.todayStats
-                );
-                const optimisticStats = getOptimisticStats(
-                    previousData.stats,
-                    optimisticTodayStats?.habits
-                );
-                const optimisticRecentActivity = getOptimisticRecentActivity(
-                    previousData.recentActivity,
-                    optimisticTodayStats?.habits
-                );
-
-                utils.habits.getDashboard.setData(undefined, {
-                    ...previousData,
-                    todayStats: optimisticTodayStats || previousData.todayStats,
-                    stats: optimisticStats || previousData.stats,
-                    recentActivity:
-                        optimisticRecentActivity || previousData.recentActivity,
+                await queryClient.cancelQueries({
+                    queryKey: orpc.habits.getDashboard.queryKey(),
                 });
-            }
 
-            return { previousData };
-        },
-        onSuccess: () => {},
-        onError: (error, variables, context) => {
-            clearOptimisticUpdate(variables.habitId);
-
-            if (context?.previousData) {
-                utils.habits.getDashboard.setData(
-                    undefined,
-                    context.previousData
+                const previousData = queryClient.getQueryData(
+                    orpc.habits.getDashboard.queryKey()
                 );
-            }
 
-            addToast({
-                type: "error",
-                title: "Erreur",
-                message:
-                    error.message || "Impossible de mettre à jour l'habitude",
-            });
-        },
-        onSettled: () => {
-            utils.habits.getDashboard.invalidate();
-        },
-    });
+                if (previousData) {
+                    const optimisticTodayStats = getOptimisticTodayStats(
+                        previousData.todayStats
+                    );
+                    const optimisticStats = getOptimisticStats(
+                        previousData.stats,
+                        optimisticTodayStats?.habits
+                    );
+                    const optimisticRecentActivity =
+                        getOptimisticRecentActivity(
+                            previousData.recentActivity,
+                            optimisticTodayStats?.habits
+                        );
+
+                    queryClient.setQueryData(
+                        orpc.habits.getDashboard.queryKey(),
+                        {
+                            ...previousData,
+                            todayStats:
+                                optimisticTodayStats || previousData.todayStats,
+                            stats: optimisticStats || previousData.stats,
+                            recentActivity:
+                                optimisticRecentActivity ||
+                                previousData.recentActivity,
+                        }
+                    );
+                }
+
+                return { previousData };
+            },
+            onError: (error, variables, context) => {
+                clearOptimisticUpdate(variables.habitId);
+
+                if (context?.previousData) {
+                    queryClient.setQueryData(
+                        orpc.habits.getDashboard.queryKey(),
+                        context.previousData
+                    );
+                }
+
+                addToast({
+                    type: "error",
+                    title: "Erreur",
+                    message:
+                        error.message ||
+                        "Impossible de mettre à jour l'habitude",
+                });
+            },
+        })
+    );
 
     const handleToggleHabit = useCallback(
-        async (habitId: string, currentStatus: boolean) => {
+        (habitId: string, currentStatus: boolean) => {
             if (habitId.startsWith("temp-")) {
                 return;
             }
@@ -186,7 +200,7 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
 
             lastClickTimes.current.set(habitId, now);
 
-            const today = new Date().toISOString().split("T")[0]!;
+            const today = new Date().toISOString().split("T")[0];
 
             toggleCompletion.mutate({
                 habitId,
@@ -198,7 +212,9 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
     );
 
     const habitsList = useMemo(() => {
-        if (!optimisticData?.habits) return [];
+        if (!optimisticData?.habits) {
+            return [];
+        }
 
         return optimisticData.habits.map((habit) => ({
             ...habit,
@@ -257,6 +273,7 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
                                 className="-rotate-90 h-16 w-16 transform"
                                 viewBox="0 0 64 64"
                             >
+                                <title>Habit Completion Progress</title>
                                 <circle
                                     cx="32"
                                     cy="32"

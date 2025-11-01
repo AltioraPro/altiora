@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
 import {
     Award,
     Calendar,
@@ -13,8 +14,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { orpc } from "@/orpc/client";
 import type { Goal } from "@/server/db/schema";
-import { api } from "@/trpc/client";
 import { GoalReminders } from "./GoalReminders";
 
 interface GoalCardProps {
@@ -30,25 +31,36 @@ export function GoalCard({
     onGoalChange,
     onEditGoal,
 }: GoalCardProps) {
-    const utils = api.useUtils();
+    const { mutateAsync: markCompleted, isPending: isMarkingCompleted } =
+        useMutation(
+            orpc.goals.markCompleted.mutationOptions({
+                meta: {
+                    invalidateQueries: [
+                        orpc.goals.getPaginated.queryKey({ input: {} }),
+                        orpc.goals.getStats.queryKey({ input: {} }),
+                        orpc.goals.getAll.queryKey({ input: {} }),
+                    ],
+                },
+                onSuccess: () => {
+                    onGoalChange?.();
+                },
+            })
+        );
 
-    const markCompletedMutation = api.goals.markCompleted.useMutation({
-        onSuccess: () => {
-            utils.goals.getPaginated.invalidate();
-            utils.goals.getStats.invalidate();
-            utils.goals.getAll.invalidate();
-            onGoalChange?.();
-        },
-    });
-
-    const deleteMutation = api.goals.delete.useMutation({
-        onSuccess: () => {
-            utils.goals.getPaginated.invalidate();
-            utils.goals.getStats.invalidate();
-            utils.goals.getAll.invalidate();
-            onGoalChange?.();
-        },
-    });
+    const { mutateAsync: deleteGoal } = useMutation(
+        orpc.goals.delete.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.goals.getPaginated.queryKey({ input: {} }),
+                    orpc.goals.getStats.queryKey({ input: {} }),
+                    orpc.goals.getAll.queryKey({ input: {} }),
+                ],
+            },
+            onSuccess: () => {
+                onGoalChange?.();
+            },
+        })
+    );
 
     const isOverdue =
         goal.deadline &&
@@ -75,17 +87,15 @@ export function GoalCard({
         return <Target className="h-5 w-5" />;
     };
 
-    const handleMarkCompleted = () => {
-        markCompletedMutation.mutate({
+    const handleMarkCompleted = async () => {
+        await markCompleted({
             id: goal.id,
             isCompleted: !goal.isCompleted,
         });
     };
 
     const handleDelete = () => {
-        if (confirm("Are you sure you want to delete this goal?")) {
-            deleteMutation.mutate({ id: goal.id });
-        }
+        deleteGoal({ id: goal.id });
     };
 
     if (viewMode === "list") {
@@ -96,7 +106,7 @@ export function GoalCard({
                     <div className="flex flex-1 items-center gap-4">
                         <button
                             className="group/button flex-shrink-0"
-                            disabled={markCompletedMutation.isPending}
+                            disabled={isMarkingCompleted}
                             onClick={handleMarkCompleted}
                             type="button"
                         >
@@ -271,7 +281,7 @@ export function GoalCard({
                                     ? "border-green-400/40 bg-green-500/20 hover:border-green-400/60 hover:bg-green-500/30"
                                     : "border-white/10 bg-white/5 hover:border-green-400/40 hover:bg-green-500/10"
                             )}
-                            disabled={markCompletedMutation.isPending}
+                            disabled={isMarkingCompleted}
                             onClick={handleMarkCompleted}
                             type="button"
                         >

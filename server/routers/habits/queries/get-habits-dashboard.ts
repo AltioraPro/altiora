@@ -1,10 +1,11 @@
 import { ORPCError } from "@orpc/client";
+import { call } from "@orpc/server";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
-import { getDashboardSchema } from "../validators";
 import type { DailyHabitStats, HabitsDashboardData } from "../types";
+import { getDashboardSchema } from "../validators";
 import { getDailyStatsHandler } from "./get-daily-stats";
-import { getUserHabitsHandler } from "./get-user-habits";
 import { getHabitStatsHandler } from "./get-habit-stats";
+import { getUserHabitsHandler } from "./get-user-habits";
 
 export const getHabitsDashboardBase =
     protectedProcedure.input(getDashboardSchema);
@@ -17,15 +18,21 @@ export const getHabitsDashboardHandler = getHabitsDashboardBase.handler(
             const today = new Date().toISOString().split("T")[0];
 
             const [todayStats, habits, stats] = await Promise.all([
-                getDailyStatsHandler.handler({
-                    context,
-                    input: { date: today },
-                }),
-                getUserHabitsHandler.handler({ context }),
-                getHabitStatsHandler.handler({
-                    context,
-                    input: { period: "month" },
-                }),
+                call(
+                    getDailyStatsHandler,
+                    {
+                        date: today,
+                    },
+                    { context }
+                ),
+                call(getUserHabitsHandler, undefined, { context }),
+                call(
+                    getHabitStatsHandler,
+                    {
+                        period: "month",
+                    },
+                    { context }
+                ),
             ]);
 
             const recentActivityPromises: Promise<DailyHabitStats>[] = [];
@@ -38,10 +45,13 @@ export const getHabitsDashboardHandler = getHabitsDashboardBase.handler(
                 const dateStr = date.toISOString().split("T")[0];
 
                 recentActivityPromises.push(
-                    getDailyStatsHandler.handler({
-                        context,
-                        input: { date: dateStr },
-                    })
+                    call(
+                        getDailyStatsHandler,
+                        {
+                            date: dateStr,
+                        },
+                        { context }
+                    )
                 );
             }
 

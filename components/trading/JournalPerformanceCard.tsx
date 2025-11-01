@@ -1,5 +1,6 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import html2canvas from "html2canvas";
 import {
     Camera,
@@ -28,7 +29,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { api } from "@/trpc/client";
+import { orpc } from "@/orpc/client";
 
 interface JournalPerformanceCardProps {
     journal: {
@@ -51,9 +52,13 @@ export function JournalPerformanceCard({
     const [capturedImage, setCapturedImage] = useState<string | null>(null);
     const flexCardRef = useRef<HTMLDivElement>(null);
 
-    const { data: tradesData } = api.trading.getTrades.useQuery(
-        { journalId: journal.id },
-        { enabled: !!journal.id }
+    const { data: tradesData } = useQuery(
+        orpc.trading.getTrades.queryOptions({
+            input: {
+                journalId: journal.id,
+            },
+            enabled: !!journal.id,
+        })
     );
 
     const cumulativeData = useMemo(() => {
@@ -88,9 +93,13 @@ export function JournalPerformanceCard({
             ? cumulativeData
             : [{ tradeNumber: 0, cumulative: 0 }];
 
-    const { data: stats } = api.trading.getStats.useQuery(
-        { journalId: journal.id },
-        { enabled: !!journal.id }
+    const { data: stats } = useQuery(
+        orpc.trading.getStats.queryOptions({
+            input: {
+                journalId: journal.id,
+            },
+            enabled: !!journal.id,
+        })
     );
 
     const bestTrade =
@@ -529,10 +538,7 @@ export function JournalPerformanceCard({
                     className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
                     onClick={handleClosePreview}
                 >
-                    <div
-                        className="w-full max-w-lg rounded-2xl border border-white/20 bg-gradient-to-br from-black/90 to-black/80 p-4 shadow-2xl"
-                        onClick={(e) => e.stopPropagation()}
-                    >
+                    <div className="w-full max-w-lg rounded-2xl border border-white/20 bg-gradient-to-br from-black/90 to-black/80 p-4 shadow-2xl">
                         <div className="mb-3">
                             <h3 className="mb-1 text-lg text-white">
                                 Performance Preview
