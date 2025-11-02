@@ -535,10 +535,10 @@ export function JournalPerformanceCard({
 
             {showPreview && capturedImage && (
                 <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-xs"
                     onClick={handleClosePreview}
                 >
-                    <div className="w-full max-w-lg rounded-2xl border border-white/20 bg-gradient-to-br from-black/90 to-black/80 p-4 shadow-2xl">
+                    <div className="w-full max-w-lg rounded-2xl border border-white/20 bg-linear-to-br from-black/90 to-black/80 p-4 shadow-2xl">
                         <div className="mb-3">
                             <h3 className="mb-1 text-lg text-white">
                                 Performance Preview

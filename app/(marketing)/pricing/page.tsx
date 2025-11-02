@@ -67,7 +67,7 @@ export default function PricingPage() {
         <>
             <Header />
 
-            <section className="min-h-screen bg-gradient-to-br from-pure-black to-neutral-950 pt-20">
+            <section className="min-h-screen bg-linear-to-br from-pure-black to-neutral-950 pt-20">
                 <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
                     {/* Header Section */}
                     <div className="mb-16 text-center">
@@ -84,7 +84,7 @@ export default function PricingPage() {
                     {/* Pricing Cards */}
                     <div className="mb-16 grid grid-cols-1 gap-8 lg:grid-cols-3">
                         {/* Free Plan */}
-                        <div className="relative rounded-2xl border border-neutral-700 bg-gradient-to-br from-neutral-800/50 to-neutral-900/50 p-6 backdrop-blur-sm transition-all duration-300 hover:border-neutral-600">
+                        <div className="relative rounded-2xl border border-neutral-700 bg-linear-to-br from-neutral-800/50 to-neutral-900/50 p-6 backdrop-blur-xs transition-all duration-300 hover:border-neutral-600">
                             <div className="absolute top-4 right-4">
                                 <span className="rounded-full bg-white/10 px-3 py-1 font-medium text-gray-300 text-sm">
                                     Free
@@ -111,25 +111,25 @@ export default function PricingPage() {
 
                             <ul className="mb-6 space-y-3">
                                 <li className="flex items-center text-neutral-300">
-                                    <Check className="mr-3 h-4 w-4 flex-shrink-0 text-neutral-400" />
+                                    <Check className="mr-3 h-4 w-4 shrink-0 text-neutral-400" />
                                     <span>
                                         Trading journal (10 entries/month)
                                     </span>
                                 </li>
                                 <li className="flex items-center text-neutral-300">
-                                    <Check className="mr-3 h-4 w-4 flex-shrink-0 text-neutral-400" />
+                                    <Check className="mr-3 h-4 w-4 shrink-0 text-neutral-400" />
                                     <span>Habit tracking (3 max)</span>
                                 </li>
                                 <li className="flex items-center text-neutral-300">
-                                    <Check className="mr-3 h-4 w-4 flex-shrink-0 text-neutral-400" />
+                                    <Check className="mr-3 h-4 w-4 shrink-0 text-neutral-400" />
                                     <span>1 annual goal + 1 quarterly</span>
                                 </li>
                                 <li className="flex items-center text-neutral-300">
-                                    <Check className="mr-3 h-4 w-4 flex-shrink-0 text-neutral-400" />
+                                    <Check className="mr-3 h-4 w-4 shrink-0 text-neutral-400" />
                                     <span>Basic analytics</span>
                                 </li>
                                 <li className="flex items-center text-neutral-300">
-                                    <Check className="mr-3 h-4 w-4 flex-shrink-0 text-neutral-400" />
+                                    <Check className="mr-3 h-4 w-4 shrink-0 text-neutral-400" />
                                     <span>Community access</span>
                                 </li>
                             </ul>
@@ -143,9 +143,9 @@ export default function PricingPage() {
                         </div>
 
                         {/* Altioran Plan - Featured */}
-                        <div className="relative transform rounded-2xl border-2 border-purple-500/60 bg-gradient-to-br from-purple-500/20 to-purple-600/10 p-10 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-purple-500/80 lg:z-10 lg:scale-110">
+                        <div className="relative transform rounded-2xl border-2 border-purple-500/60 bg-linear-to-br from-purple-500/20 to-purple-600/10 p-10 backdrop-blur-xs transition-all duration-300 hover:scale-105 hover:border-purple-500/80 lg:z-10 lg:scale-110">
                             <div className="-top-4 -translate-x-1/2 absolute left-1/2 transform">
-                                <span className="flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-400 to-purple-600 px-6 py-2 font-bold text-sm text-white">
+                                <span className="flex items-center gap-2 rounded-full bg-linear-to-r from-purple-400 to-purple-600 px-6 py-2 font-bold text-sm text-white">
                                     <Crown className="h-5 w-5" />
                                     Altioran
                                 </span>
@@ -174,7 +174,7 @@ export default function PricingPage() {
 
                             <ul className="mb-8 space-y-4">
                                 <li className="flex items-center text-gray-300">
-                                    <Zap className="mr-3 h-5 w-5 flex-shrink-0 text-purple-400" />
+                                    <Zap className="mr-3 h-5 w-5 shrink-0 text-purple-400" />
                                     <span>
                                         <strong className="text-white">
                                             Unlimited trading journal
@@ -182,7 +182,7 @@ export default function PricingPage() {
                                     </span>
                                 </li>
                                 <li className="flex items-center text-gray-300">
-                                    <Zap className="mr-3 h-5 w-5 flex-shrink-0 text-purple-400" />
+                                    <Zap className="mr-3 h-5 w-5 shrink-0 text-purple-400" />
                                     <span>
                                         <strong className="text-white">
                                             Unlimited habit tracking
@@ -190,7 +190,7 @@ export default function PricingPage() {
                                     </span>
                                 </li>
                                 <li className="flex items-center text-gray-300">
-                                    <Zap className="mr-3 h-5 w-5 flex-shrink-0 text-purple-400" />
+                                    <Zap className="mr-3 h-5 w-5 shrink-0 text-purple-400" />
                                     <span>
                                         <strong className="text-white">
                                             Unlimited goal planning
@@ -198,7 +198,7 @@ export default function PricingPage() {
                                     </span>
                                 </li>
                                 <li className="flex items-center text-gray-300">
-                                    <Zap className="mr-3 h-5 w-5 flex-shrink-0 text-purple-400" />
+                                    <Zap className="mr-3 h-5 w-5 shrink-0 text-purple-400" />
                                     <span>
                                         <strong className="text-white">
                                             Virtual assistant & Pomodoro
@@ -206,7 +206,7 @@ export default function PricingPage() {
                                     </span>
                                 </li>
                                 <li className="flex items-center text-gray-300">
-                                    <Zap className="mr-3 h-5 w-5 flex-shrink-0 text-purple-400" />
+                                    <Zap className="mr-3 h-5 w-5 shrink-0 text-purple-400" />
                                     <span>
                                         <strong className="text-white">
                                             Deep work tracking
@@ -214,7 +214,7 @@ export default function PricingPage() {
                                     </span>
                                 </li>
                                 <li className="flex items-center text-gray-300">
-                                    <Zap className="mr-3 h-5 w-5 flex-shrink-0 text-purple-400" />
+                                    <Zap className="mr-3 h-5 w-5 shrink-0 text-purple-400" />
                                     <span>
                                         <strong className="text-white">
                                             Discord integration
@@ -222,7 +222,7 @@ export default function PricingPage() {
                                     </span>
                                 </li>
                                 <li className="flex items-center text-gray-300">
-                                    <Zap className="mr-3 h-5 w-5 flex-shrink-0 text-purple-400" />
+                                    <Zap className="mr-3 h-5 w-5 shrink-0 text-purple-400" />
                                     <span>
                                         <strong className="text-white">
                                             Priority support
@@ -235,7 +235,7 @@ export default function PricingPage() {
                         </div>
 
                         {/* Private Coaching Plan */}
-                        <div className="relative rounded-2xl border border-neutral-700 bg-gradient-to-br from-neutral-800/50 to-neutral-900/50 p-6 backdrop-blur-sm transition-all duration-300 hover:border-neutral-600">
+                        <div className="relative rounded-2xl border border-neutral-700 bg-linear-to-br from-neutral-800/50 to-neutral-900/50 p-6 backdrop-blur-xs transition-all duration-300 hover:border-neutral-600">
                             <div className="absolute top-4 right-4">
                                 <span className="flex items-center gap-1 rounded-full bg-white/10 px-3 py-1 font-medium text-gray-300 text-sm">
                                     <MessageCircle className="h-4 w-4" />
@@ -263,7 +263,7 @@ export default function PricingPage() {
 
                             <ul className="mb-6 space-y-3">
                                 <li className="flex items-center text-neutral-300">
-                                    <Sparkles className="mr-3 h-4 w-4 flex-shrink-0 text-neutral-400" />
+                                    <Sparkles className="mr-3 h-4 w-4 shrink-0 text-neutral-400" />
                                     <span>
                                         <strong className="text-white">
                                             Everything Altioran, plus:
@@ -271,7 +271,7 @@ export default function PricingPage() {
                                     </span>
                                 </li>
                                 <li className="flex items-center text-neutral-300">
-                                    <Sparkles className="mr-3 h-4 w-4 flex-shrink-0 text-neutral-400" />
+                                    <Sparkles className="mr-3 h-4 w-4 shrink-0 text-neutral-400" />
                                     <span>
                                         <strong className="text-white">
                                             1-on-1 coaching sessions
@@ -279,7 +279,7 @@ export default function PricingPage() {
                                     </span>
                                 </li>
                                 <li className="flex items-center text-neutral-300">
-                                    <Sparkles className="mr-3 h-4 w-4 flex-shrink-0 text-neutral-400" />
+                                    <Sparkles className="mr-3 h-4 w-4 shrink-0 text-neutral-400" />
                                     <span>
                                         <strong className="text-white">
                                             Personalized life improvement
@@ -287,7 +287,7 @@ export default function PricingPage() {
                                     </span>
                                 </li>
                                 <li className="flex items-center text-neutral-300">
-                                    <Sparkles className="mr-3 h-4 w-4 flex-shrink-0 text-neutral-400" />
+                                    <Sparkles className="mr-3 h-4 w-4 shrink-0 text-neutral-400" />
                                     <span>
                                         <strong className="text-white">
                                             Custom goal strategies
@@ -295,7 +295,7 @@ export default function PricingPage() {
                                     </span>
                                 </li>
                                 <li className="flex items-center text-neutral-300">
-                                    <Sparkles className="mr-3 h-4 w-4 flex-shrink-0 text-neutral-400" />
+                                    <Sparkles className="mr-3 h-4 w-4 shrink-0 text-neutral-400" />
                                     <span>
                                         <strong className="text-white">
                                             Accountability partner
@@ -303,7 +303,7 @@ export default function PricingPage() {
                                     </span>
                                 </li>
                                 <li className="flex items-center text-neutral-300">
-                                    <Sparkles className="mr-3 h-4 w-4 flex-shrink-0 text-neutral-400" />
+                                    <Sparkles className="mr-3 h-4 w-4 shrink-0 text-neutral-400" />
                                     <span>
                                         <strong className="text-white">
                                             24/7 priority support

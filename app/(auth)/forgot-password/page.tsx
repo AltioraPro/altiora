@@ -186,7 +186,7 @@ export default function ForgotPasswordPage() {
                 {/* Left section - Branding */}
                 <div className="hidden flex-col justify-center px-12 lg:flex lg:w-1/2 xl:px-20">
                     <div className="max-w-lg">
-                        <h1 className="mb-6 bg-gradient-to-b from-white to-gray-400 bg-clip-text font-argesta font-bold text-[4rem] text-transparent leading-none">
+                        <h1 className="mb-6 bg-linear-to-b from-white to-gray-400 bg-clip-text font-argesta font-bold text-[4rem] text-transparent leading-none">
                             ALTIORA
                         </h1>
 
@@ -200,11 +200,11 @@ export default function ForgotPasswordPage() {
 
                         {/* Decorative line */}
                         <div className="mt-12 flex items-center space-x-4">
-                            <div className="h-px w-20 bg-gradient-to-r from-white to-transparent" />
+                            <div className="h-px w-20 bg-linear-to-r from-white to-transparent" />
                             <span className="text-white/60 text-xs tracking-widest">
                                 RESET
                             </span>
-                            <div className="h-px w-20 bg-gradient-to-l from-white to-transparent" />
+                            <div className="h-px w-20 bg-linear-to-l from-white to-transparent" />
                         </div>
                     </div>
                 </div>
@@ -247,7 +247,7 @@ export default function ForgotPasswordPage() {
                         {/* Message d'erreur global */}
                         {error && (
                             <div className="mb-6 flex items-start space-x-3 rounded-lg border border-red-500/20 bg-red-500/10 p-4">
-                                <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-400" />
+                                <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />
                                 <p className="text-red-400 text-sm">{error}</p>
                             </div>
                         )}
@@ -269,7 +269,7 @@ export default function ForgotPasswordPage() {
                                     <Mail className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
                                     <input
                                         {...register("email")}
-                                        className="w-full rounded-lg border border-white/20 bg-transparent py-3 pr-3 pl-10 text-white placeholder-white/40 transition-all duration-300 focus:border-white focus:outline-none"
+                                        className="w-full rounded-lg border border-white/20 bg-transparent py-3 pr-3 pl-10 text-white placeholder-white/40 transition-all duration-300 focus:border-white focus:outline-hidden"
                                         placeholder="your@email.com"
                                         type="email"
                                     />

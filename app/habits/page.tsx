@@ -17,7 +17,7 @@ export default function HabitsPage() {
                     <HabitsProvider>
                         {/* Header */}
                         <div className="relative mb-8 border-white/10 border-b">
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+                            <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent" />
                             <div className="relative mx-auto max-w-7xl px-6 py-8">
                                 <div className="flex items-center justify-between">
                                     <div>
@@ -46,8 +46,8 @@ export default function HabitsPage() {
 
                 {/* Background decoration */}
                 <div className="-z-10 pointer-events-none fixed inset-0 overflow-hidden">
-                    <div className="absolute top-20 left-20 h-64 w-64 rounded-full bg-white/[0.01] blur-3xl" />
-                    <div className="absolute right-20 bottom-20 h-96 w-96 rounded-full bg-white/[0.005] blur-3xl" />
+                    <div className="absolute top-20 left-20 h-64 w-64 rounded-full bg-white/1 blur-3xl" />
+                    <div className="absolute right-20 bottom-20 h-96 w-96 rounded-full bg-white/0.5 blur-3xl" />
                     <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 h-[800px] w-[800px] transform rounded-full bg-white/[0.002] blur-3xl" />
                 </div>
             </div>

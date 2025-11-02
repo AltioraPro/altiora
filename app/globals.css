@@ -1,85 +1,243 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-:root {
+@plugin 'tailwindcss-animate';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-primary-complex-50: #f8f8f8;
+  --color-primary-complex-100: #f0f0f0;
+  --color-primary-complex-200: #e0e0e0;
+  --color-primary-complex-300: #c0c0c0;
+  --color-primary-complex-400: #a0a0a0;
+  --color-primary-complex-500: #808080;
+  --color-primary-complex-600: #606060;
+  --color-primary-complex-700: #404040;
+  --color-primary-complex-800: #202020;
+  --color-primary-complex-900: #000000;
+  --color-primary-complex: #000000;
+
+  --color-pure-white: #ffffff;
+  --color-pure-black: #000000;
+
+  --color-glass-light: rgba(255, 255, 255, 0.1);
+  --color-glass-medium: rgba(255, 255, 255, 0.15);
+  --color-glass-heavy: rgba(255, 255, 255, 0.2);
+  --color-glass-border: rgba(255, 255, 255, 0.15);
+  --color-glass-shadow: rgba(0, 0, 0, 0.1);
+
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+
+  --animate-shine: shine 5s linear infinite;
+  --animate-liquid-shimmer: liquid-shimmer 4s ease-in-out infinite;
+  --animate-liquid-ripple: liquid-ripple 0.6s ease-out;
+  --animate-glass-float: glass-float 3s ease-in-out infinite;
+  --animate-scroll: scroll var(--animation-duration, 40s)
+    var(--animation-direction, forwards) linear infinite;
+
+  --backdrop-blur-glass: 12px;
+  --backdrop-blur-glass-light: 8px;
+  --backdrop-blur-glass-heavy: 16px;
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  @keyframes shine {
+    0% {
+      background-position: 100%;
+    }
+    100% {
+      background-position: -100%;
+    }
+  }
+  @keyframes liquid-shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    50% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes liquid-ripple {
+    0% {
+      width: 0;
+      height: 0;
+      opacity: 1;
+    }
+    100% {
+      width: 300px;
+      height: 300px;
+      opacity: 0;
+    }
+  }
+  @keyframes glass-float {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-2px);
+    }
+  }
+  @keyframes scroll {
+    to {
+      transform: translate(calc(-50% - 0.5rem));
+    }
+  }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@utility font-argesta {
+  font-family: 'Argesta Display', sans-serif !important;
+}
+
+@utility animate-in {
+  animation: animateIn 0.5s ease-out;
+}
+
+@utility fade-in-0 {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@utility slide-in-from-bottom-4 {
+  animation: slideInFromBottom 0.5s ease-out;
+}
+
+@utility backdrop-blur-xl {
+  backdrop-filter: blur(24px);
+}
+
+@utility backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+}
+
+@layer utilities {
+  :root {
     --pure-black: #000000;
     --pure-white: #ffffff;
     --glass-overlay: rgba(255, 255, 255, 0.1);
     --glass-border: rgba(255, 255, 255, 0.2);
     --glass-shadow: rgba(0, 0, 0, 0.1);
-}
+  }
 
-body {
+  body {
     background-color: var(--pure-black);
     color: var(--pure-white);
-}
+  }
 
-@keyframes scroll {
+  @keyframes scroll {
     to {
-        transform: translate(calc(-50% - 0.5rem));
+      transform: translate(calc(-50% - 0.5rem));
     }
-}
+  }
 
-.animate-scroll {
+  .animate-scroll {
     animation: scroll var(--animation-duration, 40s)
-        var(--animation-direction, forwards) linear infinite;
-}
+      var(--animation-direction, forwards) linear infinite;
+  }
 
-.liquid-glass-enhanced:hover::after {
-    content: "";
+  .liquid-glass-enhanced:hover::after {
+    content: '';
     position: absolute;
     top: 50%;
     left: 50%;
     width: 0;
     height: 0;
     background: radial-gradient(
-        circle,
-        rgba(255, 255, 255, 0.3) 0%,
-        transparent 70%
+      circle,
+      rgba(255, 255, 255, 0.3) 0%,
+      transparent 70%
     );
     animation: liquid-ripple 0.6s ease-out;
     pointer-events: none;
-}
+  }
 
-@keyframes liquid-ripple {
+  @keyframes liquid-ripple {
     to {
-        width: 300px;
-        height: 300px;
-        top: calc(50% - 150px);
-        left: calc(50% - 150px);
-        opacity: 0;
+      width: 300px;
+      height: 300px;
+      top: calc(50% - 150px);
+      left: calc(50% - 150px);
+      opacity: 0;
     }
-}
+  }
 
-@media (max-width: 768px) {
+  @media (max-width: 768px) {
     .liquid-glass-enhanced {
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
-}
+  }
 
-.liquid-transition {
+  .liquid-transition {
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
+  }
 
-@supports not (backdrop-filter: blur()) {
+  @supports not (backdrop-filter: blur()) {
     .liquid-glass-enhanced {
-        background: rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, 0.8);
     }
-}
+  }
 
-@font-face {
-    font-family: "Argesta Display";
-    src: url("/font/MADE2.otf") format("opentype");
+  @font-face {
+    font-family: 'Argesta Display';
+    src: url('/font/MADE2.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
-}
-
-@layer utilities {
-    .font-argesta {
-        font-family: "Argesta Display", sans-serif !important;
-    }
+  }
 }
 
 @layer base {
@@ -138,210 +296,212 @@ body {
     }
 }
 
-@keyframes magneticPull {
+@layer utilities {
+  @keyframes magneticPull {
     0%,
     100% {
-        transform: translateY(0) scale(1);
-        opacity: 0.4;
+      transform: translateY(0) scale(1);
+      opacity: 0.4;
     }
     50% {
-        transform: translateY(-20px) scale(1.5);
-        opacity: 0.8;
+      transform: translateY(-20px) scale(1.5);
+      opacity: 0.8;
     }
     75% {
-        transform: translateY(10px) scale(0.8);
-        opacity: 0.6;
+      transform: translateY(10px) scale(0.8);
+      opacity: 0.6;
     }
-}
+  }
 
-@keyframes wave {
+  @keyframes wave {
     0%,
     100% {
-        d: path(
-            "M0,60 C150,100 350,0 600,60 C850,120 1050,20 1200,60 L1200,120 L0,120 Z"
-        );
+      d: path(
+        'M0,60 C150,100 350,0 600,60 C850,120 1050,20 1200,60 L1200,120 L0,120 Z'
+      );
     }
     50% {
-        d: path(
-            "M0,80 C150,20 350,120 600,80 C850,40 1050,100 1200,80 L1200,120 L0,120 Z"
-        );
+      d: path(
+        'M0,80 C150,20 350,120 600,80 C850,40 1050,100 1200,80 L1200,120 L0,120 Z'
+      );
     }
-}
+  }
 
-@keyframes waveReverse {
+  @keyframes waveReverse {
     0%,
     100% {
-        d: path(
-            "M0,80 C200,120 400,40 600,80 C800,120 1000,40 1200,80 L1200,120 L0,120 Z"
-        );
+      d: path(
+        'M0,80 C200,120 400,40 600,80 C800,120 1000,40 1200,80 L1200,120 L0,120 Z'
+      );
     }
     50% {
-        d: path(
-            "M0,100 C200,40 400,120 600,100 C800,60 1000,120 1200,100 L1200,120 L0,120 Z"
-        );
+      d: path(
+        'M0,100 C200,40 400,120 600,100 C800,60 1000,120 1200,100 L1200,120 L0,120 Z'
+      );
     }
-}
+  }
 
-@keyframes waveAccent {
+  @keyframes waveAccent {
     0%,
     100% {
-        d: path("M0,50 C150,90 350,-10 600,50 C850,110 1050,10 1200,50");
-        opacity: 0.1;
+      d: path('M0,50 C150,90 350,-10 600,50 C850,110 1050,10 1200,50');
+      opacity: 0.1;
     }
     50% {
-        d: path("M0,70 C150,10 350,110 600,70 C850,30 1050,90 1200,70");
-        opacity: 0.3;
+      d: path('M0,70 C150,10 350,110 600,70 C850,30 1050,90 1200,70');
+      opacity: 0.3;
     }
-}
+  }
 
-@keyframes waveTrail {
+  @keyframes waveTrail {
     0%,
     100% {
-        transform: translateY(0) scale(1);
-        opacity: 0.2;
+      transform: translateY(0) scale(1);
+      opacity: 0.2;
     }
     25% {
-        transform: translateY(-30px) scale(1.8);
-        opacity: 0.8;
+      transform: translateY(-30px) scale(1.8);
+      opacity: 0.8;
     }
     50% {
-        transform: translateY(-10px) scale(0.6);
-        opacity: 0.4;
+      transform: translateY(-10px) scale(0.6);
+      opacity: 0.4;
     }
     75% {
-        transform: translateY(-20px) scale(1.2);
-        opacity: 0.6;
+      transform: translateY(-20px) scale(1.2);
+      opacity: 0.6;
     }
-}
+  }
 
-@keyframes convergeLine {
+  @keyframes convergeLine {
     0%,
     100% {
-        transform: scaleX(1) translateY(0);
-        opacity: 0.1;
+      transform: scaleX(1) translateY(0);
+      opacity: 0.1;
     }
     50% {
-        transform: scaleX(0.3) translateY(-10px);
-        opacity: 0.4;
+      transform: scaleX(0.3) translateY(-10px);
+      opacity: 0.4;
     }
-}
+  }
 
-@keyframes pulse-slow {
+  @keyframes pulse-slow {
     0%,
     100% {
-        transform: scale(1);
-        opacity: 0.05;
+      transform: scale(1);
+      opacity: 0.05;
     }
     50% {
-        transform: scale(1.1);
-        opacity: 0.15;
+      transform: scale(1.1);
+      opacity: 0.15;
     }
-}
+  }
 
-@keyframes pulse-reverse {
+  @keyframes pulse-reverse {
     0%,
     100% {
-        transform: scale(1.2);
-        opacity: 0.1;
+      transform: scale(1.2);
+      opacity: 0.1;
     }
     50% {
-        transform: scale(0.8);
-        opacity: 0.2;
+      transform: scale(0.8);
+      opacity: 0.2;
     }
-}
+  }
 
-@keyframes pulse-fast {
+  @keyframes pulse-fast {
     0%,
     100% {
-        transform: scale(0.8);
-        opacity: 0.15;
+      transform: scale(0.8);
+      opacity: 0.15;
     }
     50% {
-        transform: scale(1.4);
-        opacity: 0.4;
+      transform: scale(1.4);
+      opacity: 0.4;
     }
-}
+  }
 
-.animate-wave {
+  .animate-wave {
     animation: wave 8s ease-in-out infinite;
-}
+  }
 
-.animate-wave-reverse {
+  .animate-wave-reverse {
     animation: waveReverse 10s ease-in-out infinite;
-}
+  }
 
-.animate-wave-accent {
+  .animate-wave-accent {
     animation: waveAccent 6s ease-in-out infinite;
-}
+  }
 
-.animate-pulse-slow {
+  .animate-pulse-slow {
     animation: pulse-slow 4s ease-in-out infinite;
-}
+  }
 
-.animate-pulse-reverse {
+  .animate-pulse-reverse {
     animation: pulse-reverse 3s ease-in-out infinite;
-}
+  }
 
-.animate-pulse-fast {
+  .animate-pulse-fast {
     animation: pulse-fast 2s ease-in-out infinite;
-}
+  }
 
-@keyframes borderFlow {
+  @keyframes borderFlow {
     0% {
-        transform: translateX(-100%);
-        opacity: 0;
+      transform: translateX(-100%);
+      opacity: 0;
     }
     10% {
-        opacity: 1;
+      opacity: 1;
     }
     90% {
-        opacity: 1;
+      opacity: 1;
     }
     100% {
-        transform: translateX(calc(100vw + 100%));
-        opacity: 0;
+      transform: translateX(calc(100vw + 100%));
+      opacity: 0;
     }
-}
+  }
 
-@keyframes borderGlow {
+  @keyframes borderGlow {
     0%,
     100% {
-        transform: translateY(-50%) scale(0.8);
-        opacity: 0.3;
+      transform: translateY(-50%) scale(0.8);
+      opacity: 0.3;
     }
     50% {
-        transform: translateY(-50%) scale(1.5);
-        opacity: 0.8;
+      transform: translateY(-50%) scale(1.5);
+      opacity: 0.8;
     }
-}
+  }
 
-@keyframes elegantFlow {
+  @keyframes elegantFlow {
     0%,
     100% {
-        transform: translateX(-50%);
-        opacity: 0;
+      transform: translateX(-50%);
+      opacity: 0;
     }
     10% {
-        opacity: 0.8;
+      opacity: 0.8;
     }
     90% {
-        opacity: 0.8;
+      opacity: 0.8;
     }
     50% {
-        transform: translateX(calc(100vw - 50%));
+      transform: translateX(calc(100vw - 50%));
     }
-}
+  }
 
-@keyframes breathe {
+  @keyframes breathe {
     0%,
     100% {
-        transform: translateX(-50%) scaleX(1);
-        opacity: 0.3;
+      transform: translateX(-50%) scaleX(1);
+      opacity: 0.3;
     }
     50% {
-        transform: translateX(-50%) scaleX(1.5);
-        opacity: 0.6;
+      transform: translateX(-50%) scaleX(1.5);
+      opacity: 0.6;
     }
+  }
 }
 
 @layer base {
@@ -350,28 +510,6 @@ body {
     }
     body {
         @apply bg-background text-foreground;
-    }
-}
-
-@layer utilities {
-    .animate-in {
-        animation: animateIn 0.5s ease-out;
-    }
-
-    .fade-in-0 {
-        animation: fadeIn 0.5s ease-out;
-    }
-
-    .slide-in-from-bottom-4 {
-        animation: slideInFromBottom 0.5s ease-out;
-    }
-
-    .backdrop-blur-xl {
-        backdrop-filter: blur(24px);
-    }
-
-    .backdrop-blur-sm {
-        backdrop-filter: blur(4px);
     }
 }
 

@@ -167,7 +167,7 @@ export function AdvancedFilters({
 
             {isExpanded && (
                 <div className="absolute top-full left-0 z-50 mt-2 w-80">
-                    <div className="space-y-4 rounded-lg border border-white/10 bg-black/90 p-4 shadow-xl backdrop-blur-sm">
+                    <div className="space-y-4 rounded-lg border border-white/10 bg-black/90 p-4 shadow-xl backdrop-blur-xs">
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
                                 <h4 className="font-medium text-white/90 text-xs">

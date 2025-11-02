@@ -18,7 +18,7 @@ const ShinyText: React.FC<ShinyTextProps> = ({
     className = "",
 }) => (
     <div
-        className={`inline-block bg-gradient-to-r from-gray-400 via-white to-gray-400 bg-clip-text text-transparent ${disabled ? "" : "animate-shine"} ${className}`}
+        className={`inline-block bg-linear-to-r from-gray-400 via-white to-gray-400 bg-clip-text text-transparent ${disabled ? "" : "animate-shine"} ${className}`}
         style={{
             backgroundSize: "200% 100%",
             animationDuration: `${speed}s`,

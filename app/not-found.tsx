@@ -31,20 +31,20 @@ export default function NotFoundPage() {
 
                 {/* Floating Lines */}
                 <div className="-translate-y-1/2 absolute top-1/2 left-8 z-20 transform space-y-8 opacity-40">
-                    <div className="h-32 w-px animate-pulse-slow bg-gradient-to-b from-transparent via-white/30 to-transparent" />
-                    <div className="h-24 w-px animate-pulse-reverse bg-gradient-to-b from-transparent via-white/20 to-transparent" />
+                    <div className="h-32 w-px animate-pulse-slow bg-linear-to-b from-transparent via-white/30 to-transparent" />
+                    <div className="h-24 w-px animate-pulse-reverse bg-linear-to-b from-transparent via-white/20 to-transparent" />
                 </div>
 
                 <div className="-translate-y-1/2 absolute top-1/2 right-8 z-20 transform space-y-8 opacity-40">
-                    <div className="h-24 w-px animate-pulse-reverse bg-gradient-to-b from-transparent via-white/20 to-transparent" />
-                    <div className="h-32 w-px animate-pulse-slow bg-gradient-to-b from-transparent via-white/30 to-transparent" />
+                    <div className="h-24 w-px animate-pulse-reverse bg-linear-to-b from-transparent via-white/20 to-transparent" />
+                    <div className="h-32 w-px animate-pulse-slow bg-linear-to-b from-transparent via-white/30 to-transparent" />
                 </div>
 
                 {/* Main Content */}
                 <div className="relative z-30 mx-auto flex max-w-4xl flex-col items-center justify-center overflow-hidden px-8 text-pure-white">
                     {/* 404 Number */}
                     <div className="z-10 mb-12 flex flex-col items-center justify-center">
-                        <h1 className="pointer-events-none select-none whitespace-nowrap bg-gradient-to-b from-white via-gray-300 to-gray-500 bg-clip-text font-argesta text-[15vw] text-transparent leading-none opacity-80 sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">
+                        <h1 className="pointer-events-none select-none whitespace-nowrap bg-linear-to-b from-white via-gray-300 to-gray-500 bg-clip-text font-argesta text-[15vw] text-transparent leading-none opacity-80 sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">
                             404
                         </h1>
 

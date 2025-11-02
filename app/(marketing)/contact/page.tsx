@@ -137,11 +137,11 @@ export default function ContactPage() {
                             <div className="-top-8 -left-8 absolute h-16 w-16 animate-pulse rounded-full border border-white/20" />
                             <div className="-top-4 -left-4 absolute h-8 w-8 rotate-45 bg-white/10" />
 
-                            <h1 className="mb-8 bg-gradient-to-b from-white via-white to-gray-400 bg-clip-text text-right font-bold text-[8vw] text-transparent leading-none lg:text-[6vw]">
+                            <h1 className="mb-8 bg-linear-to-b from-white via-white to-gray-400 bg-clip-text text-right font-bold text-[8vw] text-transparent leading-none lg:text-[6vw]">
                                 CONTACT
                                 <br />
                                 <span className="relative inline-block text-white">
-                                    <span className="-left-96 -translate-y-1/2 absolute top-1/2 h-px w-96 transform bg-gradient-to-r from-transparent to-white/60" />
+                                    <span className="-left-96 -translate-y-1/2 absolute top-1/2 h-px w-96 transform bg-linear-to-r from-transparent to-white/60" />
                                     US
                                 </span>
                             </h1>
@@ -161,8 +161,8 @@ export default function ContactPage() {
                                     />
                                     <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 h-1 w-1 transform rounded-full bg-white" />
 
-                                    <div className="-right-12 absolute top-1/2 h-px w-12 bg-gradient-to-r from-white/60 to-transparent" />
-                                    <div className="-left-12 absolute top-1/2 h-px w-12 bg-gradient-to-l from-white/60 to-transparent" />
+                                    <div className="-right-12 absolute top-1/2 h-px w-12 bg-linear-to-r from-white/60 to-transparent" />
+                                    <div className="-left-12 absolute top-1/2 h-px w-12 bg-linear-to-l from-white/60 to-transparent" />
                                 </div>
                             </div>
                         </div>
@@ -179,7 +179,7 @@ export default function ContactPage() {
                                     <div className="relative">
                                         <User className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
                                         <input
-                                            className={`w-full border-b-2 bg-transparent py-3 pr-3 pl-10 text-sm transition-all duration-300 focus:outline-none ${
+                                            className={`w-full border-b-2 bg-transparent py-3 pr-3 pl-10 text-sm transition-all duration-300 focus:outline-hidden ${
                                                 focusedField === "fullName"
                                                     ? "border-white text-white"
                                                     : "border-white/20 text-white/80"
@@ -216,7 +216,7 @@ export default function ContactPage() {
                                         <div className="relative">
                                             <Mail className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
                                             <input
-                                                className={`w-full border-b-2 bg-transparent py-3 pr-3 pl-10 text-sm transition-all duration-300 focus:outline-none ${
+                                                className={`w-full border-b-2 bg-transparent py-3 pr-3 pl-10 text-sm transition-all duration-300 focus:outline-hidden ${
                                                     focusedField === "email"
                                                         ? "border-white text-white"
                                                         : "border-white/20 text-white/80"
@@ -254,7 +254,7 @@ export default function ContactPage() {
                                         <div className="relative">
                                             <Phone className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
                                             <input
-                                                className={`w-full border-b-2 bg-transparent py-3 pr-3 pl-10 text-sm transition-all duration-300 focus:outline-none ${
+                                                className={`w-full border-b-2 bg-transparent py-3 pr-3 pl-10 text-sm transition-all duration-300 focus:outline-hidden ${
                                                     focusedField === "phone"
                                                         ? "border-white text-white"
                                                         : "border-white/20 text-white/80"
@@ -292,7 +292,7 @@ export default function ContactPage() {
                                     <div className="relative">
                                         <MessageSquare className="absolute top-4 left-3 h-4 w-4 text-white/40" />
                                         <textarea
-                                            className={`w-full resize-none rounded-lg border-2 bg-transparent py-3 pr-3 pl-10 text-sm transition-all duration-300 focus:outline-none ${
+                                            className={`w-full resize-none rounded-lg border-2 bg-transparent py-3 pr-3 pl-10 text-sm transition-all duration-300 focus:outline-hidden ${
                                                 focusedField === "message"
                                                     ? "border-white text-white"
                                                     : "border-white/20 text-white/80"
@@ -317,7 +317,7 @@ export default function ContactPage() {
                                         disabled={isSubmitting}
                                         type="submit"
                                     >
-                                        <div className="absolute inset-0 origin-center scale-x-0 transform bg-gradient-to-r from-transparent via-white/5 to-transparent transition-transform duration-700 group-hover:scale-x-100" />
+                                        <div className="absolute inset-0 origin-center scale-x-0 transform bg-linear-to-r from-transparent via-white/5 to-transparent transition-transform duration-700 group-hover:scale-x-100" />
                                         <div className="absolute inset-0 translate-y-full transform bg-white/10 transition-transform duration-500 group-hover:translate-y-0" />
 
                                         <div className="-translate-x-full -translate-y-full absolute top-0 left-0 h-8 w-8 transform border-white/40 border-t border-l transition-transform duration-500 group-hover:translate-x-0 group-hover:translate-y-0" />
@@ -353,7 +353,7 @@ export default function ContactPage() {
                                             )}
                                         </div>
 
-                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 blur-sm transition-opacity duration-500 group-hover:opacity-20" />
+                                        <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent opacity-0 blur-xs transition-opacity duration-500 group-hover:opacity-20" />
                                     </button>
                                 </div>
                             </form>

@@ -88,7 +88,7 @@ export default function GoalsPage() {
                 <div className="relative mx-auto w-full">
                     {/* Header */}
                     <div className="relative mb-8 border-white/10 border-b">
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+                        <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent" />
                         <div className="relative mx-auto max-w-7xl px-6 py-8">
                             <div className="flex items-center justify-between">
                                 <div>
@@ -105,7 +105,7 @@ export default function GoalsPage() {
                                     className="group relative overflow-hidden rounded-lg border border-white/10 bg-white/10 px-6 py-3 font-semibold text-white transition-all duration-300 hover:border-white/20 hover:bg-white/20"
                                     onClick={() => setIsCreateModalOpen(true)}
                                 >
-                                    <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-white/10 to-white/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                                    <div className="absolute inset-0 bg-linear-to-r from-white/5 via-white/10 to-white/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                                     <div className="relative flex items-center gap-2">
                                         <Plus className="h-4 w-4 transition-transform group-hover:scale-110" />
                                         <span>New Goal</span>
@@ -192,8 +192,8 @@ export default function GoalsPage() {
 
                 {/* Background decoration */}
                 <div className="-z-10 pointer-events-none fixed inset-0 overflow-hidden">
-                    <div className="absolute top-20 left-20 h-64 w-64 rounded-full bg-white/[0.01] blur-3xl" />
-                    <div className="absolute right-20 bottom-20 h-96 w-96 rounded-full bg-white/[0.005] blur-3xl" />
+                    <div className="absolute top-20 left-20 h-64 w-64 rounded-full bg-white/1 blur-3xl" />
+                    <div className="absolute right-20 bottom-20 h-96 w-96 rounded-full bg-white/0.5 blur-3xl" />
                     <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 h-[800px] w-[800px] transform rounded-full bg-white/[0.002] blur-3xl" />
                 </div>
             </div>

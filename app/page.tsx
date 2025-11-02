@@ -55,7 +55,7 @@ export default function HomePage() {
                         </div>
                     </div>
 
-                    <div className="h-32 w-px bg-gradient-to-b from-transparent via-white to-transparent opacity-30" />
+                    <div className="h-32 w-px bg-linear-to-b from-transparent via-white to-transparent opacity-30" />
 
                     <div className="space-y-2">
                         <p className="-rotate-90 origin-left transform text-white text-xs opacity-70">
@@ -82,7 +82,7 @@ export default function HomePage() {
                         </div>
                     </div>
 
-                    <div className="h-32 w-px bg-gradient-to-b from-transparent via-white to-transparent opacity-30" />
+                    <div className="h-32 w-px bg-linear-to-b from-transparent via-white to-transparent opacity-30" />
 
                     <div className="space-y-2">
                         <p className="origin-right rotate-90 transform text-white text-xs opacity-70">
@@ -98,7 +98,7 @@ export default function HomePage() {
 
                 <div className="relative z-30 flex flex-col items-center justify-center overflow-hidden text-pure-white">
                     <div className="z-10 flex flex-col items-center justify-center">
-                        <h1 className="pointer-events-none select-none whitespace-nowrap bg-gradient-to-b from-white to-gray-400 bg-clip-text font-argesta text-[13vw] text-transparent leading-none opacity-90">
+                        <h1 className="pointer-events-none select-none whitespace-nowrap bg-linear-to-b from-white to-gray-400 bg-clip-text font-argesta text-[13vw] text-transparent leading-none opacity-90">
                             ALTIORA
                         </h1>
 

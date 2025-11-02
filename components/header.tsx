@@ -108,7 +108,7 @@ export const Header = async ({
                             </div>
                         ) : (
                             <Link
-                                className="group rounded-xl border border-white/20 px-4 py-2 font-semibold text-sm text-white/80 tracking-wider backdrop-blur-sm transition-all duration-300 hover:border-white/40 hover:bg-white/5 hover:text-white"
+                                className="group rounded-xl border border-white/20 px-4 py-2 font-semibold text-sm text-white/80 tracking-wider backdrop-blur-xs transition-all duration-300 hover:border-white/40 hover:bg-white/5 hover:text-white"
                                 href={PAGES.SIGN_IN}
                             >
                                 <span className="relative">

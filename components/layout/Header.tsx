@@ -126,7 +126,7 @@ export const Header = ({ className }: HeaderProps) => {
                                         <span
                                             className={`block h-0.5 bg-white transition-all duration-500 ease-out ${
                                                 isMenuOpen
-                                                    ? "w-4 translate-y-[1px] rotate-45 shadow-[0_0_10px_rgba(255,255,255,0.5)]"
+                                                    ? "w-4 translate-y-px rotate-45 shadow-[0_0_10px_rgba(255,255,255,0.5)]"
                                                     : "w-4 translate-y-[-3px] rotate-0 group-hover:w-5"
                                             }`}
                                         />
@@ -140,7 +140,7 @@ export const Header = ({ className }: HeaderProps) => {
                                         <span
                                             className={`block h-0.5 bg-white transition-all duration-500 ease-out ${
                                                 isMenuOpen
-                                                    ? "-rotate-45 w-4 translate-y-[-1px] shadow-[0_0_10px_rgba(255,255,255,0.5)]"
+                                                    ? "-rotate-45 w-4 -translate-y-px shadow-[0_0_10px_rgba(255,255,255,0.5)]"
                                                     : "w-4 translate-y-[3px] rotate-0 group-hover:w-5"
                                             }`}
                                         />
@@ -221,7 +221,7 @@ export const Header = ({ className }: HeaderProps) => {
                                 </div>
                             ) : (
                                 <Link
-                                    className="group rounded-xl border border-white/20 px-4 py-2 font-semibold text-sm text-white/80 tracking-wider backdrop-blur-sm transition-all duration-300 hover:border-white/40 hover:bg-white/5 hover:text-white"
+                                    className="group rounded-xl border border-white/20 px-4 py-2 font-semibold text-sm text-white/80 tracking-wider backdrop-blur-xs transition-all duration-300 hover:border-white/40 hover:bg-white/5 hover:text-white"
                                     href={PAGES.SIGN_IN}
                                 >
                                     <span className="relative">
@@ -264,10 +264,10 @@ export const Header = ({ className }: HeaderProps) => {
                                     : "translate-y-10 opacity-0"
                             }`}
                         >
-                            <h1 className="mb-2 bg-gradient-to-b from-white to-gray-400 bg-clip-text font-bold text-5xl text-transparent leading-none">
+                            <h1 className="mb-2 bg-linear-to-b from-white to-gray-400 bg-clip-text font-bold text-5xl text-transparent leading-none">
                                 ALTIORA
                             </h1>
-                            <div className="mx-auto h-px w-20 bg-gradient-to-r from-transparent via-white to-transparent opacity-50" />
+                            <div className="mx-auto h-px w-20 bg-linear-to-r from-transparent via-white to-transparent opacity-50" />
                         </div>
 
                         <div className="relative mx-auto mb-8 h-[450px] w-[450px]">
@@ -316,7 +316,7 @@ export const Header = ({ className }: HeaderProps) => {
                                                     transformOrigin: "center",
                                                 }}
                                             >
-                                                <div className="rounded-lg border border-white/30 bg-black/90 px-3 py-1.5 shadow-lg backdrop-blur-sm">
+                                                <div className="rounded-lg border border-white/30 bg-black/90 px-3 py-1.5 shadow-lg backdrop-blur-xs">
                                                     <span className="whitespace-nowrap font-medium text-white text-xs tracking-widest">
                                                         {item.label}
                                                     </span>

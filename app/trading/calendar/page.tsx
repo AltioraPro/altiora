@@ -287,7 +287,7 @@ export default function TradingCalendarPage() {
                 : `${day.dayPerformance.totalPnL.toFixed(1)}%`;
 
         return (
-            <div className="font-bold text-[9px] drop-shadow-sm">
+            <div className="font-bold text-[9px] drop-shadow-xs">
                 {percentage}
             </div>
         );

@@ -506,7 +506,7 @@ export default function TradingPage() {
                             <button
                                 className={`flex items-center space-x-2 rounded-lg px-5 py-3 font-medium text-sm transition-all duration-200 ${
                                     activeTab === id
-                                        ? "bg-white text-black shadow-sm"
+                                        ? "bg-white text-black shadow-xs"
                                         : "text-white/70 hover:bg-white/10 hover:text-white"
                                 }`}
                                 key={id}

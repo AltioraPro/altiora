@@ -111,12 +111,12 @@ export const Footer = () => {
                 ref={footerRef}
             >
                 {/* Sophisticated "woaw" border with subtle animation */}
-                <div className="absolute top-0 left-0 h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent" />
+                <div className="absolute top-0 left-0 h-px w-full bg-linear-to-r from-transparent via-white/12 to-transparent" />
 
                 {/* Elegant flowing accent */}
                 <div className="absolute top-0 left-0 h-px w-full overflow-hidden">
                     <div
-                        className="absolute top-0 h-px w-64 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                        className="absolute top-0 h-px w-64 bg-linear-to-r from-transparent via-white/40 to-transparent"
                         style={{
                             animation: "elegantFlow 12s ease-in-out infinite",
                         }}
@@ -193,7 +193,7 @@ export const Footer = () => {
                                 >
                                     <div className="group relative flex-1">
                                         <input
-                                            className="w-full rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white placeholder-white/50 backdrop-blur-sm transition-all duration-300 focus:border-white/40 focus:bg-white/10 focus:outline-none"
+                                            className="w-full rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white placeholder-white/50 backdrop-blur-xs transition-all duration-300 focus:border-white/40 focus:bg-white/10 focus:outline-hidden"
                                             onChange={(e) =>
                                                 setEmail(e.target.value)
                                             }
@@ -205,7 +205,7 @@ export const Footer = () => {
                                         <div className="-z-10 absolute inset-0 rounded-xl bg-white/5 opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-100" />
                                     </div>
                                     <button
-                                        className="group rounded-xl border border-white/20 bg-white/10 px-4 py-3 backdrop-blur-sm transition-all duration-300 hover:border-white/40 hover:bg-white/20"
+                                        className="group rounded-xl border border-white/20 bg-white/10 px-4 py-3 backdrop-blur-xs transition-all duration-300 hover:border-white/40 hover:bg-white/20"
                                         type="submit"
                                     >
                                         <Send className="h-4 w-4 text-white/80 transition-colors duration-300 group-hover:text-white" />
@@ -299,7 +299,7 @@ export const Footer = () => {
                                         const Icon = social.icon;
                                         return (
                                             <a
-                                                className="group flex h-10 w-10 items-center justify-center rounded-xl border border-white/20 bg-white/5 backdrop-blur-sm transition-all duration-300 hover:border-white/40 hover:bg-white/15"
+                                                className="group flex h-10 w-10 items-center justify-center rounded-xl border border-white/20 bg-white/5 backdrop-blur-xs transition-all duration-300 hover:border-white/40 hover:bg-white/15"
                                                 href={social.href}
                                                 key={social.href}
                                                 rel="noopener noreferrer"

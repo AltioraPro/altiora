@@ -93,7 +93,7 @@ function AuthErrorContent() {
             </div>
             <div className="relative z-10 flex min-h-screen">
                 ={" "}
-                <div className="hidden items-center justify-center bg-gradient-to-br from-white/5 to-transparent p-12 lg:flex lg:w-1/2">
+                <div className="hidden items-center justify-center bg-linear-to-br from-white/5 to-transparent p-12 lg:flex lg:w-1/2">
                     <div className="space-y-8 text-center">
                         <div className="space-y-4">
                             <h1 className="font-bold text-6xl text-pure-white tracking-tight">
@@ -105,13 +105,13 @@ function AuthErrorContent() {
                         </div>
 
                         <div className="max-w-md space-y-6">
-                            <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                            <div className="h-px bg-linear-to-r from-transparent via-white/20 to-transparent" />
                             <p className="text-gray-300 text-sm leading-relaxed">
                                 Transform your habits, track your trading, and
                                 achieve your goals with our comprehensive
                                 coaching platform.
                             </p>
-                            <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                            <div className="h-px bg-linear-to-r from-transparent via-white/20 to-transparent" />
                         </div>
                     </div>
                 </div>
