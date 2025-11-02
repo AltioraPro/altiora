@@ -3,56 +3,89 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
     AlertCircle,
-    ArrowLeft,
     ArrowRight,
     CheckCircle,
-    Mail,
+    Eye,
+    EyeOff,
+    Lock,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { PAGES } from "@/constants/pages";
 
-const forgotPasswordSchema = z.object({
-    email: z.string().email("Invalid email address"),
-});
+const resetPasswordSchema = z
+    .object({
+        password: z.string().min(6, "Password must be at least 6 characters"),
+        confirmPassword: z
+            .string()
+            .min(6, "Password must be at least 6 characters"),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: "Passwords don't match",
+        path: ["confirmPassword"],
+    });
 
-type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
+type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 
-export default function ForgotPasswordPage() {
+function ResetPasswordContent() {
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [token, setToken] = useState<string | null>(null);
+
+    const searchParams = useSearchParams();
+
+    useEffect(() => {
+        const tokenParam = searchParams.get("token");
+        if (tokenParam) {
+            setToken(tokenParam);
+        } else {
+            setError("Invalid or missing reset token");
+        }
+    }, [searchParams]);
 
     const {
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
-        getValues,
-    } = useForm<ForgotPasswordFormValues>({
-        resolver: zodResolver(forgotPasswordSchema),
+    } = useForm<ResetPasswordFormValues>({
+        resolver: zodResolver(resetPasswordSchema),
         defaultValues: {
-            email: "",
+            password: "",
+            confirmPassword: "",
         },
     });
 
-    const onSubmit = async (data: ForgotPasswordFormValues) => {
+    const onSubmit = async (data: ResetPasswordFormValues) => {
+        if (!token) {
+            setError("Invalid reset token");
+            return;
+        }
+
         setIsLoading(true);
         setError(null);
 
         try {
-            const response = await fetch("/api/auth/reset-password", {
+            const response = await fetch("/api/auth/reset-password/confirm", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ email: data.email }),
+                body: JSON.stringify({
+                    token,
+                    password: data.password,
+                }),
             });
 
             const result = await response.json();
 
             if (!response.ok) {
-                throw new Error(result.message || "Failed to send reset email");
+                throw new Error(result.message || "Failed to reset password");
             }
 
             setIsSuccess(true);
@@ -60,7 +93,7 @@ export default function ForgotPasswordPage() {
             const errorMessage =
                 error instanceof Error
                     ? error.message
-                    : "Failed to send reset email";
+                    : "Failed to reset password";
             setError(errorMessage);
         } finally {
             setIsLoading(false);
@@ -99,61 +132,27 @@ export default function ForgotPasswordPage() {
                         {/* Success message */}
                         <div className="mb-8">
                             <h1 className="mb-4 font-bold text-2xl text-white">
-                                Check Your Email
+                                Password Reset Successful
                             </h1>
-                            <p className="mb-2 text-gray-400">
-                                We&apos;ve sent a password reset link to:
-                            </p>
-                            <p className="font-medium text-white">
-                                {getValues("email")}
-                            </p>
-                            <p className="mt-4 text-gray-400 text-sm">
-                                Click the link in the email to reset your
-                                password. The link will expire in 1 hour.
+                            <p className="text-gray-400">
+                                Your password has been successfully reset. You
+                                can now sign in with your new password.
                             </p>
                         </div>
 
-                        {/* Actions */}
-                        <div className="space-y-4">
-                            <button
-                                className="w-full rounded-lg border border-white/20 bg-transparent py-3 text-white transition-all duration-300 hover:border-white/40 hover:bg-white/5"
-                                onClick={() => {
-                                    setIsSuccess(false);
-                                    setError(null);
-                                }}
-                            >
-                                Send Another Email
-                            </button>
+                        {/* Action */}
+                        <Link
+                            className="group relative inline-block w-full overflow-hidden rounded-lg border border-white/30 bg-transparent py-4 transition-all duration-300 hover:border-white"
+                            href={PAGES.SIGN_IN}
+                        >
+                            {/* Hover effects */}
+                            <div className="absolute inset-0 translate-y-full transform bg-white/10 transition-transform duration-300 group-hover:translate-y-0" />
 
-                            <Link
-                                className="block w-full rounded-lg border border-white/30 bg-transparent py-3 text-center transition-all duration-300 hover:border-white hover:bg-white/10"
-                                href="/auth/login"
-                            >
-                                <div className="flex items-center justify-center space-x-3">
-                                    <ArrowLeft className="h-4 w-4" />
-                                    <span className="tracking-widest">
-                                        BACK TO LOGIN
-                                    </span>
-                                </div>
-                            </Link>
-                        </div>
-
-                        {/* Help text */}
-                        <div className="mt-8">
-                            <p className="text-gray-400 text-sm">
-                                Didn&apos;t receive the email? Check your spam
-                                folder or{" "}
-                                <button
-                                    className="text-white underline hover:text-gray-300"
-                                    onClick={() => {
-                                        setIsSuccess(false);
-                                        setError(null);
-                                    }}
-                                >
-                                    try again
-                                </button>
-                            </p>
-                        </div>
+                            <div className="relative flex items-center justify-center space-x-3">
+                                <span className="tracking-widest">SIGN IN</span>
+                                <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                            </div>
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -188,15 +187,15 @@ export default function ForgotPasswordPage() {
                         </h1>
 
                         <div className="space-y-4 text-gray-300">
-                            <p className="text-xl">Reset your password.</p>
+                            <p className="text-xl">Create a new password.</p>
                             <p className="text-base opacity-80">
-                                Enter your email address and we&apos;ll send you
-                                a link to reset your password.
+                                Enter a strong password to secure your account.
                             </p>
                         </div>
 
                         {/* Decorative line */}
                         <div className="mt-12 flex items-center space-x-4">
+                            xxc
                             <div className="h-px w-20 bg-gradient-to-r from-white to-transparent" />
                             <span className="text-white/60 text-xs tracking-widest">
                                 RESET
@@ -219,25 +218,13 @@ export default function ForgotPasswordPage() {
                             </p>
                         </div>
 
-                        {/* Back link */}
-                        <div className="mb-6">
-                            <Link
-                                className="inline-flex items-center space-x-2 text-sm text-white/60 transition-colors hover:text-white"
-                                href="/auth/login"
-                            >
-                                <ArrowLeft className="h-4 w-4" />
-                                <span>Back to login</span>
-                            </Link>
-                        </div>
-
                         {/* Form title */}
                         <div className="mb-8 text-center">
                             <h2 className="mb-2 font-bold text-2xl text-white">
-                                Forgot Password
+                                Reset Password
                             </h2>
                             <p className="text-gray-400">
-                                Enter your email to receive a password reset
-                                link
+                                Enter your new password below
                             </p>
                         </div>
 
@@ -254,31 +241,92 @@ export default function ForgotPasswordPage() {
                             className="space-y-6"
                             onSubmit={handleSubmit(onSubmit)}
                         >
-                            {/* Email */}
+                            {/* New Password */}
                             <div>
-                                <label className="mb-2 block font-medium text-white/80 text-xs tracking-widest">
-                                    EMAIL
+                                <label
+                                    className="mb-2 block font-medium text-white/80 text-xs tracking-widest"
+                                    htmlFor="password"
+                                >
+                                    NEW PASSWORD
                                 </label>
                                 <div className="relative">
-                                    <Mail className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
+                                    <Lock className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
                                     <input
-                                        {...register("email")}
-                                        className="w-full rounded-lg border border-white/20 bg-transparent py-3 pr-3 pl-10 text-white placeholder-white/40 transition-all duration-300 focus:border-white focus:outline-none"
-                                        placeholder="your@email.com"
-                                        type="email"
+                                        {...register("password")}
+                                        className="w-full rounded-lg border border-white/20 bg-transparent py-3 pr-12 pl-10 text-white placeholder-white/40 transition-all duration-300 focus:border-white focus:outline-none"
+                                        placeholder="••••••••"
+                                        type={
+                                            showPassword ? "text" : "password"
+                                        }
                                     />
+                                    <button
+                                        className="-translate-y-1/2 absolute top-1/2 right-3 transform text-white/40 transition-colors hover:text-white/60"
+                                        onClick={() =>
+                                            setShowPassword(!showPassword)
+                                        }
+                                        type="button"
+                                    >
+                                        {showPassword ? (
+                                            <EyeOff className="h-4 w-4" />
+                                        ) : (
+                                            <Eye className="h-4 w-4" />
+                                        )}
+                                    </button>
                                 </div>
-                                {errors.email && (
+                                {errors.password && (
                                     <p className="mt-1 text-red-400 text-sm">
-                                        {errors.email.message}
+                                        {errors.password.message}
                                     </p>
                                 )}
                             </div>
 
-                            {/* Send reset link button */}
+                            {/* Confirm Password */}
+                            <div>
+                                <label
+                                    className="mb-2 block font-medium text-white/80 text-xs tracking-widest"
+                                    htmlFor="confirmPassword"
+                                >
+                                    CONFIRM PASSWORD
+                                </label>
+                                <div className="relative">
+                                    <Lock className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
+                                    <input
+                                        {...register("confirmPassword")}
+                                        className="w-full rounded-lg border border-white/20 bg-transparent py-3 pr-12 pl-10 text-white placeholder-white/40 transition-all duration-300 focus:border-white focus:outline-none"
+                                        placeholder="••••••••"
+                                        type={
+                                            showConfirmPassword
+                                                ? "text"
+                                                : "password"
+                                        }
+                                    />
+                                    <button
+                                        className="-translate-y-1/2 absolute top-1/2 right-3 transform text-white/40 transition-colors hover:text-white/60"
+                                        onClick={() =>
+                                            setShowConfirmPassword(
+                                                !showConfirmPassword
+                                            )
+                                        }
+                                        type="button"
+                                    >
+                                        {showConfirmPassword ? (
+                                            <EyeOff className="h-4 w-4" />
+                                        ) : (
+                                            <Eye className="h-4 w-4" />
+                                        )}
+                                    </button>
+                                </div>
+                                {errors.confirmPassword && (
+                                    <p className="mt-1 text-red-400 text-sm">
+                                        {errors.confirmPassword.message}
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Reset password button */}
                             <button
                                 className="group relative w-full overflow-hidden rounded-lg border border-white/30 bg-transparent py-4 transition-all duration-300 hover:border-white disabled:cursor-not-allowed disabled:opacity-50"
-                                disabled={isSubmitting || isLoading}
+                                disabled={isSubmitting || isLoading || !token}
                                 type="submit"
                             >
                                 {/* Hover effects */}
@@ -289,13 +337,13 @@ export default function ForgotPasswordPage() {
                                         <>
                                             <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/20 border-t-white" />
                                             <span className="tracking-widest">
-                                                SENDING...
+                                                RESETTING...
                                             </span>
                                         </>
                                     ) : (
                                         <>
                                             <span className="tracking-widest">
-                                                SEND RESET LINK
+                                                RESET PASSWORD
                                             </span>
                                             <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
                                         </>
@@ -310,7 +358,7 @@ export default function ForgotPasswordPage() {
                                 Remember your password?{" "}
                                 <Link
                                     className="font-medium text-white transition-colors hover:text-gray-300"
-                                    href="/auth/login"
+                                    href={PAGES.SIGN_IN}
                                 >
                                     Sign in
                                 </Link>
@@ -321,7 +369,7 @@ export default function ForgotPasswordPage() {
                         <div className="mt-6 text-center">
                             <Link
                                 className="text-sm text-white/60 transition-colors hover:text-white/80"
-                                href="/"
+                                href={PAGES.LANDING_PAGE}
                             >
                                 ← Back to home
                             </Link>
@@ -330,5 +378,19 @@ export default function ForgotPasswordPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function ResetPasswordPage() {
+    return (
+        <Suspense
+            fallback={
+                <div className="flex min-h-screen items-center justify-center bg-pure-black text-pure-white">
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+                </div>
+            }
+        >
+            <ResetPasswordContent />
+        </Suspense>
     );
 }

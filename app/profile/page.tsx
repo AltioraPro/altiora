@@ -7,6 +7,7 @@ import { Header } from "@/components/layout/Header";
 import { ActivityStats } from "@/components/profile/ActivityStats";
 import { HabitHeatmap } from "@/components/profile/HabitHeatmap";
 import { Card, CardContent } from "@/components/ui/card";
+import { PAGES } from "@/constants/pages";
 import { getServerSession } from "@/lib/auth/utils";
 import { tryCatch } from "@/lib/try-catch";
 import { api } from "@/orpc/server";
@@ -15,7 +16,7 @@ async function DeepworkStats() {
     const session = await getServerSession();
 
     if (!session?.user) {
-        return redirect("/auth/login");
+        return redirect(PAGES.SIGN_IN);
     }
 
     const stats = await api.profile.getUserStats();
@@ -74,7 +75,7 @@ export default async function ProfilePage() {
         (error instanceof ORPCError && error.code === "UNAUTHORIZED") ||
         !user
     ) {
-        return redirect("/auth/login");
+        return redirect(PAGES.SIGN_IN);
     }
 
     const formatDate = (date: Date) =>

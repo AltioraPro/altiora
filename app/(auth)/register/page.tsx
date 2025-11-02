@@ -1,16 +1,28 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle, ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react";
+import {
+    AlertCircle,
+    ArrowRight,
+    CheckCircle,
+    Eye,
+    EyeOff,
+    Lock,
+    Mail,
+    User,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { signIn } from "@/lib/auth-client";
+import { PAGES } from "@/constants/pages";
+import { signIn, signUp } from "@/lib/auth-client";
+import { withQuery } from "@/lib/utils/routes";
 
 const GoogleIcon = () => (
     <svg className="h-5 w-5" viewBox="0 0 24 24">
+        <title>Google Icon</title>
         <path
             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
             fill="currentColor"
@@ -30,16 +42,29 @@ const GoogleIcon = () => (
     </svg>
 );
 
-const loginSchema = z.object({
-    email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    rememberMe: z.boolean().optional(),
-});
+const registerSchema = z
+    .object({
+        email: z.string().email("Invalid email address"),
+        password: z.string().min(6, "Password must be at least 6 characters"),
+        confirmPassword: z
+            .string()
+            .min(6, "Password must be at least 6 characters"),
+        firstName: z.string().min(1, "First name is required"),
+        lastName: z.string().min(1, "Last name is required"),
+        acceptTerms: z
+            .boolean()
+            .refine((val) => val === true, "You must accept the terms"),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: "Passwords don't match",
+        path: ["confirmPassword"],
+    });
 
-type LoginFormValues = z.infer<typeof loginSchema>;
+type RegisterFormValues = z.infer<typeof registerSchema>;
 
-export default function LoginPage() {
+export default function RegisterPage() {
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [authError, setAuthError] = useState<string | null>(null);
 
@@ -49,86 +74,106 @@ export default function LoginPage() {
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
-    } = useForm<LoginFormValues>({
-        resolver: zodResolver(loginSchema),
+    } = useForm<RegisterFormValues>({
+        resolver: zodResolver(registerSchema),
         defaultValues: {
             email: "",
             password: "",
-            rememberMe: false,
+            confirmPassword: "",
+            firstName: "",
+            lastName: "",
+            acceptTerms: false,
         },
     });
 
-    const onSubmit = async (data: LoginFormValues) => {
+    const onSubmit = async (data: RegisterFormValues) => {
         setIsLoading(true);
         setAuthError(null);
 
         try {
-            const { data: result, error } = await signIn.email({
+            const { data: result, error } = await signUp.email({
+                name: `${data.firstName} ${data.lastName}`,
                 email: data.email,
                 password: data.password,
             });
 
             if (error) {
                 if (
-                    error.message?.includes("email_not_verified") ||
-                    error.message?.includes("verify")
+                    error.message?.includes("existing email") ||
+                    error.status === 422
                 ) {
-                    router.push(
-                        `/auth/check-email?email=${encodeURIComponent(data.email)}`
+                    setAuthError(
+                        "This email is already registered. Please use a different email or sign in."
                     );
-                    return;
+                } else {
+                    setAuthError(error.message || "Registration error");
                 }
-                setAuthError(
-                    error.message || "Connection error. Please try again."
-                );
             } else if (result?.user) {
-                if (!result.user.emailVerified) {
-                    router.push(
-                        `/auth/check-email?email=${encodeURIComponent(data.email)}`
-                    );
-                    return;
-                }
-                router.push("/profile");
+                router.push(
+                    withQuery(PAGES.VERIFICATION, { email: data.email })
+                );
             }
         } catch (error: unknown) {
-            const errorMessage =
-                error instanceof Error ? error.message : "Connection error";
+            let errorMessage = "Registration error";
+
+            if (error instanceof Error) {
+                if (
+                    error.message.includes("422") ||
+                    error.message.includes("existing email")
+                ) {
+                    errorMessage =
+                        "This email is already registered. Please use a different email or sign in.";
+                } else {
+                    errorMessage = error.message;
+                }
+            }
+
             setAuthError(errorMessage);
         } finally {
             setIsLoading(false);
         }
     };
 
-    const handleGoogleSignIn = async () => {
+    const handleGoogleSignUp = async () => {
         setIsLoading(true);
         setAuthError(null);
 
         try {
             const { error } = await signIn.social({
                 provider: "google",
-                callbackURL: "/profile",
+                callbackURL: PAGES.DASHBOARD,
             });
 
             if (error) {
                 if (error.message?.includes("unable_to_link_account")) {
-                    router.push("/auth/error?error=unable_to_link_account");
+                    router.push(
+                        withQuery(PAGES.ERROR, {
+                            error: "unable_to_link_account",
+                        })
+                    );
                     return;
                 }
                 if (error.message?.includes("access_denied")) {
-                    router.push("/auth/error?error=access_denied");
+                    router.push(
+                        withQuery(PAGES.ERROR, { error: "access_denied" })
+                    );
                     return;
                 }
                 if (error.message?.includes("oauth_callback_error")) {
-                    router.push("/auth/error?error=oauth_callback_error");
+                    router.push(
+                        withQuery(PAGES.ERROR, {
+                            error: "oauth_callback_error",
+                        })
+                    );
                     return;
                 }
                 setAuthError(
-                    error.message || "Google sign-in failed. Please try again."
+                    error.message || "Google sign-up failed. Please try again."
                 );
             }
         } catch (error: unknown) {
             const errorMessage =
-                error instanceof Error ? error.message : "Google sign-in error";
+                error instanceof Error ? error.message : "Google sign-up error";
             setAuthError(errorMessage);
         } finally {
             setIsLoading(false);
@@ -164,19 +209,40 @@ export default function LoginPage() {
 
                         <div className="space-y-4 text-gray-300">
                             <p className="text-xl">
-                                Discipline. Performance. Results.
+                                Start your transformation.
                             </p>
                             <p className="text-base opacity-80">
-                                Access your personal coaching platform for
-                                trading, habits and goal planning.
+                                Create your account and join a community
+                                dedicated to excellence in trading and personal
+                                development.
                             </p>
+                        </div>
+
+                        {/* Benefits */}
+                        <div className="mt-8 space-y-3">
+                            {[
+                                "Professional trading journal",
+                                "Smart habit tracking",
+                                "Goal planning",
+                                "Discord integration",
+                            ].map((benefit, index) => (
+                                <div
+                                    className="flex items-center space-x-3"
+                                    key={index}
+                                >
+                                    <CheckCircle className="h-4 w-4 text-white/60" />
+                                    <span className="text-sm text-white/70">
+                                        {benefit}
+                                    </span>
+                                </div>
+                            ))}
                         </div>
 
                         {/* Decorative line */}
                         <div className="mt-12 flex items-center space-x-4">
                             <div className="h-px w-20 bg-gradient-to-r from-white to-transparent" />
                             <span className="text-white/60 text-xs tracking-widest">
-                                LOGIN
+                                SIGN UP
                             </span>
                             <div className="h-px w-20 bg-gradient-to-l from-white to-transparent" />
                         </div>
@@ -199,10 +265,11 @@ export default function LoginPage() {
                         {/* Form title */}
                         <div className="mb-8 text-center">
                             <h2 className="mb-2 font-bold text-2xl text-white">
-                                Sign In
+                                Create Account
                             </h2>
                             <p className="text-gray-400">
-                                Sign in to your account to continue
+                                Join thousands of users who are transforming
+                                their lives
                             </p>
                         </div>
 
@@ -221,9 +288,61 @@ export default function LoginPage() {
                             className="space-y-6"
                             onSubmit={handleSubmit(onSubmit)}
                         >
+                            {/* First and Last Name */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label
+                                        className="mb-2 block font-medium text-white/80 text-xs tracking-widest"
+                                        htmlFor="firstName"
+                                    >
+                                        FIRST NAME
+                                    </label>
+                                    <div className="relative">
+                                        <User className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
+                                        <input
+                                            {...register("firstName")}
+                                            className="w-full rounded-lg border border-white/20 bg-transparent py-3 pr-3 pl-10 text-white placeholder-white/40 transition-all duration-300 focus:border-white focus:outline-none"
+                                            placeholder="John"
+                                            type="text"
+                                        />
+                                    </div>
+                                    {errors.firstName && (
+                                        <p className="mt-1 text-red-400 text-sm">
+                                            {errors.firstName.message}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label
+                                        className="mb-2 block font-medium text-white/80 text-xs tracking-widest"
+                                        htmlFor="lastName"
+                                    >
+                                        LAST NAME
+                                    </label>
+                                    <div className="relative">
+                                        <User className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
+                                        <input
+                                            {...register("lastName")}
+                                            className="w-full rounded-lg border border-white/20 bg-transparent py-3 pr-3 pl-10 text-white placeholder-white/40 transition-all duration-300 focus:border-white focus:outline-none"
+                                            placeholder="Doe"
+                                            type="text"
+                                        />
+                                    </div>
+                                    {errors.lastName && (
+                                        <p className="mt-1 text-red-400 text-sm">
+                                            {errors.lastName.message}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+
                             {/* Email */}
                             <div>
-                                <label className="mb-2 block font-medium text-white/80 text-xs tracking-widest">
+                                <label
+                                    className="mb-2 block font-medium text-white/80 text-xs tracking-widest"
+                                    htmlFor="email"
+                                >
                                     EMAIL
                                 </label>
                                 <div className="relative">
@@ -244,7 +363,10 @@ export default function LoginPage() {
 
                             {/* Password */}
                             <div>
-                                <label className="mb-2 block font-medium text-white/80 text-xs tracking-widest">
+                                <label
+                                    className="mb-2 block font-medium text-white/80 text-xs tracking-widest"
+                                    htmlFor="password"
+                                >
                                     PASSWORD
                                 </label>
                                 <div className="relative">
@@ -278,28 +400,82 @@ export default function LoginPage() {
                                 )}
                             </div>
 
-                            {/* Options */}
-                            <div className="flex items-center justify-between">
-                                <label className="flex cursor-pointer items-center space-x-2">
-                                    <input
-                                        {...register("rememberMe")}
-                                        className="h-4 w-4 rounded border border-white/20 bg-transparent text-white focus:ring-white/20"
-                                        type="checkbox"
-                                    />
-                                    <span className="text-sm text-white/80">
-                                        Remember me
-                                    </span>
-                                </label>
-
-                                <Link
-                                    className="text-sm text-white/60 transition-colors hover:text-white"
-                                    href="/auth/forgot-password"
+                            {/* Confirm Password */}
+                            <div>
+                                <label
+                                    className="mb-2 block font-medium text-white/80 text-xs tracking-widest"
+                                    htmlFor="confirmPassword"
                                 >
-                                    Forgot password?
-                                </Link>
+                                    CONFIRM PASSWORD
+                                </label>
+                                <div className="relative">
+                                    <Lock className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
+                                    <input
+                                        {...register("confirmPassword")}
+                                        className="w-full rounded-lg border border-white/20 bg-transparent py-3 pr-12 pl-10 text-white placeholder-white/40 transition-all duration-300 focus:border-white focus:outline-none"
+                                        placeholder="••••••••"
+                                        type={
+                                            showConfirmPassword
+                                                ? "text"
+                                                : "password"
+                                        }
+                                    />
+                                    <button
+                                        className="-translate-y-1/2 absolute top-1/2 right-3 transform text-white/40 transition-colors hover:text-white/60"
+                                        onClick={() =>
+                                            setShowConfirmPassword(
+                                                !showConfirmPassword
+                                            )
+                                        }
+                                        type="button"
+                                    >
+                                        {showConfirmPassword ? (
+                                            <EyeOff className="h-4 w-4" />
+                                        ) : (
+                                            <Eye className="h-4 w-4" />
+                                        )}
+                                    </button>
+                                </div>
+                                {errors.confirmPassword && (
+                                    <p className="mt-1 text-red-400 text-sm">
+                                        {errors.confirmPassword.message}
+                                    </p>
+                                )}
                             </div>
 
-                            {/* Sign in button */}
+                            {/* Terms acceptance */}
+                            <div>
+                                <label className="flex cursor-pointer items-start space-x-3">
+                                    <input
+                                        {...register("acceptTerms")}
+                                        className="mt-1 h-4 w-4 rounded border border-white/20 bg-transparent text-white focus:ring-white/20"
+                                        type="checkbox"
+                                    />
+                                    <span className="text-sm text-white/80 leading-relaxed">
+                                        I accept the{" "}
+                                        <Link
+                                            className="text-white underline hover:text-gray-300"
+                                            href={PAGES.TERMS_OF_SERVICE}
+                                        >
+                                            terms of service
+                                        </Link>{" "}
+                                        and{" "}
+                                        <Link
+                                            className="text-white underline hover:text-gray-300"
+                                            href={PAGES.PRIVACY_POLICY}
+                                        >
+                                            privacy policy
+                                        </Link>
+                                    </span>
+                                </label>
+                                {errors.acceptTerms && (
+                                    <p className="mt-1 text-red-400 text-sm">
+                                        {errors.acceptTerms.message}
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Sign up button */}
                             <button
                                 className="group relative w-full overflow-hidden rounded-lg border border-white/30 bg-transparent py-4 transition-all duration-300 hover:border-white disabled:cursor-not-allowed disabled:opacity-50"
                                 disabled={isSubmitting || isLoading}
@@ -313,13 +489,13 @@ export default function LoginPage() {
                                         <>
                                             <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/20 border-t-white" />
                                             <span className="tracking-widest">
-                                                SIGNING IN...
+                                                CREATING...
                                             </span>
                                         </>
                                     ) : (
                                         <>
                                             <span className="tracking-widest">
-                                                SIGN IN
+                                                CREATE ACCOUNT
                                             </span>
                                             <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
                                         </>
@@ -337,11 +513,12 @@ export default function LoginPage() {
                             <div className="h-px flex-1 bg-white/20" />
                         </div>
 
-                        {/* Google Sign In */}
+                        {/* Google Sign Up */}
                         <button
                             className="group relative w-full overflow-hidden rounded-lg border border-white/20 bg-transparent py-3 transition-all duration-300 hover:border-white/40 hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-50"
                             disabled={isLoading}
-                            onClick={handleGoogleSignIn}
+                            onClick={handleGoogleSignUp}
+                            type="button"
                         >
                             <div className="relative flex items-center justify-center space-x-3">
                                 <GoogleIcon />
@@ -351,15 +528,15 @@ export default function LoginPage() {
                             </div>
                         </button>
 
-                        {/* Registration link */}
+                        {/* Sign in link */}
                         <div className="mt-8 text-center">
                             <p className="text-gray-400">
-                                Don&apos;t have an account?{" "}
+                                Already have an account?{" "}
                                 <Link
                                     className="font-medium text-white transition-colors hover:text-gray-300"
-                                    href="/auth/register"
+                                    href={PAGES.SIGN_IN}
                                 >
-                                    Create account
+                                    Sign in
                                 </Link>
                             </p>
                         </div>
@@ -368,7 +545,7 @@ export default function LoginPage() {
                         <div className="mt-6 text-center">
                             <Link
                                 className="text-sm text-white/60 transition-colors hover:text-white/80"
-                                href="/"
+                                href={PAGES.LANDING_PAGE}
                             >
                                 ← Back to home
                             </Link>

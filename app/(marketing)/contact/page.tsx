@@ -77,7 +77,6 @@ export default function ContactPage() {
 
         await new Promise((resolve) => setTimeout(resolve, 2000));
 
-        console.log("Form submitted:", formData);
         setIsSubmitting(false);
 
         setFormData({
@@ -171,7 +170,10 @@ export default function ContactPage() {
                         <div className="relative w-full max-w-2xl">
                             <form className="space-y-6" onSubmit={handleSubmit}>
                                 <div className="relative">
-                                    <label className="mb-2 block font-medium text-white/60 text-xs tracking-widest">
+                                    <label
+                                        className="mb-2 block font-medium text-white/60 text-xs tracking-widest"
+                                        htmlFor="fullName"
+                                    >
                                         FULL NAME *
                                     </label>
                                     <div className="relative">
@@ -205,7 +207,10 @@ export default function ContactPage() {
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="relative">
-                                        <label className="mb-2 block font-medium text-white/60 text-xs tracking-widest">
+                                        <label
+                                            className="mb-2 block font-medium text-white/60 text-xs tracking-widest"
+                                            htmlFor="email"
+                                        >
                                             EMAIL *
                                         </label>
                                         <div className="relative">
@@ -240,7 +245,10 @@ export default function ContactPage() {
                                     </div>
 
                                     <div className="relative">
-                                        <label className="mb-2 block font-medium text-white/60 text-xs tracking-widest">
+                                        <label
+                                            className="mb-2 block font-medium text-white/60 text-xs tracking-widest"
+                                            htmlFor="phone"
+                                        >
                                             PHONE
                                         </label>
                                         <div className="relative">
@@ -275,7 +283,10 @@ export default function ContactPage() {
                                 </div>
 
                                 <div className="relative">
-                                    <label className="mb-2 block font-medium text-white/60 text-xs tracking-widest">
+                                    <label
+                                        className="mb-2 block font-medium text-white/60 text-xs tracking-widest"
+                                        htmlFor="message"
+                                    >
                                         MESSAGE *
                                     </label>
                                     <div className="relative">

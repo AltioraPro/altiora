@@ -12,6 +12,7 @@ import {
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
+import { PAGES } from "@/constants/pages";
 import { cn } from "@/lib/utils";
 import { orpc } from "@/orpc/client";
 
@@ -98,11 +99,11 @@ function VerifyEmailContent() {
     };
 
     const handleNavigateToDashboard = () => {
-        window.location.href = "/dashboard";
+        window.location.href = PAGES.DASHBOARD;
     };
 
     const handleNavigateToRegister = () => {
-        window.location.href = "/auth/register";
+        window.location.href = PAGES.SIGN_UP;
     };
 
     const getStatusIcon = () => {
@@ -503,7 +504,7 @@ function VerifyEmailContent() {
                         <div className="mt-8 space-y-3 text-center">
                             <button
                                 className="text-sm text-white/60 transition-colors hover:text-white/80"
-                                onClick={() => router.push("/auth/login")}
+                                onClick={() => router.push(PAGES.SIGN_IN)}
                                 type="button"
                             >
                                 ← Back to login
@@ -513,7 +514,7 @@ function VerifyEmailContent() {
                                 Still having trouble?{" "}
                                 <Link
                                     className="text-white/60 underline hover:text-white"
-                                    href="/contact"
+                                    href={PAGES.CONTACT_US}
                                 >
                                     Contact support
                                 </Link>

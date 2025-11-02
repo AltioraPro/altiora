@@ -3,7 +3,9 @@ import Link from "next/link";
 import ShinyText from "@/components/landing/ShinyText";
 import { Header } from "@/components/layout/Header";
 import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
+import { PAGES } from "@/constants/pages";
 import { ProButton } from "./_components/pro-button";
+
 export default function PricingPage() {
     const testimonials1 = [
         {
@@ -134,7 +136,7 @@ export default function PricingPage() {
 
                             <Link
                                 className="block w-full transform rounded-xl bg-neutral-700 py-3 text-center font-semibold text-white transition-all duration-300 hover:scale-105 hover:bg-neutral-600"
-                                href="/auth/register"
+                                href={PAGES.SIGN_UP}
                             >
                                 Start Free
                             </Link>
@@ -312,7 +314,7 @@ export default function PricingPage() {
 
                             <Link
                                 className="block w-full transform rounded-xl bg-neutral-700 py-3 text-center font-semibold text-white transition-all duration-300 hover:scale-105 hover:bg-neutral-600"
-                                href="/contact"
+                                href={PAGES.CONTACT_US}
                             >
                                 Get Quote
                             </Link>

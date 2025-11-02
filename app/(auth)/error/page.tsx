@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
+import { PAGES } from "@/constants/pages";
 
 function AuthErrorContent() {
     const searchParams = useSearchParams();
@@ -66,11 +67,11 @@ function AuthErrorContent() {
     }, [errorCode]);
 
     const handleRetry = () => {
-        router.push("/auth/login");
+        router.push(PAGES.SIGN_IN);
     };
 
     const handleGoHome = () => {
-        router.push("/");
+        router.push(PAGES.LANDING_PAGE);
     };
 
     return (
@@ -126,6 +127,7 @@ function AuthErrorContent() {
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
                                 >
+                                    <title>Error Icon</title>
                                     <path
                                         d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z"
                                         strokeLinecap="round"
@@ -160,6 +162,7 @@ function AuthErrorContent() {
                                 <button
                                     className="w-full rounded-lg bg-pure-white px-6 py-3 font-semibold text-pure-black transition-colors duration-200 hover:bg-gray-200"
                                     onClick={handleRetry}
+                                    type="button"
                                 >
                                     Try Again
                                 </button>
@@ -174,6 +177,7 @@ function AuthErrorContent() {
                                 <button
                                     className="w-full px-4 py-2 font-medium text-gray-400 transition-colors duration-200 hover:text-pure-white"
                                     onClick={handleGoHome}
+                                    type="button"
                                 >
                                     Return to Home
                                 </button>

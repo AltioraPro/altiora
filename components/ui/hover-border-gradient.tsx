@@ -7,22 +7,20 @@ import { cn } from "@/lib/utils";
 type Direction = "TOP" | "LEFT" | "BOTTOM" | "RIGHT";
 
 interface HoverBorderGradientProps extends React.HTMLAttributes<HTMLElement> {
-    as?: React.ElementType;
+    as?: React.ComponentType;
     containerClassName?: string;
     className?: string;
     duration?: number;
     clockwise?: boolean;
-    href?: string;
 }
 
 export function HoverBorderGradient({
     children,
     containerClassName,
     className,
-    as: Tag = "button",
+    as,
     duration = 1,
     clockwise = true,
-    href,
     ...props
 }: React.PropsWithChildren<HoverBorderGradientProps>) {
     const [hovered, setHovered] = useState<boolean>(false);
@@ -60,13 +58,14 @@ export function HoverBorderGradient({
         }
     }, [hovered, duration, clockwise]);
 
+    const Tag = as ?? "button";
+
     return (
         <Tag
             className={cn(
                 "group relative flex h-min w-fit flex-col flex-nowrap content-center items-center justify-center gap-10 overflow-visible rounded-full border bg-black/20 decoration-clone p-px transition-all duration-500 hover:bg-black/10 dark:bg-white/20",
                 containerClassName
             )}
-            href={href}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
             {...props}

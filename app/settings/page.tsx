@@ -8,8 +8,10 @@ import { DiscordConnection } from "@/components/profile/DiscordConnection";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { LeaderboardVisibility } from "@/components/settings/LeaderboardVisibility";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PAGES } from "@/constants/pages";
 import { tryCatch } from "@/lib/try-catch";
 import { api } from "@/orpc/server";
+
 export default async function SettingsPage() {
     const [error, user] = await tryCatch(api.auth.getCurrentUser());
 
@@ -17,7 +19,7 @@ export default async function SettingsPage() {
         (error instanceof ORPCError && error.code === "UNAUTHORIZED") ||
         !user
     ) {
-        return redirect("/auth/login");
+        return redirect(PAGES.SIGN_IN);
     }
 
     return (

@@ -13,6 +13,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { DiscordWelcomePopup } from "@/components/auth/DiscordWelcomePopup";
+import { PAGES } from "@/constants/pages";
 import { orpc } from "@/orpc/client";
 
 function CheckEmailContent() {
@@ -348,7 +349,7 @@ function CheckEmailContent() {
                                 /* Email already verified - Login button */
                                 <button
                                     className="flex w-full items-center justify-center space-x-3 rounded-lg border border-white/20 bg-white px-4 py-3 font-medium text-black text-sm transition-all duration-200 hover:bg-gray-100"
-                                    onClick={() => router.push("/auth/login")}
+                                    onClick={() => router.push(PAGES.SIGN_IN)}
                                     type="button"
                                 >
                                     <ArrowLeft className="h-4 w-4" />
@@ -405,7 +406,7 @@ function CheckEmailContent() {
                                     <button
                                         className="flex w-full items-center justify-center space-x-3 rounded-lg border border-white/10 px-4 py-3 font-medium text-sm text-white/70 transition-all duration-200 hover:border-white/20 hover:text-white"
                                         onClick={() =>
-                                            router.push("/auth/login")
+                                            router.push(PAGES.SIGN_IN)
                                         }
                                         type="button"
                                     >
@@ -422,7 +423,7 @@ function CheckEmailContent() {
                                 Still having trouble?{" "}
                                 <Link
                                     className="text-white/60 underline hover:text-white"
-                                    href="/contact"
+                                    href={PAGES.CONTACT_US}
                                 >
                                     Contact support
                                 </Link>
