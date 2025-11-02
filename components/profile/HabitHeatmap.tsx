@@ -5,14 +5,27 @@ import { orpc } from "@/orpc/client";
 
 export function HabitHeatmap() {
     const { data: heatmapData, isLoading } = useQuery(
-        orpc.profile.getHabitHeatmap.queryOptions({})
+        orpc.profile.getHabitHeatmap.queryOptions()
     );
 
-    if (isLoading || !heatmapData) {
+    if (isLoading) {
         return (
             <div className="animate-pulse rounded-lg border border-white/10 bg-black/20 p-6">
                 <div className="mb-4 h-6 w-40 rounded bg-white/10" />
                 <div className="h-32 rounded bg-white/10" />
+            </div>
+        );
+    }
+
+    if (!heatmapData) {
+        return (
+            <div className="rounded-lg border border-white/10 bg-black/20 p-6">
+                <div className="mb-4 h-6 w-40 rounded bg-white/10" />
+                <div className="flex h-32 items-center justify-center rounded bg-white/10">
+                    <p className="text-white/40 text-xs uppercase tracking-wider">
+                        No data found
+                    </p>
+                </div>
             </div>
         );
     }

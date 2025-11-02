@@ -6,10 +6,10 @@ import { DiscordConnection } from "@/components/profile/DiscordConnection";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { LeaderboardVisibility } from "@/components/settings/LeaderboardVisibility";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { orpcClient } from "@/orpc/client";
+import { api } from "@/orpc/server";
 
 export default async function SettingsPage() {
-    const user = await orpcClient.auth.getCurrentUser();
+    const user = await api.auth.getCurrentUser();
 
     return (
         <>

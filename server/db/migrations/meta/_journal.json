@@ -176,6 +176,13 @@
       "when": 1761127517323,
       "tag": "0024_tiresome_pixie",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1762090423336,
+      "tag": "0025_gifted_stardust",
+      "breakpoints": true
     }
   ]
 }

@@ -5,10 +5,10 @@ import { Header } from "@/components/layout/Header";
 import { ActivityStats } from "@/components/profile/ActivityStats";
 import { HabitHeatmap } from "@/components/profile/HabitHeatmap";
 import { Card, CardContent } from "@/components/ui/card";
-import { orpcClient } from "@/orpc/client";
+import { api } from "@/orpc/server";
 
 async function DeepworkStats() {
-    const stats = await orpcClient.profile.getUserStats();
+    const stats = await api.profile.getUserStats();
 
     return (
         <div className="flex h-full flex-col justify-center rounded-lg bg-black/5 p-4">
@@ -58,7 +58,7 @@ async function DeepworkStats() {
 }
 
 export default async function ProfilePage() {
-    const user = await orpcClient.auth.getCurrentUser();
+    const user = await api.auth.getCurrentUser();
 
     const formatDate = (date: Date) =>
         new Intl.DateTimeFormat("en-US", {
