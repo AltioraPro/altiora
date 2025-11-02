@@ -9,8 +9,6 @@ export const getHabitHeatmapHandler = getHabitHeatmapBase.handler(
     async ({ context }) => {
         const { db, session } = context;
 
-        console.log("getHabitHeatmapHandler");
-
         const oneYearAgo = new Date();
         oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
         const startDate = oneYearAgo.toISOString().split("T")[0];
