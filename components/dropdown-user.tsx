@@ -58,9 +58,9 @@ export function DropdownUser({ user }: { user: User }) {
                         Settings
                     </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild variant="destructive">
+                <DropdownMenuItem variant="destructive">
                     <LogoutButton className="flex h-full w-full items-center gap-2">
-                        <LogOut className="size-4" />
+                        <LogOut className="text-destructive" />
                         Sign Out
                     </LogoutButton>
                 </DropdownMenuItem>
