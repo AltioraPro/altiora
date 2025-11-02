@@ -3,7 +3,6 @@ import { CreditCard, MessageCircle, Shield, User } from "lucide-react";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { DiscordWelcomeChecker } from "@/components/auth/DiscordWelcomeChecker";
-import { Header } from "@/components/layout/Header";
 import { DiscordConnection } from "@/components/profile/DiscordConnection";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { LeaderboardVisibility } from "@/components/settings/LeaderboardVisibility";
@@ -24,8 +23,6 @@ export default async function SettingsPage() {
 
     return (
         <>
-            <Header />
-
             <div className="min-h-screen bg-pure-black text-pure-white">
                 <div className="relative mx-auto w-full">
                     {/* Header */}

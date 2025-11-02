@@ -18,6 +18,26 @@ import { PAGES } from "@/constants/pages";
 import { signOut, useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
+const menuItems = [
+    { href: PAGES.LANDING_PAGE, label: "HOME", icon: Home, angle: -70 },
+    {
+        href: PAGES.TRADING_JOURNALS,
+        label: "TRADING",
+        icon: TrendingUp,
+        angle: -45,
+    },
+    { href: PAGES.HABITS, label: "HABITS", icon: Target, angle: -20 },
+    { href: PAGES.GOALS, label: "GOALS", icon: Users, angle: 5 },
+    {
+        href: PAGES.LEADERBOARD,
+        label: "LEADERBOARD",
+        icon: Trophy,
+        angle: 30,
+    },
+    { href: PAGES.SETTINGS, label: "SETTINGS", icon: Settings, angle: 55 },
+    { href: PAGES.CONTACT_US, label: "CONTACT", icon: Phone, angle: 80 },
+];
+
 interface HeaderProps {
     className?: string;
 }
@@ -78,30 +98,10 @@ export const Header = ({ className }: HeaderProps) => {
         };
     }, [isMenuOpen, toggleMenu]);
 
-    const menuItems = [
-        { href: PAGES.LANDING_PAGE, label: "HOME", icon: Home, angle: -70 },
-        {
-            href: PAGES.TRADING_JOURNALS,
-            label: "TRADING",
-            icon: TrendingUp,
-            angle: -45,
-        },
-        { href: PAGES.HABITS, label: "HABITS", icon: Target, angle: -20 },
-        { href: PAGES.GOALS, label: "GOALS", icon: Users, angle: 5 },
-        {
-            href: PAGES.LEADERBOARD,
-            label: "LEADERBOARD",
-            icon: Trophy,
-            angle: 30,
-        },
-        { href: PAGES.SETTINGS, label: "SETTINGS", icon: Settings, angle: 55 },
-        { href: PAGES.CONTACT_US, label: "CONTACT", icon: Phone, angle: 80 },
-    ];
-
     return (
         <>
             <header
-                className={`fixed top-0 right-0 left-0 z-30 border border-white/10 bg-transparent backdrop-blur-md transition-transform duration-300 ease-in-out ${className} ${
+                className={`sticky top-0 right-0 left-0 z-30 border border-white/10 bg-transparent backdrop-blur-md transition-transform duration-300 ease-in-out ${className} ${
                     isVisible ? "translate-y-0" : "-translate-y-full"
                 }`}
             >
@@ -140,7 +140,7 @@ export const Header = ({ className }: HeaderProps) => {
                                         <span
                                             className={`block h-0.5 bg-white transition-all duration-500 ease-out ${
                                                 isMenuOpen
-                                                    ? "-rotate-45 w-4 -translate-y-px shadow-[0_0_10px_rgba(255,255,255,0.5)]"
+                                                    ? "-rotate-45 -translate-y-px w-4 shadow-[0_0_10px_rgba(255,255,255,0.5)]"
                                                     : "w-4 translate-y-[3px] rotate-0 group-hover:w-5"
                                             }`}
                                         />

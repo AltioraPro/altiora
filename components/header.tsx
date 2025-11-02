@@ -1,16 +1,9 @@
-import { User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { PAGES } from "@/constants/pages";
 import { getServerSession } from "@/lib/auth/utils";
 import { cn } from "@/lib/utils";
-import { LogoutButton } from "./logout-button";
+import { DropdownUser } from "./dropdown-user";
 
 export const Header = async ({
     className,
@@ -47,7 +40,7 @@ export const Header = async ({
                             </Link>
                         </div>
                         <Link
-                            className="flex flex-1 items-center justify-center"
+                            className="mx-8 flex items-center justify-center"
                             href={PAGES.LANDING_PAGE}
                         >
                             <Image
@@ -78,34 +71,7 @@ export const Header = async ({
                     {/* Auth Section - Right */}
                     <div className="z-10 ml-auto flex flex-1 items-center justify-end space-x-3">
                         {session?.user ? (
-                            /* User Profile - Connecté */
-                            <div className="flex items-center space-x-3">
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger className="flex items-center gap-2 rounded-xl border border-white/20 px-3 py-2 text-sm text-white/80 hover:border-white/40 hover:bg-white/5 hover:text-white">
-                                        <div className="flex size-6 items-center justify-center rounded-full bg-white/10">
-                                            <User className="size-3" />
-                                        </div>
-                                        {session.user.name.split(" ")[0]}
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent>
-                                        <DropdownMenuItem>
-                                            <Link href={PAGES.PROFILE}>
-                                                Profile
-                                            </Link>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem>
-                                            <Link href={PAGES.SETTINGS}>
-                                                Settings
-                                            </Link>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem>
-                                            <LogoutButton>
-                                                Sign Out
-                                            </LogoutButton>
-                                        </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </div>
+                            <DropdownUser user={session.user} />
                         ) : (
                             <Link
                                 className="group rounded-xl border border-white/20 px-4 py-2 font-semibold text-sm text-white/80 tracking-wider backdrop-blur-xs transition-all duration-300 hover:border-white/40 hover:bg-white/5 hover:text-white"

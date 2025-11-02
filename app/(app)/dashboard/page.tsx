@@ -222,9 +222,9 @@ function OnboardingContent() {
 
                                     <div className="absolute inset-0 flex items-center justify-center p-6">
                                         <div className="relative h-full w-full">
-                                            <div className="absolute top-2 left-4 h-40 w-32 rotate-[-8deg] transform rounded-lg border border-white/20 bg-linear-to-br from-white/10 to-white/5 shadow-xl transition-all duration-500 group-hover:translate-x-[-4px] group-hover:-rotate-12" />
+                                            <div className="group-hover:-rotate-12 absolute top-2 left-4 h-40 w-32 rotate-[-8deg] transform rounded-lg border border-white/20 bg-linear-to-br from-white/10 to-white/5 shadow-xl transition-all duration-500 group-hover:translate-x-[-4px]" />
 
-                                            <div className="absolute top-1 left-12 h-40 w-32 -rotate-2 transform rounded-lg border border-white/30 bg-linear-to-br from-white/15 to-white/5 shadow-xl transition-all duration-500 group-hover:translate-y-[-2px] group-hover:rotate-[-4deg]">
+                                            <div className="-rotate-2 absolute top-1 left-12 h-40 w-32 transform rounded-lg border border-white/30 bg-linear-to-br from-white/15 to-white/5 shadow-xl transition-all duration-500 group-hover:translate-y-[-2px] group-hover:rotate-[-4deg]">
                                                 <div className="space-y-2 p-3">
                                                     <div className="flex items-center gap-2">
                                                         <div className="h-2 w-2 rounded-full bg-green-400 transition-all duration-300 group-hover:shadow-[0_0_8px_rgba(74,222,128,0.6)]" />
