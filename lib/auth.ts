@@ -1,11 +1,9 @@
-import { stripe } from "@better-auth/stripe";
 import { autumn } from "autumn-js/better-auth";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { env } from "@/env";
 import { resend } from "@/lib/resend";
 import { db } from "@/server/db";
-import stripeClient from "./stripe";
 
 export function getBaseUrl() {
     if (env.VERCEL_ENV === "preview") {
@@ -160,30 +158,7 @@ export const auth = betterAuth({
         updateAge: 60 * 60 * 24,
     },
 
-    plugins: [
-        stripe({
-            stripeClient,
-            stripeWebhookSecret: env.STRIPE_WEBHOOK_SECRET,
-            createCustomerOnSignUp: true,
-            subscription: {
-                getCheckoutSessionParams: () => ({
-                    params: {
-                        tax_id_collection: {
-                            enabled: true,
-                        },
-                    },
-                }),
-                enabled: true,
-                plans: [
-                    {
-                        name: "altioran",
-                        priceId: "price_1SCdcHBtAefV566E4tUitB8Z",
-                    },
-                ],
-            },
-        }),
-        autumn(),
-    ],
+    plugins: [autumn()],
 });
 
 export type Session = typeof auth.$Infer.Session;

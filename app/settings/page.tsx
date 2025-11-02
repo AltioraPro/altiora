@@ -1,4 +1,6 @@
+import { ORPCError } from "@orpc/server";
 import { CreditCard, MessageCircle, Shield, User } from "lucide-react";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { DiscordWelcomeChecker } from "@/components/auth/DiscordWelcomeChecker";
 import { Header } from "@/components/layout/Header";
@@ -6,10 +8,17 @@ import { DiscordConnection } from "@/components/profile/DiscordConnection";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { LeaderboardVisibility } from "@/components/settings/LeaderboardVisibility";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { tryCatch } from "@/lib/try-catch";
 import { api } from "@/orpc/server";
-
 export default async function SettingsPage() {
-    const user = await api.auth.getCurrentUser();
+    const [error, user] = await tryCatch(api.auth.getCurrentUser());
+
+    if (
+        (error instanceof ORPCError && error.code === "UNAUTHORIZED") ||
+        !user
+    ) {
+        return redirect("/auth/login");
+    }
 
     return (
         <>

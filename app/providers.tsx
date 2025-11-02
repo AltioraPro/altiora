@@ -13,7 +13,10 @@ interface ProvidersProps {
 export function Providers({ children }: ProvidersProps) {
     return (
         <ORPCQueryClientProvider>
-            <AutumnProvider betterAuthUrl={env.NEXT_PUBLIC_BETTER_AUTH_URL}>
+            <AutumnProvider
+                betterAuthUrl={env.NEXT_PUBLIC_BETTER_AUTH_URL}
+                includeCredentials={true}
+            >
                 <ToastProvider>{children}</ToastProvider>
             </AutumnProvider>
         </ORPCQueryClientProvider>

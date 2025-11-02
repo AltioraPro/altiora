@@ -4,7 +4,6 @@ import ShinyText from "@/components/landing/ShinyText";
 import { Header } from "@/components/layout/Header";
 import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
 import { ProButton } from "./_components/pro-button";
-
 export default function PricingPage() {
     const testimonials1 = [
         {

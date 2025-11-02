@@ -183,6 +183,13 @@
       "when": 1762090423336,
       "tag": "0025_gifted_stardust",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1762091803627,
+      "tag": "0026_daffy_vengeance",
+      "breakpoints": true
     }
   ]
 }

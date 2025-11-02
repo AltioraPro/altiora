@@ -1,13 +1,23 @@
+import { ORPCError } from "@orpc/server";
 import { User } from "lucide-react";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { Header } from "@/components/layout/Header";
 import { ActivityStats } from "@/components/profile/ActivityStats";
 import { HabitHeatmap } from "@/components/profile/HabitHeatmap";
 import { Card, CardContent } from "@/components/ui/card";
+import { getServerSession } from "@/lib/auth/utils";
+import { tryCatch } from "@/lib/try-catch";
 import { api } from "@/orpc/server";
 
 async function DeepworkStats() {
+    const session = await getServerSession();
+
+    if (!session?.user) {
+        return redirect("/auth/login");
+    }
+
     const stats = await api.profile.getUserStats();
 
     return (
@@ -58,7 +68,14 @@ async function DeepworkStats() {
 }
 
 export default async function ProfilePage() {
-    const user = await api.auth.getCurrentUser();
+    const [error, user] = await tryCatch(api.auth.getCurrentUser());
+
+    if (
+        (error instanceof ORPCError && error.code === "UNAUTHORIZED") ||
+        !user
+    ) {
+        return redirect("/auth/login");
+    }
 
     const formatDate = (date: Date) =>
         new Intl.DateTimeFormat("en-US", {
