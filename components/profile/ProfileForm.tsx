@@ -1,33 +1,17 @@
 "use client";
 
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Calendar, Edit3, Mail, Save, Shield, User, X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import { api } from "@/trpc/client";
+import { orpc } from "@/orpc/client";
 
 export function ProfileForm() {
     const {
         data: user,
         isLoading,
         error,
-    } = api.auth.getCurrentUser.useQuery(undefined, {
-        retry: (failureCount, error) => {
-            if (
-                error &&
-                typeof error === "object" &&
-                "data" in error &&
-                error.data &&
-                typeof error.data === "object" &&
-                "code" in error.data &&
-                error.data.code === "UNAUTHORIZED"
-            ) {
-                return false;
-            }
-            return failureCount < 2;
-        },
-        refetchOnWindowFocus: false,
-        refetchOnMount: false,
-    });
+    } = useQuery(orpc.auth.getCurrentUser.queryOptions({}));
 
     const [name, setName] = useState("");
     const [isEditing, setIsEditing] = useState(false);
@@ -36,14 +20,16 @@ export function ProfileForm() {
         setName(user.name);
     }
 
-    const updateProfile = api.auth.updateProfile.useMutation({
-        onSuccess: () => {
-            setIsEditing(false);
-        },
-        onError: (error) => {
-            console.error("Profile update error:", error);
-        },
-    });
+    const updateProfile = useMutation(
+        orpc.auth.updateProfile.mutationOptions({
+            onSuccess: () => {
+                setIsEditing(false);
+            },
+            onError: (error) => {
+                console.error("Profile update error:", error);
+            },
+        })
+    );
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -134,7 +120,7 @@ export function ProfileForm() {
             {/* Profile Header */}
             <div className="flex items-center space-x-6">
                 <div className="relative">
-                    <div className="flex h-20 w-20 items-center justify-center rounded-full border border-white/20 bg-gradient-to-br from-white/10 to-white/5">
+                    <div className="flex h-20 w-20 items-center justify-center rounded-full border border-white/20 bg-linear-to-br from-white/10 to-white/5">
                         {renderAvatar()}
                     </div>
                     {user.discordProfile?.discordConnected && (
@@ -272,7 +258,7 @@ export function ProfileForm() {
                                 DISPLAY NAME
                             </label>
                             <input
-                                className="w-full rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-white placeholder-white/40 transition-all duration-300 focus:border-white/40 focus:bg-white/10 focus:outline-none"
+                                className="w-full rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-white placeholder-white/40 transition-all duration-300 focus:border-white/40 focus:bg-white/10 focus:outline-hidden"
                                 id="name"
                                 onChange={(e) => setName(e.target.value)}
                                 placeholder="Enter your display name"

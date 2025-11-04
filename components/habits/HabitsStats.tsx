@@ -14,7 +14,8 @@ import {
     Zap,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import type { HabitStatsOverview } from "@/server/api/routers/habits/types";
+import { cn } from "@/lib/utils";
+import type { HabitStatsOverview } from "@/server/routers/habits/types";
 import { useHabits } from "./HabitsProvider";
 
 interface HabitsStatsProps {
@@ -235,7 +236,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
 
     const currentRank =
         rankSystem.find((rank) => optimisticCurrentStreak >= rank.minStreak) ||
-        rankSystem[0]!;
+        rankSystem[0];
     const nextRank = rankSystem.find(
         (rank) => rank.minStreak > optimisticCurrentStreak
     );
@@ -292,8 +293,8 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
 
     return (
         <>
-            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm">
-                <div className="absolute top-0 left-0 h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xs">
+                <div className="absolute top-0 left-0 h-px w-full bg-linear-to-r from-transparent via-white/20 to-transparent" />
 
                 <div className="p-6">
                     <div className="mb-6 flex items-center justify-between">
@@ -304,6 +305,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                         <button
                             className={`flex items-center space-x-2 ${currentRank.bgColor} border ${currentRank.borderColor} group rounded-lg px-3 py-1 transition-all duration-200 hover:scale-105`}
                             onClick={() => setIsRankModalOpen(true)}
+                            type="button"
                         >
                             <currentRank.icon
                                 className={`h-4 w-4 ${currentRank.color} transition-transform group-hover:scale-110`}
@@ -498,14 +500,8 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
 
             {/* Rank System Modal */}
             {isRankModalOpen && (
-                <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
-                    onClick={() => setIsRankModalOpen(false)}
-                >
-                    <div
-                        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-white/20 bg-white/10 backdrop-blur-md"
-                        onClick={(e) => e.stopPropagation()}
-                    >
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
+                    <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-white/20 bg-white/10 backdrop-blur-md">
                         <div className="p-6">
                             {/* Header */}
                             <div className="mb-6 flex items-center justify-between">
@@ -515,6 +511,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                                 <button
                                     className="rounded-lg p-2 transition-colors hover:bg-white/10"
                                     onClick={() => setIsRankModalOpen(false)}
+                                    type="button"
                                 >
                                     <X className="h-5 w-5 text-white/60" />
                                 </button>
@@ -619,13 +616,15 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
 
                                         return (
                                             <div
-                                                className={`rounded-xl border p-4 transition-all duration-200 ${
-                                                    isCurrentRank
-                                                        ? `${rank.bgColor} ${rank.borderColor}`
-                                                        : isUnlocked
-                                                          ? "border-white/20 bg-white/5"
-                                                          : "border-white/10 bg-white/5 opacity-50"
-                                                }`}
+                                                className={cn(
+                                                    "rounded-xl border p-4 transition-all duration-200",
+                                                    isCurrentRank &&
+                                                        `${rank.bgColor} ${rank.borderColor}`,
+                                                    isUnlocked &&
+                                                        "border-white/20 bg-white/5",
+                                                    !isUnlocked &&
+                                                        "border-white/10 bg-white/5 opacity-50"
+                                                )}
                                                 key={rank.name}
                                             >
                                                 <div className="mb-2 flex items-center justify-between">

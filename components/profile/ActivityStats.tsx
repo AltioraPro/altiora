@@ -1,10 +1,16 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import { useCustomer } from "autumn-js/react";
 import { Calendar, Crown, Target, TrendingUp, Trophy } from "lucide-react";
-import { api } from "@/trpc/client";
+import { orpc } from "@/orpc/client";
 
 export function ActivityStats() {
-    const { data: stats, isLoading } = api.profile.getUserStats.useQuery();
+    const { data: stats, isLoading } = useQuery(
+        orpc.profile.getUserStats.queryOptions()
+    );
+
+    const { customer } = useCustomer();
 
     if (isLoading || !stats) {
         return (
@@ -135,11 +141,9 @@ export function ActivityStats() {
                     <p className="mb-2 font-medium text-sm text-white/60">
                         Plan
                     </p>
-                    {/* <p
-                        className={`font-bold text-2xl ${stats.user.subscriptionPlan === "PRO" ? "text-white" : "text-white/60"}`}
-                    >
-                        {stats.user.subscriptionPlan}
-                    </p> */}
+                    <p className="font-bold text-2xl text-white">
+                        {customer?.products[0]?.name}
+                    </p>
                 </div>
             </div>
         </div>

@@ -64,7 +64,7 @@ export function DraggableJournalCard({
                 {...listeners}
                 className="absolute top-2 left-2 z-10 cursor-grab opacity-0 transition-opacity active:cursor-grabbing group-hover:opacity-100"
             >
-                <div className="rounded bg-black/50 p-1 backdrop-blur-sm">
+                <div className="rounded bg-black/50 p-1 backdrop-blur-xs">
                     <GripVertical className="h-4 w-4 text-white/60" />
                 </div>
             </div>

@@ -1,45 +1,64 @@
-import { api } from "@/trpc/client";
-import { useOptimizedInvalidation } from "./useOptimizedInvalidation";
+import { useMutation } from "@tanstack/react-query";
+import { orpc } from "@/orpc/client";
 
 export function useOptimizedGoalMutation() {
-    const utils = api.useUtils();
-    const { invalidateGoalsAndLimits, invalidateGoalsOnly } =
-        useOptimizedInvalidation();
+    const createGoalMutation = useMutation(
+        orpc.goals.create.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.goals.getPaginated.queryKey({ input: {} }),
+                    orpc.goals.getStats.queryKey({ input: {} }),
+                    orpc.goals.getAll.queryKey({ input: {} }),
+                ],
+            },
+        })
+    );
 
-    const createGoalMutation = api.goals.create.useMutation({
-        onSuccess: (data) => {
-            invalidateGoalsAndLimits();
-            return data;
-        },
-        onError: (error) => {
-            console.error("Error creating goal:", error);
-            throw error;
-        },
-    });
+    const updateGoalMutation = useMutation(
+        orpc.goals.update.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.goals.getPaginated.queryKey({ input: {} }),
+                    orpc.goals.getStats.queryKey({ input: {} }),
+                    orpc.goals.getAll.queryKey({ input: {} }),
+                ],
+            },
+        })
+    );
 
-    const updateGoalMutation = api.goals.update.useMutation({
-        onSuccess: () => {
-            invalidateGoalsOnly();
-        },
-    });
-
-    const deleteGoalMutation = api.goals.delete.useMutation({
-        onSuccess: () => {
-            invalidateGoalsAndLimits();
-        },
-    });
-
-    const markCompletedMutation = api.goals.markCompleted.useMutation({
-        onSuccess: () => {
-            invalidateGoalsOnly();
-        },
-    });
-
-    const updateProgressMutation = api.goals.updateProgress.useMutation({
-        onSuccess: () => {
-            invalidateGoalsOnly();
-        },
-    });
+    const deleteGoalMutation = useMutation(
+        orpc.goals.delete.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.goals.getPaginated.queryKey({ input: {} }),
+                    orpc.goals.getStats.queryKey({ input: {} }),
+                    orpc.goals.getAll.queryKey({ input: {} }),
+                ],
+            },
+        })
+    );
+    const markCompletedMutation = useMutation(
+        orpc.goals.markCompleted.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.goals.getPaginated.queryKey({ input: {} }),
+                    orpc.goals.getStats.queryKey({ input: {} }),
+                    orpc.goals.getAll.queryKey({ input: {} }),
+                ],
+            },
+        })
+    );
+    const updateProgressMutation = useMutation(
+        orpc.goals.updateProgress.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.goals.getPaginated.queryKey({ input: {} }),
+                    orpc.goals.getStats.queryKey({ input: {} }),
+                    orpc.goals.getAll.queryKey({ input: {} }),
+                ],
+            },
+        })
+    );
 
     return {
         createGoal: createGoalMutation.mutate,

@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import { Providers } from "@/app/providers";
 import { Footer } from "@/components/layout/Footer";
-import { Header } from "@/components/layout/Header";
-import { Providers } from "@/components/providers/Providers";
+
+import "@/orpc/server"; // for pre-rendering
 import "./globals.css";
+import { PROJECT } from "@/constants/project";
 
 export const metadata: Metadata = {
-    title: "Altiora",
-    description: "Productivity and trading self-coaching SaaS",
+    title: PROJECT.NAME,
+    description: PROJECT.DESCRIPTION,
     icons: {
         icon: { url: "/img/logo.png", sizes: "48x48", type: "image/png" },
     },
@@ -18,11 +20,10 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <html lang="fr">
+        <html className="dark" lang="fr" style={{ colorScheme: "dark" }}>
             <body>
                 <Providers>
-                    <Header />
-                    <main className="pt-16">{children}</main>
+                    <main>{children}</main>
                     <Footer />
                 </Providers>
             </body>

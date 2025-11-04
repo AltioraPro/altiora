@@ -7,7 +7,7 @@
 import { Canvas, type RootState, useFrame, useThree } from "@react-three/fiber";
 /* eslint-disable react/no-unknown-property */
 import type React from "react";
-import { forwardRef, useLayoutEffect, useMemo, useRef } from "react";
+import { useLayoutEffect, useMemo, useRef } from "react";
 import { Color, type IUniform, type Mesh, type ShaderMaterial } from "three";
 
 type NormalizedRGB = [number, number, number];
@@ -91,14 +91,11 @@ void main() {
 }
 `;
 
-interface SilkPlaneProps {
+interface SilkPlaneProps extends React.RefAttributes<Mesh> {
     uniforms: SilkUniforms;
 }
 
-const SilkPlane = forwardRef<Mesh, SilkPlaneProps>(function SilkPlane(
-    { uniforms },
-    ref
-) {
+const SilkPlane = ({ uniforms, ref }: SilkPlaneProps) => {
     const { viewport } = useThree();
 
     useLayoutEffect(() => {
@@ -119,21 +116,16 @@ const SilkPlane = forwardRef<Mesh, SilkPlaneProps>(function SilkPlane(
     });
 
     return (
-        // @ts-expect-error - Mesh is not a valid JSX element
         <mesh ref={ref}>
-            {/* @ts-expect-error - PlaneGeometry is not a valid JSX element */}
             <planeGeometry args={[1, 1, 1, 1]} />
-            {/* @ts-expect-error - ShaderMaterial is not a valid JSX element */}
             <shaderMaterial
                 fragmentShader={fragmentShader}
                 uniforms={uniforms}
                 vertexShader={vertexShader}
             />
-            {/* @ts-expect-error - Mesh is not a valid JSX element */}
         </mesh>
     );
-});
-SilkPlane.displayName = "SilkPlane";
+};
 
 export interface SilkProps {
     speed?: number;

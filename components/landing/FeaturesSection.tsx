@@ -43,8 +43,8 @@ export const FeaturesSection = () => (
                 style={{ animationDelay: "1s" }}
             />
 
-            <div className="absolute top-1/3 left-0 h-px w-24 bg-gradient-to-r from-transparent to-white/20" />
-            <div className="absolute top-2/3 right-0 h-px w-32 bg-gradient-to-l from-transparent to-white/25" />
+            <div className="absolute top-1/3 left-0 h-px w-24 bg-linear-to-r from-transparent to-white/20" />
+            <div className="absolute top-2/3 right-0 h-px w-32 bg-linear-to-l from-transparent to-white/25" />
 
             <div
                 className="-translate-x-1/2 -translate-y-1/2 pointer-events-none absolute top-1/2 left-1/2 h-[60%] w-[80%] transform opacity-20"
@@ -58,15 +58,15 @@ export const FeaturesSection = () => (
         <div className="container relative z-10 mx-auto px-6 py-20">
             <div className="mb-20 text-center">
                 <div className="mb-6 flex items-center justify-center space-x-4">
-                    <div className="h-px w-16 bg-gradient-to-r from-transparent to-white/30" />
+                    <div className="h-px w-16 bg-linear-to-r from-transparent to-white/30" />
                     <span className="text-white/60 text-xs tracking-[0.3em]">
                         FEATURES
                     </span>
-                    <div className="h-px w-16 bg-gradient-to-l from-transparent to-white/30" />
+                    <div className="h-px w-16 bg-linear-to-l from-transparent to-white/30" />
                 </div>
 
                 <h2 className="mb-6 font-argesta font-bold text-5xl md:text-6xl">
-                    <span className="bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent">
+                    <span className="bg-linear-to-b from-white to-gray-400 bg-clip-text text-transparent">
                         TRANSFORM
                     </span>
                     <br />

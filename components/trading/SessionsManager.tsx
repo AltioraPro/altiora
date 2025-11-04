@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { AlertTriangle, Plus, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { api } from "@/trpc/client";
+import { orpc } from "@/orpc/client";
 
 interface SessionsManagerProps {
     journalId: string;
@@ -29,34 +30,47 @@ export function SessionsManager({ journalId }: SessionsManagerProps) {
         timezone: "UTC",
     });
 
-    const { data: sessions, isLoading } = api.trading.getSessions.useQuery({
-        journalId,
-    });
-    const { data: trades } = api.trading.getTrades.useQuery({ journalId });
-    const utils = api.useUtils();
+    const { data: sessions, isLoading } = useQuery(
+        orpc.trading.getSessions.queryOptions({ input: { journalId } })
+    );
 
-    const createSessionMutation = api.trading.createSession.useMutation({
-        onSuccess: () => {
-            utils.trading.getSessions.invalidate();
-            setNewSession({
-                name: "",
-                description: "",
-                startTime: "",
-                endTime: "",
-                timezone: "UTC",
-            });
-            setIsCreating(false);
-        },
-    });
+    const { data: trades } = useQuery(
+        orpc.trading.getTrades.queryOptions({ input: { journalId } })
+    );
 
-    const deleteSessionMutation = api.trading.deleteSession.useMutation({
-        onSuccess: () => {
-            utils.trading.getSessions.invalidate();
-        },
-    });
+    const createSessionMutation = useMutation(
+        orpc.trading.createSession.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.trading.getSessions.queryKey({ input: { journalId } }),
+                ],
+            },
+            onSuccess: () => {
+                setNewSession({
+                    name: "",
+                    description: "",
+                    startTime: "",
+                    endTime: "",
+                    timezone: "UTC",
+                });
+            },
+        })
+    );
+
+    const { mutateAsync: deleteSession } = useMutation(
+        orpc.trading.deleteSession.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.trading.getSessions.queryKey({ input: { journalId } }),
+                ],
+            },
+        })
+    );
 
     const handleCreateSession = async () => {
-        if (!newSession.name.trim()) return;
+        if (!newSession.name.trim()) {
+            return;
+        }
 
         try {
             await createSessionMutation.mutateAsync({
@@ -73,17 +87,7 @@ export function SessionsManager({ journalId }: SessionsManagerProps) {
     };
 
     const handleDeleteSession = async (sessionId: string) => {
-        if (
-            confirm(
-                "Are you sure you want to delete this session? This action is irreversible."
-            )
-        ) {
-            try {
-                await deleteSessionMutation.mutateAsync({ id: sessionId });
-            } catch (error) {
-                console.error("Error deleting session:", error);
-            }
-        }
+        await deleteSession({ id: sessionId });
     };
 
     const sessionPerformances =
@@ -107,10 +111,9 @@ export function SessionsManager({ journalId }: SessionsManagerProps) {
     const filteredSessions = sessionPerformances.filter(
         (session) =>
             session.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (session.description &&
-                session.description
-                    .toLowerCase()
-                    .includes(searchTerm.toLowerCase()))
+            session.description
+                ?.toLowerCase()
+                .includes(searchTerm.toLowerCase())
     );
 
     if (isLoading) {

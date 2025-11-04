@@ -1,7 +1,9 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { api } from "@/trpc/client";
+import { cn } from "@/lib/utils";
+import { orpc } from "@/orpc/client";
 
 interface LeaderboardVisibilityProps {
     initialIsPublic: boolean;
@@ -11,22 +13,21 @@ export function LeaderboardVisibility({
     initialIsPublic,
 }: LeaderboardVisibilityProps) {
     const [isPublic, setIsPublic] = useState(initialIsPublic);
-    const utils = api.useUtils();
 
-    const updateVisibility = api.auth.updateLeaderboardVisibility.useMutation({
-        onSuccess: () => {
-            utils.auth.getCurrentUser.invalidate();
-        },
-        onError: (error) => {
-            console.error("Error updating leaderboard visibility:", error);
-            setIsPublic(!isPublic);
-        },
-    });
+    const { mutateAsync: updateVisibility, isPending } = useMutation(
+        orpc.auth.updateLeaderboardVisibility.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.auth.getCurrentUser.queryKey({ input: {} }),
+                ],
+            },
+        })
+    );
 
-    const handleToggle = () => {
+    const handleToggle = async () => {
         const newValue = !isPublic;
         setIsPublic(newValue);
-        updateVisibility.mutate({ isPublic: newValue });
+        await updateVisibility({ isPublic: newValue });
     };
 
     return (
@@ -42,10 +43,14 @@ export function LeaderboardVisibility({
                 </div>
 
                 <button
-                    className={`relative h-6 w-11 rounded-full transition-colors duration-300 ${
-                        isPublic ? "bg-white" : "bg-white/20"
-                    } ${updateVisibility.isPending ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
-                    disabled={updateVisibility.isPending}
+                    className={cn(
+                        "relative h-6 w-11 rounded-full transition-colors duration-300",
+                        isPublic ? "bg-white" : "bg-white/20",
+                        isPending
+                            ? "cursor-not-allowed opacity-50"
+                            : "cursor-pointer"
+                    )}
+                    disabled={isPending}
                     onClick={handleToggle}
                     type="button"
                 >

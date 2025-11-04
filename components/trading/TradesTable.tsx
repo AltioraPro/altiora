@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { enUS } from "date-fns/locale";
 import {
@@ -21,7 +22,8 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { api } from "@/trpc/client";
+import { cn } from "@/lib/utils";
+import { orpc } from "@/orpc/client";
 import { EditTradeModal } from "./EditTradeModal";
 
 interface TradesTableProps {
@@ -39,33 +41,46 @@ export function TradesTable({ journalId }: TradesTableProps) {
     const itemsPerPage = 10;
     const offset = currentPage * itemsPerPage;
 
-    const { data: trades, isLoading } = api.trading.getTrades.useQuery({
-        journalId,
-        limit: itemsPerPage,
-        offset,
-    });
+    const { data: trades, isLoading } = useQuery(
+        orpc.trading.getTrades.queryOptions({
+            input: { journalId, limit: itemsPerPage, offset },
+        })
+    );
 
-    const { data: stats } = api.trading.getStats.useQuery({ journalId });
-    const { data: assets } = api.trading.getAssets.useQuery({ journalId });
-    const { data: sessions } = api.trading.getSessions.useQuery({ journalId });
-    const { data: setups } = api.trading.getSetups.useQuery({ journalId });
+    const { data: stats } = useQuery(
+        orpc.trading.getStats.queryOptions({ input: { journalId } })
+    );
+    const { data: assets } = useQuery(
+        orpc.trading.getAssets.queryOptions({ input: { journalId } })
+    );
+    const { data: sessions } = useQuery(
+        orpc.trading.getSessions.queryOptions({ input: { journalId } })
+    );
+    const { data: setups } = useQuery(
+        orpc.trading.getSetups.queryOptions({ input: { journalId } })
+    );
 
-    const utils = api.useUtils();
-    const deleteTradeMutation = api.trading.deleteTrade.useMutation({
-        onSuccess: () => {
-            utils.trading.getTrades.invalidate();
-            utils.trading.getStats.invalidate();
-        },
-    });
-
-    const deleteMultipleTradesMutation =
-        api.trading.deleteMultipleTrades.useMutation({
-            onSuccess: () => {
-                utils.trading.getTrades.invalidate();
-                utils.trading.getStats.invalidate();
-                setSelectedTrades(new Set());
+    const { mutateAsync: deleteTrade } = useMutation(
+        orpc.trading.deleteTrade.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.trading.getTrades.queryKey({ input: { journalId } }),
+                    orpc.trading.getStats.queryKey({ input: { journalId } }),
+                ],
             },
-        });
+        })
+    );
+
+    const { mutateAsync: deleteMultipleTrades } = useMutation(
+        orpc.trading.deleteMultipleTrades.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.trading.getTrades.queryKey({ input: { journalId } }),
+                    orpc.trading.getStats.queryKey({ input: { journalId } }),
+                ],
+            },
+        })
+    );
 
     const totalTrades = stats?.totalTrades || 0;
     const totalPages = Math.ceil(totalTrades / itemsPerPage);
@@ -96,7 +111,7 @@ export function TradesTable({ journalId }: TradesTableProps) {
 
         setIsDeleting(true);
         try {
-            await deleteMultipleTradesMutation.mutateAsync({
+            await deleteMultipleTrades({
                 tradeIds: Array.from(selectedTrades),
             });
         } catch (error) {
@@ -108,7 +123,7 @@ export function TradesTable({ journalId }: TradesTableProps) {
 
     const handleDeleteSingle = async (tradeId: string) => {
         try {
-            await deleteTradeMutation.mutateAsync({ id: tradeId });
+            await deleteTrade({ id: tradeId });
         } catch (error) {
             console.error("Error deleting trade:", error);
         }
@@ -308,7 +323,24 @@ export function TradesTable({ journalId }: TradesTableProps) {
                                                 <td className="px-4 py-3 text-sm">
                                                     <div className="space-y-1">
                                                         <span
-                                                            className={`${Number(trade.profitLossPercentage || 0) > 0 ? "text-green-400" : Number(trade.profitLossPercentage || 0) < 0 ? "text-red-400" : "text-blue-400"}`}
+                                                            className={cn(
+                                                                "text-green-400",
+                                                                Number(
+                                                                    trade.profitLossPercentage ||
+                                                                        0
+                                                                ) > 0 &&
+                                                                    "text-green-400",
+                                                                Number(
+                                                                    trade.profitLossPercentage ||
+                                                                        0
+                                                                ) < 0 &&
+                                                                    "text-red-400",
+                                                                Number(
+                                                                    trade.profitLossPercentage ||
+                                                                        0
+                                                                ) === 0 &&
+                                                                    "text-blue-400"
+                                                            )}
                                                         >
                                                             {Number(
                                                                 trade.profitLossPercentage ||
@@ -324,7 +356,25 @@ export function TradesTable({ journalId }: TradesTableProps) {
                                                             stats?.journal
                                                                 ?.usePercentageCalculation && (
                                                                 <div
-                                                                    className={`text-xs ${Number(trade.profitLossAmount || 0) > 0 ? "text-green-400" : Number(trade.profitLossAmount || 0) < 0 ? "text-red-400" : "text-blue-400"}`}
+                                                                    className={cn(
+                                                                        "text-xs",
+                                                                        Number(
+                                                                            trade.profitLossAmount ||
+                                                                                0
+                                                                        ) > 0 &&
+                                                                            "text-green-400",
+                                                                        Number(
+                                                                            trade.profitLossAmount ||
+                                                                                0
+                                                                        ) < 0 &&
+                                                                            "text-red-400",
+                                                                        Number(
+                                                                            trade.profitLossAmount ||
+                                                                                0
+                                                                        ) ===
+                                                                            0 &&
+                                                                            "text-blue-400"
+                                                                    )}
                                                                 >
                                                                     {Number(
                                                                         trade.profitLossAmount ||
@@ -522,8 +572,6 @@ export function TradesTable({ journalId }: TradesTableProps) {
                     onClose={() => setEditingTradeId(null)}
                     onSuccess={() => {
                         setEditingTradeId(null);
-                        utils.trading.getTrades.invalidate();
-                        utils.trading.getStats.invalidate();
                     }}
                     tradeId={editingTradeId}
                 />

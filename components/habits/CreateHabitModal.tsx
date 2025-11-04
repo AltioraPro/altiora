@@ -1,9 +1,10 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/components/ui/toast";
-import { api } from "@/trpc/client";
+import { orpc } from "@/orpc/client";
 import { useHabits } from "./HabitsProvider";
 
 const HABIT_EMOJIS = [
@@ -74,28 +75,35 @@ export function CreateHabitModal({ onSuccess }: CreateHabitModalProps = {}) {
     const [description, setDescription] = useState("");
     const [color, setColor] = useState("#ffffff");
 
-    const utils = api.useUtils();
-    const createHabitMutation = api.habits.create.useMutation({
-        onSuccess: () => {
-            utils.habits.getAll.invalidate();
-            utils.habits.getDashboard.invalidate();
-            addToast({
-                type: "success",
-                title: "Habits created",
-                message: "Your new habit has been created successfully",
-            });
-            handleClose();
-            onSuccess?.();
-        },
-        onError: (error) => {
-            console.error("Error creating habit:", error);
-            addToast({
-                type: "error",
-                title: "Error",
-                message: error.message || "Impossible to create the habit",
-            });
-        },
-    });
+    const { mutateAsync: createHabit, isPending: isCreatingHabit } =
+        useMutation(
+            orpc.habits.create.mutationOptions({
+                meta: {
+                    invalidateQueries: [
+                        orpc.habits.getAll.queryKey({ input: {} }),
+                        orpc.habits.getDashboard.queryKey({ input: {} }),
+                    ],
+                },
+                onSuccess: () => {
+                    addToast({
+                        type: "success",
+                        title: "Habits created",
+                        message: "Your new habit has been created successfully",
+                    });
+                    handleClose();
+                    onSuccess?.();
+                },
+                onError: (error) => {
+                    console.error("Error creating habit:", error);
+                    addToast({
+                        type: "error",
+                        title: "Error",
+                        message:
+                            error.message || "Impossible to create the habit",
+                    });
+                },
+            })
+        );
 
     const handleClose = () => {
         setTitle("");
@@ -111,7 +119,7 @@ export function CreateHabitModal({ onSuccess }: CreateHabitModalProps = {}) {
             return;
         }
 
-        createHabitMutation.mutate({
+        createHabit({
             title: title.trim(),
             emoji,
             description: description.trim() || undefined,
@@ -125,15 +133,15 @@ export function CreateHabitModal({ onSuccess }: CreateHabitModalProps = {}) {
 
     return (
         <>
-            <div
-                className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm"
+            <button
+                className="fixed inset-0 z-9999 bg-black/50 backdrop-blur-xs"
                 onClick={handleClose}
                 type="button"
             />
 
-            <div className="pointer-events-none fixed inset-0 z-[10000] flex items-center justify-center p-4">
+            <div className="pointer-events-none fixed inset-0 z-10000 flex items-center justify-center p-4">
                 <div className="pointer-events-auto relative max-h-[90vh] w-full max-w-md overflow-hidden rounded-2xl border border-white/20 bg-pure-black">
-                    <div className="absolute top-0 left-0 h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                    <div className="absolute top-0 left-0 h-px w-full bg-linear-to-r from-transparent via-white/20 to-transparent" />
 
                     <div className="max-h-[calc(90vh-2rem)] overflow-y-auto p-4">
                         <div className="mb-4 flex items-center justify-between">
@@ -191,7 +199,7 @@ export function CreateHabitModal({ onSuccess }: CreateHabitModalProps = {}) {
                                         {emoji}
                                     </div>
                                     <input
-                                        className="w-full rounded-lg border border-white/20 bg-white/5 py-2 pr-3 pl-10 text-white placeholder-white/50 transition-all duration-300 focus:border-white/40 focus:bg-white/10 focus:outline-none"
+                                        className="w-full rounded-lg border border-white/20 bg-white/5 py-2 pr-3 pl-10 text-white placeholder-white/50 transition-all duration-300 focus:border-white/40 focus:bg-white/10 focus:outline-hidden"
                                         maxLength={255}
                                         onChange={(e) =>
                                             setTitle(e.target.value)
@@ -212,7 +220,7 @@ export function CreateHabitModal({ onSuccess }: CreateHabitModalProps = {}) {
                                     DESCRIPTION (OPTIONAL)
                                 </label>
                                 <textarea
-                                    className="w-full resize-none rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-white placeholder-white/50 transition-all duration-300 focus:border-white/40 focus:bg-white/10 focus:outline-none"
+                                    className="w-full resize-none rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-white placeholder-white/50 transition-all duration-300 focus:border-white/40 focus:bg-white/10 focus:outline-hidden"
                                     onChange={(e) =>
                                         setDescription(e.target.value)
                                     }
@@ -280,15 +288,10 @@ export function CreateHabitModal({ onSuccess }: CreateHabitModalProps = {}) {
                                 </button>
                                 <button
                                     className="flex-1 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-sm text-white transition-all duration-300 hover:border-white/40 hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-50"
-                                    disabled={
-                                        !title.trim() ||
-                                        createHabitMutation.isPending
-                                    }
+                                    disabled={!title.trim() || isCreatingHabit}
                                     type="submit"
                                 >
-                                    {createHabitMutation.isPending
-                                        ? "CREATING..."
-                                        : "CREATE"}
+                                    {isCreatingHabit ? "CREATING..." : "CREATE"}
                                 </button>
                             </div>
                         </form>

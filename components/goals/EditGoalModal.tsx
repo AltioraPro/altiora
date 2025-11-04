@@ -1,10 +1,11 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
+import { orpc } from "@/orpc/client";
 import type { Goal } from "@/server/db/schema";
-import { api } from "@/trpc/client";
 
 interface EditGoalModalProps {
     goal: Goal;
@@ -28,17 +29,21 @@ export function EditGoalModal({
         reminderFrequency: goal.reminderFrequency || "weekly",
     });
 
-    const utils = api.useUtils();
-
-    const updateGoalMutation = api.goals.update.useMutation({
-        onSuccess: () => {
-            utils.goals.getPaginated.invalidate();
-            utils.goals.getStats.invalidate();
-            utils.goals.getAll.invalidate();
-            onGoalChange?.();
-            onClose();
-        },
-    });
+    const updateGoalMutation = useMutation(
+        orpc.goals.update.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.goals.getPaginated.queryKey({ input: {} }),
+                    orpc.goals.getStats.queryKey({ input: {} }),
+                    orpc.goals.getAll.queryKey({ input: {} }),
+                ],
+            },
+            onSuccess: () => {
+                onGoalChange?.();
+                onClose();
+            },
+        })
+    );
 
     useEffect(() => {
         setFormData({
@@ -73,10 +78,10 @@ export function EditGoalModal({
     };
 
     return (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
             <div className="relative max-h-[90vh] w-full max-w-md overflow-hidden rounded-2xl border border-white/20 bg-pure-black">
                 {/* Gradient accent */}
-                <div className="absolute top-0 left-0 h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                <div className="absolute top-0 left-0 h-px w-full bg-linear-to-r from-transparent via-white/20 to-transparent" />
 
                 <div className="max-h-[calc(90vh-2rem)] overflow-y-auto p-4">
                     {/* Header */}
@@ -103,7 +108,7 @@ export function EditGoalModal({
                                 Goal Title *
                             </label>
                             <input
-                                className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-white/50 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-white/20"
+                                className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-white/50 focus:border-transparent focus:outline-hidden focus:ring-2 focus:ring-white/20"
                                 id="edit-title"
                                 onChange={(e) =>
                                     setFormData({
@@ -127,7 +132,7 @@ export function EditGoalModal({
                                 Description
                             </label>
                             <textarea
-                                className="w-full resize-none rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-white/50 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-white/20"
+                                className="w-full resize-none rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-white/50 focus:border-transparent focus:outline-hidden focus:ring-2 focus:ring-white/20"
                                 id="edit-description"
                                 onChange={(e) =>
                                     setFormData({
@@ -150,7 +155,7 @@ export function EditGoalModal({
                                 Goal Type
                             </label>
                             <select
-                                className="w-full appearance-none rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white focus:border-transparent focus:outline-none focus:ring-2 focus:ring-white/20"
+                                className="w-full appearance-none rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white focus:border-transparent focus:outline-hidden focus:ring-2 focus:ring-white/20"
                                 id="edit-type"
                                 onChange={(e) =>
                                     setFormData({
@@ -200,7 +205,7 @@ export function EditGoalModal({
                                 Deadline
                             </label>
                             <input
-                                className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white focus:border-transparent focus:outline-none focus:ring-2 focus:ring-white/20"
+                                className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white focus:border-transparent focus:outline-hidden focus:ring-2 focus:ring-white/20"
                                 id="edit-deadline"
                                 onChange={(e) =>
                                     setFormData({
@@ -248,7 +253,7 @@ export function EditGoalModal({
                                         Reminder Frequency
                                     </label>
                                     <select
-                                        className="w-full appearance-none rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white focus:border-transparent focus:outline-none focus:ring-2 focus:ring-white/20"
+                                        className="w-full appearance-none rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white focus:border-transparent focus:outline-hidden focus:ring-2 focus:ring-white/20"
                                         id="edit-reminderFrequency"
                                         onChange={(e) =>
                                             setFormData({

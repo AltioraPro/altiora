@@ -1,6 +1,5 @@
 "use client";
 
-import { stripeClient } from "@better-auth/stripe/client";
 import { inferAdditionalFields } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 import type { auth } from "./auth";
@@ -23,12 +22,7 @@ function resolveBaseUrl(): string {
 
 export const authClient = createAuthClient({
     baseURL: resolveBaseUrl(),
-    plugins: [
-        inferAdditionalFields<typeof auth>(),
-        stripeClient({
-            subscription: true,
-        }),
-    ],
+    plugins: [inferAdditionalFields<typeof auth>()],
 });
 
 export const { signIn, signUp, signOut, useSession, getSession } = authClient;

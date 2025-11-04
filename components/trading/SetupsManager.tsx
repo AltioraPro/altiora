@@ -1,6 +1,7 @@
 "use client";
 
-import { AlertTriangle, Plus, Search, Trash2 } from "lucide-react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { AlertTriangle, Loader2, Plus, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,14 +13,14 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { api } from "@/trpc/client";
+import { orpc } from "@/orpc/client";
 
 interface SetupsManagerProps {
     journalId: string;
 }
 
 export function SetupsManager({ journalId }: SetupsManagerProps) {
-    const [isCreating, setIsCreating] = useState(false);
+    const [isCreatingModalOpen, setIsCreatingModalOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [newSetup, setNewSetup] = useState({
         name: "",
@@ -28,74 +29,75 @@ export function SetupsManager({ journalId }: SetupsManagerProps) {
         successRate: "",
     });
 
-    const { data: setups, isLoading } = api.trading.getSetups.useQuery({
-        journalId,
-    });
-    const utils = api.useUtils();
+    const { data: setups, isLoading } = useQuery(
+        orpc.trading.getSetups.queryOptions({
+            input: { journalId },
+        })
+    );
 
-    const createSetupMutation = api.trading.createSetup.useMutation({
-        onSuccess: () => {
-            utils.trading.getSetups.invalidate();
-            setNewSetup({
-                name: "",
-                description: "",
-                strategy: "",
-                successRate: "",
-            });
-            setIsCreating(false);
-        },
-    });
+    const { mutateAsync: createSetup, isPending: isCreatingSetup } =
+        useMutation(
+            orpc.trading.createSetup.mutationOptions({
+                meta: {
+                    invalidateQueries: [
+                        orpc.trading.getSetups.queryKey({
+                            input: { journalId },
+                        }),
+                    ],
+                },
+                onSuccess: () => {
+                    setNewSetup({
+                        name: "",
+                        description: "",
+                        strategy: "",
+                        successRate: "",
+                    });
+                },
+            })
+        );
 
-    const deleteSetupMutation = api.trading.deleteSetup.useMutation({
-        onSuccess: () => {
-            utils.trading.getSetups.invalidate();
-        },
-    });
+    const { mutateAsync: deleteSetup, isPending: isDeletingSetup } =
+        useMutation(
+            orpc.trading.deleteSetup.mutationOptions({
+                meta: {
+                    invalidateQueries: [
+                        orpc.trading.getSetups.queryKey({
+                            input: { journalId },
+                        }),
+                    ],
+                },
+            })
+        );
 
     const handleCreateSetup = async () => {
-        if (!newSetup.name.trim()) return;
-
-        try {
-            await createSetupMutation.mutateAsync({
-                journalId,
-                name: newSetup.name.trim(),
-                description: newSetup.description.trim() || undefined,
-                strategy: newSetup.strategy.trim() || undefined,
-                successRate: newSetup.successRate
-                    ? Number.parseFloat(newSetup.successRate)
-                    : undefined,
-            });
-        } catch (error) {
-            console.error("Error creating setup:", error);
+        if (!newSetup.name.trim()) {
+            return;
         }
+
+        await createSetup({
+            journalId,
+            name: newSetup.name.trim(),
+            description: newSetup.description.trim() || undefined,
+            strategy: newSetup.strategy.trim() || undefined,
+            successRate: newSetup.successRate
+                ? Number.parseFloat(newSetup.successRate)
+                : undefined,
+        });
+        setIsCreatingModalOpen(false);
     };
 
     const handleDeleteSetup = async (setupId: string) => {
-        if (
-            confirm(
-                "Are you sure you want to delete this setup? This action is irreversible."
-            )
-        ) {
-            try {
-                await deleteSetupMutation.mutateAsync({ id: setupId });
-            } catch (error) {
-                console.error("Error deleting setup:", error);
-            }
-        }
+        await deleteSetup({ id: setupId });
     };
 
     const filteredSetups =
         setups?.filter(
             (setup) =>
                 setup.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                (setup.description &&
-                    setup.description
-                        .toLowerCase()
-                        .includes(searchTerm.toLowerCase())) ||
-                (setup.strategy &&
-                    setup.strategy
-                        .toLowerCase()
-                        .includes(searchTerm.toLowerCase()))
+                setup.description
+                    ?.toLowerCase()
+                    .includes(searchTerm.toLowerCase()) ||
+                setup.strategy?.toLowerCase().includes(searchTerm.toLowerCase())
         ) || [];
 
     if (isLoading) {
@@ -129,7 +131,9 @@ export function SetupsManager({ journalId }: SetupsManagerProps) {
                     </div>
                     <Button
                         className="bg-white text-black hover:bg-gray-200"
-                        onClick={() => setIsCreating(!isCreating)}
+                        onClick={() =>
+                            setIsCreatingModalOpen(!isCreatingModalOpen)
+                        }
                     >
                         <Plus className="mr-2 h-4 w-4" />
                         Add Setup
@@ -149,7 +153,7 @@ export function SetupsManager({ journalId }: SetupsManagerProps) {
                 </div>
 
                 {/* Create new setup form */}
-                {isCreating && (
+                {isCreatingModalOpen && (
                     <div className="rounded-lg border border-white/10 bg-black/20 p-4">
                         <h3 className="mb-4 font-medium text-white">
                             Create New Setup
@@ -172,7 +176,9 @@ export function SetupsManager({ journalId }: SetupsManagerProps) {
                             <div className="flex items-center justify-end space-x-2">
                                 <Button
                                     className="border-white/20 bg-transparent text-white hover:bg-white/10"
-                                    onClick={() => setIsCreating(false)}
+                                    onClick={() =>
+                                        setIsCreatingModalOpen(false)
+                                    }
                                     variant="outline"
                                 >
                                     Cancel
@@ -180,12 +186,11 @@ export function SetupsManager({ journalId }: SetupsManagerProps) {
                                 <Button
                                     className="bg-white text-black hover:bg-gray-200"
                                     disabled={
-                                        !newSetup.name.trim() ||
-                                        createSetupMutation.isPending
+                                        !newSetup.name.trim() || isCreatingSetup
                                     }
                                     onClick={handleCreateSetup}
                                 >
-                                    {createSetupMutation.isPending
+                                    {isCreatingSetup
                                         ? "Creating..."
                                         : "Create Setup"}
                                 </Button>
@@ -207,11 +212,16 @@ export function SetupsManager({ journalId }: SetupsManagerProps) {
                                 </span>
                                 <Button
                                     className="h-8 w-8 p-1 text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                                    disabled={isDeletingSetup}
                                     onClick={() => handleDeleteSetup(setup.id)}
                                     size="sm"
                                     variant="ghost"
                                 >
-                                    <Trash2 className="h-4 w-4" />
+                                    {isDeletingSetup ? (
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                        <Trash2 className="h-4 w-4" />
+                                    )}
                                 </Button>
                             </div>
                         ))}

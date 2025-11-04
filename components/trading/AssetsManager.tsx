@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { AlertTriangle, Plus, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { api } from "@/trpc/client";
+import { orpc } from "@/orpc/client";
 
 interface AssetsManagerProps {
     journalId: string;
@@ -27,27 +28,40 @@ export function AssetsManager({ journalId }: AssetsManagerProps) {
         type: "forex" as "forex" | "crypto" | "stocks" | "commodities",
     });
 
-    const { data: assets, isLoading } = api.trading.getAssets.useQuery({
-        journalId,
-    });
-    const utils = api.useUtils();
+    const { data: assets, isLoading } = useQuery(
+        orpc.trading.getAssets.queryOptions({
+            input: { journalId },
+        })
+    );
 
-    const createAssetMutation = api.trading.createAsset.useMutation({
-        onSuccess: () => {
-            utils.trading.getAssets.invalidate();
-            setNewAsset({ name: "", symbol: "", type: "forex" });
-            setIsCreating(false);
-        },
-    });
+    const createAssetMutation = useMutation(
+        orpc.trading.createAsset.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.trading.getAssets.queryKey({ input: { journalId } }),
+                ],
+            },
+            onSuccess: () => {
+                setNewAsset({ name: "", symbol: "", type: "forex" });
+                setIsCreating(false);
+            },
+        })
+    );
 
-    const deleteAssetMutation = api.trading.deleteAsset.useMutation({
-        onSuccess: () => {
-            utils.trading.getAssets.invalidate();
-        },
-    });
+    const deleteAssetMutation = useMutation(
+        orpc.trading.deleteAsset.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.trading.getAssets.queryKey({ input: { journalId } }),
+                ],
+            },
+        })
+    );
 
     const handleCreateAsset = async () => {
-        if (!newAsset.name.trim()) return;
+        if (!newAsset.name.trim()) {
+            return;
+        }
 
         try {
             await createAssetMutation.mutateAsync({
@@ -62,27 +76,12 @@ export function AssetsManager({ journalId }: AssetsManagerProps) {
     };
 
     const handleDeleteAsset = async (assetId: string) => {
-        if (
-            confirm(
-                "Are you sure you want to delete this asset? This action is irreversible."
-            )
-        ) {
-            try {
-                await deleteAssetMutation.mutateAsync({ id: assetId });
-            } catch (error) {
-                console.error("Error deleting asset:", error);
-            }
-        }
+        await deleteAssetMutation.mutateAsync({ id: assetId });
     };
 
     const filteredAssets =
-        assets?.filter(
-            (asset) =>
-                asset.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                (asset.symbol &&
-                    asset.symbol
-                        .toLowerCase()
-                        .includes(searchTerm.toLowerCase()))
+        assets?.filter((asset) =>
+            asset.name.toLowerCase().includes(searchTerm.toLowerCase())
         ) || [];
 
     if (isLoading) {

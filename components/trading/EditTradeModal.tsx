@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/toast";
-import { api } from "@/trpc/client";
+import { orpc } from "@/orpc/client";
 
 interface EditTradeModalProps {
     isOpen: boolean;
@@ -51,21 +52,30 @@ export function EditTradeModal({
 
     const [isLoading, setIsLoading] = useState(false);
 
-    const { data: trade, isLoading: tradeLoading } =
-        api.trading.getTradeById.useQuery(
-            { id: tradeId },
-            { enabled: isOpen && !!tradeId }
-        );
+    const { data: trade, isLoading: tradeLoading } = useQuery(
+        orpc.trading.getTradeById.queryOptions({
+            input: { id: tradeId },
+            enabled: isOpen && !!tradeId,
+        })
+    );
 
-    const { data: sessions } = api.trading.getSessions.useQuery({
-        journalId: trade?.journalId,
-    });
-    const { data: setups } = api.trading.getSetups.useQuery({
-        journalId: trade?.journalId,
-    });
-    const { data: assets } = api.trading.getAssets.useQuery({
-        journalId: trade?.journalId,
-    });
+    const { data: sessions } = useQuery(
+        orpc.trading.getSessions.queryOptions({
+            input: { journalId: trade?.journalId },
+        })
+    );
+
+    const { data: setups } = useQuery(
+        orpc.trading.getSetups.queryOptions({
+            input: { journalId: trade?.journalId },
+        })
+    );
+
+    const { data: assets } = useQuery(
+        orpc.trading.getAssets.queryOptions({
+            input: { journalId: trade?.journalId },
+        })
+    );
 
     useEffect(() => {
         if (trade) {
@@ -87,39 +97,44 @@ export function EditTradeModal({
         }
     }, [trade]);
 
-    const updateTradeMutation = api.trading.updateTrade.useMutation({
-        onSuccess: () => {
-            addToast({
-                type: "success",
-                title: "Success",
-                message: "Trade updated successfully",
-            });
-            onSuccess?.();
-            onClose();
-        },
-        onError: (error) => {
-            addToast({
-                type: "error",
-                title: "Error",
-                message: error.message || "Failed to update trade",
-            });
-        },
-    });
+    const { mutateAsync: updateTrade } = useMutation(
+        orpc.trading.updateTrade.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.trading.getTradeById.queryKey({
+                        input: { id: tradeId },
+                    }),
+                    orpc.trading.getTrades.queryKey({
+                        input: { journalId: trade?.journalId },
+                    }),
+                    orpc.trading.getStats.queryKey({
+                        input: { journalId: trade?.journalId },
+                    }),
+                ],
+            },
+            onSuccess: () => {
+                addToast({
+                    type: "success",
+                    title: "Success",
+                    message: "Trade updated successfully",
+                });
+                onSuccess?.();
+                onClose();
+            },
+            onError: (error) => {
+                addToast({
+                    type: "error",
+                    title: "Error",
+                    message: error.message || "Failed to update trade",
+                });
+            },
+        })
+    );
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!formData.tradeDate) {
-            addToast({
-                type: "error",
-                title: "Error",
-                message: "Please fill in the trade date",
-            });
-            return;
-        }
-
-        setIsLoading(true);
         try {
-            await updateTradeMutation.mutateAsync({
+            await updateTrade({
                 id: tradeId,
                 tradeDate: formData.tradeDate,
                 assetId: formData.assetId || undefined,

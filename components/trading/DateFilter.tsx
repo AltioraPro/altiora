@@ -144,7 +144,7 @@ export function DateFilter({
                 <Button
                     className={`h-7 rounded-md px-3 text-xs transition-all ${
                         filter.view === "monthly"
-                            ? "bg-white/20 text-white shadow-sm"
+                            ? "bg-white/20 text-white shadow-xs"
                             : "text-white/60 hover:bg-white/10 hover:text-white"
                     }`}
                     onClick={() => handleViewChange("monthly")}
@@ -156,7 +156,7 @@ export function DateFilter({
                 <Button
                     className={`h-7 rounded-md px-3 text-xs transition-all ${
                         filter.view === "yearly"
-                            ? "bg-white/20 text-white shadow-sm"
+                            ? "bg-white/20 text-white shadow-xs"
                             : "text-white/60 hover:bg-white/10 hover:text-white"
                     }`}
                     onClick={() => handleViewChange("yearly")}
@@ -168,7 +168,7 @@ export function DateFilter({
                 <Button
                     className={`h-7 rounded-md px-3 text-xs transition-all ${
                         filter.view === "all"
-                            ? "bg-white/20 text-white shadow-sm"
+                            ? "bg-white/20 text-white shadow-xs"
                             : "text-white/60 hover:bg-white/10 hover:text-white"
                     }`}
                     onClick={() => handleViewChange("all")}

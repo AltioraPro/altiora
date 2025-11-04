@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Plus, X } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -23,7 +24,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { api } from "@/trpc/client";
+import { orpc } from "@/orpc/client";
 
 const createTradeSchema = z.object({
     tradeDate: z.string().min(1, "Date is required"),
@@ -52,7 +53,6 @@ export function CreateTradeModal({
     onClose,
     journalId,
 }: CreateTradeModalProps) {
-    const utils = api.useUtils();
     const [showQuickCreate, setShowQuickCreate] = useState<{
         asset: boolean;
         session: boolean;
@@ -80,29 +80,36 @@ export function CreateTradeModal({
         }
     }, [journalId, form]);
 
-    const { data: assets } = api.trading.getAssets.useQuery({
-        journalId: journalId || "",
-    });
-    const { data: sessions } = api.trading.getSessions.useQuery({
-        journalId: journalId || "",
-    });
-    const { data: setups } = api.trading.getSetups.useQuery({
-        journalId: journalId || "",
-    });
-
-    const { data: journal } = api.trading.getJournalById.useQuery(
-        { id: journalId || "" },
-        { enabled: !!journalId }
+    const { data: assets } = useQuery(
+        orpc.trading.getAssets.queryOptions({
+            input: { journalId: journalId || "" },
+        })
     );
 
-    const { data: capitalData } = api.trading.getCurrentCapital.useQuery(
-        { journalId: journalId || "" },
-        { enabled: !!journalId && !!journal?.usePercentageCalculation }
-    ) as {
-        data:
-            | { currentCapital: string | null; startingCapital: string | null }
-            | undefined;
-    };
+    const { data: sessions } = useQuery(
+        orpc.trading.getSessions.queryOptions({
+            input: { journalId: journalId || "" },
+        })
+    );
+    const { data: setups } = useQuery(
+        orpc.trading.getSetups.queryOptions({
+            input: { journalId: journalId || "" },
+        })
+    );
+
+    const { data: journal } = useQuery(
+        orpc.trading.getJournalById.queryOptions({
+            input: { id: journalId || "" },
+            enabled: !!journalId,
+        })
+    );
+
+    const { data: capitalData } = useQuery(
+        orpc.trading.getCurrentCapital.queryOptions({
+            input: { journalId: journalId || "" },
+            enabled: !!journalId && !!journal?.usePercentageCalculation,
+        })
+    );
 
     const profitLossAmount = form.watch("profitLossAmount");
     const profitLossPercentage = form.watch("profitLossPercentage");
@@ -142,50 +149,90 @@ export function CreateTradeModal({
         capitalData?.currentCapital,
     ]);
 
-    const createTradeMutation = api.trading.createTrade.useMutation({
-        onSuccess: () => {
-            utils.trading.getTrades.invalidate();
-            utils.trading.getStats.invalidate();
-            form.reset({
-                tradeDate: new Date().toISOString().split("T")[0],
-                symbol: "",
-                riskInput: "",
-                profitLossAmount: "",
-                profitLossPercentage: "",
-                tradingviewLink: "",
-                notes: "",
-                journalId: journalId || "",
-            });
-            onClose();
-        },
-    });
+    const { mutateAsync: createTrade, isPending: isCreatingTrade } =
+        useMutation(
+            orpc.trading.createTrade.mutationOptions({
+                meta: {
+                    invalidateQueries: [
+                        orpc.trading.getTrades.queryKey({
+                            input: { journalId },
+                        }),
+                        orpc.trading.getStats.queryKey({
+                            input: { journalId },
+                        }),
+                    ],
+                },
+                onSuccess: () => {
+                    form.reset({
+                        tradeDate: new Date().toISOString().split("T")[0],
+                        symbol: "",
+                        riskInput: "",
+                        profitLossAmount: "",
+                        profitLossPercentage: "",
+                        tradingviewLink: "",
+                        notes: "",
+                        journalId: journalId || "",
+                    });
+                    onClose();
+                },
+            })
+        );
 
-    const createAssetMutation = api.trading.createAsset.useMutation({
-        onSuccess: () => {
-            utils.trading.getAssets.invalidate();
-            setShowQuickCreate((prev) => ({ ...prev, asset: false }));
-        },
-    });
+    const { mutateAsync: createAsset, isPending: isCreatingAsset } =
+        useMutation(
+            orpc.trading.createAsset.mutationOptions({
+                meta: {
+                    invalidateQueries: [
+                        orpc.trading.getAssets.queryKey({
+                            input: { journalId },
+                        }),
+                    ],
+                },
+                onSuccess: () => {
+                    setShowQuickCreate((prev) => ({ ...prev, asset: false }));
+                },
+            })
+        );
 
-    const createSessionMutation = api.trading.createSession.useMutation({
-        onSuccess: () => {
-            utils.trading.getSessions.invalidate();
-            setShowQuickCreate((prev) => ({ ...prev, session: false }));
-        },
-    });
+    const { mutateAsync: createSession, isPending: isCreatingSession } =
+        useMutation(
+            orpc.trading.createSession.mutationOptions({
+                meta: {
+                    invalidateQueries: [
+                        orpc.trading.getSessions.queryKey({
+                            input: { journalId },
+                        }),
+                    ],
+                },
+                onSuccess: () => {
+                    setShowQuickCreate((prev) => ({ ...prev, session: false }));
+                },
+            })
+        );
 
-    const createSetupMutation = api.trading.createSetup.useMutation({
-        onSuccess: () => {
-            utils.trading.getSetups.invalidate();
-            setShowQuickCreate((prev) => ({ ...prev, setup: false }));
-        },
-    });
+    const { mutateAsync: createSetup, isPending: isCreatingSetup } =
+        useMutation(
+            orpc.trading.createSetup.mutationOptions({
+                meta: {
+                    invalidateQueries: [
+                        orpc.trading.getSetups.queryKey({
+                            input: { journalId },
+                        }),
+                    ],
+                },
+                onSuccess: () => {
+                    setShowQuickCreate((prev) => ({ ...prev, setup: false }));
+                },
+            })
+        );
 
     const handleQuickCreateAsset = async (name: string, symbol: string) => {
-        if (!(journalId && name.trim() && symbol.trim())) return;
+        if (!(journalId && name.trim() && symbol.trim())) {
+            return;
+        }
 
         try {
-            const newAsset = await createAssetMutation.mutateAsync({
+            const newAsset = await createAsset({
                 journalId,
                 name: name.trim(),
                 symbol: symbol.trim().toUpperCase(),
@@ -198,10 +245,12 @@ export function CreateTradeModal({
     };
 
     const handleQuickCreateSession = async (name: string) => {
-        if (!(journalId && name.trim())) return;
+        if (!(journalId && name.trim())) {
+            return;
+        }
 
         try {
-            const newSession = await createSessionMutation.mutateAsync({
+            const newSession = await createSession({
                 journalId,
                 name: name.trim(),
                 timezone: "UTC",
@@ -214,10 +263,12 @@ export function CreateTradeModal({
     };
 
     const handleQuickCreateSetup = async (name: string) => {
-        if (!(journalId && name.trim())) return;
+        if (!(journalId && name.trim())) {
+            return;
+        }
 
         try {
-            const newSetup = await createSetupMutation.mutateAsync({
+            const newSetup = await createSetup({
                 journalId,
                 name: name.trim(),
             });
@@ -231,24 +282,26 @@ export function CreateTradeModal({
     const handleSubmit = async (data: CreateTradeForm) => {
         try {
             if (!(data.profitLossAmount || data.profitLossPercentage)) {
-                alert("Please provide either amount or percentage");
+                console.error("Please provide either amount or percentage");
                 return;
             }
 
             const tradeData = {
                 ...data,
                 tradeDate: data.tradeDate,
-                journalId: journalId!,
+                journalId: journalId || "",
                 isClosed: true,
             };
 
-            await createTradeMutation.mutateAsync(tradeData);
+            await createTrade(tradeData);
         } catch (error) {
             console.error("Error creating trade:", error);
         }
     };
 
-    if (!isOpen) return null;
+    if (!isOpen) {
+        return null;
+    }
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
@@ -325,7 +378,7 @@ export function CreateTradeModal({
 
                             {showQuickCreate.asset ? (
                                 <QuickCreateAsset
-                                    isLoading={createAssetMutation.isPending}
+                                    isLoading={isCreatingAsset}
                                     onCancel={() =>
                                         setShowQuickCreate((prev) => ({
                                             ...prev,
@@ -391,7 +444,7 @@ export function CreateTradeModal({
 
                             {showQuickCreate.session ? (
                                 <QuickCreateSession
-                                    isLoading={createSessionMutation.isPending}
+                                    isLoading={isCreatingSession}
                                     onCancel={() =>
                                         setShowQuickCreate((prev) => ({
                                             ...prev,
@@ -451,7 +504,7 @@ export function CreateTradeModal({
 
                             {showQuickCreate.setup ? (
                                 <QuickCreateSetup
-                                    isLoading={createSetupMutation.isPending}
+                                    isLoading={isCreatingSetup}
                                     onCancel={() =>
                                         setShowQuickCreate((prev) => ({
                                             ...prev,
@@ -698,10 +751,10 @@ export function CreateTradeModal({
                             </Button>
                             <Button
                                 className="bg-white text-black hover:bg-gray-200"
-                                disabled={createTradeMutation.isPending}
+                                disabled={isCreatingTrade}
                                 type="submit"
                             >
-                                {createTradeMutation.isPending
+                                {isCreatingTrade
                                     ? "Creating..."
                                     : "Create trade"}
                             </Button>
