@@ -84,6 +84,64 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
         },
     ];
 
+    const parsePnL = (profitLossPercentage: string | null): number =>
+        profitLossPercentage ? Number.parseFloat(profitLossPercentage) || 0 : 0;
+
+    const updateSessionStats = (
+        sessionStats: Map<
+            string,
+            {
+                name: string;
+                totalPnL: number;
+                count: number;
+                winningTrades: number;
+            }
+        >,
+        sessionId: string,
+        sessionName: string,
+        pnl: number
+    ) => {
+        const existing = sessionStats.get(sessionId);
+        if (existing) {
+            existing.totalPnL += pnl;
+            existing.count += 1;
+            if (pnl > 0) {
+                existing.winningTrades += 1;
+            }
+        } else {
+            sessionStats.set(sessionId, {
+                name: sessionName,
+                totalPnL: pnl,
+                count: 1,
+                winningTrades: pnl > 0 ? 1 : 0,
+            });
+        }
+    };
+
+    const transformSessionStats = (
+        sessionStats: Map<
+            string,
+            {
+                name: string;
+                totalPnL: number;
+                count: number;
+                winningTrades: number;
+            }
+        >
+    ) =>
+        Array.from(sessionStats.values())
+            .map((item, index) => ({
+                name: item.name,
+                pnl: item.totalPnL,
+                count: item.count,
+                winRate:
+                    item.count > 0
+                        ? (item.winningTrades / item.count) * 100
+                        : 0,
+                color: COLORS[index % COLORS.length],
+            }))
+            .sort((a, b) => b.pnl - a.pnl);
+
     const sessionPerformanceData = (() => {
         if (!(trades && sessions)) {
             return [];
@@ -103,41 +161,18 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
             if (trade.sessionId) {
                 const session = sessions.find((s) => s.id === trade.sessionId);
                 if (session) {
-                    const pnl = trade.profitLossPercentage
-                        ? Number.parseFloat(trade.profitLossPercentage) || 0
-                        : 0;
-                    const existing = sessionStats.get(trade.sessionId);
-
-                    if (existing) {
-                        existing.totalPnL += pnl;
-                        existing.count += 1;
-                        if (pnl > 0) {
-                            existing.winningTrades += 1;
-                        }
-                    } else {
-                        sessionStats.set(trade.sessionId, {
-                            name: session.name,
-                            totalPnL: pnl,
-                            count: 1,
-                            winningTrades: pnl > 0 ? 1 : 0,
-                        });
-                    }
+                    const pnl = parsePnL(trade.profitLossPercentage);
+                    updateSessionStats(
+                        sessionStats,
+                        trade.sessionId,
+                        session.name,
+                        pnl
+                    );
                 }
             }
         }
 
-        return Array.from(sessionStats.values())
-            .map((item, index) => ({
-                name: item.name,
-                pnl: item.totalPnL,
-                count: item.count,
-                winRate:
-                    item.count > 0
-                        ? (item.winningTrades / item.count) * 100
-                        : 0,
-                color: COLORS[index % COLORS.length],
-            }))
-            .sort((a, b) => b.pnl - a.pnl);
+        return transformSessionStats(sessionStats);
     })();
 
     const cumulativeData =
@@ -180,6 +215,8 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
         cumulativeData.length > 0
             ? (cumulativeData.at(-1)?.cumulative ?? 0)
             : 0;
+
+    const isPositive = totalPerformance >= 0;
 
     return (
         <div className="space-y-6">
@@ -467,12 +504,20 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                                         >
                                             <stop
                                                 offset="0%"
-                                                stopColor="#10B981"
+                                                stopColor={
+                                                    isPositive
+                                                        ? "#10B981"
+                                                        : "#ef4444"
+                                                }
                                                 stopOpacity={0.8}
                                             />
                                             <stop
                                                 offset="100%"
-                                                stopColor="#10B981"
+                                                stopColor={
+                                                    isPositive
+                                                        ? "#10B981"
+                                                        : "#ef4444"
+                                                }
                                                 stopOpacity={0.1}
                                             />
                                         </linearGradient>
@@ -526,18 +571,30 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                                         dataKey="cumulative"
                                         dot={false}
                                         fill="url(#performanceGradient)"
-                                        stroke="#10B981"
+                                        stroke={
+                                            isPositive ? "#10B981" : "#ef4444"
+                                        }
                                         strokeWidth={3}
                                         type="monotone"
                                     />
                                     {cumulativeData.length > 0 && (
                                         <ReferenceDot
-                                            fill="#10B981"
+                                            fill={
+                                                isPositive
+                                                    ? "#10B981"
+                                                    : "#ef4444"
+                                            }
                                             r={6}
-                                            stroke="#10B981"
+                                            stroke={
+                                                isPositive
+                                                    ? "#10B981"
+                                                    : "#ef4444"
+                                            }
                                             strokeWidth={2}
                                             style={{
-                                                filter: "drop-shadow(0 0 8px rgba(16, 185, 129, 0.6)) drop-shadow(0 0 16px rgba(16, 185, 129, 0.3))",
+                                                filter: isPositive
+                                                    ? "drop-shadow(0 0 8px rgba(16, 185, 129, 0.6)) drop-shadow(0 0 16px rgba(16, 185, 129, 0.3))"
+                                                    : "drop-shadow(0 0 8px rgba(239, 68, 68, 0.6)) drop-shadow(0 0 16px rgba(239, 68, 68, 0.3))",
                                                 animation:
                                                     "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
                                             }}
@@ -564,16 +621,6 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                                 </div>
                                 <div className="text-center font-bold text-2xl text-white">
                                     {cumulativeData.length}
-                                </div>
-                            </div>
-                            <div className="text-right">
-                                <div className="text-sm text-white/70 tracking-wide">
-                                    AVG PnL
-                                </div>
-                                <div className="font-bold text-2xl text-white">
-                                    {cumulativeData.length > 0
-                                        ? `${(totalPerformance / cumulativeData.length).toFixed(1)}%`
-                                        : "0.0%"}
                                 </div>
                             </div>
                         </div>

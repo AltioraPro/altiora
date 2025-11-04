@@ -6,6 +6,7 @@ import {
     Bar,
     BarChart,
     CartesianGrid,
+    Cell,
     ResponsiveContainer,
     Tooltip,
     XAxis,
@@ -119,6 +120,11 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
                 }>
             ) || [];
 
+    const isPositive =
+        cumulativeData.length > 0
+            ? (cumulativeData.at(-1)?.cumulative ?? 0) >= 0
+            : false;
+
     return (
         <div className="space-y-6">
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -154,12 +160,20 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
                                         >
                                             <stop
                                                 offset="0%"
-                                                stopColor="#10b981"
+                                                stopColor={
+                                                    isPositive
+                                                        ? "#10b981"
+                                                        : "#ef4444"
+                                                }
                                                 stopOpacity={0.3}
                                             />
                                             <stop
                                                 offset="100%"
-                                                stopColor="#10b981"
+                                                stopColor={
+                                                    isPositive
+                                                        ? "#10b981"
+                                                        : "#ef4444"
+                                                }
                                                 stopOpacity={0.05}
                                             />
                                         </linearGradient>
@@ -195,7 +209,9 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
                                     <Area
                                         dataKey="cumulative"
                                         fill="url(#global-cumulative-gradient)"
-                                        stroke="#10b981"
+                                        stroke={
+                                            isPositive ? "#10b981" : "#ef4444"
+                                        }
                                         strokeWidth={2}
                                         type="monotone"
                                     />
@@ -206,7 +222,7 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
                 </Card>
 
                 {/* Monthly Performance */}
-                <Card className="border border-white/20 bg-linear-to-br from-black/40 to-black/60 backdrop-blur-xs">
+                <Card className="border border-white/20 bg-gradient-to-br from-black/40 to-black/60 backdrop-blur-sm">
                     <CardHeader className="pb-3">
                         <CardTitle className="text-lg text-white tracking-wide">
                             MONTHLY PERFORMANCE
@@ -312,11 +328,23 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
                                     />
                                     <Bar
                                         dataKey="pnl"
-                                        fill="url(#monthlyGradient)"
                                         radius={[4, 4, 4, 4]}
                                         stroke="rgba(255,255,255,0.1)"
                                         strokeWidth={1}
-                                    />
+                                    >
+                                        {monthlyPerformanceData.map(
+                                            (entry, index) => (
+                                                <Cell
+                                                    fill={
+                                                        entry.pnl >= 0
+                                                            ? "#10B981"
+                                                            : "#ef4444"
+                                                    }
+                                                    key={`cell-${index}`}
+                                                />
+                                            )
+                                        )}
+                                    </Bar>
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
