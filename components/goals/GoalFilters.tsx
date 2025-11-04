@@ -92,7 +92,7 @@ export function GoalFilters({
                 <div className="relative">
                     <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/50" />
                     <input
-                        className="w-full rounded-lg border border-white/10 bg-white/5 py-2 pr-10 pl-10 text-white placeholder-white/50 transition-all duration-200 focus:border-white/20 focus:outline-none focus:ring-2 focus:ring-white/20"
+                        className="w-full rounded-lg border border-white/10 bg-white/5 py-2 pr-10 pl-10 text-white placeholder-white/50 transition-all duration-200 focus:border-white/20 focus:outline-hidden focus:ring-2 focus:ring-white/20"
                         onChange={(e) => setLocalSearch(e.target.value)}
                         placeholder="Search goals..."
                         type="text"
@@ -129,7 +129,7 @@ export function GoalFilters({
                 {/* Panneau de filtres */}
                 {isFiltersOpen && (
                     <div
-                        className="absolute top-full right-0 z-[9999] mt-2 w-80 rounded-xl border border-white/10 bg-neutral-900 p-4 shadow-2xl"
+                        className="absolute top-full right-0 z-9999 mt-2 w-80 rounded-xl border border-white/10 bg-neutral-900 p-4 shadow-2xl"
                         ref={filtersRef}
                     >
                         <div className="space-y-4">

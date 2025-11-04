@@ -230,8 +230,8 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
         optimisticData;
 
     return (
-        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm">
-            <div className="absolute top-0 left-0 h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xs">
+            <div className="absolute top-0 left-0 h-px w-full bg-linear-to-r from-transparent via-white/20 to-transparent" />
 
             <div className="p-6">
                 <div className="mb-6 flex items-center justify-between">

@@ -1,11 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    typescript: {
-        ignoreBuildErrors: false,
+    experimental: {
+        turbopackFileSystemCacheForDev: true,
     },
-    eslint: {
-        ignoreDuringBuilds: false,
-    },
+    reactCompiler: true,
+    typedRoutes: true,
     images: {
         remotePatterns: [
             {

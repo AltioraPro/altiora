@@ -139,7 +139,7 @@ export function HabitsManager() {
                 <div className="relative max-w-sm flex-1">
                     <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
                     <input
-                        className="w-full rounded-lg border border-white/20 bg-white/10 py-2 pr-4 pl-10 text-sm text-white placeholder-white/40 transition-colors focus:border-white/40 focus:outline-none"
+                        className="w-full rounded-lg border border-white/20 bg-white/10 py-2 pr-4 pl-10 text-sm text-white placeholder-white/40 transition-colors focus:border-white/40 focus:outline-hidden"
                         onChange={(e) => handleSearch(e.target.value)}
                         placeholder="Search habits..."
                         type="text"

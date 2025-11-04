@@ -96,7 +96,7 @@ export function DiscordConnection() {
             : Target;
 
     return (
-        <Card className="border border-white/10 bg-white/5 backdrop-blur-sm">
+        <Card className="border border-white/10 bg-white/5 backdrop-blur-xs">
             <CardHeader>
                 <CardTitle className="flex items-center space-x-2 text-white">
                     <MessageCircle className="h-5 w-5" />

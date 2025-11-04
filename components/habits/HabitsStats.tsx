@@ -293,8 +293,8 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
 
     return (
         <>
-            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm">
-                <div className="absolute top-0 left-0 h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xs">
+                <div className="absolute top-0 left-0 h-px w-full bg-linear-to-r from-transparent via-white/20 to-transparent" />
 
                 <div className="p-6">
                     <div className="mb-6 flex items-center justify-between">
@@ -500,7 +500,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
 
             {/* Rank System Modal */}
             {isRankModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
                     <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-white/20 bg-white/10 backdrop-blur-md">
                         <div className="p-6">
                             {/* Header */}
