@@ -144,17 +144,16 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
   });
 
 
-  const handleQuickCreateAsset = async (name: string, symbol: string) => {
-    if (!journalId || !name.trim() || !symbol.trim()) return;
+  const handleQuickCreateAsset = async (name: string) => {
+    if (!journalId || !name.trim()) return;
 
     try {
       const newAsset = await createAssetMutation.mutateAsync({
         journalId,
         name: name.trim(),
-        symbol: symbol.trim().toUpperCase(),
       });
 
-      form.setValue("symbol", newAsset.symbol);
+      form.setValue("symbol", newAsset.name);
     } catch (error) {
       console.error("Error creating asset:", error);
     }
@@ -537,20 +536,18 @@ export function CreateTradeModal({ isOpen, onClose, journalId }: CreateTradeModa
 }
 
 interface QuickCreateAssetProps {
-  onCreate: (name: string, symbol: string) => void;
+  onCreate: (name: string) => void;
   onCancel: () => void;
   isLoading: boolean;
 }
 
 function QuickCreateAsset({ onCreate, onCancel, isLoading }: QuickCreateAssetProps) {
   const [name, setName] = useState("");
-  const [symbol, setSymbol] = useState("");
 
   const handleSubmit = () => {
-    if (name.trim() && symbol.trim()) {
-      onCreate(name, symbol);
+    if (name.trim()) {
+      onCreate(name);
       setName("");
-      setSymbol("");
     }
   };
 
@@ -562,24 +559,16 @@ function QuickCreateAsset({ onCreate, onCancel, isLoading }: QuickCreateAssetPro
           <X className="w-3 h-3" />
         </Button>
       </div>
-      <div className="grid grid-cols-2 gap-2">
-        <Input
-          placeholder="Asset name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="h-8 text-xs bg-black/40 border-white/15 text-white placeholder:text-white/50"
-        />
-        <Input
-          placeholder="Symbol"
-          value={symbol}
-          onChange={(e) => setSymbol(e.target.value.toUpperCase())}
-          className="h-8 text-xs bg-black/40 border-white/15 text-white placeholder:text-white/50"
-        />
-      </div>
+      <Input
+        placeholder="Asset name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        className="h-8 text-xs bg-black/40 border-white/15 text-white placeholder:text-white/50"
+      />
       <Button
         type="button"
         onClick={handleSubmit}
-        disabled={isLoading || !name.trim() || !symbol.trim()}
+        disabled={isLoading || !name.trim()}
         size="sm"
         className="h-7 w-full text-xs bg-white/20 hover:bg-white/30 text-white"
       >

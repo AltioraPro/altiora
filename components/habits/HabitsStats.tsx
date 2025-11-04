@@ -34,7 +34,7 @@ interface StatItem {
 export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
   const { getOptimisticStats, optimisticUpdates } = useHabits();
   const [isRankModalOpen, setIsRankModalOpen] = useState(false);
-  
+
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -55,22 +55,22 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
       document.body.style.overflow = 'unset';
     };
   }, [isRankModalOpen]);
-  
+
 
   const optimisticTodayHabits = todayHabits?.map(habit => ({
     ...habit,
     isCompleted: optimisticUpdates[habit.id] ?? habit.isCompleted
   })) ?? [];
-  
+
 
   const todayCompletedHabits = optimisticTodayHabits.filter(h => h.isCompleted).length;
   const todayTotalHabits = optimisticTodayHabits.length;
   const todayCompletionRate = todayTotalHabits > 0 ? Math.round((todayCompletedHabits / todayTotalHabits) * 100) : 0;
   const willContinueStreak = todayCompletedHabits > 0;
-  
+
 
   const optimisticData = getOptimisticStats(data, optimisticTodayHabits);
-  
+
 
   const totalActiveHabits = optimisticData?.totalActiveHabits ?? todayTotalHabits;
   const averageCompletionRate = optimisticData?.averageCompletionRate ?? todayCompletionRate;
@@ -183,7 +183,11 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
   ];
 
 
-  const currentRank = rankSystem.find(rank => optimisticCurrentStreak >= rank.minStreak) || rankSystem[0]!;
+  // Find current rank - get the highest rank the user has achieved
+  const currentRank = rankSystem
+    .filter(rank => optimisticCurrentStreak >= rank.minStreak)
+    .sort((a, b) => b.minStreak - a.minStreak)[0] || rankSystem[0]!;
+
   const nextRank = rankSystem.find(rank => rank.minStreak > optimisticCurrentStreak);
   const daysToNextRank = nextRank ? nextRank.minStreak - optimisticCurrentStreak : 0;
 
@@ -224,14 +228,14 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
       <div className="bg-white/5 rounded-2xl border border-white/10 backdrop-blur-sm relative overflow-hidden">
 
         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-        
+
         <div className="p-6">
 
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-bold  tracking-tight">
               STATISTICS
             </h3>
-            
+
 
             <button
               onClick={() => setIsRankModalOpen(true)}
@@ -249,7 +253,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
           <div className="grid grid-cols-2 lg:grid-cols-2 gap-4">
             {stats.map((stat) => {
               const Icon = stat.icon;
-              
+
               return (
                 <div
                   key={stat.label}
@@ -257,7 +261,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                 >
                   <div className="flex items-center justify-between mb-3">
                     <Icon className="w-5 h-5 text-white/60 group-hover:text-white transition-colors" />
-                    
+
                     {/* Special indicators */}
                     {stat.label === "CURRENT SERIES" && (optimisticCurrentStreak >= 7 || stat.showPulse) && (
                       <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
@@ -272,7 +276,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                       <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
                     )}
                   </div>
-                  
+
                   <div className="space-y-1">
                     <div className={`text-2xl font-bold  ${stat.color} transition-colors`}>
                       {stat.value}{stat.suffix}
@@ -293,22 +297,22 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                 <div className="flex items-center space-x-3 text-sm">
                   <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                   <span className="text-green-400 ">
-                    {optimisticCurrentStreak >= 365 
-                      ? `${optimisticCurrentStreak} days consecutive! Immortal consistency!` 
-                      : optimisticCurrentStreak >= 180 
-                      ? `${optimisticCurrentStreak} days consecutive! Grandmaster level!` 
-                      : optimisticCurrentStreak >= 90 
-                      ? `${optimisticCurrentStreak} days consecutive! Master level!` 
-                      : optimisticCurrentStreak >= 30 
-                      ? `${optimisticCurrentStreak} days consecutive! Legendary consistency!` 
-                      : optimisticCurrentStreak >= 14 
-                      ? `${optimisticCurrentStreak} days consecutive! You're becoming an expert!` 
-                      : `${optimisticCurrentStreak} days consecutive! Excellent work!`
+                    {optimisticCurrentStreak >= 365
+                      ? `${optimisticCurrentStreak} consecutive days! Immortal consistency!`
+                      : optimisticCurrentStreak >= 180
+                        ? `${optimisticCurrentStreak} consecutive days! Grandmaster level!`
+                        : optimisticCurrentStreak >= 90
+                          ? `${optimisticCurrentStreak} consecutive days! Master level!`
+                          : optimisticCurrentStreak >= 30
+                            ? `${optimisticCurrentStreak} consecutive days! Legendary consistency!`
+                            : optimisticCurrentStreak >= 14
+                              ? `${optimisticCurrentStreak} consecutive days! You're becoming an expert!`
+                              : `${optimisticCurrentStreak} consecutive days! Excellent work!`
                     }
                   </span>
                 </div>
               )}
-              
+
               {averageCompletionRate >= 80 && (
                 <div className="flex items-center space-x-3 text-sm">
                   <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
@@ -317,7 +321,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                   </span>
                 </div>
               )}
-              
+
               {optimisticCurrentStreak < 3 && totalActiveHabits > 0 && (
                 <div className="flex items-center space-x-3 text-sm">
                   <div className="w-2 h-2 bg-white/60 rounded-full" />
@@ -346,6 +350,14 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                 </div>
               )}
 
+              {/* Current rank display */}
+              <div className="flex items-center space-x-3 text-sm">
+                <currentRank.icon className={`w-4 h-4 ${currentRank.color}`} />
+                <span className={`${currentRank.color}`}>
+                  Current rank: {currentRank.name} ({optimisticCurrentStreak} days)
+                </span>
+              </div>
+
               {/* Rank-specific messages */}
               {currentRank.name === "IMMORTAL" && (
                 <div className="flex items-center space-x-3 text-sm">
@@ -355,7 +367,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                   </span>
                 </div>
               )}
-              
+
               {currentRank.name === "GRANDMASTER" && (
                 <div className="flex items-center space-x-3 text-sm">
                   <Shield className="w-4 h-4 text-red-400" />
@@ -364,7 +376,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                   </span>
                 </div>
               )}
-              
+
               {currentRank.name === "MASTER" && (
                 <div className="flex items-center space-x-3 text-sm">
                   <Zap className="w-4 h-4 text-orange-400" />
@@ -373,7 +385,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                   </span>
                 </div>
               )}
-              
+
               {currentRank.name === "LEGEND" && (
                 <div className="flex items-center space-x-3 text-sm">
                   <Crown className="w-4 h-4 text-yellow-400" />
@@ -382,7 +394,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                   </span>
                 </div>
               )}
-              
+
               {currentRank.name === "EXPERT" && (
                 <div className="flex items-center space-x-3 text-sm">
                   <Star className="w-4 h-4 text-purple-400" />
@@ -391,7 +403,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                   </span>
                 </div>
               )}
-              
+
               {currentRank.name === "CHAMPION" && (
                 <div className="flex items-center space-x-3 text-sm">
                   <Trophy className="w-4 h-4 text-green-400" />
@@ -407,11 +419,11 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
 
       {/* Rank System Modal */}
       {isRankModalOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={() => setIsRankModalOpen(false)}
         >
-          <div 
+          <div
             className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
@@ -465,7 +477,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
               {nextRank && (
                 <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-6">
                   <h3 className="text-lg font-bold  mb-3">
-                    PROCHAIN RANK: {nextRank.name}
+                    NEXT RANK: {nextRank.name}
                   </h3>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between text-sm">
@@ -475,16 +487,16 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                       </span>
                     </div>
                     <div className="w-full bg-white/10 rounded-full h-2">
-                      <div 
+                      <div
                         className={`h-2 rounded-full transition-all duration-500 ${nextRank.color.replace('text-', 'bg-')}`}
                         style={{ width: `${Math.min((optimisticCurrentStreak / nextRank.minStreak) * 100, 100)}%` }}
                       />
                     </div>
                     <div className="text-center">
                       <span className="text-sm text-white/60">
-                        {daysToNextRank === 1 
-                          ? "Plus qu'1 jour consécutif pour devenir " + nextRank.name
-                          : `Plus que ${daysToNextRank} jours consécutifs pour devenir ${nextRank.name}`
+                        {daysToNextRank === 1
+                          ? "Only 1 consecutive day to become " + nextRank.name
+                          : `Only ${daysToNextRank} consecutive days to become ${nextRank.name}`
                         }
                       </span>
                     </div>
@@ -497,22 +509,21 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                 <h3 className="text-lg font-bold  mb-4">
                   ALL RANKS
                 </h3>
-                                 <div className="space-y-3">
-                   {rankSystem.map((rank) => {
+                <div className="space-y-3">
+                  {rankSystem.map((rank) => {
                     const RankIcon = rank.icon;
                     const isCurrentRank = rank.name === currentRank.name;
                     const isUnlocked = optimisticCurrentStreak >= rank.minStreak;
-                    
+
                     return (
                       <div
                         key={rank.name}
-                        className={`border rounded-xl p-4 transition-all duration-200 ${
-                          isCurrentRank 
-                            ? `${rank.bgColor} ${rank.borderColor}` 
-                            : isUnlocked
+                        className={`border rounded-xl p-4 transition-all duration-200 ${isCurrentRank
+                          ? `${rank.bgColor} ${rank.borderColor}`
+                          : isUnlocked
                             ? "bg-white/5 border-white/20"
                             : "bg-white/5 border-white/10 opacity-50"
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center space-x-3">
@@ -549,4 +560,3 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
   );
 }
 
- 

@@ -1,37 +1,48 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { db, cacheUtils } from "@/server/db";
-import { 
-  tradingJournals, 
-  tradingAssets, 
-  tradingSessions, 
-  tradingSetups, 
-  advancedTrades 
+import {
+  tradingJournals,
+  tradingAssets,
+  tradingSessions,
+  tradingSetups,
+  advancedTrades,
 } from "@/server/db/schema";
-import { 
-  filterTradesSchema,
-  tradingStatsSchema,
-} from "../validators";
-import { eq, and, desc, asc, gte, lte, like, sql, count, sum, avg, inArray } from "drizzle-orm";
+import { filterTradesSchema, tradingStatsSchema } from "../validators";
+import {
+  eq,
+  and,
+  desc,
+  asc,
+  gte,
+  lte,
+  like,
+  sql,
+  count,
+  sum,
+  avg,
+  inArray,
+} from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
 export const tradingQueriesRouter = createTRPCRouter({
-  getTradingJournals: protectedProcedure
-    .query(async ({ ctx }) => {
-      const { session } = ctx;
-      const userId = session.userId;
+  getTradingJournals: protectedProcedure.query(async ({ ctx }) => {
+    const { session } = ctx;
+    const userId = session.userId;
 
-      const journals = await db
-        .select()
-        .from(tradingJournals)
-        .where(and(
+    const journals = await db
+      .select()
+      .from(tradingJournals)
+      .where(
+        and(
           eq(tradingJournals.userId, userId),
           eq(tradingJournals.isActive, true)
-        ))
-        .orderBy(tradingJournals.order, desc(tradingJournals.createdAt));
+        )
+      )
+      .orderBy(tradingJournals.order, desc(tradingJournals.createdAt));
 
-      return journals;
-    }),
+    return journals;
+  }),
 
   getTradingJournalById: protectedProcedure
     .input(z.object({ id: z.string() }))
@@ -42,10 +53,12 @@ export const tradingQueriesRouter = createTRPCRouter({
       const [journal] = await db
         .select()
         .from(tradingJournals)
-        .where(and(
-          eq(tradingJournals.id, input.id),
-          eq(tradingJournals.userId, userId)
-        ))
+        .where(
+          and(
+            eq(tradingJournals.id, input.id),
+            eq(tradingJournals.userId, userId)
+          )
+        )
         .limit(1);
 
       if (!journal) {
@@ -58,15 +71,17 @@ export const tradingQueriesRouter = createTRPCRouter({
       return journal;
     }),
 
-
   getTradingAssets: protectedProcedure
     .input(z.object({ journalId: z.string().optional() }))
     .query(async ({ ctx, input }) => {
       const { session } = ctx;
       const userId = session.userId;
 
-      const whereConditions = [eq(tradingAssets.userId, userId), eq(tradingAssets.isActive, true)];
-      
+      const whereConditions = [
+        eq(tradingAssets.userId, userId),
+        eq(tradingAssets.isActive, true),
+      ];
+
       if (input.journalId) {
         whereConditions.push(eq(tradingAssets.journalId, input.journalId));
       }
@@ -89,10 +104,9 @@ export const tradingQueriesRouter = createTRPCRouter({
       const [asset] = await db
         .select()
         .from(tradingAssets)
-        .where(and(
-          eq(tradingAssets.id, input.id),
-          eq(tradingAssets.userId, userId)
-        ))
+        .where(
+          and(eq(tradingAssets.id, input.id), eq(tradingAssets.userId, userId))
+        )
         .limit(1);
 
       if (!asset) {
@@ -106,20 +120,27 @@ export const tradingQueriesRouter = createTRPCRouter({
     }),
 
   getTradingSessions: protectedProcedure
-    .input(z.object({ 
-      journalId: z.string().optional(),
-      journalIds: z.array(z.string()).optional()
-    }))
+    .input(
+      z.object({
+        journalId: z.string().optional(),
+        journalIds: z.array(z.string()).optional(),
+      })
+    )
     .query(async ({ ctx, input }) => {
       const { session } = ctx;
       const userId = session.userId;
 
-      const whereConditions = [eq(tradingSessions.userId, userId), eq(tradingSessions.isActive, true)];
-      
+      const whereConditions = [
+        eq(tradingSessions.userId, userId),
+        eq(tradingSessions.isActive, true),
+      ];
+
       if (input.journalId) {
         whereConditions.push(eq(tradingSessions.journalId, input.journalId));
       } else if (input.journalIds && input.journalIds.length > 0) {
-        whereConditions.push(inArray(tradingSessions.journalId, input.journalIds));
+        whereConditions.push(
+          inArray(tradingSessions.journalId, input.journalIds)
+        );
       }
 
       const sessions = await db
@@ -140,10 +161,12 @@ export const tradingQueriesRouter = createTRPCRouter({
       const [tradingSession] = await db
         .select()
         .from(tradingSessions)
-        .where(and(
-          eq(tradingSessions.id, input.id),
-          eq(tradingSessions.userId, userId)
-        ))
+        .where(
+          and(
+            eq(tradingSessions.id, input.id),
+            eq(tradingSessions.userId, userId)
+          )
+        )
         .limit(1);
 
       if (!tradingSession) {
@@ -157,20 +180,27 @@ export const tradingQueriesRouter = createTRPCRouter({
     }),
 
   getTradingSetups: protectedProcedure
-    .input(z.object({ 
-      journalId: z.string().optional(),
-      journalIds: z.array(z.string()).optional()
-    }))
+    .input(
+      z.object({
+        journalId: z.string().optional(),
+        journalIds: z.array(z.string()).optional(),
+      })
+    )
     .query(async ({ ctx, input }) => {
       const { session } = ctx;
       const userId = session.userId;
 
-      const whereConditions = [eq(tradingSetups.userId, userId), eq(tradingSetups.isActive, true)];
-      
+      const whereConditions = [
+        eq(tradingSetups.userId, userId),
+        eq(tradingSetups.isActive, true),
+      ];
+
       if (input.journalId) {
         whereConditions.push(eq(tradingSetups.journalId, input.journalId));
       } else if (input.journalIds && input.journalIds.length > 0) {
-        whereConditions.push(inArray(tradingSetups.journalId, input.journalIds));
+        whereConditions.push(
+          inArray(tradingSetups.journalId, input.journalIds)
+        );
       }
 
       const setups = await db
@@ -191,10 +221,9 @@ export const tradingQueriesRouter = createTRPCRouter({
       const [setup] = await db
         .select()
         .from(tradingSetups)
-        .where(and(
-          eq(tradingSetups.id, input.id),
-          eq(tradingSetups.userId, userId)
-        ))
+        .where(
+          and(eq(tradingSetups.id, input.id), eq(tradingSetups.userId, userId))
+        )
         .limit(1);
 
       if (!setup) {
@@ -214,11 +243,13 @@ export const tradingQueriesRouter = createTRPCRouter({
       const userId = session.userId;
 
       const whereConditions = [eq(advancedTrades.userId, userId)];
-      
+
       if (input.journalId) {
         whereConditions.push(eq(advancedTrades.journalId, input.journalId));
       } else if (input.journalIds && input.journalIds.length > 0) {
-        whereConditions.push(inArray(advancedTrades.journalId, input.journalIds));
+        whereConditions.push(
+          inArray(advancedTrades.journalId, input.journalIds)
+        );
       }
       if (input.assetId) {
         whereConditions.push(eq(advancedTrades.assetId, input.assetId));
@@ -228,7 +259,9 @@ export const tradingQueriesRouter = createTRPCRouter({
       if (input.sessionId) {
         whereConditions.push(eq(advancedTrades.sessionId, input.sessionId));
       } else if (input.sessionIds && input.sessionIds.length > 0) {
-        whereConditions.push(inArray(advancedTrades.sessionId, input.sessionIds));
+        whereConditions.push(
+          inArray(advancedTrades.sessionId, input.sessionIds)
+        );
       }
       if (input.setupId) {
         whereConditions.push(eq(advancedTrades.setupId, input.setupId));
@@ -248,19 +281,25 @@ export const tradingQueriesRouter = createTRPCRouter({
         whereConditions.push(eq(advancedTrades.isClosed, input.isClosed));
       }
 
-      const trades = input.limit 
+      const trades = input.limit
         ? await db
             .select()
             .from(advancedTrades)
             .where(and(...whereConditions))
-            .orderBy(desc(advancedTrades.tradeDate), desc(advancedTrades.createdAt))
+            .orderBy(
+              desc(advancedTrades.tradeDate),
+              desc(advancedTrades.createdAt)
+            )
             .limit(input.limit)
             .offset(input.offset || 0)
         : await db
             .select()
             .from(advancedTrades)
             .where(and(...whereConditions))
-            .orderBy(desc(advancedTrades.tradeDate), desc(advancedTrades.createdAt));
+            .orderBy(
+              desc(advancedTrades.tradeDate),
+              desc(advancedTrades.createdAt)
+            );
 
       return trades;
     }),
@@ -274,10 +313,12 @@ export const tradingQueriesRouter = createTRPCRouter({
       const [trade] = await db
         .select()
         .from(advancedTrades)
-        .where(and(
-          eq(advancedTrades.id, input.id),
-          eq(advancedTrades.userId, userId)
-        ))
+        .where(
+          and(
+            eq(advancedTrades.id, input.id),
+            eq(advancedTrades.userId, userId)
+          )
+        )
         .limit(1);
 
       if (!trade) {
@@ -297,17 +338,21 @@ export const tradingQueriesRouter = createTRPCRouter({
       const userId = session.userId;
 
       const whereConditions = [eq(advancedTrades.userId, userId)];
-      
+
       if (input.journalId) {
         whereConditions.push(eq(advancedTrades.journalId, input.journalId));
       } else if (input.journalIds && input.journalIds.length > 0) {
-        whereConditions.push(inArray(advancedTrades.journalId, input.journalIds));
+        whereConditions.push(
+          inArray(advancedTrades.journalId, input.journalIds)
+        );
       }
       if (input.assetIds && input.assetIds.length > 0) {
         whereConditions.push(inArray(advancedTrades.assetId, input.assetIds));
       }
       if (input.sessionIds && input.sessionIds.length > 0) {
-        whereConditions.push(inArray(advancedTrades.sessionId, input.sessionIds));
+        whereConditions.push(
+          inArray(advancedTrades.sessionId, input.sessionIds)
+        );
       }
       if (input.setupIds && input.setupIds.length > 0) {
         whereConditions.push(inArray(advancedTrades.setupId, input.setupIds));
@@ -324,10 +369,12 @@ export const tradingQueriesRouter = createTRPCRouter({
         const [journalResult] = await db
           .select()
           .from(tradingJournals)
-          .where(and(
-            eq(tradingJournals.id, input.journalId),
-            eq(tradingJournals.userId, userId)
-          ))
+          .where(
+            and(
+              eq(tradingJournals.id, input.journalId),
+              eq(tradingJournals.userId, userId)
+            )
+          )
           .limit(1);
         journal = journalResult;
       }
@@ -344,9 +391,15 @@ export const tradingQueriesRouter = createTRPCRouter({
 
       const [pnlStats] = await db
         .select({
-          totalPnL: sum(sql`CAST(${advancedTrades.profitLossPercentage} AS DECIMAL)`),
-          avgPnL: avg(sql`CAST(${advancedTrades.profitLossPercentage} AS DECIMAL)`),
-          totalAmountPnL: sum(sql`CAST(${advancedTrades.profitLossAmount} AS DECIMAL)`),
+          totalPnL: sum(
+            sql`CAST(${advancedTrades.profitLossPercentage} AS DECIMAL)`
+          ),
+          avgPnL: avg(
+            sql`CAST(${advancedTrades.profitLossPercentage} AS DECIMAL)`
+          ),
+          totalAmountPnL: sum(
+            sql`CAST(${advancedTrades.profitLossAmount} AS DECIMAL)`
+          ),
         })
         .from(advancedTrades)
         .where(and(...whereConditions, eq(advancedTrades.isClosed, true)));
@@ -354,26 +407,64 @@ export const tradingQueriesRouter = createTRPCRouter({
       const [winningTrades] = await db
         .select({ count: count() })
         .from(advancedTrades)
-        .where(and(
-          ...whereConditions,
-          eq(advancedTrades.isClosed, true),
-          eq(advancedTrades.exitReason, "TP")
-        ));
+        .where(
+          and(
+            ...whereConditions,
+            eq(advancedTrades.isClosed, true),
+            eq(advancedTrades.exitReason, "TP")
+          )
+        );
 
       const [losingTrades] = await db
         .select({ count: count() })
         .from(advancedTrades)
-        .where(and(
-          ...whereConditions,
-          eq(advancedTrades.isClosed, true),
-          eq(advancedTrades.exitReason, "SL")
-        ));
+        .where(
+          and(
+            ...whereConditions,
+            eq(advancedTrades.isClosed, true),
+            eq(advancedTrades.exitReason, "SL")
+          )
+        );
+
+      const [tpAggregation] = await db
+        .select({
+          total: sum(
+            sql`CAST(${advancedTrades.profitLossPercentage} AS DECIMAL)`
+          ),
+          count: count(),
+        })
+        .from(advancedTrades)
+        .where(
+          and(
+            ...whereConditions,
+            eq(advancedTrades.isClosed, true),
+            eq(advancedTrades.exitReason, "TP")
+          )
+        );
+
+      const [slAggregation] = await db
+        .select({
+          total: sum(
+            sql`CAST(${advancedTrades.profitLossPercentage} AS DECIMAL)`
+          ),
+          count: count(),
+        })
+        .from(advancedTrades)
+        .where(
+          and(
+            ...whereConditions,
+            eq(advancedTrades.isClosed, true),
+            eq(advancedTrades.exitReason, "SL")
+          )
+        );
 
       const tradesBySymbol = await db
         .select({
           symbol: advancedTrades.symbol,
           count: count(),
-          totalPnL: sum(sql`CAST(${advancedTrades.profitLossPercentage} AS DECIMAL)`),
+          totalPnL: sum(
+            sql`CAST(${advancedTrades.profitLossPercentage} AS DECIMAL)`
+          ),
         })
         .from(advancedTrades)
         .where(and(...whereConditions))
@@ -384,7 +475,9 @@ export const tradingQueriesRouter = createTRPCRouter({
         .select({
           setupId: advancedTrades.setupId,
           count: count(),
-          totalPnL: sum(sql`CAST(${advancedTrades.profitLossPercentage} AS DECIMAL)`),
+          totalPnL: sum(
+            sql`CAST(${advancedTrades.profitLossPercentage} AS DECIMAL)`
+          ),
         })
         .from(advancedTrades)
         .where(and(...whereConditions))
@@ -408,22 +501,25 @@ export const tradingQueriesRouter = createTRPCRouter({
 
       let totalAmountPnL = pnlStats.totalAmountPnL || 0;
       let totalPnLPercentage = 0;
-      
+
       const closedTradesData = await db
         .select({
           profitLossPercentage: advancedTrades.profitLossPercentage,
           profitLossAmount: advancedTrades.profitLossAmount,
+          tradeDate: advancedTrades.tradeDate,
         })
         .from(advancedTrades)
         .where(and(...whereConditions, eq(advancedTrades.isClosed, true)))
-        .orderBy(asc(advancedTrades.tradeDate));
+        .orderBy(asc(advancedTrades.tradeDate), asc(advancedTrades.createdAt));
 
       if (closedTradesData.length > 0) {
         totalPnLPercentage = closedTradesData.reduce((sum, trade) => {
-          const pnlPercentage = trade.profitLossPercentage ? parseFloat(trade.profitLossPercentage) || 0 : 0;
+          const pnlPercentage = trade.profitLossPercentage
+            ? parseFloat(trade.profitLossPercentage) || 0
+            : 0;
           return sum + pnlPercentage;
         }, 0);
-        
+
         if (journal?.usePercentageCalculation && journal?.startingCapital) {
           const startingCapital = parseFloat(journal.startingCapital);
           totalAmountPnL = (totalPnLPercentage / 100) * startingCapital;
@@ -435,7 +531,46 @@ export const tradingQueriesRouter = createTRPCRouter({
         totalAmountPnL = 0;
       }
 
-      const winRate = closedTrades.count > 0 ? (winningTrades.count / closedTrades.count) * 100 : 0;
+      const winRate =
+        closedTrades.count > 0
+          ? (winningTrades.count / closedTrades.count) * 100
+          : 0;
+
+      // Calcul des streaks (séries consécutives)
+      let currentWinningStreak = 0;
+      let currentLosingStreak = 0;
+      let maxWinningStreak = 0;
+      let maxLosingStreak = 0;
+
+      if (closedTradesData.length > 0) {
+        // Trier par date puis par heure de création pour s'assurer de l'ordre chronologique
+        const sortedTrades = closedTradesData.sort((a, b) => {
+          const dateA = new Date(a.tradeDate).getTime();
+          const dateB = new Date(b.tradeDate).getTime();
+          if (dateA !== dateB) return dateA - dateB;
+          return 0; // Si même date, garder l'ordre de création
+        });
+
+        for (const trade of sortedTrades) {
+          const pnl = parseFloat(trade.profitLossPercentage || "0");
+
+          if (pnl > 0) {
+            // Trade gagnant
+            currentWinningStreak++;
+            currentLosingStreak = 0;
+            maxWinningStreak = Math.max(maxWinningStreak, currentWinningStreak);
+          } else if (pnl < 0) {
+            // Trade perdant
+            currentLosingStreak++;
+            currentWinningStreak = 0;
+            maxLosingStreak = Math.max(maxLosingStreak, currentLosingStreak);
+          } else {
+            // Trade BE - interrompt les streaks
+            currentWinningStreak = 0;
+            currentLosingStreak = 0;
+          }
+        }
+      }
 
       return {
         totalTrades: totalTrades.count,
@@ -445,16 +580,34 @@ export const tradingQueriesRouter = createTRPCRouter({
         totalAmountPnL: Number(totalAmountPnL) || undefined,
         winningTrades: winningTrades.count,
         losingTrades: losingTrades.count,
+        avgGain:
+          tpAggregation &&
+          tpAggregation.count > 0 &&
+          tpAggregation.total !== null
+            ? Number(tpAggregation.total) / tpAggregation.count
+            : 0,
+        avgLoss:
+          slAggregation &&
+          slAggregation.count > 0 &&
+          slAggregation.total !== null
+            ? Math.abs(Number(slAggregation.total) / slAggregation.count)
+            : 0,
         winRate: winRate,
         tradesBySymbol,
         tradesBySetup,
         tpTrades: tpTrades.count,
         beTrades: beTrades.count,
         slTrades: slTrades.count,
-        journal: journal ? {
-          usePercentageCalculation: journal.usePercentageCalculation,
-          startingCapital: journal.startingCapital || undefined
-        } : undefined,
+        currentWinningStreak,
+        currentLosingStreak,
+        maxWinningStreak,
+        maxLosingStreak,
+        journal: journal
+          ? {
+              usePercentageCalculation: journal.usePercentageCalculation,
+              startingCapital: journal.startingCapital || undefined,
+            }
+          : undefined,
       };
     }),
 
@@ -464,7 +617,9 @@ export const tradingQueriesRouter = createTRPCRouter({
       const { session } = ctx;
       const userId = session.userId;
 
-      const cached = await cacheUtils.getStats(userId, 'trading-capital', { journalId: input.journalId });
+      const cached = await cacheUtils.getStats(userId, "trading-capital", {
+        journalId: input.journalId,
+      });
       if (cached) {
         return cached;
       }
@@ -472,10 +627,12 @@ export const tradingQueriesRouter = createTRPCRouter({
       const [journal] = await db
         .select()
         .from(tradingJournals)
-        .where(and(
-          eq(tradingJournals.id, input.journalId),
-          eq(tradingJournals.userId, userId)
-        ))
+        .where(
+          and(
+            eq(tradingJournals.id, input.journalId),
+            eq(tradingJournals.userId, userId)
+          )
+        )
         .limit(1);
 
       if (!journal) {
@@ -490,32 +647,43 @@ export const tradingQueriesRouter = createTRPCRouter({
       }
 
       const startingCapital = parseFloat(journal.startingCapital);
-      
+
       const closedTradesData = await db
         .select({
           profitLossPercentage: advancedTrades.profitLossPercentage,
         })
         .from(advancedTrades)
-        .where(and(
-          eq(advancedTrades.journalId, input.journalId),
-          eq(advancedTrades.userId, userId),
-          eq(advancedTrades.isClosed, true)
-        ))
+        .where(
+          and(
+            eq(advancedTrades.journalId, input.journalId),
+            eq(advancedTrades.userId, userId),
+            eq(advancedTrades.isClosed, true)
+          )
+        )
         .orderBy(asc(advancedTrades.tradeDate));
-      
+
       const totalPnLPercentage = closedTradesData.reduce((sum, trade) => {
-        const pnlPercentage = trade.profitLossPercentage ? parseFloat(trade.profitLossPercentage) || 0 : 0;
+        const pnlPercentage = trade.profitLossPercentage
+          ? parseFloat(trade.profitLossPercentage) || 0
+          : 0;
         return sum + pnlPercentage;
       }, 0);
-      
-      const currentCapital = startingCapital + (totalPnLPercentage / 100) * startingCapital;
 
-      const result = { 
-        currentCapital: currentCapital.toFixed(2), 
-        startingCapital: startingCapital.toFixed(2) 
+      const currentCapital =
+        startingCapital + (totalPnLPercentage / 100) * startingCapital;
+
+      const result = {
+        currentCapital: currentCapital.toFixed(2),
+        startingCapital: startingCapital.toFixed(2),
       };
 
-      await cacheUtils.setStats(userId, 'trading-capital', result, { journalId: input.journalId }, 600);
+      await cacheUtils.setStats(
+        userId,
+        "trading-capital",
+        result,
+        { journalId: input.journalId },
+        600
+      );
 
       return result;
     }),
@@ -529,10 +697,12 @@ export const tradingQueriesRouter = createTRPCRouter({
       const [journal] = await db
         .select()
         .from(tradingJournals)
-        .where(and(
-          eq(tradingJournals.id, input.journalId),
-          eq(tradingJournals.userId, userId)
-        ))
+        .where(
+          and(
+            eq(tradingJournals.id, input.journalId),
+            eq(tradingJournals.userId, userId)
+          )
+        )
         .limit(1);
 
       if (!journal) {
@@ -546,28 +716,34 @@ export const tradingQueriesRouter = createTRPCRouter({
         db
           .select()
           .from(tradingAssets)
-          .where(and(
-            eq(tradingAssets.journalId, input.journalId),
-            eq(tradingAssets.isActive, true)
-          ))
+          .where(
+            and(
+              eq(tradingAssets.journalId, input.journalId),
+              eq(tradingAssets.isActive, true)
+            )
+          )
           .orderBy(tradingAssets.name),
 
         db
           .select()
           .from(tradingSessions)
-          .where(and(
-            eq(tradingSessions.journalId, input.journalId),
-            eq(tradingSessions.isActive, true)
-          ))
+          .where(
+            and(
+              eq(tradingSessions.journalId, input.journalId),
+              eq(tradingSessions.isActive, true)
+            )
+          )
           .orderBy(tradingSessions.name),
 
         db
           .select()
           .from(tradingSetups)
-          .where(and(
-            eq(tradingSetups.journalId, input.journalId),
-            eq(tradingSetups.isActive, true)
-          ))
+          .where(
+            and(
+              eq(tradingSetups.journalId, input.journalId),
+              eq(tradingSetups.isActive, true)
+            )
+          )
           .orderBy(tradingSetups.name),
 
         db
@@ -596,10 +772,12 @@ export const tradingQueriesRouter = createTRPCRouter({
       const [trade] = await db
         .select()
         .from(advancedTrades)
-        .where(and(
-          eq(advancedTrades.id, input.id),
-          eq(advancedTrades.userId, userId)
-        ))
+        .where(
+          and(
+            eq(advancedTrades.id, input.id),
+            eq(advancedTrades.userId, userId)
+          )
+        )
         .limit(1);
 
       if (!trade) {
@@ -611,4 +789,4 @@ export const tradingQueriesRouter = createTRPCRouter({
 
       return trade;
     }),
-}); 
+});

@@ -5,6 +5,7 @@ import { Home, Target, TrendingUp, Users, Settings, Phone, LogOut, User, Trophy 
 import Image from "next/image";
 import Link from "next/link";
 import { useSession, signOut } from "@/lib/auth-client";
+import { api } from "@/trpc/client";
 
 interface HeaderProps {
   className?: string;
@@ -16,6 +17,10 @@ export const Header = ({ className = "" }: HeaderProps) => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const { data: session, isPending } = useSession();
+  const { data: user } = api.auth.getCurrentUser.useQuery(undefined, {
+    enabled: !!session?.user,
+    retry: false,
+  });
 
   const toggleMenu = useCallback(() => {
     setIsMenuOpen(!isMenuOpen);
@@ -150,8 +155,36 @@ export const Header = ({ className = "" }: HeaderProps) => {
                     href="/profile"
                     className="flex items-center space-x-2 text-white/80 hover:text-white px-3 py-2 rounded-xl border border-white/20 hover:bg-white/5 hover:border-white/40 transition-all duration-300 group"
                   >
-                    <div className="w-6 h-6 bg-white/10 rounded-full flex items-center justify-center">
-                      <User className="w-3 h-3" />
+                    <div className="w-6 h-6 rounded-full overflow-hidden border border-white/20">
+                      {(() => {
+                        if (user?.discordConnected && user?.discordAvatar) {
+                          return (
+                            <Image
+                              src={`https://cdn.discordapp.com/avatars/${user.discordId}/${user.discordAvatar}.png`}
+                              alt="Profile"
+                              width={24}
+                              height={24}
+                              className="w-full h-full object-cover"
+                            />
+                          );
+                        } else if (user?.image) {
+                          return (
+                            <Image
+                              src={user.image}
+                              alt="Profile"
+                              width={24}
+                              height={24}
+                              className="w-full h-full object-cover"
+                            />
+                          );
+                        } else {
+                          return (
+                            <div className="w-full h-full bg-white/10 flex items-center justify-center">
+                              <User className="w-3 h-3" />
+                            </div>
+                          );
+                        }
+                      })()}
                     </div>
                     <span className="text-sm font-medium">
                       {session.user.name?.split(' ')[0] || session.user.email.split('@')[0]}
@@ -324,8 +357,36 @@ export const Header = ({ className = "" }: HeaderProps) => {
                 /* User Profile Section - Connecté */
                 <div className="flex flex-col items-center space-y-4">
                   <div className="flex items-center space-x-3 text-white/80">
-                    <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center border border-white/20">
-                      <User className="w-5 h-5" />
+                    <div className="w-10 h-10 rounded-full overflow-hidden border border-white/20">
+                      {(() => {
+                        if (user?.discordConnected && user?.discordAvatar) {
+                          return (
+                            <Image
+                              src={`https://cdn.discordapp.com/avatars/${user.discordId}/${user.discordAvatar}.png`}
+                              alt="Profile"
+                              width={40}
+                              height={40}
+                              className="w-full h-full object-cover"
+                            />
+                          );
+                        } else if (user?.image) {
+                          return (
+                            <Image
+                              src={user.image}
+                              alt="Profile"
+                              width={40}
+                              height={40}
+                              className="w-full h-full object-cover"
+                            />
+                          );
+                        } else {
+                          return (
+                            <div className="w-full h-full bg-white/10 flex items-center justify-center">
+                              <User className="w-5 h-5" />
+                            </div>
+                          );
+                        }
+                      })()}
                     </div>
                     <div className="text-center">
                       <p className="text-sm font-medium  tracking-wide">

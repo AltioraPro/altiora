@@ -16,15 +16,24 @@ interface GlobalTradingStatsProps {
     tpTrades: number;
     beTrades: number;
     slTrades: number;
+    avgGain?: number;
+    avgLoss?: number;
   };
 }
 
 export function GlobalTradingStats({ stats }: GlobalTradingStatsProps) {
   const totalPnL = typeof stats.totalPnL === "string" ? parseFloat(stats.totalPnL) || 0 : stats.totalPnL;
-  const avgPnL = typeof stats.avgPnL === "string" ? parseFloat(stats.avgPnL) || 0 : stats.avgPnL;
-  const avgWin = stats.winningTrades > 0 ? totalPnL / Math.max(stats.winningTrades, 1) : 0;
-  const avgLoss = stats.losingTrades > 0 ? Math.abs(totalPnL) / Math.max(stats.losingTrades, 1) : 0;
-  const profitFactor = avgLoss > 0 ? avgWin / avgLoss : 0;
+
+  const avgWin = typeof stats.avgGain === 'number'
+    ? stats.avgGain
+    : (stats.winningTrades > 0 ? totalPnL / stats.winningTrades : 0);
+  const avgLoss = typeof stats.avgLoss === 'number'
+    ? stats.avgLoss
+    : (stats.losingTrades > 0 ? Math.abs(totalPnL) / stats.losingTrades : 0);
+
+  const totalGains = stats.winningTrades > 0 ? totalPnL : 0;
+  const totalLosses = stats.losingTrades > 0 ? Math.abs(totalPnL) : 0;
+  const profitFactor = totalLosses > 0 ? totalGains / totalLosses : 0;
 
   return (
     <div className="space-y-6">
@@ -33,7 +42,7 @@ export function GlobalTradingStats({ stats }: GlobalTradingStatsProps) {
         <Card className="border border-white/10 bg-black/20 p-5 hover:bg-black/30 transition-colors">
           <div className="space-y-2">
             <div className="text-sm text-white/70">Performance</div>
-            <div className="text-2xl font-bold text-white">
+            <div className={`text-2xl font-bold ${totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
               {totalPnL >= 0 ? "+" : ""}
               {totalPnL.toFixed(1)}%
             </div>
@@ -63,7 +72,7 @@ export function GlobalTradingStats({ stats }: GlobalTradingStatsProps) {
       </div>
 
       {/* Secondary Metrics */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card className="border border-white/10 bg-black/20 p-4 hover:bg-black/30 transition-colors">
           <div className="space-y-1">
             <div className="text-xs text-white/60">Avg Gain</div>
@@ -77,18 +86,11 @@ export function GlobalTradingStats({ stats }: GlobalTradingStatsProps) {
             <div className="text-lg font-semibold text-white">{avgLoss.toFixed(1)}%</div>
           </div>
         </Card>
-
-        <Card className="border border-white/10 bg-black/20 p-4 hover:bg-black/30 transition-colors">
-          <div className="space-y-1">
-            <div className="text-xs text-white/60">Avg P&L</div>
-            <div className="text-lg font-semibold text-white">{avgPnL.toFixed(1)}%</div>
-          </div>
-        </Card>
       </div>
 
       {/* Exit Strategy */}
       <div className="flex justify-center">
-      <Card className="border border-white/10 bg-black/20 p-2 hover:bg-black/30 transition-colors w-fit">
+        <Card className="border border-white/10 bg-black/20 p-2 hover:bg-black/30 transition-colors w-fit">
           <div className="flex items-center gap-6">
             <div className="text-center">
               <div className="text-sm text-green-400/60">TP</div>

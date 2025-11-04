@@ -3,62 +3,62 @@
 import { api } from "@/trpc/client";
 
 export function HabitHeatmap() {
-const { data: heatmapData, isLoading } = api.profile.getHabitHeatmap.useQuery();
+  const { data: heatmapData, isLoading } = api.profile.getHabitHeatmap.useQuery();
 
-if (isLoading || !heatmapData) {
+  if (isLoading || !heatmapData) {
     return (
-    <div className="bg-black/20 border border-white/10 rounded-lg p-6 animate-pulse">
+      <div className="bg-black/20 border border-white/10 rounded-lg p-6 animate-pulse">
         <div className="h-6 bg-white/10 rounded w-40 mb-4" />
         <div className="h-32 bg-white/10 rounded" />
-    </div>
+      </div>
     );
-}
+  }
 
-const generateDays = () => {
+  const generateDays = () => {
     const days = [];
     const today = new Date();
-    
+
     for (let i = 364; i >= 0; i--) {
-    const date = new Date(today);
-    date.setDate(date.getDate() - i);
-    const dateString = date.toISOString().split('T')[0];
-    const count = heatmapData[dateString] || 0;
-    days.push({ date: dateString, count });
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateString = date.toISOString().split('T')[0];
+      const count = heatmapData[dateString] || 0;
+      days.push({ date: dateString, count });
     }
-    
+
     return days;
-};
+  };
 
-const days = generateDays();
+  const days = generateDays();
 
-const weeks: Array<Array<{ date: string; count: number }>> = [];
-let currentWeek: Array<{ date: string; count: number }> = [];
+  const weeks: Array<Array<{ date: string; count: number }>> = [];
+  let currentWeek: Array<{ date: string; count: number }> = [];
 
-days.forEach((day, index) => {
+  days.forEach((day, index) => {
     const date = new Date(day.date);
     const dayOfWeek = date.getDay();
-    
-    if (index === 0 && dayOfWeek !== 0) {
-    for (let i = 0; i < dayOfWeek; i++) {
-        currentWeek.push({ date: '', count: 0 });
-    }
-    }
-    
-    currentWeek.push(day);
-    
-    if (dayOfWeek === 6 || index === days.length - 1) {
-    weeks.push([...currentWeek]);
-    currentWeek = [];
-    }
-});
 
-const getIntensityClass = (count: number) => {
+    if (index === 0 && dayOfWeek !== 0) {
+      for (let i = 0; i < dayOfWeek; i++) {
+        currentWeek.push({ date: '', count: 0 });
+      }
+    }
+
+    currentWeek.push(day);
+
+    if (dayOfWeek === 6 || index === days.length - 1) {
+      weeks.push([...currentWeek]);
+      currentWeek = [];
+    }
+  });
+
+  const getIntensityClass = (count: number) => {
     if (count === 0) return "bg-white/5";
-    if (count === 1) return "bg-white/20";
-    if (count === 2) return "bg-white/40";
-    if (count >= 3) return "bg-white/60";
+    if (count === 1) return "bg-green-500/20";
+    if (count === 2) return "bg-green-500/40";
+    if (count >= 3) return "bg-green-500/60";
     return "bg-white/5";
-};
+  };
 
   return (
     <div className="bg-black/20 rounded-lg p-6">
@@ -73,9 +73,8 @@ const getIntensityClass = (count: number) => {
               {week.map((day, dayIndex) => (
                 <div
                   key={dayIndex}
-                  className={`w-3 h-3 rounded-sm transition-all duration-200 hover:ring-1 hover:ring-white/40 ${
-                    day.date ? getIntensityClass(day.count) : 'opacity-0'
-                  }`}
+                  className={`w-3 h-3 rounded-sm transition-all duration-200 hover:ring-1 hover:ring-white/40 ${day.date ? getIntensityClass(day.count) : 'opacity-0'
+                    }`}
                   title={day.date ? `${day.date}: ${day.count} completion${day.count !== 1 ? 's' : ''}` : ''}
                 />
               ))}

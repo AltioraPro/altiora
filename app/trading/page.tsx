@@ -153,6 +153,46 @@ export default function TradingPage() {
   const cumulativeData = filteredTrades ? calculateCumulativePerformance(filteredTrades) : [];
   const totalPerformance = cumulativeData.length > 0 ? cumulativeData[cumulativeData.length - 1]?.cumulative : 0;
 
+  // Calcul des streaks
+  const calculateStreaks = (trades: AdvancedTrade[]) => {
+    let currentWinningStreak = 0;
+    let currentLosingStreak = 0;
+    let maxWinningStreak = 0;
+    let maxLosingStreak = 0;
+
+    const sortedTrades = trades
+      .filter(t => t.isClosed)
+      .sort((a, b) => {
+        const dateA = new Date(a.tradeDate).getTime();
+        const dateB = new Date(b.tradeDate).getTime();
+        if (dateA !== dateB) return dateA - dateB;
+        // Si même date, trier par createdAt
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      });
+
+    for (const trade of sortedTrades) {
+      const pnl = parseFloat(trade.profitLossPercentage || '0');
+
+      if (pnl > 0) {
+        currentWinningStreak++;
+        currentLosingStreak = 0;
+        maxWinningStreak = Math.max(maxWinningStreak, currentWinningStreak);
+      } else if (pnl < 0) {
+        currentLosingStreak++;
+        currentWinningStreak = 0;
+        maxLosingStreak = Math.max(maxLosingStreak, currentLosingStreak);
+      } else {
+        // Trade BE - interrompt les streaks
+        currentWinningStreak = 0;
+        currentLosingStreak = 0;
+      }
+    }
+
+    return { currentWinningStreak, currentLosingStreak, maxWinningStreak, maxLosingStreak };
+  };
+
+  const streaks = filteredTrades ? calculateStreaks(filteredTrades) : { currentWinningStreak: 0, currentLosingStreak: 0, maxWinningStreak: 0, maxLosingStreak: 0 };
+
   const stats = (filteredTrades && filteredTrades.length > 0 ? {
     totalTrades: filteredTrades.length,
     closedTrades: filteredTrades.length,
@@ -163,6 +203,18 @@ export default function TradingPage() {
     totalPnL: totalPerformance,
     avgPnL: filteredTrades && filteredTrades.length > 0 ?
       totalPerformance / filteredTrades.length : 0,
+    avgGain: (() => {
+      const tp = filteredTrades.filter(t => t.exitReason === 'TP');
+      if (tp.length === 0) return 0;
+      const sum = tp.reduce((s, t) => s + (t.profitLossPercentage ? parseFloat(t.profitLossPercentage) || 0 : 0), 0);
+      return sum / tp.length;
+    })(),
+    avgLoss: (() => {
+      const sl = filteredTrades.filter(t => t.exitReason === 'SL');
+      if (sl.length === 0) return 0;
+      const sum = sl.reduce((s, t) => s + (t.profitLossPercentage ? parseFloat(t.profitLossPercentage) || 0 : 0), 0);
+      return Math.abs(sum / sl.length);
+    })(),
     totalAmountPnL: (() => {
       if (!filteredTrades) return 0;
 
@@ -178,6 +230,10 @@ export default function TradingPage() {
     tpTrades: filteredTrades.filter(t => t.exitReason === 'TP').length,
     beTrades: filteredTrades.filter(t => t.exitReason === 'BE').length,
     slTrades: filteredTrades.filter(t => t.exitReason === 'SL').length,
+    currentWinningStreak: streaks.currentWinningStreak,
+    currentLosingStreak: streaks.currentLosingStreak,
+    maxWinningStreak: streaks.maxWinningStreak,
+    maxLosingStreak: streaks.maxLosingStreak,
     journal: selectedJournal ? {
       usePercentageCalculation: selectedJournal.usePercentageCalculation,
       startingCapital: selectedJournal.startingCapital || undefined
@@ -303,18 +359,20 @@ export default function TradingPage() {
       {/* Filters and Actions Bar */}
       <div className="flex flex-col gap-4 mb-8">
         {/* Filters Section */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-          <DateFilter onFilterChange={setDateFilter} />
-          {selectedJournalId && (
-            <AdvancedFilters
-              journalId={selectedJournalId}
-              onFiltersChange={setAdvancedFilters}
-            />
-          )}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="flex items-center gap-4">
+            <DateFilter onFilterChange={setDateFilter} />
+            {selectedJournalId && (
+              <AdvancedFilters
+                journalId={selectedJournalId}
+                onFiltersChange={setAdvancedFilters}
+              />
+            )}
+          </div>
         </div>
 
         {/* Actions Section */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+        <div className="flex items-center gap-3">
           <Button
             onClick={() => setIsImportModalOpen(true)}
             variant="outline"
@@ -356,8 +414,8 @@ export default function TradingPage() {
                 key={id}
                 onClick={() => setActiveTab(id as 'trades' | 'assets' | 'sessions' | 'setups')}
                 className={`flex items-center space-x-2 px-5 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${activeTab === id
-                    ? 'bg-white text-black shadow-sm'
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                  ? 'bg-white text-black shadow-sm'
+                  : 'text-white/70 hover:text-white hover:bg-white/10'
                   }`}
               >
                 <Icon className="w-4 h-4" />
