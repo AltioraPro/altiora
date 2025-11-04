@@ -138,7 +138,7 @@ function CheckEmailContent() {
                 {/* Left section - Branding */}
                 <div className="hidden flex-col justify-center px-12 lg:flex lg:w-1/2 xl:px-20">
                     <div className="max-w-lg">
-                        <h1 className="mb-6 bg-gradient-to-b from-white to-gray-400 bg-clip-text font-argesta font-bold text-[4rem] text-transparent leading-none">
+                        <h1 className="mb-6 bg-linear-to-b from-white to-gray-400 bg-clip-text font-argesta font-bold text-[4rem] text-transparent leading-none">
                             ALTIORA
                         </h1>
 
@@ -183,11 +183,11 @@ function CheckEmailContent() {
 
                         {/* Decorative line */}
                         <div className="mt-12 flex items-center space-x-4">
-                            <div className="h-px w-20 bg-gradient-to-r from-white to-transparent" />
+                            <div className="h-px w-20 bg-linear-to-r from-white to-transparent" />
                             <span className="text-white/60 text-xs tracking-widest">
                                 VERIFY
                             </span>
-                            <div className="h-px w-20 bg-gradient-to-l from-white to-transparent" />
+                            <div className="h-px w-20 bg-linear-to-l from-white to-transparent" />
                         </div>
                     </div>
                 </div>
@@ -210,7 +210,7 @@ function CheckEmailContent() {
                             {isAlreadyVerified ? (
                                 <>
                                     <div className="relative mx-auto mb-6 inline-flex h-20 w-20 items-center justify-center">
-                                        <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-green-500/40 bg-green-500/20 backdrop-blur-sm">
+                                        <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-green-500/40 bg-green-500/20 backdrop-blur-xs">
                                             <CheckCircle className="h-8 w-8 text-green-400" />
                                         </div>
                                     </div>
@@ -227,7 +227,7 @@ function CheckEmailContent() {
                                 <>
                                     <div className="relative mx-auto mb-6 inline-flex h-20 w-20 items-center justify-center">
                                         <div className="absolute inset-0 animate-ping rounded-full border-2 border-white/20" />
-                                        <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur-sm">
+                                        <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur-xs">
                                             <Mail className="h-8 w-8 text-white" />
                                         </div>
                                     </div>
@@ -245,7 +245,7 @@ function CheckEmailContent() {
 
                         {/* Email display */}
                         {email && (
-                            <div className="mb-8 rounded-lg border border-white/20 bg-white/5 p-4 backdrop-blur-sm">
+                            <div className="mb-8 rounded-lg border border-white/20 bg-white/5 p-4 backdrop-blur-xs">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center space-x-3">
                                         <div className="h-2 w-2 rounded-full bg-green-400" />
@@ -270,7 +270,7 @@ function CheckEmailContent() {
                             {/* Error message */}
                             {error && (
                                 <div className="flex items-start space-x-3 rounded-lg border border-red-500/20 bg-red-500/5 p-3">
-                                    <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-400" />
+                                    <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
                                     <p className="text-red-200 text-xs">
                                         {error}
                                     </p>
@@ -279,7 +279,7 @@ function CheckEmailContent() {
 
                             {!isAlreadyVerified && (
                                 <>
-                                    <div className="rounded-lg border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+                                    <div className="rounded-lg border border-white/10 bg-white/5 p-4 backdrop-blur-xs">
                                         <h3 className="mb-3 font-medium text-sm text-white tracking-wide">
                                             NEXT STEPS
                                         </h3>
@@ -315,7 +315,7 @@ function CheckEmailContent() {
 
                                     {/* Warning for spam */}
                                     <div className="flex items-start space-x-3 rounded-lg border border-yellow-500/20 bg-yellow-500/5 p-3">
-                                        <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-400" />
+                                        <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-yellow-400" />
                                         <p className="text-xs text-yellow-200">
                                             Can&apos;t find the email? Check
                                             your spam or promotions folder.
@@ -325,7 +325,7 @@ function CheckEmailContent() {
                             )}
 
                             {isAlreadyVerified && (
-                                <div className="rounded-lg border border-green-500/20 bg-green-500/5 p-4 backdrop-blur-sm">
+                                <div className="rounded-lg border border-green-500/20 bg-green-500/5 p-4 backdrop-blur-xs">
                                     <div className="flex items-center space-x-3">
                                         <CheckCircle className="h-5 w-5 text-green-400" />
                                         <div>

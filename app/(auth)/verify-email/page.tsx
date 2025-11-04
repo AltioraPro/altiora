@@ -113,7 +113,7 @@ function VerifyEmailContent() {
                     <div className="relative mx-auto mb-8 inline-flex h-20 w-20 items-center justify-center">
                         <div className="absolute inset-0 animate-ping rounded-full border-2 border-white/20" />
                         <div className="animation-delay-75 absolute inset-2 animate-ping rounded-full border-2 border-white/40" />
-                        <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur-sm">
+                        <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur-xs">
                             <RefreshCw className="h-8 w-8 animate-spin text-white" />
                         </div>
                     </div>
@@ -122,7 +122,7 @@ function VerifyEmailContent() {
                 return (
                     <div className="relative mx-auto mb-8 inline-flex h-20 w-20 items-center justify-center">
                         <div className="absolute inset-0 animate-pulse rounded-full bg-green-500/20" />
-                        <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-green-500/40 bg-green-500/20 backdrop-blur-sm">
+                        <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-green-500/40 bg-green-500/20 backdrop-blur-xs">
                             <CheckCircle className="h-8 w-8 text-green-400" />
                         </div>
                     </div>
@@ -130,7 +130,7 @@ function VerifyEmailContent() {
             case "expired":
                 return (
                     <div className="relative mx-auto mb-8 inline-flex h-20 w-20 items-center justify-center">
-                        <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-yellow-500/40 bg-yellow-500/20 backdrop-blur-sm">
+                        <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-yellow-500/40 bg-yellow-500/20 backdrop-blur-xs">
                             <AlertTriangle className="h-8 w-8 text-yellow-400" />
                         </div>
                     </div>
@@ -138,7 +138,7 @@ function VerifyEmailContent() {
             case "error":
                 return (
                     <div className="relative mx-auto mb-8 inline-flex h-20 w-20 items-center justify-center">
-                        <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-red-500/40 bg-red-500/20 backdrop-blur-sm">
+                        <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-red-500/40 bg-red-500/20 backdrop-blur-xs">
                             <XCircle className="h-8 w-8 text-red-400" />
                         </div>
                     </div>
@@ -200,7 +200,7 @@ function VerifyEmailContent() {
             <div className="relative z-10 flex min-h-screen">
                 <div className="hidden flex-col justify-center px-12 lg:flex lg:w-1/2 xl:px-20">
                     <div className="max-w-lg">
-                        <h1 className="mb-6 bg-gradient-to-b from-white to-gray-400 bg-clip-text font-argesta font-bold text-[4rem] text-transparent leading-none">
+                        <h1 className="mb-6 bg-linear-to-b from-white to-gray-400 bg-clip-text font-argesta font-bold text-[4rem] text-transparent leading-none">
                             ALTIORA
                         </h1>
 
@@ -286,11 +286,11 @@ function VerifyEmailContent() {
                         </div>
 
                         <div className="mt-12 flex items-center space-x-4">
-                            <div className="h-px w-20 bg-gradient-to-r from-white to-transparent" />
+                            <div className="h-px w-20 bg-linear-to-r from-white to-transparent" />
                             <span className="text-white/60 text-xs tracking-widest">
                                 {status === "success" ? "COMPLETE" : "VERIFY"}
                             </span>
-                            <div className="h-px w-20 bg-gradient-to-l from-white to-transparent" />
+                            <div className="h-px w-20 bg-linear-to-l from-white to-transparent" />
                         </div>
                     </div>
                 </div>
@@ -345,7 +345,7 @@ function VerifyEmailContent() {
                         )}
 
                         {status === "success" && (
-                            <div className="mb-8 rounded-lg border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+                            <div className="mb-8 rounded-lg border border-white/10 bg-white/5 p-4 backdrop-blur-xs">
                                 <h3 className="mb-3 font-medium text-sm text-white tracking-wide">
                                     NEXT STEPS
                                 </h3>
@@ -373,7 +373,7 @@ function VerifyEmailContent() {
                         )}
 
                         {(status === "expired" || status === "error") && (
-                            <div className="mb-8 rounded-lg border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+                            <div className="mb-8 rounded-lg border border-white/10 bg-white/5 p-4 backdrop-blur-xs">
                                 <h3 className="mb-3 font-medium text-sm text-white tracking-wide">
                                     WHAT TO DO?
                                 </h3>

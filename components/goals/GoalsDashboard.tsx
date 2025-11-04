@@ -77,12 +77,12 @@ function QuarterlyGoalItem({
     };
 
     return (
-        <div className="group relative mb-4 rounded-lg border border-white/5 bg-white/[0.02] p-5 transition-all duration-200 hover:border-white/10 hover:bg-white/[0.04]">
+        <div className="group relative mb-4 rounded-lg border border-white/5 bg-white/2 p-5 transition-all duration-200 hover:border-white/10 hover:bg-white/4">
             <div className="flex items-start justify-between">
                 <div className="min-w-0 flex-1">
                     <div className="mb-2 flex items-center gap-3">
                         <button
-                            className="flex-shrink-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+                            className="shrink-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
                             disabled={isMarkingCompleted}
                             onClick={handleMarkCompleted}
                             type="button"
@@ -95,7 +95,7 @@ function QuarterlyGoalItem({
                         </button>
 
                         <h4
-                            className={`line-clamp-1 break-words font-medium text-sm ${goal.isCompleted ? "text-white/50 line-through" : "text-white/90"}`}
+                            className={`line-clamp-1 wrap-break-word font-medium text-sm ${goal.isCompleted ? "text-white/50 line-through" : "text-white/90"}`}
                             title={goal.title}
                         >
                             {goal.title}
@@ -255,7 +255,7 @@ export function GoalsDashboard() {
 
     if (error) {
         return (
-            <div className="relative rounded-xl border border-white/10 bg-white/[0.02] p-8 text-center">
+            <div className="relative rounded-xl border border-white/10 bg-white/2 p-8 text-center">
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/5">
                     <TrendingUp className="h-8 w-8 text-white/40" />
                 </div>
@@ -273,10 +273,10 @@ export function GoalsDashboard() {
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                     {Array.from({ length: 4 }).map((_, i) => (
                         <div
-                            className="relative animate-pulse rounded-xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm"
+                            className="relative animate-pulse rounded-xl border border-white/10 bg-white/3 p-6 backdrop-blur-xs"
                             key={i}
                         >
-                            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/5 to-white/10 opacity-20" />
+                            <div className="absolute inset-0 rounded-xl bg-linear-to-br from-white/5 to-white/10 opacity-20" />
                             <div className="relative">
                                 <div className="mb-4 h-6 rounded bg-white/10" />
                                 <div className="mb-3 h-4 rounded bg-white/10" />
@@ -291,8 +291,8 @@ export function GoalsDashboard() {
 
         if (goalsData?.goals.length === 0) {
             return (
-                <div className="relative rounded-xl border border-white/10 bg-white/[0.02] p-12 text-center backdrop-blur-sm">
-                    <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full border border-white/10 bg-gradient-to-br from-white/10 to-white/5">
+                <div className="relative rounded-xl border border-white/10 bg-white/2 p-12 text-center backdrop-blur-xs">
+                    <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full border border-white/10 bg-linear-to-br from-white/10 to-white/5">
                         <Search className="h-10 w-10 text-white/40" />
                     </div>
                     <h3 className="mb-3 font-bold text-2xl text-white">
@@ -339,7 +339,7 @@ export function GoalsDashboard() {
                                             <h3 className="font-bold text-2xl text-white/90">
                                                 {year}
                                             </h3>
-                                            <div className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent" />
+                                            <div className="h-px flex-1 bg-linear-to-r from-white/20 to-transparent" />
                                             <div className="rounded-full bg-white/5 px-3 py-1 text-sm text-white/60">
                                                 {annualByYear[year].length}{" "}
                                                 goals
@@ -453,7 +453,7 @@ export function GoalsDashboard() {
                                                         ]
                                                     }
                                                 </h3>
-                                                <div className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent" />
+                                                <div className="h-px flex-1 bg-linear-to-r from-white/20 to-transparent" />
                                                 <div className="rounded-full bg-white/5 px-3 py-1 text-sm text-white/60">
                                                     {
                                                         quarterlyByQuarter[
@@ -538,7 +538,7 @@ export function GoalsDashboard() {
                                             <h3 className="font-bold text-2xl text-white/90">
                                                 {year}
                                             </h3>
-                                            <div className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent" />
+                                            <div className="h-px flex-1 bg-linear-to-r from-white/20 to-transparent" />
                                             <div className="rounded-full bg-white/5 px-3 py-1 text-sm text-white/60">
                                                 {monthlyByYear[year].length}{" "}
                                                 goals

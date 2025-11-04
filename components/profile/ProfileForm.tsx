@@ -120,7 +120,7 @@ export function ProfileForm() {
             {/* Profile Header */}
             <div className="flex items-center space-x-6">
                 <div className="relative">
-                    <div className="flex h-20 w-20 items-center justify-center rounded-full border border-white/20 bg-gradient-to-br from-white/10 to-white/5">
+                    <div className="flex h-20 w-20 items-center justify-center rounded-full border border-white/20 bg-linear-to-br from-white/10 to-white/5">
                         {renderAvatar()}
                     </div>
                     {user.discordProfile?.discordConnected && (
@@ -258,7 +258,7 @@ export function ProfileForm() {
                                 DISPLAY NAME
                             </label>
                             <input
-                                className="w-full rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-white placeholder-white/40 transition-all duration-300 focus:border-white/40 focus:bg-white/10 focus:outline-none"
+                                className="w-full rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-white placeholder-white/40 transition-all duration-300 focus:border-white/40 focus:bg-white/10 focus:outline-hidden"
                                 id="name"
                                 onChange={(e) => setName(e.target.value)}
                                 placeholder="Enter your display name"

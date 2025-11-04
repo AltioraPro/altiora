@@ -1,7 +1,6 @@
-import type { Route } from "next";
 import { route } from "@/lib/utils/routes";
 
-export const AUTH_PAGES: Record<string, Route> = {
+export const AUTH_PAGES = {
     SIGN_IN: route("/login"),
     SIGN_UP: route("/register"),
     FORGOT_PASSWORD: route("/forgot-password"),
@@ -12,7 +11,7 @@ export const AUTH_PAGES: Record<string, Route> = {
     ERROR: route("/error"),
 };
 
-export const MARKETING_PAGES: Record<string, Route> = {
+export const MARKETING_PAGES = {
     LANDING_PAGE: route("/"),
     ABOUT_US: route("/about"),
     CONTACT_US: route("/contact"),
@@ -22,7 +21,7 @@ export const MARKETING_PAGES: Record<string, Route> = {
     TERMS_OF_SERVICE: route("/terms-of-service"),
 };
 
-export const APPLICATION_PAGES: Record<string, Route> = {
+export const APPLICATION_PAGES = {
     DASHBOARD: route("/dashboard"),
     PROFILE: route("/profile"),
     GOALS: route("/goals"),
@@ -34,7 +33,7 @@ export const APPLICATION_PAGES: Record<string, Route> = {
     SETTINGS: route("/settings"),
 };
 
-export const SETTINGS_PAGES: Record<string, Route> = {
+export const SETTINGS_PAGES = {
     ACCOUNT_SETTINGS: route("/settings/account"),
     NOTIFICATION_SETTINGS: route("/settings/notification"),
     PRIVACY_SECURITY_SETTINGS: route("/settings/privacy-security"),
@@ -42,17 +41,17 @@ export const SETTINGS_PAGES: Record<string, Route> = {
     ORG_MEMBERS_SETTINGS: route("/org-settings/members"),
 };
 
-export const ADMIN_PAGES: Record<string, Route> = {
+export const ADMIN_PAGES = {
     ADMIN_USERS: route("/admin/users"),
     ADMIN_WAITLIST: route("/admin/waitlist"),
 };
 
-export const ORGANIZATION_ONBOARDING_PAGES: Record<string, Route> = {
+export const ORGANIZATION_ONBOARDING_PAGES = {
     CREATE_ORGANIZATION: route("/organization/create"),
     INVITATIONS: route("/organization/invitations"),
 };
 
-export const PAGES: Record<string, Route> = {
+export const PAGES = {
     ...AUTH_PAGES,
     ...MARKETING_PAGES,
     ...APPLICATION_PAGES,

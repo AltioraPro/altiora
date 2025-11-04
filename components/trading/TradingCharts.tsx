@@ -184,7 +184,7 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
     return (
         <div className="space-y-6">
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-                <Card className="0 border border-white/20 bg-gradient-to-br from-black/40 to-black/6 backdrop-blur-sm">
+                <Card className="0 border border-white/20 bg-linear-to-br from-black/40 to-black/6 backdrop-blur-xs">
                     <CardHeader className="pb-3">
                         <CardTitle className="text-lg text-white tracking-wide">
                             WIN RATE
@@ -314,7 +314,7 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                     </CardContent>
                 </Card>
 
-                <Card className="border border-white/20 bg-gradient-to-br from-black/40 to-black/60 backdrop-blur-sm lg:col-span-2">
+                <Card className="border border-white/20 bg-linear-to-br from-black/40 to-black/60 backdrop-blur-xs lg:col-span-2">
                     <CardHeader className="pb-3">
                         <CardTitle className="text-lg text-white tracking-wide">
                             PERFORMANCE BY SESSION
@@ -440,7 +440,7 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                 </Card>
             </div>
 
-            <Card className="w-full border border-white/20 bg-gradient-to-br from-black/40 to-black/60 backdrop-blur-sm">
+            <Card className="w-full border border-white/20 bg-linear-to-br from-black/40 to-black/60 backdrop-blur-xs">
                 <CardHeader className="pb-3">
                     <CardTitle className="text-lg text-white tracking-wide">
                         CUMULATIVE PERFORMANCE

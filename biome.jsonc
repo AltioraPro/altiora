@@ -47,7 +47,8 @@
       "nursery": {
         "useConsistentTypeDefinitions": "off",
         "noShadow": "off",
-        "useMaxParams": "off"
+        "useMaxParams": "off",
+        "noReactForwardRef": "off"
       }
     }
   }

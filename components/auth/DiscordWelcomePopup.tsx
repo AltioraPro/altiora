@@ -95,7 +95,7 @@ export function DiscordWelcomePopup({
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs"
             onClick={onClose}
         >
             <Card
@@ -146,7 +146,7 @@ export function DiscordWelcomePopup({
                                     className="flex items-start space-x-3 rounded-lg border border-white/10 bg-white/5 p-3"
                                     key={index}
                                 >
-                                    <Icon className="mt-0.5 h-5 w-5 flex-shrink-0 text-white/60" />
+                                    <Icon className="mt-0.5 h-5 w-5 shrink-0 text-white/60" />
                                     <div>
                                         <h3 className="mb-1 font-medium text-sm text-white">
                                             {feature.title}

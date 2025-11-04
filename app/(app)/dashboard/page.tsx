@@ -222,9 +222,9 @@ function OnboardingContent() {
 
                                     <div className="absolute inset-0 flex items-center justify-center p-6">
                                         <div className="relative h-full w-full">
-                                            <div className="absolute top-2 left-4 h-40 w-32 rotate-[-8deg] transform rounded-lg border border-white/20 bg-gradient-to-br from-white/10 to-white/5 shadow-xl transition-all duration-500 group-hover:translate-x-[-4px] group-hover:rotate-[-12deg]" />
+                                            <div className="group-hover:-rotate-12 absolute top-2 left-4 h-40 w-32 rotate-[-8deg] transform rounded-lg border border-white/20 bg-linear-to-br from-white/10 to-white/5 shadow-xl transition-all duration-500 group-hover:translate-x-[-4px]" />
 
-                                            <div className="absolute top-1 left-12 h-40 w-32 rotate-[-2deg] transform rounded-lg border border-white/30 bg-gradient-to-br from-white/15 to-white/5 shadow-xl transition-all duration-500 group-hover:translate-y-[-2px] group-hover:rotate-[-4deg]">
+                                            <div className="-rotate-2 absolute top-1 left-12 h-40 w-32 transform rounded-lg border border-white/30 bg-linear-to-br from-white/15 to-white/5 shadow-xl transition-all duration-500 group-hover:translate-y-[-2px] group-hover:rotate-[-4deg]">
                                                 <div className="space-y-2 p-3">
                                                     <div className="flex items-center gap-2">
                                                         <div className="h-2 w-2 rounded-full bg-green-400 transition-all duration-300 group-hover:shadow-[0_0_8px_rgba(74,222,128,0.6)]" />
@@ -240,7 +240,7 @@ function OnboardingContent() {
                                                 </div>
                                             </div>
 
-                                            <div className="absolute top-0 left-20 h-40 w-32 rotate-[4deg] transform rounded-lg border border-white/40 bg-gradient-to-br from-white/20 to-white/10 shadow-2xl transition-all duration-500 group-hover:translate-x-[4px] group-hover:translate-y-[-4px] group-hover:rotate-[8deg] group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)]">
+                                            <div className="absolute top-0 left-20 h-40 w-32 rotate-[4deg] transform rounded-lg border border-white/40 bg-linear-to-br from-white/20 to-white/10 shadow-2xl transition-all duration-500 group-hover:translate-x-[4px] group-hover:translate-y-[-4px] group-hover:rotate-[8deg] group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)]">
                                                 <div className="space-y-2 p-3">
                                                     <div className="flex items-center justify-between">
                                                         <div className="flex items-center gap-1.5">
@@ -312,9 +312,9 @@ function OnboardingContent() {
 
                                     <div className="absolute inset-0 flex items-center justify-center p-6">
                                         <div className="w-full max-w-[200px] space-y-3">
-                                            <div className="rounded-lg border border-white/30 bg-gradient-to-br from-white/15 to-white/5 p-3 shadow-lg transition-all duration-500 group-hover:translate-x-[-2px] group-hover:shadow-xl">
+                                            <div className="rounded-lg border border-white/30 bg-linear-to-br from-white/15 to-white/5 p-3 shadow-lg transition-all duration-500 group-hover:translate-x-[-2px] group-hover:shadow-xl">
                                                 <div className="flex items-start gap-2">
-                                                    <div className="mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border-2 border-green-400 bg-green-400/20 transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_8px_rgba(74,222,128,0.6)]">
+                                                    <div className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 border-green-400 bg-green-400/20 transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_8px_rgba(74,222,128,0.6)]">
                                                         <CheckSquare className="h-2.5 w-2.5 text-green-400" />
                                                     </div>
                                                     <div className="flex-1 space-y-1.5">
@@ -335,9 +335,9 @@ function OnboardingContent() {
                                                 </div>
                                             </div>
 
-                                            <div className="scale-105 transform rounded-lg border border-white/40 bg-gradient-to-br from-white/20 to-white/10 p-3 shadow-xl transition-all duration-500 group-hover:scale-110 group-hover:border-blue-400/50 group-hover:shadow-2xl">
+                                            <div className="scale-105 transform rounded-lg border border-white/40 bg-linear-to-br from-white/20 to-white/10 p-3 shadow-xl transition-all duration-500 group-hover:scale-110 group-hover:border-blue-400/50 group-hover:shadow-2xl">
                                                 <div className="flex items-start gap-2">
-                                                    <div className="mt-0.5 h-4 w-4 flex-shrink-0 rounded border-2 border-blue-400 transition-all duration-300 group-hover:bg-blue-400/20 group-hover:shadow-[0_0_8px_rgba(96,165,250,0.6)]" />
+                                                    <div className="mt-0.5 h-4 w-4 shrink-0 rounded border-2 border-blue-400 transition-all duration-300 group-hover:bg-blue-400/20 group-hover:shadow-[0_0_8px_rgba(96,165,250,0.6)]" />
                                                     <div className="flex-1 space-y-1.5">
                                                         <div className="h-2 w-4/5 rounded bg-white/40 transition-all duration-300 group-hover:bg-white/50" />
                                                         <div className="h-1 w-full rounded bg-white/20 transition-all duration-300 group-hover:bg-white/30" />
@@ -361,9 +361,9 @@ function OnboardingContent() {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="rounded-lg border border-white/25 bg-gradient-to-br from-white/10 to-white/5 p-3 shadow-md transition-all duration-500 group-hover:translate-x-[2px] group-hover:border-white/35">
+                                            <div className="rounded-lg border border-white/25 bg-linear-to-br from-white/10 to-white/5 p-3 shadow-md transition-all duration-500 group-hover:translate-x-[2px] group-hover:border-white/35">
                                                 <div className="flex items-start gap-2">
-                                                    <div className="mt-0.5 h-4 w-4 flex-shrink-0 rounded border-2 border-white/40 transition-all duration-300 group-hover:border-white/60" />
+                                                    <div className="mt-0.5 h-4 w-4 shrink-0 rounded border-2 border-white/40 transition-all duration-300 group-hover:border-white/60" />
                                                     <div className="flex-1 space-y-1.5">
                                                         <div className="h-2 w-2/3 rounded bg-white/25 transition-all duration-300 group-hover:bg-white/35" />
                                                         <div className="h-1 w-5/6 rounded bg-white/15 transition-all duration-300 group-hover:bg-white/25" />
@@ -542,54 +542,54 @@ function HabitCard({
                             </div>
 
                             <div className="flex justify-center gap-1">
-                                <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-gradient-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
+                                <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-linear-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
                                     <CheckSquare className="h-3 w-3 text-green-400" />
                                 </div>
                                 <div className="h-7 w-7 rounded border border-white/20 bg-white/10 transition-all duration-300 group-hover:border-white/30 group-hover:bg-white/15" />
-                                <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-gradient-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
+                                <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-linear-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
                                     <CheckSquare className="h-3 w-3 text-green-400" />
                                 </div>
-                                <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-gradient-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
+                                <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-linear-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
                                     <CheckSquare className="h-3 w-3 text-green-400" />
                                 </div>
-                                <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-gradient-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
+                                <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-linear-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
                                     <CheckSquare className="h-3 w-3 text-green-400" />
                                 </div>
                                 <div className="h-7 w-7 rounded border border-white/20 bg-white/10 transition-all duration-300 group-hover:border-white/30 group-hover:bg-white/15" />
-                                <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-gradient-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
+                                <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-linear-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
                                     <CheckSquare className="h-3 w-3 text-green-400" />
                                 </div>
                             </div>
 
                             <div className="flex justify-center gap-1">
-                                <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-gradient-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
+                                <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-linear-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
                                     <CheckSquare className="h-3 w-3 text-green-400" />
                                 </div>
-                                <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-gradient-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
+                                <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-linear-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
                                     <CheckSquare className="h-3 w-3 text-green-400" />
                                 </div>
                                 <div className="h-7 w-7 rounded border border-white/20 bg-white/10 transition-all duration-300 group-hover:border-white/30 group-hover:bg-white/15" />
-                                <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-gradient-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
+                                <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-linear-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
                                     <CheckSquare className="h-3 w-3 text-green-400" />
                                 </div>
-                                <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-gradient-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
+                                <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-linear-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
                                     <CheckSquare className="h-3 w-3 text-green-400" />
                                 </div>
-                                <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-gradient-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
+                                <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-linear-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
                                     <CheckSquare className="h-3 w-3 text-green-400" />
                                 </div>
-                                <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-gradient-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
+                                <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-linear-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
                                     <CheckSquare className="h-3 w-3 text-green-400" />
                                 </div>
                             </div>
 
                             {/* Week 3 */}
                             <div className="flex justify-center gap-1">
-                                <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-gradient-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
+                                <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-linear-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
                                     <CheckSquare className="h-3 w-3 text-green-400" />
                                 </div>
                                 <div className="h-7 w-7 rounded border border-white/20 bg-white/10 transition-all duration-300 group-hover:border-white/30 group-hover:bg-white/15" />
-                                <div className="flex h-7 w-7 scale-110 transform items-center justify-center rounded border-2 border-blue-400 bg-gradient-to-br from-blue-400/40 to-blue-500/40 shadow-xl transition-all duration-500 group-hover:scale-125 group-hover:border-blue-300 group-hover:shadow-[0_0_16px_rgba(96,165,250,0.6)]">
+                                <div className="flex h-7 w-7 scale-110 transform items-center justify-center rounded border-2 border-blue-400 bg-linear-to-br from-blue-400/40 to-blue-500/40 shadow-xl transition-all duration-500 group-hover:scale-125 group-hover:border-blue-300 group-hover:shadow-[0_0_16px_rgba(96,165,250,0.6)]">
                                     <div className="h-2 w-2 animate-pulse rounded-full bg-blue-400" />
                                 </div>
                                 <div className="h-7 w-7 rounded border border-white/10 bg-white/5 transition-all duration-300 group-hover:border-white/20 group-hover:bg-white/10" />
@@ -771,7 +771,7 @@ export default function GlobalDashboardPage() {
                         </button>
 
                         {isDropdownOpen && (
-                            <div className="absolute top-full right-0 left-0 z-50 mt-2 max-h-60 overflow-y-auto rounded-lg border border-white/10 bg-black/90 shadow-xl backdrop-blur-sm">
+                            <div className="absolute top-full right-0 left-0 z-50 mt-2 max-h-60 overflow-y-auto rounded-lg border border-white/10 bg-black/90 shadow-xl backdrop-blur-xs">
                                 <div className="space-y-1 p-3">
                                     <div
                                         className="flex cursor-pointer items-center space-x-3 rounded-md p-2 transition-colors hover:bg-white/10"

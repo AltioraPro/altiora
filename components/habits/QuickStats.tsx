@@ -33,7 +33,7 @@ export function QuickStats() {
             <div className="hidden items-center space-x-6 md:flex">
                 <div className="text-center">
                     <div className="font-bold text-2xl">
-                        <span className="bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
+                        <span className="bg-linear-to-r from-white to-white/70 bg-clip-text text-transparent">
                             --
                         </span>
                     </div>
@@ -42,7 +42,7 @@ export function QuickStats() {
                 <div className="h-8 w-px bg-white/20" />
                 <div className="text-center">
                     <div className="font-bold text-2xl">
-                        <span className="bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
+                        <span className="bg-linear-to-r from-white to-white/70 bg-clip-text text-transparent">
                             --
                         </span>
                     </div>
@@ -56,7 +56,7 @@ export function QuickStats() {
         <div className="hidden items-center space-x-6 md:flex">
             <div className="text-center">
                 <div className="font-bold text-2xl">
-                    <span className="bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
+                    <span className="bg-linear-to-r from-white to-white/70 bg-clip-text text-transparent">
                         {todayTotal > 0
                             ? `${todayCompleted}/${todayTotal}`
                             : "--"}
@@ -67,7 +67,7 @@ export function QuickStats() {
             <div className="h-8 w-px bg-white/20" />
             <div className="text-center">
                 <div className="font-bold text-2xl">
-                    <span className="bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
+                    <span className="bg-linear-to-r from-white to-white/70 bg-clip-text text-transparent">
                         {currentStreak > 0 ? currentStreak : "--"}
                     </span>
                 </div>

@@ -3,7 +3,6 @@ import { CreditCard, MessageCircle, Shield, User } from "lucide-react";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { DiscordWelcomeChecker } from "@/components/auth/DiscordWelcomeChecker";
-import { Header } from "@/components/layout/Header";
 import { DiscordConnection } from "@/components/profile/DiscordConnection";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { LeaderboardVisibility } from "@/components/settings/LeaderboardVisibility";
@@ -24,13 +23,11 @@ export default async function SettingsPage() {
 
     return (
         <>
-            <Header />
-
             <div className="min-h-screen bg-pure-black text-pure-white">
                 <div className="relative mx-auto w-full">
                     {/* Header */}
                     <div className="relative mb-8 border-white/10 border-b">
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+                        <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent" />
                         <div className="relative mx-auto max-w-7xl px-6 py-8">
                             <div className="flex items-center justify-between">
                                 <div>
@@ -132,8 +129,8 @@ export default async function SettingsPage() {
 
                 {/* Background decoration */}
                 <div className="-z-10 pointer-events-none fixed inset-0 overflow-hidden">
-                    <div className="absolute top-20 left-20 h-64 w-64 rounded-full bg-white/[0.01] blur-3xl" />
-                    <div className="absolute right-20 bottom-20 h-96 w-96 rounded-full bg-white/[0.005] blur-3xl" />
+                    <div className="absolute top-20 left-20 h-64 w-64 rounded-full bg-white/1 blur-3xl" />
+                    <div className="absolute right-20 bottom-20 h-96 w-96 rounded-full bg-white/0.5 blur-3xl" />
                 </div>
             </div>
 

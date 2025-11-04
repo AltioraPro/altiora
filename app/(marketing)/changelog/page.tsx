@@ -144,10 +144,10 @@ export default function ChangelogPage() {
             <div className="min-h-screen bg-pure-black pt-20 text-pure-white">
                 <div className="mx-auto max-w-4xl px-6 py-16">
                     <div className="mb-12 text-center">
-                        <h1 className="mb-4 bg-gradient-to-b from-white to-gray-400 bg-clip-text font-bold text-5xl text-transparent">
+                        <h1 className="mb-4 bg-linear-to-b from-white to-gray-400 bg-clip-text font-bold text-5xl text-transparent">
                             CHANGELOG
                         </h1>
-                        <div className="mx-auto h-px w-24 bg-gradient-to-r from-transparent via-white to-transparent opacity-50" />
+                        <div className="mx-auto h-px w-24 bg-linear-to-r from-transparent via-white to-transparent opacity-50" />
                         <p className="mt-6 text-white/60">
                             Track all updates, improvements, and new features
                         </p>
