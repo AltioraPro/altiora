@@ -85,7 +85,7 @@ export const InfiniteMovingCards = ({
     return (
         <div
             className={cn(
-                "scroller relative z-20 w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]",
+                "scroller relative z-20 w-full overflow-hidden mask-[linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]",
                 className
             )}
             ref={containerRef}
@@ -94,7 +94,7 @@ export const InfiniteMovingCards = ({
                 className={cn(
                     "flex w-max min-w-full shrink-0 flex-nowrap gap-4 py-4",
                     start && "animate-scroll",
-                    pauseOnHover && "hover:[animation-play-state:paused]"
+                    pauseOnHover && "hover:paused"
                 )}
                 ref={scrollerRef}
             >
@@ -106,13 +106,13 @@ export const InfiniteMovingCards = ({
                         <blockquote>
                             <div
                                 aria-hidden="true"
-                                className="user-select-none -top-0.5 -left-0.5 -z-1 pointer-events-none absolute h-[calc(100%_+_4px)] w-[calc(100%_+_4px)]"
+                                className="user-select-none -top-0.5 -left-0.5 -z-1 pointer-events-none absolute h-[calc(100%+4px)] w-[calc(100%+4px)]"
                             />
                             <span className="relative z-20 font-normal text-sm text-white leading-[1.6]">
                                 {item.quote}
                             </span>
                             <div className="relative z-20 mt-6 flex flex-row items-center">
-                                <div className="mr-3 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-800">
+                                <div className="mr-3 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-800">
                                     <User className="h-4 w-4 text-gray-400" />
                                 </div>
                                 <span className="flex flex-col gap-1">

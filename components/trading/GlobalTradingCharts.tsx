@@ -206,7 +206,7 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
                 </Card>
 
                 {/* Monthly Performance */}
-                <Card className="border border-white/20 bg-gradient-to-br from-black/40 to-black/60 backdrop-blur-sm">
+                <Card className="border border-white/20 bg-linear-to-br from-black/40 to-black/60 backdrop-blur-xs">
                     <CardHeader className="pb-3">
                         <CardTitle className="text-lg text-white tracking-wide">
                             MONTHLY PERFORMANCE

@@ -18,7 +18,6 @@ export const getMeHandler = getMeBase.handler(async ({ context }) => {
             emailVerified: true,
             rank: true,
             isLeaderboardPublic: true,
-            stripeCustomerId: true,
             createdAt: true,
             updatedAt: true,
         },

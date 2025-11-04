@@ -14,13 +14,35 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { PAGES } from "@/constants/pages";
 import { signOut, useSession } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
+
+const menuItems = [
+    { href: PAGES.LANDING_PAGE, label: "HOME", icon: Home, angle: -70 },
+    {
+        href: PAGES.TRADING_JOURNALS,
+        label: "TRADING",
+        icon: TrendingUp,
+        angle: -45,
+    },
+    { href: PAGES.HABITS, label: "HABITS", icon: Target, angle: -20 },
+    { href: PAGES.GOALS, label: "GOALS", icon: Users, angle: 5 },
+    {
+        href: PAGES.LEADERBOARD,
+        label: "LEADERBOARD",
+        icon: Trophy,
+        angle: 30,
+    },
+    { href: PAGES.SETTINGS, label: "SETTINGS", icon: Settings, angle: 55 },
+    { href: PAGES.CONTACT_US, label: "CONTACT", icon: Phone, angle: 80 },
+];
 
 interface HeaderProps {
     className?: string;
 }
 
-export const Header = ({ className = "" }: HeaderProps) => {
+export const Header = ({ className }: HeaderProps) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
     const [isVisible, setIsVisible] = useState(true);
@@ -76,25 +98,10 @@ export const Header = ({ className = "" }: HeaderProps) => {
         };
     }, [isMenuOpen, toggleMenu]);
 
-    const menuItems = [
-        { href: "/", label: "HOME", icon: Home, angle: -70 },
-        {
-            href: "/trading/journals",
-            label: "TRADING",
-            icon: TrendingUp,
-            angle: -45,
-        },
-        { href: "/habits", label: "HABITS", icon: Target, angle: -20 },
-        { href: "/goals", label: "GOALS", icon: Users, angle: 5 },
-        { href: "/leaderboard", label: "LEADERBOARD", icon: Trophy, angle: 30 },
-        { href: "/settings", label: "SETTINGS", icon: Settings, angle: 55 },
-        { href: "/contact", label: "CONTACT", icon: Phone, angle: 80 },
-    ];
-
     return (
         <>
             <header
-                className={`fixed top-0 right-0 left-0 z-30 border border-white/10 bg-transparent backdrop-blur-md transition-transform duration-300 ease-in-out ${className} ${
+                className={`sticky top-0 right-0 left-0 z-30 border border-white/10 bg-transparent backdrop-blur-md transition-transform duration-300 ease-in-out ${className} ${
                     isVisible ? "translate-y-0" : "-translate-y-full"
                 }`}
             >
@@ -119,7 +126,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
                                         <span
                                             className={`block h-0.5 bg-white transition-all duration-500 ease-out ${
                                                 isMenuOpen
-                                                    ? "w-4 translate-y-[1px] rotate-45 shadow-[0_0_10px_rgba(255,255,255,0.5)]"
+                                                    ? "w-4 translate-y-px rotate-45 shadow-[0_0_10px_rgba(255,255,255,0.5)]"
                                                     : "w-4 translate-y-[-3px] rotate-0 group-hover:w-5"
                                             }`}
                                         />
@@ -133,7 +140,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
                                         <span
                                             className={`block h-0.5 bg-white transition-all duration-500 ease-out ${
                                                 isMenuOpen
-                                                    ? "-rotate-45 w-4 translate-y-[-1px] shadow-[0_0_10px_rgba(255,255,255,0.5)]"
+                                                    ? "-rotate-45 -translate-y-px w-4 shadow-[0_0_10px_rgba(255,255,255,0.5)]"
                                                     : "w-4 translate-y-[3px] rotate-0 group-hover:w-5"
                                             }`}
                                         />
@@ -153,7 +160,10 @@ export const Header = ({ className = "" }: HeaderProps) => {
 
                         {/* Logo - Centre absolu */}
                         <div className="-translate-x-1/2 absolute left-1/2 z-5 transform">
-                            <Link className="flex items-center" href="/">
+                            <Link
+                                className="flex items-center"
+                                href={PAGES.LANDING_PAGE}
+                            >
                                 <Image
                                     alt="Altiora Logo"
                                     className="h-10 w-auto"
@@ -174,7 +184,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
                                 <div className="flex items-center space-x-3">
                                     <Link
                                         className="group flex items-center space-x-2 rounded-xl border border-white/20 px-3 py-2 text-white/80 transition-all duration-300 hover:border-white/40 hover:bg-white/5 hover:text-white"
-                                        href="/settings"
+                                        href={PAGES.SETTINGS}
                                     >
                                         <Settings className="h-4 w-4" />
                                         <span className="font-medium text-sm">
@@ -184,7 +194,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
 
                                     <Link
                                         className="group flex items-center space-x-2 rounded-xl border border-white/20 px-3 py-2 text-white/80 transition-all duration-300 hover:border-white/40 hover:bg-white/5 hover:text-white"
-                                        href="/profile"
+                                        href={PAGES.PROFILE}
                                     >
                                         <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/10">
                                             <User className="h-3 w-3" />
@@ -201,7 +211,8 @@ export const Header = ({ className = "" }: HeaderProps) => {
                                         className="rounded-xl border border-white/20 p-2 text-white/60 transition-all duration-300 hover:border-white/40 hover:bg-white/5 hover:text-white"
                                         onClick={async () => {
                                             await signOut();
-                                            window.location.href = "/";
+                                            window.location.href =
+                                                PAGES.LANDING_PAGE;
                                         }}
                                         title="Sign Out"
                                     >
@@ -209,25 +220,15 @@ export const Header = ({ className = "" }: HeaderProps) => {
                                     </button>
                                 </div>
                             ) : (
-                                /* Auth Buttons - Non connecté */
-                                <>
-                                    <Link
-                                        className="group rounded-xl border border-white/20 px-4 py-2 font-semibold text-sm text-white/80 tracking-wider backdrop-blur-sm transition-all duration-300 hover:border-white/40 hover:bg-white/5 hover:text-white"
-                                        href="/auth/login"
-                                    >
-                                        <span className="relative">
-                                            Login
-                                            <div className="-bottom-1 absolute left-0 h-px w-0 bg-white/60 transition-all duration-300 group-hover:w-full" />
-                                        </span>
-                                    </Link>
-
-                                    <Link
-                                        className="transform rounded-xl border border-white/30 bg-white/10 px-5 py-2.5 font-semibold text-sm text-white tracking-wider shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:border-white/50 hover:bg-white/20 hover:shadow-white/20"
-                                        href="/auth/register"
-                                    >
-                                        Register
-                                    </Link>
-                                </>
+                                <Link
+                                    className="group rounded-xl border border-white/20 px-4 py-2 font-semibold text-sm text-white/80 tracking-wider backdrop-blur-xs transition-all duration-300 hover:border-white/40 hover:bg-white/5 hover:text-white"
+                                    href={PAGES.SIGN_IN}
+                                >
+                                    <span className="relative">
+                                        Login
+                                        <div className="-bottom-1 absolute left-0 h-px w-0 bg-white/60 transition-all duration-300 group-hover:w-full" />
+                                    </span>
+                                </Link>
                             )}
                         </div>
                     </div>
@@ -263,10 +264,10 @@ export const Header = ({ className = "" }: HeaderProps) => {
                                     : "translate-y-10 opacity-0"
                             }`}
                         >
-                            <h1 className="mb-2 bg-gradient-to-b from-white to-gray-400 bg-clip-text font-bold text-5xl text-transparent leading-none">
+                            <h1 className="mb-2 bg-linear-to-b from-white to-gray-400 bg-clip-text font-bold text-5xl text-transparent leading-none">
                                 ALTIORA
                             </h1>
-                            <div className="mx-auto h-px w-20 bg-gradient-to-r from-transparent via-white to-transparent opacity-50" />
+                            <div className="mx-auto h-px w-20 bg-linear-to-r from-transparent via-white to-transparent opacity-50" />
                         </div>
 
                         <div className="relative mx-auto mb-8 h-[450px] w-[450px]">
@@ -279,11 +280,12 @@ export const Header = ({ className = "" }: HeaderProps) => {
 
                                 return (
                                     <Link
-                                        className={`group absolute z-10 transition-all duration-700 ease-out ${
+                                        className={cn(
+                                            "group absolute z-10 transition-all duration-700 ease-out",
                                             isMenuOpen
                                                 ? "translate-x-0 translate-y-0 opacity-100"
                                                 : "translate-x-0 translate-y-0 opacity-0"
-                                        }`}
+                                        )}
                                         href={item.href}
                                         key={item.href}
                                         onClick={toggleMenu}
@@ -314,7 +316,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
                                                     transformOrigin: "center",
                                                 }}
                                             >
-                                                <div className="rounded-lg border border-white/30 bg-black/90 px-3 py-1.5 shadow-lg backdrop-blur-sm">
+                                                <div className="rounded-lg border border-white/30 bg-black/90 px-3 py-1.5 shadow-lg backdrop-blur-xs">
                                                     <span className="whitespace-nowrap font-medium text-white text-xs tracking-widest">
                                                         {item.label}
                                                     </span>
@@ -440,7 +442,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
                                 <div className="flex items-center justify-center space-x-6">
                                     <Link
                                         className="group font-medium text-sm text-white/60 tracking-wide transition-all duration-300 hover:text-white"
-                                        href="/auth/login"
+                                        href={PAGES.SIGN_IN}
                                         onClick={toggleMenu}
                                     >
                                         LOGIN
@@ -449,7 +451,7 @@ export const Header = ({ className = "" }: HeaderProps) => {
                                     <div className="h-4 w-px bg-white/20" />
                                     <Link
                                         className="group font-medium text-sm text-white/60 tracking-wide transition-all duration-300 hover:text-white"
-                                        href="/auth/register"
+                                        href={PAGES.SIGN_UP}
                                         onClick={toggleMenu}
                                     >
                                         REGISTER

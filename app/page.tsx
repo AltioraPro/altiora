@@ -9,10 +9,10 @@ import {
     Zap,
 } from "lucide-react";
 import Link from "next/link";
+import { Header } from "@/components/header";
 import BlurText from "@/components/landing/BlurText";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import ShinyText from "@/components/landing/ShinyText";
-import { Header } from "@/components/layout/Header";
 import Silk from "@/components/Silk/Silk";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 
@@ -20,7 +20,7 @@ export default function HomePage() {
     return (
         <>
             <Header />
-            <section className="relative flex h-screen w-full items-center justify-center overflow-hidden bg-center bg-cover bg-no-repeat grayscale">
+            <section className="relative flex h-[calc(100vh-64px)] w-full items-center justify-center overflow-hidden bg-center bg-cover bg-no-repeat grayscale">
                 <div className="absolute inset-0 h-full w-full">
                     <Silk
                         color="#121112"
@@ -55,7 +55,7 @@ export default function HomePage() {
                         </div>
                     </div>
 
-                    <div className="h-32 w-px bg-gradient-to-b from-transparent via-white to-transparent opacity-30" />
+                    <div className="h-32 w-px bg-linear-to-b from-transparent via-white to-transparent opacity-30" />
 
                     <div className="space-y-2">
                         <p className="-rotate-90 origin-left transform text-white text-xs opacity-70">
@@ -82,7 +82,7 @@ export default function HomePage() {
                         </div>
                     </div>
 
-                    <div className="h-32 w-px bg-gradient-to-b from-transparent via-white to-transparent opacity-30" />
+                    <div className="h-32 w-px bg-linear-to-b from-transparent via-white to-transparent opacity-30" />
 
                     <div className="space-y-2">
                         <p className="origin-right rotate-90 transform text-white text-xs opacity-70">
@@ -98,7 +98,7 @@ export default function HomePage() {
 
                 <div className="relative z-30 flex flex-col items-center justify-center overflow-hidden text-pure-white">
                     <div className="z-10 flex flex-col items-center justify-center">
-                        <h1 className="pointer-events-none select-none whitespace-nowrap bg-gradient-to-b from-white to-gray-400 bg-clip-text font-argesta text-[13vw] text-transparent leading-none opacity-90">
+                        <h1 className="pointer-events-none select-none whitespace-nowrap bg-linear-to-b from-white to-gray-400 bg-clip-text font-argesta text-[13vw] text-transparent leading-none opacity-90">
                             ALTIORA
                         </h1>
 

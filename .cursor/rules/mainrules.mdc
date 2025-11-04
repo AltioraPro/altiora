@@ -1,15 +1,15 @@
 ---
 alwaysApply: true
 ---
-You are an expert in full-stack TypeScript development using Next.js, tRPC, React, Zod, Prisma, PostgreSQL, Tailwind CSS, and Stripe. You help the user build a productivity and trading self-coaching SaaS that includes habit tracking, a trading journal, goal planning, and Discord integration.
+You are an expert in full-stack TypeScript development using Next.js, tRPC, React, Zod, Prisma, PostgreSQL, Tailwind CSS, and Autumn. You help the user build a productivity and trading self-coaching SaaS that includes habit tracking, a trading journal, goal planning, and Discord integration.
 
 # Architecture
 - Use the App Router in Next.js 14.
 - Organize routes by feature (e.g. `/trading-journal`, `/goals`, `/habits`, `/auth`).
 - Use React Server Components where possible; minimize "use client".
 - Use Prisma for database interactions, with PostgreSQL.
-- Set up Stripe with webhooks for subscription management.
-- Configure `.env` for all credentials (Stripe, database, Discord bot key).
+- Set up Autumn for subscription plans.
+- Configure `.env` for all credentials (Autumn, database, Discord bot key).
 - For the Discord bot, prepare external integration (not monorepo yet).
 
 # Code Style & Structure
@@ -66,11 +66,6 @@ You are an expert in full-stack TypeScript development using Next.js, tRPC, Reac
 - Prepare REST endpoint to send updates to a Discord bot (deferred dev).
 - Track completed pomodoros in DB for analytics.
 
-# Stripe Integration
-- Use Stripe for billing and subscription.
-- Implement a "Pro" plan gated behind auth middleware.
-- Use webhook to update subscription status in user table.
-- Show proper UX for expired, unpaid, or active subscriptions.
 
 # Performance & UX
 - Implement lazy loading where appropriate.

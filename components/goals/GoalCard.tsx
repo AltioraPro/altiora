@@ -100,18 +100,18 @@ export function GoalCard({
 
     if (viewMode === "list") {
         return (
-            <div className="group relative rounded-xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] hover:border-white/20">
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-white/5 via-white/10 to-white/5 opacity-0 blur-sm transition-opacity duration-500 group-hover:opacity-100" />
+            <div className="group relative rounded-xl border border-white/10 bg-white/3 p-6 backdrop-blur-xs transition-all duration-300 hover:scale-[1.02] hover:border-white/20">
+                <div className="absolute inset-0 rounded-xl bg-linear-to-r from-white/5 via-white/10 to-white/5 opacity-0 blur-xs transition-opacity duration-500 group-hover:opacity-100" />
                 <div className="relative flex items-center justify-between">
                     <div className="flex flex-1 items-center gap-4">
                         <button
-                            className="group/button flex-shrink-0"
+                            className="group/button shrink-0"
                             disabled={isMarkingCompleted}
                             onClick={handleMarkCompleted}
                             type="button"
                         >
                             {goal.isCompleted ? (
-                                <div className="flex h-6 w-6 items-center justify-center rounded-full border border-green-400/40 bg-gradient-to-br from-green-500/30 to-green-400/20 shadow-green-500/20 shadow-lg transition-transform duration-300 group-hover/button:scale-110">
+                                <div className="flex h-6 w-6 items-center justify-center rounded-full border border-green-400/40 bg-linear-to-br from-green-500/30 to-green-400/20 shadow-green-500/20 shadow-lg transition-transform duration-300 group-hover/button:scale-110">
                                     <CheckCircle className="h-4 w-4 text-green-400" />
                                 </div>
                             ) : (
@@ -123,7 +123,7 @@ export function GoalCard({
 
                         <div className="min-w-0 flex-1">
                             <h3
-                                className={`mb-2 line-clamp-2 break-words font-semibold text-lg ${goal.isCompleted ? "text-green-400/60 line-through" : "text-white"} transition-all duration-300`}
+                                className={`mb-2 line-clamp-2 wrap-break-word font-semibold text-lg ${goal.isCompleted ? "text-green-400/60 line-through" : "text-white"} transition-all duration-300`}
                                 title={goal.title}
                             >
                                 {goal.title}
@@ -188,14 +188,14 @@ export function GoalCard({
     }
 
     return (
-        <div className="group relative overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-white/20">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-white/10 to-white/5 opacity-0 blur-sm transition-opacity duration-500 group-hover:opacity-100" />
-            <div className="absolute top-0 left-0 h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+        <div className="group relative overflow-hidden rounded-xl border border-white/10 bg-white/3 p-6 backdrop-blur-xs transition-all duration-300 hover:scale-105 hover:border-white/20">
+            <div className="absolute inset-0 bg-linear-to-br from-white/5 via-white/10 to-white/5 opacity-0 blur-xs transition-opacity duration-500 group-hover:opacity-100" />
+            <div className="absolute top-0 left-0 h-px w-full bg-linear-to-r from-transparent via-white/20 to-transparent" />
 
             <div className="relative">
                 <div className="mb-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-gradient-to-br from-white/10 to-white/5 transition-transform duration-300 group-hover:scale-110">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-linear-to-br from-white/10 to-white/5 transition-transform duration-300 group-hover:scale-110">
                             <div className="text-white/80">{getGoalIcon()}</div>
                         </div>
                         <div className="flex gap-2">
@@ -231,14 +231,14 @@ export function GoalCard({
 
                 <div className="mb-4">
                     <h3
-                        className={`mb-2 line-clamp-3 break-words font-semibold text-lg ${goal.isCompleted ? "text-green-400/60 line-through" : "text-white"} transition-all duration-300`}
+                        className={`mb-2 line-clamp-3 wrap-break-word font-semibold text-lg ${goal.isCompleted ? "text-green-400/60 line-through" : "text-white"} transition-all duration-300`}
                         title={goal.title}
                     >
                         {goal.title}
                     </h3>
                     {goal.description && (
                         <p
-                            className={`break-words text-sm ${goal.isCompleted ? "text-green-400/40" : "text-white/60"} line-clamp-2`}
+                            className={`wrap-break-word text-sm ${goal.isCompleted ? "text-green-400/40" : "text-white/60"} line-clamp-2`}
                             title={goal.description}
                         >
                             {goal.description}
