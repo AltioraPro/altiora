@@ -1,23 +1,16 @@
 import { redirect } from "next/navigation";
-import { Header } from "@/components/layout/Header";
 import { PAGES } from "@/constants/pages";
 import { getServerSession } from "@/lib/auth/utils";
 
-export default async function AppLayout({
+export default async function AuthLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
     const session = await getServerSession();
 
-    if (!session?.user) {
-        redirect(PAGES.SIGN_IN);
+    if (session?.user) {
+        redirect(PAGES.DASHBOARD);
     }
-
-    return (
-        <>
-            <Header />
-            {children}
-        </>
-    );
+    return <>{children}</>;
 }
