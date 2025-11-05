@@ -3,6 +3,8 @@ import { base } from "@/server/context";
 import {
     createGoalBase,
     createGoalHandler,
+    createGoalsBase,
+    createGoalsHandler,
     createGoalTaskBase,
     createGoalTaskHandler,
     createSubGoalBase,
@@ -111,6 +113,13 @@ export const goalsRouter = base.router({
         .handler(
             async ({ context, input }) =>
                 await call(createGoalHandler, input, { context })
+        ),
+
+    batchCreate: createGoalsBase
+        .route({ method: "POST" })
+        .handler(
+            async ({ context, input }) =>
+                await call(createGoalsHandler, input, { context })
         ),
 
     update: updateGoalBase
