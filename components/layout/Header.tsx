@@ -14,7 +14,7 @@ export const Header = async ({ className, ...props }: HeaderProps) => {
 
     return (
         <header
-            className="sticky top-0 right-0 left-0 z-20 border border-white/10 bg-transparent backdrop-blur-md transition-transform duration-300 ease-in-out"
+            className="sticky top-0 right-0 left-0 z-20 border-white/10 border-b bg-transparent backdrop-blur-md transition-transform duration-300 ease-in-out"
             {...props}
         >
             <div className="mx-auto px-4 sm:px-6 lg:px-8">
