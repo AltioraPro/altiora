@@ -22,18 +22,18 @@ export function GlobalTradingStats({
             ? Number.parseFloat(stats.totalPnL) || 0
             : stats.totalPnL;
 
-    const avgWin =
-        typeof stats.avgGain === "number"
-            ? stats.avgGain
-            : stats.winningTrades > 0
-              ? totalPnL / stats.winningTrades
-              : 0;
-    const avgLoss =
-        typeof stats.avgLoss === "number"
-            ? stats.avgLoss
-            : stats.losingTrades > 0
-              ? Math.abs(totalPnL) / stats.losingTrades
-              : 0;
+    // const avgWin =
+    //     typeof stats.avgGain === "number"
+    //         ? stats.avgGain
+    //         : stats.winningTrades > 0
+    //           ? totalPnL / stats.winningTrades
+    //           : 0;
+    // const avgLoss =
+    //     typeof stats.avgLoss === "number"
+    //         ? stats.avgLoss
+    //         : stats.losingTrades > 0
+    //           ? Math.abs(totalPnL) / stats.losingTrades
+    //           : 0;
 
     const totalGains = stats.winningTrades > 0 ? totalPnL : 0;
     const totalLosses = stats.losingTrades > 0 ? Math.abs(totalPnL) : 0;
@@ -86,7 +86,7 @@ export function GlobalTradingStats({
             </div>
 
             {/* Secondary Metrics */}
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            {/* <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                 <Card className="border border-white/10 bg-black/20 p-4 transition-colors hover:bg-black/30">
                     <div className="space-y-1">
                         <div className="text-white/60 text-xs">Avg Gain</div>
@@ -104,7 +104,7 @@ export function GlobalTradingStats({
                         </div>
                     </div>
                 </Card>
-            </div>
+            </div> */}
 
             {/* Exit Strategy */}
             <div className="flex justify-center">
