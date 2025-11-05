@@ -14,6 +14,8 @@ export const createGoalValidator = z.object({
     sortOrder: z.number().int().min(0).optional(),
 });
 
+export const createGoalsValidator = z.array(createGoalValidator);
+
 export const updateGoalValidator = z.object({
     id: z.string().min(1, "Goal ID is required"),
     title: z
