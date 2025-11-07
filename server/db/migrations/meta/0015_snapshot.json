@@ -133,12 +133,8 @@
           "name": "account_user_id_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -148,10 +144,7 @@
         "account_provider_account_unique": {
           "name": "account_provider_account_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "provider_id",
-            "account_id"
-          ]
+          "columns": ["provider_id", "account_id"]
         }
       },
       "policies": {},
@@ -387,12 +380,8 @@
           "name": "altiora_advanced_trade_user_id_user_id_fk",
           "tableFrom": "altiora_advanced_trade",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -400,12 +389,8 @@
           "name": "altiora_advanced_trade_journal_id_altiora_trading_journal_id_fk",
           "tableFrom": "altiora_advanced_trade",
           "tableTo": "altiora_trading_journal",
-          "columnsFrom": [
-            "journal_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["journal_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -413,12 +398,8 @@
           "name": "altiora_advanced_trade_asset_id_altiora_trading_asset_id_fk",
           "tableFrom": "altiora_advanced_trade",
           "tableTo": "altiora_trading_asset",
-          "columnsFrom": [
-            "asset_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["asset_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -426,12 +407,8 @@
           "name": "altiora_advanced_trade_session_id_altiora_trading_session_id_fk",
           "tableFrom": "altiora_advanced_trade",
           "tableTo": "altiora_trading_session",
-          "columnsFrom": [
-            "session_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["session_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -439,12 +416,8 @@
           "name": "altiora_advanced_trade_setup_id_altiora_trading_setup_id_fk",
           "tableFrom": "altiora_advanced_trade",
           "tableTo": "altiora_trading_setup",
-          "columnsFrom": [
-            "setup_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["setup_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -556,12 +529,8 @@
           "name": "altiora_goal_reminder_goal_id_altiora_goal_id_fk",
           "tableFrom": "altiora_goal_reminder",
           "tableTo": "altiora_goal",
-          "columnsFrom": [
-            "goal_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["goal_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -569,12 +538,8 @@
           "name": "altiora_goal_reminder_user_id_user_id_fk",
           "tableFrom": "altiora_goal_reminder",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -713,12 +678,8 @@
           "name": "altiora_goal_task_goal_id_altiora_goal_id_fk",
           "tableFrom": "altiora_goal_task",
           "tableTo": "altiora_goal",
-          "columnsFrom": [
-            "goal_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["goal_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -726,12 +687,8 @@
           "name": "altiora_goal_task_user_id_user_id_fk",
           "tableFrom": "altiora_goal_task",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -941,12 +898,8 @@
           "name": "altiora_goal_user_id_user_id_fk",
           "tableFrom": "altiora_goal",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1152,12 +1105,8 @@
           "name": "altiora_habit_completion_user_id_user_id_fk",
           "tableFrom": "altiora_habit_completion",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1165,12 +1114,8 @@
           "name": "altiora_habit_completion_habit_id_altiora_habit_id_fk",
           "tableFrom": "altiora_habit_completion",
           "tableTo": "altiora_habit",
-          "columnsFrom": [
-            "habit_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["habit_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1295,12 +1240,8 @@
           "name": "altiora_habit_user_id_user_id_fk",
           "tableFrom": "altiora_habit",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1397,12 +1338,8 @@
           "name": "monthly_usage_user_id_user_id_fk",
           "tableFrom": "monthly_usage",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1506,12 +1443,8 @@
           "name": "session_user_id_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1622,12 +1555,8 @@
           "name": "altiora_sub_goal_goal_id_altiora_goal_id_fk",
           "tableFrom": "altiora_sub_goal",
           "tableTo": "altiora_goal",
-          "columnsFrom": [
-            "goal_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["goal_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1635,12 +1564,8 @@
           "name": "altiora_sub_goal_user_id_user_id_fk",
           "tableFrom": "altiora_sub_goal",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1912,12 +1837,8 @@
           "name": "altiora_trade_user_id_user_id_fk",
           "tableFrom": "altiora_trade",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2043,12 +1964,8 @@
           "name": "altiora_trading_asset_user_id_user_id_fk",
           "tableFrom": "altiora_trading_asset",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2056,12 +1973,8 @@
           "name": "altiora_trading_asset_journal_id_altiora_trading_journal_id_fk",
           "tableFrom": "altiora_trading_asset",
           "tableTo": "altiora_trading_journal",
-          "columnsFrom": [
-            "journal_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["journal_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2179,12 +2092,8 @@
           "name": "altiora_trading_journal_user_id_user_id_fk",
           "tableFrom": "altiora_trading_journal",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2307,12 +2216,8 @@
           "name": "altiora_trading_session_user_id_user_id_fk",
           "tableFrom": "altiora_trading_session",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2320,12 +2225,8 @@
           "name": "altiora_trading_session_journal_id_altiora_trading_journal_id_fk",
           "tableFrom": "altiora_trading_session",
           "tableTo": "altiora_trading_journal",
-          "columnsFrom": [
-            "journal_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["journal_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2441,12 +2342,8 @@
           "name": "altiora_trading_setup_user_id_user_id_fk",
           "tableFrom": "altiora_trading_setup",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2454,12 +2351,8 @@
           "name": "altiora_trading_setup_journal_id_altiora_trading_journal_id_fk",
           "tableFrom": "altiora_trading_setup",
           "tableTo": "altiora_trading_journal",
-          "columnsFrom": [
-            "journal_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["journal_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2640,9 +2533,7 @@
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},

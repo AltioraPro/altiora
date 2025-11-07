@@ -1,193 +1,58 @@
+import { autumn } from "autumn-js/better-auth";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { env } from "@/env";
+import { resend } from "@/lib/resend";
 import { db } from "@/server/db";
-import { users, sessions, accounts, verifications } from "@/server/db/schema";
-import { Resend } from "resend";
-import { createAuthMiddleware } from "better-auth/api";
 
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-
-
-const computedBaseUrl = (() => {
-  if (process.env.NEXT_PUBLIC_APP_URL) {
-    return process.env.NEXT_PUBLIC_APP_URL;
-  }
-  
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-  
-  return "http://localhost:3000";
-})();
-
-
-const dbProxy = new Proxy(db, {
-  get(target, prop) {
-    const original = (target as any)[prop];
-    
-    if (prop === 'insert') {
-      return (table: any) => {
-        const insertBuilder = original.call(target, table);
-        return new Proxy(insertBuilder, {
-          get(insertTarget, insertProp) {
-            const insertOriginal = (insertTarget as any)[insertProp];
-            if (insertProp === 'values') {
-              return (values: any) => {
-                console.log('[DB PROXY INSERT] Values before fix:', values);
-                
-                if (values.emailVerified === false || values.emailVerified === true) {
-                  console.log('[DB PROXY INSERT] Converting emailVerified boolean to null');
-                  values.emailVerified = null;
-                }
-                
-                const now = new Date();
-                if (values.createdAt === undefined || values.createdAt === null) {
-                  console.log('[DB PROXY INSERT] Adding missing createdAt');
-                  values.createdAt = now;
-                }
-                if (values.updatedAt === undefined || values.updatedAt === null) {
-                  console.log('[DB PROXY INSERT] Adding missing updatedAt');
-                  values.updatedAt = now;
-                }
-                
-                console.log('[DB PROXY INSERT] Values after fix:', values);
-                return insertOriginal.call(insertTarget, values);
-              };
-            }
-            return typeof insertOriginal === 'function' ? insertOriginal.bind(insertTarget) : insertOriginal;
-          }
-        });
-      };
+export function getBaseUrl() {
+    if (env.VERCEL_ENV === "preview") {
+        return `https://${env.VERCEL_BRANCH_URL}`;
     }
-    
-    if (prop === 'update') {
-      return (table: any) => {
-        const updateBuilder = original.call(target, table);
-        return new Proxy(updateBuilder, {
-          get(updateTarget, updateProp) {
-            const updateOriginal = (updateTarget as any)[updateProp];
-            if (updateProp === 'set') {
-              return (values: any) => {
-                if (values.emailVerified === false || values.emailVerified === true) {
-                  values.emailVerified = null;
-                }
-                
-                if (values.updatedAt === undefined || values.updatedAt === null) {
-                  values.updatedAt = new Date();
-                }
-                
-                return updateOriginal.call(updateTarget, values);
-              };
-            }
-            return typeof updateOriginal === 'function' ? updateOriginal.bind(updateTarget) : updateOriginal;
-          }
-        });
-      };
+    if (env.VERCEL_PROJECT_PRODUCTION_URL) {
+        return `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`;
     }
-    
-    return typeof original === 'function' ? original.bind(target) : original;
-  }
-});
+    return "http://localhost:3000";
+}
 
-const baseAdapter = drizzleAdapter(dbProxy as any, {
-  provider: "pg",
-  schema: {
-    user: users,
-    session: sessions,
-    account: accounts,
-    verification: verifications,
-  },
-});
-
-const wrappedAdapter = (options: any) => {
-  const adapter = baseAdapter(options);
-  
-  const originalCreate = adapter.create;
-  adapter.create = async <T extends Record<string, unknown>, R = T>(
-    data: { model: string; data: Omit<T, "id">; select?: string[] | undefined; forceAllowId?: boolean | undefined; }
-  ): Promise<R> => {
-    console.log(`[ADAPTER CREATE] Model: ${data.model}, Data:`, data.data);
-    
-    const payload = { ...data, data: { ...data.data } };
-    
-    const now = new Date();
-    if ((payload.data as any).createdAt === undefined || (payload.data as any).createdAt === null) {
-      console.log('[ADAPTER CREATE] Adding createdAt');
-      (payload.data as any).createdAt = now;
-    }
-    if ((payload.data as any).updatedAt === undefined || (payload.data as any).updatedAt === null) {
-      console.log('[ADAPTER CREATE] Adding updatedAt');
-      (payload.data as any).updatedAt = now;
-    }
-    
-    if ((payload.data as any).emailVerified === false || (payload.data as any).emailVerified === true) {
-      console.log('[ADAPTER CREATE] Converting emailVerified boolean to null');
-      (payload.data as any).emailVerified = null;
-    }
-    
-    console.log(`[ADAPTER CREATE] Final data:`, payload.data);
-    return originalCreate.call(adapter, payload) as Promise<R>;
-  };
-  
-  const originalUpdate = adapter.update;
-  adapter.update = async <T extends Record<string, unknown>, R = T>(
-    data: { model: string; where: any; update: Partial<T>; select?: string[] | undefined; }
-  ): Promise<R> => {
-    console.log(`[ADAPTER UPDATE] Model: ${data.model}, Update:`, data.update);
-    
-    const payload = { ...data, update: { ...data.update } };
-    
-    if ((payload.update as any).updatedAt === undefined || (payload.update as any).updatedAt === null) {
-      console.log('[ADAPTER UPDATE] Adding updatedAt');
-      (payload.update as any).updatedAt = new Date();
-    }
-    
-    if ((payload.update as any).emailVerified === false || (payload.update as any).emailVerified === true) {
-      console.log('[ADAPTER UPDATE] Converting emailVerified boolean to null');
-      (payload.update as any).emailVerified = null;
-    }
-    
-    console.log(`[ADAPTER UPDATE] Final update:`, payload.update);
-    return originalUpdate.call(adapter, payload) as Promise<R>;
-  };
-  
-  return adapter;
-};
+const userAdditionalFields = {
+    rank: {
+        type: "string",
+        required: true,
+        defaultValue: "NEW",
+    },
+    isLeaderboardPublic: {
+        type: "boolean",
+        required: true,
+        defaultValue: false,
+    },
+} as const;
 
 export const auth = betterAuth({
-  baseURL: computedBaseUrl,
-  secret: process.env.BETTER_AUTH_SECRET,
-  database: wrappedAdapter,
-  hooks: {
-    before: createAuthMiddleware(async (ctx) => {
-      if (ctx.path === "/sign-up/email") {
-        return {
-          context: {
-            ...ctx,
-            body: {
-              ...ctx.body,
-              name: ctx.body.name || "John Doe",
-            },
-          }
-        };
-      }
+    baseURL: getBaseUrl(),
+    secret: env.BETTER_AUTH_SECRET,
+    trustedOrigins: [getBaseUrl()],
+    database: drizzleAdapter(db, {
+        provider: "pg",
     }),
-    
-    after: createAuthMiddleware(async () => {
-    }),
-  },
-  trustedOrigins: [computedBaseUrl],
-  emailAndPassword: {
-    enabled: true,
-    requireEmailVerification: true,
-    sendResetPassword: async ({ user, url }: { user: { email: string }, url: string }) => {
-      await resend.emails.send({
-        from: "Altiora <noreply@altiora.pro>",
-        to: user.email,
-        subject: "Reset your password - Altiora",
-        html: `
+    user: {
+        additionalFields: userAdditionalFields,
+    },
+    emailAndPassword: {
+        enabled: true,
+        requireEmailVerification: true,
+        sendResetPassword: async ({
+            user,
+            url,
+        }: {
+            user: { email: string };
+            url: string;
+        }) => {
+            await resend.emails.send({
+                from: "Altiora <noreply@altiora.pro>",
+                to: user.email,
+                subject: "Reset your password - Altiora",
+                html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #000; color: #fff; padding: 40px 20px;">
             <div style="text-align: center; margin-bottom: 40px;">
               <h1 style="color: #fff; font-size: 32px; margin: 0;">ALTIORA</h1>
@@ -220,17 +85,23 @@ export const auth = betterAuth({
             </div>
           </div>
         `,
-      });
+            });
+        },
     },
-  },
 
-  emailVerification: {
-    sendVerificationEmail: async ({ user, url }: { user: { email: string }, url: string }) => {
-      await resend.emails.send({
-        from: "Altiora <noreply@altiora.pro>",
-        to: user.email,
-        subject: "Verify your email address",
-        html: `
+    emailVerification: {
+        sendVerificationEmail: async ({
+            user,
+            url,
+        }: {
+            user: { email: string };
+            url: string;
+        }) => {
+            await resend.emails.send({
+                from: "Altiora <noreply@altiora.pro>",
+                to: user.email,
+                subject: "Verify your email address",
+                html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #000; color: #fff; padding: 40px 20px;">
             <div style="text-align: center; margin-bottom: 40px;">
               <h1 style="color: #fff; font-size: 32px; margin: 0;">ALTIORA</h1>
@@ -260,45 +131,35 @@ export const auth = betterAuth({
             </div>
           </div>
         `,
-      });
+            });
+        },
     },
-  },
 
-  socialProviders: {
-    google: {
-      prompt: "select_account",
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      redirectURI: `${computedBaseUrl}/api/auth/callback/google`,
+    socialProviders: {
+        google: {
+            clientId: env.GOOGLE_CLIENT_ID,
+            clientSecret: env.GOOGLE_CLIENT_SECRET,
+        },
     },
-  },
-  
-  account: {
-    accountLinking: {
-      enabled: true,
-      trustedProviders: ["google"],
-    },
-  },
-  
-  advanced: {
-    crossSubDomainCookies: {
-      enabled: true,
-    },
-    useSecureCookies: process.env.NODE_ENV === "production",
-    database: {
-      generateId: false,
-    },
-  },
 
-  ...(process.env.NODE_ENV === "development" && {
-    debug: true,
-  }),
+    advanced: {
+        crossSubDomainCookies: {
+            enabled: true,
+        },
+        useSecureCookies: env.NODE_ENV === "production",
+    },
 
-  session: {
-    expiresIn: 60 * 60 * 24 * 7, 
-    updateAge: 60 * 60 * 24, 
-  },
+    ...(process.env.NODE_ENV === "development" && {
+        debug: true,
+    }),
+
+    session: {
+        expiresIn: 60 * 60 * 24 * 7,
+        updateAge: 60 * 60 * 24,
+    },
+
+    plugins: [autumn()],
 });
 
 export type Session = typeof auth.$Infer.Session;
-export type User = typeof auth.$Infer.Session.user; 
+export type User = typeof auth.$Infer.Session.user;

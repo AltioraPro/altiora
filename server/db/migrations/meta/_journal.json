@@ -134,6 +134,62 @@
       "when": 1760702356272,
       "tag": "0018_legal_shockwave",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1761077271381,
+      "tag": "0019_aspiring_shockwave",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1761079782127,
+      "tag": "0020_huge_hulk",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1761080687343,
+      "tag": "0021_sad_blink",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1761119694283,
+      "tag": "0022_flowery_william_stryker",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1761127393666,
+      "tag": "0023_safe_nehzno",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1761127517323,
+      "tag": "0024_tiresome_pixie",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1762090423336,
+      "tag": "0025_gifted_stardust",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1762091803627,
+      "tag": "0026_daffy_vengeance",
+      "breakpoints": true
     }
   ]
 }
