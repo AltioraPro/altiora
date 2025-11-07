@@ -20,6 +20,7 @@ export default function HomePage() {
     return (
         <>
             <Header />
+
             <section className="relative flex h-[calc(100vh-64px)] w-full items-center justify-center overflow-hidden bg-center bg-cover bg-no-repeat grayscale">
                 <div className="absolute inset-0 h-full w-full">
                     <Silk
