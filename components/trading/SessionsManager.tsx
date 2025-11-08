@@ -95,9 +95,7 @@ export function SessionsManager({ journalId }: SessionsManagerProps) {
             const sessionTrades =
                 trades?.filter((trade) => trade.sessionId === session.id) || [];
             const totalPnL = sessionTrades.reduce((sum, trade) => {
-                const pnl = trade.profitLossPercentage
-                    ? Number.parseFloat(trade.profitLossPercentage) || 0
-                    : 0;
+                const pnl = Number(trade.profitLossPercentage);
                 return sum + pnl;
             }, 0);
 

@@ -24,7 +24,7 @@ interface GlobalTradingChartsProps {
     sessions?: Array<{ id: string; name: string }>;
     trades?: Array<{
         id: string;
-        tradeDate: string;
+        tradeDate: Date;
         profitLossPercentage: string | null;
         sessionId: string | null;
     }>;
@@ -46,14 +46,12 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
             }
         >();
         for (const trade of trades) {
-            const date = new Date(trade.tradeDate);
+            const date = trade.tradeDate;
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, "0");
             const key = `${year}-${month}`;
             const label = `${date.toLocaleString("en-US", { month: "short" })}. ${String(year).slice(-2)}`;
-            const pnl = trade.profitLossPercentage
-                ? Number.parseFloat(trade.profitLossPercentage) || 0
-                : 0;
+            const pnl = Number(trade.profitLossPercentage);
             const existing = monthStats.get(key);
 
             if (existing) {
@@ -94,9 +92,7 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
             )
             .reduce(
                 (acc, trade, index) => {
-                    const pnl = trade.profitLossPercentage
-                        ? Number.parseFloat(trade.profitLossPercentage) || 0
-                        : 0;
+                    const pnl = Number(trade.profitLossPercentage);
                     const previousCumulative =
                         acc.length > 0 ? (acc.at(-1)?.cumulative ?? 0) : 0;
 

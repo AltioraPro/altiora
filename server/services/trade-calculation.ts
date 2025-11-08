@@ -15,13 +15,12 @@ export interface TradeCalculationInput {
 
 export function calculateTradeResults(
     input: TradeCalculationInput,
-    journal: TradingJournal,
-    currentCapital?: number
+    journal: TradingJournal
 ): TradeCalculationResult {
     if (!(journal.usePercentageCalculation && journal.startingCapital)) {
         return {
-            profitLossPercentage: input.profitLossPercentage || "0",
-            profitLossAmount: input.profitLossAmount,
+            profitLossPercentage: input.profitLossPercentage || "",
+            profitLossAmount: input.profitLossAmount || "",
             exitReason: input.exitReason || "Manual",
         };
     }
@@ -40,8 +39,8 @@ export function calculateTradeResults(
     }
 
     return {
-        profitLossPercentage: profitLossPercentage.toFixed(2),
-        profitLossAmount: profitLossAmount.toFixed(2),
+        profitLossPercentage: profitLossPercentage.toString(),
+        profitLossAmount: profitLossAmount.toString(),
         exitReason: input.exitReason || "Manual",
     };
 }
@@ -58,13 +57,21 @@ export function validatePercentageCalculation(
 
 export function formatPercentage(value: string | number): string {
     const num = typeof value === "string" ? Number.parseFloat(value) : value;
-    if (isNaN(num)) return "0.00%";
+
+    if (Number.isNaN(num)) {
+        return "0.00%";
+    }
+
     return `${num >= 0 ? "+" : ""}${num.toFixed(2)}%`;
 }
 
 export function formatAmount(value: string | number, currency = "€"): string {
     const num = typeof value === "string" ? Number.parseFloat(value) : value;
-    if (isNaN(num)) return `0.00${currency}`;
+
+    if (Number.isNaN(num)) {
+        return `0.00${currency}`;
+    }
+
     return `${num >= 0 ? "+" : ""}${num.toFixed(2)}${currency}`;
 }
 
@@ -73,7 +80,10 @@ export function getTradeColor(profitLossPercentage: string | number): string {
         typeof profitLossPercentage === "string"
             ? Number.parseFloat(profitLossPercentage)
             : profitLossPercentage;
-    if (isNaN(num) || num === 0) return "text-gray-500";
+
+    if (Number.isNaN(num) || num === 0) {
+        return "text-gray-500";
+    }
     return num > 0 ? "text-green-600" : "text-red-600";
 }
 

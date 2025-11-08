@@ -37,7 +37,6 @@ export const createTradingAssetHandler = createTradingAssetBase.handler(
                 userId,
                 journalId: input.journalId,
                 name: input.name,
-                symbol: input.symbol || input.name,
                 type: input.type,
                 createdAt: new Date(),
                 updatedAt: new Date(),

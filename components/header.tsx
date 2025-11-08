@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Suspense } from "react";
 import { PAGES } from "@/constants/pages";
 import { getServerSession } from "@/lib/auth/utils";
 import { cn } from "@/lib/utils";
@@ -69,9 +68,7 @@ export const Header = ({
 
                     {/* Auth Section - Right */}
                     <div className="z-10 ml-auto flex flex-1 items-center justify-end space-x-3">
-                        <Suspense>
-                            <HeaderLoggedIn />
-                        </Suspense>
+                        <HeaderLoggedIn />
                     </div>
                 </div>
             </div>

@@ -1,7 +1,10 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { DialogClose } from "@radix-ui/react-dialog";
 import { useMutation } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -11,34 +14,48 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import {
+    Field,
+    FieldContent,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { orpc } from "@/orpc/client";
-import type { TradingJournal } from "@/server/db/schema";
+import {
+    type UpdateTradingJournalInput,
+    updateTradingJournalSchema,
+} from "@/server/routers/trading/validators";
+import { useEditJournalStore } from "@/stores/edit-journal-store";
 
-interface EditJournalModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    journal: Pick<TradingJournal, "id" | "name" | "description">;
-    onSuccess?: () => void;
-}
+export function EditJournalModal() {
+    const { isOpen, journal, close } = useEditJournalStore();
 
-export function EditJournalModal({
-    isOpen,
-    onClose,
-    journal,
-    onSuccess,
-}: EditJournalModalProps) {
-    const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors, isSubmitting },
+    } = useForm<UpdateTradingJournalInput>({
+        resolver: zodResolver(updateTradingJournalSchema),
+        defaultValues: {
+            id: "",
+            name: "",
+            description: "",
+        },
+    });
 
     useEffect(() => {
         if (journal) {
-            setName(journal.name || "");
-            setDescription(journal.description || "");
+            reset({
+                id: journal.id,
+                name: journal.name || "",
+                description: journal.description || "",
+            });
         }
-    }, [journal]);
+    }, [journal, reset]);
 
     const { mutateAsync: updateJournal, isPending: isUpdatingJournal } =
         useMutation(
@@ -49,100 +66,110 @@ export function EditJournalModal({
                     ],
                 },
                 onSuccess: () => {
-                    onSuccess?.();
+                    reset();
+                    close();
                 },
             })
         );
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!name.trim()) {
-            console.error("Journal name is required");
+    const onSubmit = async (data: UpdateTradingJournalInput) => {
+        if (!journal) {
             return;
         }
-
-        try {
-            await updateJournal({
-                id: journal.id,
-                name: name.trim(),
-                description: description.trim(),
-            });
-        } catch (error) {
-            console.error("Error updating journal:", error);
-        }
+        await updateJournal({
+            id: journal.id,
+            name: data.name,
+            description: data.description,
+        });
     };
+
+    const isPending = isUpdatingJournal || isSubmitting;
 
     const handleClose = () => {
-        if (!isUpdatingJournal) {
-            onClose();
+        if (isPending) {
+            return;
         }
+        reset();
+        close();
     };
+
+    if (!journal) {
+        return null;
+    }
 
     return (
         <Dialog onOpenChange={handleClose} open={isOpen}>
-            <DialogContent className="border-white/20 bg-black text-white sm:max-w-[425px]">
-                <DialogHeader>
-                    <DialogTitle className="text-white">
-                        Edit journal
-                    </DialogTitle>
-                    <DialogDescription className="text-white/70">
-                        Edit your trading journal information.
-                    </DialogDescription>
-                </DialogHeader>
-                <form onSubmit={handleSubmit}>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid gap-2">
-                            <Label className="text-white/80" htmlFor="name">
+            <form id="edit-journal-form" onSubmit={handleSubmit(onSubmit)}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Edit journal</DialogTitle>
+                        <DialogDescription>
+                            Edit your trading journal information.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <FieldGroup>
+                        <Field data-invalid={!!errors.name}>
+                            <FieldLabel htmlFor="name">
                                 Journal name *
-                            </Label>
-                            <Input
-                                className="border-white/30 bg-black text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
-                                disabled={isUpdatingJournal}
-                                id="name"
-                                onChange={(e) => setName(e.target.value)}
-                                placeholder="Ex: Main Journal"
-                                value={name}
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label
-                                className="text-white/80"
-                                htmlFor="description"
-                            >
+                            </FieldLabel>
+                            <FieldContent>
+                                <Input
+                                    disabled={isPending}
+                                    id="name"
+                                    placeholder="Ex: Main Journal"
+                                    {...register("name")}
+                                />
+                                <FieldError
+                                    errors={
+                                        errors.name ? [errors.name] : undefined
+                                    }
+                                />
+                            </FieldContent>
+                        </Field>
+
+                        <Field data-invalid={!!errors.description}>
+                            <FieldLabel htmlFor="description">
                                 Description
-                            </Label>
-                            <Textarea
-                                className="border-white/30 bg-black text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
-                                disabled={isUpdatingJournal}
-                                id="description"
-                                onChange={(e) => setDescription(e.target.value)}
-                                placeholder="Optional journal description"
-                                rows={3}
-                                value={description}
-                            />
-                        </div>
-                    </div>
+                            </FieldLabel>
+                            <FieldContent>
+                                <Textarea
+                                    disabled={isPending}
+                                    id="description"
+                                    placeholder="Optional journal description"
+                                    rows={3}
+                                    {...register("description")}
+                                />
+                                <FieldError
+                                    errors={
+                                        errors.description
+                                            ? [errors.description]
+                                            : undefined
+                                    }
+                                />
+                            </FieldContent>
+                        </Field>
+                    </FieldGroup>
                     <DialogFooter>
+                        <DialogClose asChild>
+                            <Button
+                                disabled={isPending}
+                                onClick={handleClose}
+                                type="button"
+                                variant="outline"
+                            >
+                                Cancel
+                            </Button>
+                        </DialogClose>
                         <Button
-                            className="border-white/30 text-white transition-colors hover:bg-white hover:text-black"
-                            disabled={isUpdatingJournal}
-                            onClick={handleClose}
-                            type="button"
-                            variant="outline"
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            className="bg-white text-black transition-colors hover:bg-white/90"
-                            disabled={isUpdatingJournal || !name.trim()}
+                            disabled={isPending}
+                            form="edit-journal-form"
                             type="submit"
                         >
-                            {isUpdatingJournal ? "Updating..." : "Update"}
+                            {isPending ? "Updating..." : "Update"}
                         </Button>
                     </DialogFooter>
-                </form>
-            </DialogContent>
+                </DialogContent>
+            </form>
         </Dialog>
     );
 }

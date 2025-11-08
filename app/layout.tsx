@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Providers } from "@/app/providers";
-import { Footer } from "@/components/layout/Footer";
 
 import "@/orpc/server"; // for pre-rendering
 import "./globals.css";
@@ -24,7 +23,6 @@ export default function RootLayout({
             <body>
                 <Providers>
                     <main>{children}</main>
-                    <Footer />
                 </Providers>
             </body>
         </html>

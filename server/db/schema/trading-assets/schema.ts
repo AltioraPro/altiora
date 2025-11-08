@@ -1,4 +1,3 @@
-import { sql } from "drizzle-orm";
 import {
     boolean,
     index,
@@ -21,19 +20,17 @@ export const tradingAssets = pgTable(
             .notNull(),
 
         name: varchar("name", { length: 50 }).notNull(),
-        symbol: varchar("symbol", { length: 20 }).notNull(),
         type: varchar("type", { length: 20 }).default("forex"),
         isActive: boolean("is_active").default(true).notNull(),
         createdAt: timestamp("created_at", { withTimezone: true })
-            .default(sql`CURRENT_TIMESTAMP`)
+            .defaultNow()
             .notNull(),
         updatedAt: timestamp("updated_at", { withTimezone: true })
-            .default(sql`CURRENT_TIMESTAMP`)
+            .defaultNow()
             .notNull(),
     },
     (table) => [
         index("trading_asset_user_id_idx").on(table.userId),
         index("trading_asset_journal_id_idx").on(table.journalId),
-        index("trading_asset_symbol_idx").on(table.symbol),
     ]
 );

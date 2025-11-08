@@ -25,7 +25,6 @@ export function DraggableJournalCard({
     showSelection = false,
 }: DraggableJournalCardProps) {
     const {
-        attributes,
         listeners,
         setNodeRef,
         transform,
@@ -52,7 +51,7 @@ export function DraggableJournalCard({
                         checked={isSelected}
                         className="border-white/30 bg-black/50 data-[state=checked]:bg-white data-[state=checked]:text-black"
                         onCheckedChange={(checked) =>
-                            onSelect(journal.id, checked as boolean)
+                            onSelect(journal.id, Boolean(checked))
                         }
                     />
                 </div>
@@ -60,9 +59,8 @@ export function DraggableJournalCard({
 
             {/* Drag Handle */}
             <div
-                {...attributes}
-                {...listeners}
                 className="absolute top-2 left-2 z-10 cursor-grab opacity-0 transition-opacity active:cursor-grabbing group-hover:opacity-100"
+                {...listeners}
             >
                 <div className="rounded bg-black/50 p-1 backdrop-blur-xs">
                     <GripVertical className="h-4 w-4 text-white/60" />

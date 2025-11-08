@@ -299,9 +299,7 @@ export function TradesTable({ journalId }: TradesTableProps) {
                                                         (a) =>
                                                             a.id ===
                                                             trade.assetId
-                                                    )?.name ||
-                                                        trade.symbol ||
-                                                        "-"}
+                                                    )?.name || "-"}
                                                 </td>
                                                 <td className="px-4 py-3 text-sm text-white">
                                                     {sessions?.find(
@@ -521,7 +519,7 @@ export function TradesTable({ journalId }: TradesTableProps) {
                                                             variant={
                                                                 currentPage ===
                                                                 pageNum
-                                                                    ? "default"
+                                                                    ? "primary"
                                                                     : "outline"
                                                             }
                                                         >
