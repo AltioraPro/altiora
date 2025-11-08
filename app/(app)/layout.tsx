@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
-import { Header } from "@/components/layout/Header";
 import { PAGES } from "@/constants/pages";
 import { getServerSession } from "@/lib/auth/utils";
 import { ModalProvider } from "@/providers/modal-provider";
+import { Header } from "./_components/header";
+import { Sidebar } from "./_components/sidebar";
 
 export default async function AppLayout({
     children,
@@ -17,8 +18,13 @@ export default async function AppLayout({
 
     return (
         <ModalProvider>
-            <Header />
-            {children}
+            <div className="relative">
+                <Sidebar />
+                <div className="pb-8 md:ml-[70px]">
+                    <Header />
+                    {children}
+                </div>
+            </div>
         </ModalProvider>
     );
 }
