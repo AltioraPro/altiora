@@ -3,6 +3,7 @@
 import { inferAdditionalFields } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 import type { auth } from "./auth";
+import { whitelistClient } from "./auth/plugins/whitelist/client";
 
 function resolveBaseUrl(): string {
     if (typeof window !== "undefined") {
@@ -22,7 +23,7 @@ function resolveBaseUrl(): string {
 
 export const authClient = createAuthClient({
     baseURL: resolveBaseUrl(),
-    plugins: [inferAdditionalFields<typeof auth>()],
+    plugins: [inferAdditionalFields<typeof auth>(), whitelistClient()],
 });
 
 export const { signIn, signUp, signOut, useSession, getSession } = authClient;

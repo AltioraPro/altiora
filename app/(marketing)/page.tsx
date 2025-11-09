@@ -1,5 +1,4 @@
 import {
-    ArrowRight,
     BarChart3,
     ChevronDown,
     Clock,
@@ -8,14 +7,13 @@ import {
     TrendingUp,
     Zap,
 } from "lucide-react";
-import Link from "next/link";
 import { Suspense } from "react";
 import { Header } from "@/components/header";
 import BlurText from "@/components/landing/BlurText";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import ShinyText from "@/components/landing/ShinyText";
 import Silk from "@/components/Silk/Silk";
-import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
+import { WaitlistForm } from "./_components/waitlist-form";
 
 export default function HomePage() {
     return (
@@ -116,30 +114,7 @@ export default function HomePage() {
                         />
                     </div>
 
-                    <div className="flex items-center justify-center">
-                        <div className="mt-12 flex flex-col gap-4 sm:flex-row">
-                            <Link href="/pricing">
-                                <HoverBorderGradient
-                                    className="bg-pure-black text-white opacity-70"
-                                    containerClassName="bg-pure-black"
-                                >
-                                    <span className="flex items-center gap-2">
-                                        Get Started
-                                        <ArrowRight className="h-4 w-4" />
-                                    </span>
-                                </HoverBorderGradient>
-                            </Link>
-
-                            <Link href="/about">
-                                <HoverBorderGradient
-                                    className="bg-pure-black text-white opacity-70"
-                                    containerClassName="bg-pure-white"
-                                >
-                                    About Us
-                                </HoverBorderGradient>
-                            </Link>
-                        </div>
-                    </div>
+                    <WaitlistForm />
                 </div>
                 <div className="-translate-x-1/2 absolute bottom-8 left-1/2 z-30 transform">
                     <div className="flex animate-bounce flex-col items-center space-y-2">
