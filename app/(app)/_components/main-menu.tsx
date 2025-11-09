@@ -173,8 +173,7 @@ const Item = ({
                     <div
                         className={cn(
                             "mr-[15px] ml-[15px] h-[40px] border border-transparent transition-all duration-200 ease-&lsqb;cubic-bezier(0.4,0,0.2,1)&rsqb;",
-                            isActive &&
-                                "border-[#DCDAD2] bg-neutral-900 dark:border-[#2C2C2C] dark:bg-neutral-900",
+                            isActive && "border-neutral-700 bg-neutral-900",
                             isExpanded ? "w-[calc(100%-30px)]" : "w-[40px]"
                         )}
                     />

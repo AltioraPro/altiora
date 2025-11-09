@@ -1,9 +1,17 @@
+import { render } from "@react-email/components";
 import { autumn } from "autumn-js/better-auth";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { emailOTP } from "better-auth/plugins";
+import { PAGES } from "@/constants/pages";
+import { PROJECT } from "@/constants/project";
+import ResetPasswordTemplate from "@/emails/reset-password";
+import VerifyEmailTemplate from "@/emails/verify-email";
+import WaitlistApprovedTemplate from "@/emails/waitlist-approved";
 import { env } from "@/env";
 import { resend } from "@/lib/resend";
 import { db } from "@/server/db";
+import { whitelist } from "./auth/plugins/whitelist";
 
 export function getBaseUrl() {
     if (env.VERCEL_ENV === "preview") {
@@ -41,96 +49,24 @@ export const auth = betterAuth({
     emailAndPassword: {
         enabled: true,
         requireEmailVerification: true,
-        sendResetPassword: async ({
-            user,
-            url,
-        }: {
-            user: { email: string };
-            url: string;
-        }) => {
-            await resend.emails.send({
-                from: "Altiora <noreply@altiora.pro>",
-                to: user.email,
-                subject: "Reset your password - Altiora",
-                html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #000; color: #fff; padding: 40px 20px;">
-            <div style="text-align: center; margin-bottom: 40px;">
-              <h1 style="color: #fff; font-size: 32px; margin: 0;">ALTIORA</h1>
-              <p style="color: #999; margin: 8px 0 0 0;">Personal coaching platform</p>
-            </div>
-            
-            <div style="background: #111; border: 1px solid #333; border-radius: 8px; padding: 32px; margin-bottom: 24px;">
-              <h2 style="color: #fff; margin: 0 0 16px 0; font-size: 24px;">Reset Your Password</h2>
-              <p style="color: #ccc; margin: 0 0 24px 0; line-height: 1.6;">
-                We received a request to reset your password. Click the button below to create a new password.
-              </p>
-              
-              <div style="text-align: center; margin: 32px 0;">
-                <a href="${url}" style="background: #fff; color: #000; padding: 16px 32px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold; font-size: 16px;">
-                  Reset Password
-                </a>
-              </div>
-              
-              <p style="color: #666; font-size: 14px; margin: 24px 0 0 0; text-align: center;">
-                This link will expire in 1 hour.
-              </p>
-              
-              <p style="color: #666; font-size: 14px; margin: 16px 0 0 0; text-align: center;">
-                If you didn't request this password reset, please ignore this email.
-              </p>
-            </div>
-            
-            <div style="text-align: center; color: #666; font-size: 12px;">
-              <p style="margin: 0;">© 2024 Altiora. All rights reserved.</p>
-            </div>
-          </div>
-        `,
-            });
-        },
-    },
+        minPasswordLength: 8,
+        maxPasswordLength: 128,
+        sendResetPassword: async ({ user, url }, request) => {
+            const host = request?.headers.get("host") ?? "localhost:3000";
 
-    emailVerification: {
-        sendVerificationEmail: async ({
-            user,
-            url,
-        }: {
-            user: { email: string };
-            url: string;
-        }) => {
+            const html = await render(
+                ResetPasswordTemplate({
+                    name: user.name,
+                    url,
+                    host,
+                })
+            );
+
             await resend.emails.send({
                 from: "Altiora <noreply@altiora.pro>",
                 to: user.email,
-                subject: "Verify your email address",
-                html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #000; color: #fff; padding: 40px 20px;">
-            <div style="text-align: center; margin-bottom: 40px;">
-              <h1 style="color: #fff; font-size: 32px; margin: 0;">ALTIORA</h1>
-              <p style="color: #999; margin: 8px 0 0 0;">Personal coaching platform</p>
-            </div>
-            
-            <div style="background: #111; border: 1px solid #333; border-radius: 8px; padding: 32px; margin-bottom: 24px;">
-              <h2 style="color: #fff; margin: 0 0 16px 0; font-size: 24px;">Welcome to Altiora!</h2>
-              <p style="color: #ccc; margin: 0 0 24px 0; line-height: 1.6;">
-                Complete your account setup by verifying your email address. Click the button below to get started.
-              </p>
-              
-              <div style="text-align: center; margin: 32px 0;">
-                <a href="${url}" style="background: #fff; color: #000; padding: 16px 32px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold; font-size: 16px;">
-                  Verify Email Address
-                </a>
-              </div>
-              
-              <p style="color: #666; font-size: 14px; margin: 24px 0 0 0; text-align: center;">
-                This link will expire in 24 hours.
-              </p>
-            </div>
-            
-            <div style="text-align: center; color: #666; font-size: 12px;">
-              <p style="margin: 0;">If you didn't create this account, please ignore this email.</p>
-              <p style="margin: 8px 0 0 0;">© 2024 Altiora. All rights reserved.</p>
-            </div>
-          </div>
-        `,
+                subject: `Reset your password for ${PROJECT.NAME}`,
+                html,
             });
         },
     },
@@ -153,12 +89,62 @@ export const auth = betterAuth({
         debug: true,
     }),
 
-    session: {
-        expiresIn: 60 * 60 * 24 * 7,
-        updateAge: 60 * 60 * 24,
-    },
+    plugins: [
+        autumn(),
+        emailOTP({
+            async sendVerificationOTP({ email, otp }, request) {
+                const host = request?.headers.get("host") ?? "localhost:3000";
 
-    plugins: [autumn()],
+                const html = await render(
+                    VerifyEmailTemplate({
+                        otp,
+                        host,
+                        email,
+                    })
+                );
+
+                await resend.emails.send({
+                    from: "Altiora <noreply@altiora.pro>",
+                    to: email,
+                    subject: `Your verification code for ${PROJECT.NAME}`,
+                    html,
+                });
+            },
+        }),
+        whitelist({
+            enforceOnRegistration: false,
+            allowAdminManagement: true,
+            allowWaitlist: true,
+            sendStatusNotification: async ({ email, status, oldStatus }) => {
+                if (oldStatus !== "pending") {
+                    return;
+                }
+
+                switch (status) {
+                    case "approved": {
+                        const signUpUrl = `${getBaseUrl()}${PAGES.SIGN_UP}?signUpEmail=${email}`;
+                        const html = await render(
+                            WaitlistApprovedTemplate({
+                                signUpUrl,
+                                email,
+                            })
+                        );
+
+                        await resend.emails.send({
+                            from: "Altiora <noreply@altiora.pro>",
+                            to: email,
+                            subject: `Your application to ${PROJECT.NAME} has been approved`,
+                            html,
+                        });
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+            },
+        }),
+    ],
 });
 
 export type Session = typeof auth.$Infer.Session;
