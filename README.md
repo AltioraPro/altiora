@@ -1,6 +1,8 @@
 # Altiora
 
-![Altiora](./public/img/logo.png)
+<p align="center">
+  <img src="./public/img/logo.png" alt="Altiora Logo" />
+</p>
 
 <p align="center">
   <a href="https://discord.gg/4mU5pEw8Gs"><img src="https://img.shields.io/badge/Join%20the%20community-5865F2?logo=discord&logoColor=white" alt="Discord"></a>
@@ -8,6 +10,7 @@
 </p>
 
 [Altiora](https://altiora.pro) is a self-coaching platform for traders and makers that merges productivity tooling, trading journals, and behavioral coaching.
+
 
 ## Getting Started
 
