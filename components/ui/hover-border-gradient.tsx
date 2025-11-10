@@ -1,5 +1,5 @@
 "use client";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 type Direction = "TOP" | "LEFT" | "BOTTOM" | "RIGHT";
 
 interface HoverBorderGradientProps extends React.HTMLAttributes<HTMLElement> {
-    as?: React.ComponentType;
+    asChild?: boolean;
     containerClassName?: string;
     className?: string;
     duration?: number;
@@ -15,10 +15,10 @@ interface HoverBorderGradientProps extends React.HTMLAttributes<HTMLElement> {
 }
 
 export function HoverBorderGradient({
+    asChild,
     children,
     containerClassName,
     className,
-    as,
     duration = 1,
     clockwise = true,
     ...props
@@ -58,16 +58,16 @@ export function HoverBorderGradient({
         }
     }, [hovered, duration, clockwise]);
 
-    const Tag = as ?? "button";
-
     return (
-        <Tag
+        <button
             className={cn(
                 "group relative flex h-min w-fit flex-col flex-nowrap content-center items-center justify-center gap-10 overflow-visible rounded-full border bg-black/20 box-decoration-clone p-px transition-all duration-500 hover:bg-black/10 dark:bg-white/20",
                 containerClassName
             )}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
+            tabIndex={asChild ? undefined : -1}
+            type="button"
             {...props}
         >
             <div
@@ -97,6 +97,6 @@ export function HoverBorderGradient({
                 transition={{ ease: "linear", duration: duration ?? 1 }}
             />
             <div className="absolute inset-[2px] z-1 flex-none rounded-[100px] bg-black transition-colors duration-300 group-hover:bg-black/90" />
-        </Tag>
+        </button>
     );
 }

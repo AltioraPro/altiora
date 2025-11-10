@@ -2,6 +2,7 @@
 pnpm-lock.yaml
 pnpm-workspace.yaml
 package-lock.json
+bun.lock
 package.json
 
 # Translation files (generated)

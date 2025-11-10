@@ -4,7 +4,7 @@
 	Installed from https://reactbits.dev/ts/tailwind/
 */
 
-import { motion, type Transition } from "framer-motion";
+import { motion, type Transition } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 type BlurTextProps = {

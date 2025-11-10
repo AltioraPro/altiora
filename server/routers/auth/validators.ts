@@ -34,6 +34,10 @@ export const updateLeaderboardVisibilitySchema = z.object({
     isPublic: z.boolean(),
 });
 
+export const waitlistSchema = z.object({
+    email: z.email(),
+});
+
 export type SyncUserInput = z.infer<typeof syncUserSchema>;
 export type SendVerificationEmailInput = z.infer<
     typeof sendVerificationEmailSchema
@@ -45,3 +49,5 @@ export type UpdateRankInput = z.infer<typeof updateRankSchema>;
 export type UpdateLeaderboardVisibilityInput = z.infer<
     typeof updateLeaderboardVisibilitySchema
 >;
+
+export type WaitlistInput = z.infer<typeof waitlistSchema>;
