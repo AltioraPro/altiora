@@ -1,4 +1,4 @@
-import { route } from "@/lib/utils/routes";
+import { route, routeFn } from "@/lib/utils/routes";
 
 export const AUTH_PAGES = {
     SIGN_IN: route("/login"),
@@ -28,6 +28,7 @@ export const APPLICATION_PAGES = {
     HABITS: route("/habits"),
     TRADING: route("/trading"),
     TRADING_JOURNALS: route("/trading/journals"),
+    TRADING_JOURNAL: routeFn((id: string) => `/trading/journals/${id}`),
     TRADING_CALENDAR: route("/trading/calendar"),
     LEADERBOARD: route("/leaderboard"),
     SETTINGS: route("/settings"),

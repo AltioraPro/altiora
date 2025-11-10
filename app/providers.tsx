@@ -1,6 +1,7 @@
 "use client";
 
 import { AutumnProvider } from "autumn-js/react";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import type { ReactNode } from "react";
 import { ToastProvider } from "@/components/ui/toast";
 import { env } from "@/env";
@@ -15,12 +16,14 @@ export function Providers({ children }: ProvidersProps) {
     return (
         <ORPCQueryClientProvider>
             <ThemeProvider attribute="class" forcedTheme="dark">
-                <AutumnProvider
-                    betterAuthUrl={env.NEXT_PUBLIC_BETTER_AUTH_URL}
-                    includeCredentials={true}
-                >
-                    <ToastProvider>{children}</ToastProvider>
-                </AutumnProvider>
+                <NuqsAdapter>
+                    <AutumnProvider
+                        betterAuthUrl={env.NEXT_PUBLIC_BETTER_AUTH_URL}
+                        includeCredentials={true}
+                    >
+                        <ToastProvider>{children}</ToastProvider>
+                    </AutumnProvider>
+                </NuqsAdapter>
             </ThemeProvider>
         </ORPCQueryClientProvider>
     );

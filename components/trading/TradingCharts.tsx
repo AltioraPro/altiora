@@ -33,7 +33,7 @@ interface TradingChartsProps {
         losingTrades: number;
         winRate: number;
         tradesBySymbol: Array<{
-            symbol: string;
+            assetId: string | null;
             count: number;
             totalPnL: string | null;
         }>;
@@ -52,7 +52,7 @@ interface TradingChartsProps {
     }>;
     trades?: Array<{
         id: string;
-        tradeDate: string;
+        tradeDate: Date;
         profitLossPercentage: string | null;
         sessionId: string | null;
     }>;
@@ -83,9 +83,6 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
             percentage: 100 - stats.winRate,
         },
     ];
-
-    const parsePnL = (profitLossPercentage: string | null): number =>
-        profitLossPercentage ? Number.parseFloat(profitLossPercentage) || 0 : 0;
 
     const updateSessionStats = (
         sessionStats: Map<
@@ -161,7 +158,7 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
             if (trade.sessionId) {
                 const session = sessions.find((s) => s.id === trade.sessionId);
                 if (session) {
-                    const pnl = parsePnL(trade.profitLossPercentage);
+                    const pnl = Number(trade.profitLossPercentage);
                     updateSessionStats(
                         sessionStats,
                         trade.sessionId,
@@ -184,9 +181,7 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
             )
             .reduce(
                 (acc, trade, index) => {
-                    const pnl = trade.profitLossPercentage
-                        ? Number.parseFloat(trade.profitLossPercentage) || 0
-                        : 0;
+                    const pnl = Number(trade.profitLossPercentage);
                     const previousCumulative =
                         acc.length > 0 ? (acc.at(-1)?.cumulative ?? 0) : 0;
 

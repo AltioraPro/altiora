@@ -62,7 +62,7 @@ export default function TradingCalendarPage() {
             const tradeDate = new Date(trade.tradeDate)
                 .toISOString()
                 .split("T")[0];
-            const pnlAmount = Number.parseFloat(trade.profitLossAmount || "0");
+            const pnlAmount = Number(trade.profitLossAmount) || 0;
 
             const existing = performanceMap.get(tradeDate);
             if (existing) {
@@ -463,7 +463,7 @@ export default function TradingCalendarPage() {
                                 }
                                 variant={
                                     viewMode === mode.key
-                                        ? "default"
+                                        ? "primary"
                                         : "outline"
                                 }
                             >

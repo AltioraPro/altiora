@@ -1,5 +1,5 @@
 import { ORPCError } from "@orpc/client";
-import { and, asc, eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { advancedTrades, tradingJournals } from "@/server/db/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
 import { calculateTradeResults } from "@/server/services/trade-calculation";
@@ -49,40 +49,6 @@ export const updateAdvancedTradeHandler = updateAdvancedTradeBase.handler(
             });
         }
 
-        let currentCapital: number | undefined;
-        if (journal[0].usePercentageCalculation && journal[0].startingCapital) {
-            const startingCapital = Number.parseFloat(
-                journal[0].startingCapital
-            );
-
-            const closedTradesData = await db
-                .select({
-                    profitLossPercentage: advancedTrades.profitLossPercentage,
-                })
-                .from(advancedTrades)
-                .where(
-                    and(
-                        eq(
-                            advancedTrades.journalId,
-                            existingTrade[0].journalId
-                        ),
-                        eq(advancedTrades.userId, userId),
-                        eq(advancedTrades.isClosed, true)
-                    )
-                )
-                .orderBy(asc(advancedTrades.tradeDate));
-
-            const totalPnLPercentage = closedTradesData.reduce((sum, trade) => {
-                const pnlPercentage = trade.profitLossPercentage
-                    ? Number.parseFloat(trade.profitLossPercentage) || 0
-                    : 0;
-                return sum + pnlPercentage;
-            }, 0);
-
-            currentCapital =
-                startingCapital + (totalPnLPercentage / 100) * startingCapital;
-        }
-
         let calculatedResults = {};
         if (
             updateData.profitLossAmount !== undefined ||
@@ -90,12 +56,13 @@ export const updateAdvancedTradeHandler = updateAdvancedTradeBase.handler(
         ) {
             calculatedResults = calculateTradeResults(
                 {
-                    profitLossAmount: updateData.profitLossAmount,
-                    profitLossPercentage: updateData.profitLossPercentage,
+                    profitLossAmount: String(updateData.profitLossAmount),
+                    profitLossPercentage: String(
+                        updateData.profitLossPercentage
+                    ),
                     exitReason: updateData.exitReason,
                 },
-                journal[0],
-                currentCapital
+                journal[0]
             );
         }
 
@@ -104,6 +71,9 @@ export const updateAdvancedTradeHandler = updateAdvancedTradeBase.handler(
             .set({
                 ...updateData,
                 ...calculatedResults,
+                tradeDate: updateData.tradeDate
+                    ? new Date(updateData.tradeDate)
+                    : existingTrade[0].tradeDate,
                 updatedAt: new Date(),
             })
             .where(

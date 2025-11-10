@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { PAGES } from "@/constants/pages";
 
 const DiscordIcon = ({ className }: { className?: string }) => (
@@ -320,10 +320,9 @@ export const Footer = () => {
                         <div className="flex flex-col items-center justify-between space-y-4 md:flex-row md:space-y-0">
                             {/* Copyright */}
                             <div className="text-center md:text-left">
-                                <p className="text-sm text-white/50">
-                                    &copy; {new Date().getFullYear()} Altiora.
-                                    All rights reserved.
-                                </p>
+                                <Suspense>
+                                    <CurrentYear />
+                                </Suspense>
                             </div>
 
                             {/* Additional Links */}
@@ -361,3 +360,11 @@ export const Footer = () => {
         </>
     );
 };
+
+function CurrentYear() {
+    return (
+        <p className="text-sm text-white/50">
+            &copy; {new Date().getFullYear()} Altiora. All rights reserved.
+        </p>
+    );
+}

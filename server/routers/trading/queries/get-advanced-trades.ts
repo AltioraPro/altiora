@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, inArray, like, lte } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, lte } from "drizzle-orm";
 import { advancedTrades } from "@/server/db/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
 import { filterTradesSchema } from "../validators";
@@ -41,18 +41,15 @@ export const getAdvancedTradesHandler = getAdvancedTradesBase.handler(
                 inArray(advancedTrades.setupId, input.setupIds)
             );
         }
-        if (input.symbol) {
-            whereConditions.push(
-                like(advancedTrades.symbol, `%${input.symbol}%`)
-            );
-        }
         if (input.startDate) {
             whereConditions.push(
-                gte(advancedTrades.tradeDate, input.startDate)
+                gte(advancedTrades.tradeDate, new Date(input.startDate))
             );
         }
         if (input.endDate) {
-            whereConditions.push(lte(advancedTrades.tradeDate, input.endDate));
+            whereConditions.push(
+                lte(advancedTrades.tradeDate, new Date(input.endDate))
+            );
         }
         if (input.isClosed !== undefined) {
             whereConditions.push(eq(advancedTrades.isClosed, input.isClosed));

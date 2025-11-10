@@ -1,4 +1,4 @@
-import { type InferSelectModel, sql } from "drizzle-orm";
+import type { InferSelectModel } from "drizzle-orm";
 import {
     boolean,
     index,
@@ -37,23 +37,21 @@ export const advancedTrades = pgTable(
             () => tradingSetups.id,
             { onDelete: "set null" }
         ),
-        tradeDate: varchar("trade_date", { length: 10 }).notNull(),
-        symbol: varchar("symbol", { length: 50 }).notNull(),
-        riskInput: varchar("risk_input", { length: 50 }),
-        profitLossAmount: varchar("profit_loss_amount", { length: 50 }),
-        profitLossPercentage: varchar("profit_loss_percentage", { length: 50 }),
-        exitReason: varchar("exit_reason", { length: 20 }),
-        breakEvenThreshold: varchar("break_even_threshold", {
-            length: 10,
-        }).default("0.1"),
-        tradingviewLink: varchar("tradingview_link", { length: 1024 }),
+        tradeDate: timestamp("trade_date", { withTimezone: true })
+            .defaultNow()
+            .notNull(),
+        riskInput: text("risk_input"),
+        profitLossAmount: text("profit_loss_amount"),
+        profitLossPercentage: text("profit_loss_percentage"),
+        exitReason: text("exit_reason"),
+        breakEvenThreshold: text("break_even_threshold").default("0.1"),
+        tradingviewLink: text("tradingview_link"),
         notes: text("notes"),
         isClosed: boolean("is_closed").default(false).notNull(),
-        createdAt: timestamp("created_at", { withTimezone: true })
-            .default(sql`CURRENT_TIMESTAMP`)
-            .notNull(),
-        updatedAt: timestamp("updated_at", { withTimezone: true })
-            .default(sql`CURRENT_TIMESTAMP`)
+        createdAt: timestamp("created_at").defaultNow().notNull(),
+        updatedAt: timestamp("updated_at")
+            .defaultNow()
+            .$onUpdate(() => /* @__PURE__ */ new Date())
             .notNull(),
     },
     (table) => [
@@ -63,7 +61,6 @@ export const advancedTrades = pgTable(
         index("advanced_trade_session_id_idx").on(table.sessionId),
         index("advanced_trade_setup_id_idx").on(table.setupId),
         index("advanced_trade_date_idx").on(table.tradeDate),
-        index("advanced_trade_symbol_idx").on(table.symbol),
     ]
 );
 

@@ -11,8 +11,8 @@ interface DashboardChartsProps {
     sessions: Array<{ id: string; name: string }>;
     trades: Array<{
         id: string;
-        tradeDate: string;
-        profitLossPercentage: string | null;
+        tradeDate: Date;
+        profitLossPercentage: string;
         sessionId: string | null;
     }>;
 }

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { PAGES } from "@/constants/pages";
 import { getServerSession } from "@/lib/auth/utils";
+import { ModalProvider } from "@/providers/modal-provider";
 
 export default async function AppLayout({
     children,
@@ -15,9 +16,9 @@ export default async function AppLayout({
     }
 
     return (
-        <>
+        <ModalProvider>
             <Header />
             {children}
-        </>
+        </ModalProvider>
     );
 }

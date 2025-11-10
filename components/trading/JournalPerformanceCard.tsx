@@ -11,6 +11,7 @@ import {
     TrendingUp,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import {
     Area,
@@ -29,6 +30,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { PAGES } from "@/constants/pages";
 import { orpc } from "@/orpc/client";
 
 interface JournalPerformanceCardProps {
@@ -75,9 +77,8 @@ export function JournalPerformanceCard({
             )
             .reduce(
                 (acc, trade, index) => {
-                    const pnl = trade.profitLossPercentage
-                        ? Number.parseFloat(trade.profitLossPercentage) || 0
-                        : 0;
+                    const pnl = Number(trade.profitLossPercentage);
+
                     const previous =
                         acc.length > 0 ? (acc.at(-1)?.cumulative ?? 0) : 0;
                     const cumulative = previous + pnl;
@@ -412,10 +413,10 @@ export function JournalPerformanceCard({
                         <div className="mb-4 grid grid-cols-3 gap-3">
                             <div className="rounded-lg border border-white/10 bg-black/20 p-3 text-center">
                                 <div
-                                    className={`font-bold text-xl ${Number(stats.totalPnL) >= 0 ? "text-green-400" : "text-red-400"}`}
+                                    className={`font-bold text-xl ${stats.totalPnL >= 0 ? "text-green-400" : "text-red-400"}`}
                                 >
-                                    {Number(stats.totalPnL) >= 0 ? "+" : ""}
-                                    {Number(stats.totalPnL).toFixed(2)}%
+                                    {stats.totalPnL >= 0 ? "+" : ""}
+                                    {stats.totalPnL.toFixed(2)}%
                                 </div>
                                 <div className="text-white/60 text-xs">
                                     Performance
@@ -487,8 +488,6 @@ export function JournalPerformanceCard({
                                 </Badge>
                             </div>
                             <div className="mt-1 text-sm text-white/80">
-                                {bestTrade.symbol.replace(/(\s*#\d+\s*$)/g, "")}{" "}
-                                •{" "}
                                 {new Date(
                                     bestTrade.tradeDate
                                 ).toLocaleDateString("en-US")}
@@ -530,15 +529,12 @@ export function JournalPerformanceCard({
                             >
                                 <Trash2 className="h-4 w-4" />
                             </Button>
-                            <a href={`/trading?journalId=${journal.id}`}>
-                                <Button
-                                    className="bg-white text-black hover:bg-gray-200"
-                                    size="sm"
-                                >
+                            <Button asChild size="sm">
+                                <Link href={PAGES.TRADING_JOURNAL(journal.id)}>
                                     <ExternalLink className="mr-1 h-4 w-4" />
                                     Open
-                                </Button>
-                            </a>
+                                </Link>
+                            </Button>
                         </div>
                     </div>
                 </CardContent>
