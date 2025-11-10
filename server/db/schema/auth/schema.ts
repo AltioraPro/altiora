@@ -51,3 +51,15 @@ export const verification = pgTable("verification", {
     createdAt: timestamp("created_at"),
     updatedAt: timestamp("updated_at"),
 });
+
+export const accessList = pgTable("access_list", {
+    id: text("id").primaryKey(),
+    email: text("email").notNull().unique(),
+    status: text("status").notNull(),
+    addedBy: text("added_by").references(() => user.id, {
+        onDelete: "set null",
+    }),
+    userId: text("user_id").references(() => user.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").notNull(),
+    updatedAt: timestamp("updated_at").notNull(),
+});
