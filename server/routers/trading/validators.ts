@@ -4,7 +4,7 @@ export const createTradingJournalSchema = z.object({
     name: z.string().min(1, "Journal name is required").max(255),
     description: z.string().optional(),
     startingCapital: z.string().optional(),
-    usePercentageCalculation: z.boolean().default(false),
+    usePercentageCalculation: z.boolean(),
 });
 
 export const updateTradingJournalSchema = z.object({
@@ -19,14 +19,12 @@ export const updateTradingJournalSchema = z.object({
 export const createTradingAssetSchema = z.object({
     journalId: z.string().min(1, "Journal ID is required"),
     name: z.string().min(1, "Asset name is required").max(50),
-    symbol: z.string().max(20).optional(),
     type: z.enum(["forex", "crypto", "stocks", "commodities"]).default("forex"),
 });
 
 export const updateTradingAssetSchema = z.object({
     id: z.string().min(1, "Asset ID is required"),
     name: z.string().min(1, "Asset name is required").max(50).optional(),
-    symbol: z.string().max(20).optional(),
     type: z.enum(["forex", "crypto", "stocks", "commodities"]).optional(),
     isActive: z.boolean().optional(),
 });
@@ -94,27 +92,22 @@ export const updateTradingSetupSchema = z.object({
 export const createAdvancedTradeSchema = z
     .object({
         journalId: z.string().min(1, "Journal ID is required"),
-        assetId: z.string().optional(),
-        sessionId: z.string().optional(),
+        assetId: z.string().min(1, "Asset ID is required"),
+        sessionId: z.string().min(1, "Session ID is required").optional(),
         setupId: z.string().optional(),
-
-        tradeDate: z
-            .string()
-            .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)"),
-        symbol: z.string().max(50).optional(),
-        riskInput: z.string().max(50).optional(),
-        profitLossAmount: z.string().max(50).optional(),
-        profitLossPercentage: z.string().max(50).optional(),
-        exitReason: z.enum(["TP", "BE", "SL", "Manual"]).optional(),
-
+        tradeDate: z.date(),
+        riskInput: z.string().optional(),
+        profitLossAmount: z.string().optional(),
+        profitLossPercentage: z.string().optional(),
+        exitReason: z.enum(["TP", "BE", "SL", "Manual"]),
         tradingviewLink: z.string().optional(),
         notes: z.string().optional(),
-        isClosed: z.boolean().default(false),
+        isClosed: z.boolean(),
     })
     .refine(
         (data) =>
-            (data.profitLossAmount && data.profitLossAmount !== "") ||
-            (data.profitLossPercentage && data.profitLossPercentage !== ""),
+            (data.profitLossAmount && !data.profitLossAmount) ||
+            (data.profitLossPercentage && !data.profitLossPercentage),
         {
             message: "Either profit/loss amount or percentage is required",
             path: ["profitLossAmount"],
@@ -131,10 +124,9 @@ export const updateAdvancedTradeSchema = z.object({
         .string()
         .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)")
         .optional(),
-    symbol: z.string().max(50).optional(),
-    riskInput: z.string().max(50).optional(),
-    profitLossAmount: z.string().max(50).optional(),
-    profitLossPercentage: z.string().max(50).optional(),
+    riskInput: z.string().optional(),
+    profitLossAmount: z.string().optional(),
+    profitLossPercentage: z.string().optional(),
     exitReason: z.enum(["TP", "BE", "SL", "Manual"]).optional(),
 
     tradingviewLink: z.string().optional(),
@@ -205,3 +197,28 @@ export const journalIdsSchema = z.object({
 export const deleteMultipleTradesSchema = z.object({
     tradeIds: z.array(z.string()),
 });
+
+export type CreateTradingJournalInput = z.infer<
+    typeof createTradingJournalSchema
+>;
+export type UpdateTradingJournalInput = z.infer<
+    typeof updateTradingJournalSchema
+>;
+export type CreateTradingAssetInput = z.infer<typeof createTradingAssetSchema>;
+export type UpdateTradingAssetInput = z.infer<typeof updateTradingAssetSchema>;
+export type CreateTradingSessionInput = z.infer<
+    typeof createTradingSessionSchema
+>;
+export type UpdateTradingSessionInput = z.infer<
+    typeof updateTradingSessionSchema
+>;
+export type CreateTradingSetupInput = z.infer<typeof createTradingSetupSchema>;
+export type UpdateTradingSetupInput = z.infer<typeof updateTradingSetupSchema>;
+export type CreateAdvancedTradeInput = z.infer<
+    typeof createAdvancedTradeSchema
+>;
+export type UpdateAdvancedTradeInput = z.infer<
+    typeof updateAdvancedTradeSchema
+>;
+export type FilterTradesInput = z.infer<typeof filterTradesSchema>;
+export type TradingStatsInput = z.infer<typeof tradingStatsSchema>;

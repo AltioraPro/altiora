@@ -2,8 +2,9 @@
 
 import { Activity, BarChart3, Target, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
-interface TradingStatsProps {
+interface TradingStatsProps extends React.ComponentProps<"div"> {
     stats: {
         totalTrades: number;
         closedTrades: number;
@@ -14,7 +15,7 @@ interface TradingStatsProps {
         losingTrades: number;
         winRate: number;
         tradesBySymbol: Array<{
-            symbol: string;
+            assetId: string | null;
             count: number;
             totalPnL: string | null;
         }>;
@@ -41,7 +42,11 @@ interface TradingStatsProps {
     };
 }
 
-export function TradingStats({ stats }: TradingStatsProps) {
+export function TradingStats({
+    stats,
+    className,
+    ...props
+}: TradingStatsProps) {
     const totalPnL =
         typeof stats.totalPnL === "string"
             ? Number.parseFloat(stats.totalPnL) || 0
@@ -53,7 +58,7 @@ export function TradingStats({ stats }: TradingStatsProps) {
     const profitFactor = totalLosses > 0 ? totalGains / totalLosses : 0;
 
     return (
-        <div className="space-y-8">
+        <div className={cn("space-y-8", className)} {...props}>
             {/* Performance Overview */}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 <Card className="border border-white/10 bg-black/20 p-6 transition-colors hover:bg-black/30">

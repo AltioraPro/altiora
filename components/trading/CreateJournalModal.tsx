@@ -1,7 +1,9 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { DialogClose } from "@radix-ui/react-dialog";
 import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -12,27 +14,44 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import {
+    Field,
+    FieldContent,
+    FieldDescription,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { orpc } from "@/orpc/client";
+import {
+    type CreateTradingJournalInput,
+    createTradingJournalSchema,
+} from "@/server/routers/trading/validators";
+import { useCreateJournalStore } from "@/stores/create-journal-store";
 
-interface CreateJournalModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onSuccess?: () => void;
-}
+export function CreateJournalModal() {
+    const { isOpen, close } = useCreateJournalStore();
 
-export function CreateJournalModal({
-    isOpen,
-    onClose,
-    onSuccess,
-}: CreateJournalModalProps) {
-    const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
-    const [startingCapital, setStartingCapital] = useState("");
-    const [usePercentageCalculation, setUsePercentageCalculation] =
-        useState(false);
+    const {
+        register,
+        handleSubmit,
+        control,
+        watch,
+        reset,
+        formState: { errors, isSubmitting },
+    } = useForm<CreateTradingJournalInput>({
+        resolver: zodResolver(createTradingJournalSchema),
+        defaultValues: {
+            name: "",
+            description: "",
+            startingCapital: "",
+            usePercentageCalculation: false,
+        },
+    });
+
+    const usePercentageCalculation = watch("usePercentageCalculation");
 
     const { mutateAsync: createJournal, isPending: isCreatingJournal } =
         useMutation(
@@ -44,158 +63,165 @@ export function CreateJournalModal({
                 },
 
                 onSuccess: () => {
-                    setName("");
-                    setDescription("");
-                    setStartingCapital("");
-                    setUsePercentageCalculation(false);
-                    onSuccess?.();
+                    reset();
+                    close();
                 },
             })
         );
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!name.trim()) {
-            console.error("Journal name is required");
-            return;
-        }
-
-        try {
-            await createJournal({
-                name: name.trim(),
-                description: description.trim(),
-                startingCapital: startingCapital.trim() || undefined,
-                usePercentageCalculation,
-            });
-        } catch (error) {
-            console.error("Error creating journal:", error);
-        }
+    const onSubmit = async (data: CreateTradingJournalInput) => {
+        await createJournal(data);
     };
 
+    const isPending = isCreatingJournal || isSubmitting;
+
     const handleClose = () => {
-        if (!isCreatingJournal) {
-            setName("");
-            setDescription("");
-            setStartingCapital("");
-            setUsePercentageCalculation(false);
-            onClose();
+        if (isPending) {
+            return;
         }
+        reset();
+        close();
     };
 
     return (
         <Dialog onOpenChange={handleClose} open={isOpen}>
-            <DialogContent className="border-white/20 bg-black text-white sm:max-w-[425px]">
-                <DialogHeader>
-                    <DialogTitle className="text-white">
-                        Create a new journal
-                    </DialogTitle>
-                    <DialogDescription className="text-white/70">
-                        Create a new trading journal to organize your trades and
-                        track your performance. Enable percentage calculation
-                        for automatic BE/TP/SL detection.
-                    </DialogDescription>
-                </DialogHeader>
-                <form onSubmit={handleSubmit}>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid gap-2">
-                            <Label className="text-white/80" htmlFor="name">
+            <form id="create-journal-form" onSubmit={handleSubmit(onSubmit)}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle className="text-white">
+                            Create a new journal
+                        </DialogTitle>
+                        <DialogDescription>
+                            Create a new trading journal to organize your trades
+                            and track your performance. Enable percentage
+                            calculation for automatic BE/TP/SL detection.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <FieldGroup>
+                        <Field data-invalid={!!errors.name}>
+                            <FieldLabel htmlFor="name">
                                 Journal name *
-                            </Label>
-                            <Input
-                                className="border-white/30 bg-black text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
-                                disabled={isCreatingJournal}
-                                id="name"
-                                onChange={(e) => setName(e.target.value)}
-                                placeholder="Ex: Main Journal"
-                                value={name}
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label
-                                className="text-white/80"
-                                htmlFor="description"
-                            >
+                            </FieldLabel>
+                            <FieldContent>
+                                <Input
+                                    disabled={isPending}
+                                    id="name"
+                                    placeholder="Ex: Main Journal"
+                                    {...register("name")}
+                                />
+                                <FieldError
+                                    errors={
+                                        errors.name ? [errors.name] : undefined
+                                    }
+                                />
+                            </FieldContent>
+                        </Field>
+
+                        <Field data-invalid={!!errors.description}>
+                            <FieldLabel htmlFor="description">
                                 Description
-                            </Label>
-                            <Textarea
-                                className="border-white/30 bg-black text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
-                                disabled={isCreatingJournal}
-                                id="description"
-                                onChange={(e) => setDescription(e.target.value)}
-                                placeholder="Optional journal description"
-                                rows={3}
-                                value={description}
+                            </FieldLabel>
+                            <FieldContent>
+                                <Textarea
+                                    disabled={isPending}
+                                    id="description"
+                                    placeholder="Optional journal description"
+                                    rows={3}
+                                    {...register("description")}
+                                />
+                                <FieldError
+                                    errors={
+                                        errors.description
+                                            ? [errors.description]
+                                            : undefined
+                                    }
+                                />
+                            </FieldContent>
+                        </Field>
+
+                        <Field
+                            data-invalid={!!errors.usePercentageCalculation}
+                            orientation="horizontal"
+                        >
+                            <Controller
+                                control={control}
+                                name="usePercentageCalculation"
+                                render={({ field }) => (
+                                    <>
+                                        <Checkbox
+                                            checked={field.value}
+                                            disabled={isPending}
+                                            id="usePercentageCalculation"
+                                            onCheckedChange={(checked) =>
+                                                field.onChange(checked)
+                                            }
+                                        />
+                                        <FieldLabel htmlFor="usePercentageCalculation">
+                                            Use percentage calculation
+                                        </FieldLabel>
+                                    </>
+                                )}
                             />
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <Checkbox
-                                checked={usePercentageCalculation}
-                                disabled={isCreatingJournal}
-                                id="usePercentageCalculation"
-                                onCheckedChange={(checked) =>
-                                    setUsePercentageCalculation(
-                                        checked as boolean
-                                    )
+                            <FieldError
+                                errors={
+                                    errors.usePercentageCalculation
+                                        ? [errors.usePercentageCalculation]
+                                        : undefined
                                 }
                             />
-                            <Label
-                                className="text-sm text-white/80"
-                                htmlFor="usePercentageCalculation"
-                            >
-                                Use percentage calculation
-                            </Label>
-                        </div>
+                        </Field>
+
                         {usePercentageCalculation && (
-                            <div className="grid gap-2">
-                                <Label
-                                    className="text-white/80"
-                                    htmlFor="startingCapital"
-                                >
+                            <Field data-invalid={!!errors.startingCapital}>
+                                <FieldLabel htmlFor="startingCapital">
                                     Starting capital
-                                </Label>
-                                <Input
-                                    className="border-white/30 bg-black text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
-                                    disabled={isCreatingJournal}
-                                    id="startingCapital"
-                                    onChange={(e) =>
-                                        setStartingCapital(e.target.value)
-                                    }
-                                    placeholder="Ex: 10000"
-                                    step="0.01"
-                                    type="number"
-                                    value={startingCapital}
-                                />
-                                <p className="text-white/50 text-xs">
-                                    The starting capital allows to calculate
-                                    percentages automatically when creating
-                                    trades
-                                </p>
-                            </div>
+                                </FieldLabel>
+                                <FieldContent>
+                                    <Input
+                                        disabled={isPending}
+                                        id="startingCapital"
+                                        placeholder="Ex: 10000"
+                                        step="0.01"
+                                        type="number"
+                                        {...register("startingCapital")}
+                                    />
+                                    <FieldDescription>
+                                        The starting capital allows to calculate
+                                        percentages automatically when creating
+                                        trades
+                                    </FieldDescription>
+                                    <FieldError
+                                        errors={
+                                            errors.startingCapital
+                                                ? [errors.startingCapital]
+                                                : undefined
+                                        }
+                                    />
+                                </FieldContent>
+                            </Field>
                         )}
-                    </div>
+                    </FieldGroup>
                     <DialogFooter>
+                        <DialogClose asChild>
+                            <Button
+                                disabled={isPending}
+                                onClick={handleClose}
+                                type="button"
+                                variant="outline"
+                            >
+                                Cancel
+                            </Button>
+                        </DialogClose>
                         <Button
-                            className="border-white/30 text-black transition-colors hover:bg-white hover:text-black"
-                            disabled={isCreatingJournal}
-                            onClick={handleClose}
-                            type="button"
-                            variant="outline"
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            className="bg-white text-black transition-colors hover:bg-white/90"
-                            disabled={isCreatingJournal || !name.trim()}
+                            disabled={isPending}
+                            form="create-journal-form"
                             type="submit"
                         >
-                            {isCreatingJournal
-                                ? "Creating..."
-                                : "Create journal"}
+                            {isPending ? "Creating..." : "Create journal"}
                         </Button>
                     </DialogFooter>
-                </form>
-            </DialogContent>
+                </DialogContent>
+            </form>
         </Dialog>
     );
 }

@@ -67,7 +67,6 @@ export function AssetsManager({ journalId }: AssetsManagerProps) {
             await createAssetMutation.mutateAsync({
                 journalId,
                 name: newAsset.name.trim(),
-                symbol: newAsset.symbol.trim() || undefined,
                 type: newAsset.type,
             });
         } catch (error) {

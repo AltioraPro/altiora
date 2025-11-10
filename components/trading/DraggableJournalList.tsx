@@ -57,7 +57,9 @@ export function DraggableJournalList({
     }, [journals]);
 
     const handleJournalSelect = (journalId: string, selected: boolean) => {
-        if (!onSelectionChange) return;
+        if (!onSelectionChange) {
+            return;
+        }
 
         if (selected) {
             onSelectionChange([...selectedJournalIds, journalId]);

@@ -203,10 +203,7 @@ export function ImportTradesModal({
         }
 
         const existingAsset = existingAssets?.find(
-            (a) =>
-                a.name.toLowerCase() === assetToUse.toLowerCase() ||
-                (a.symbol &&
-                    a.symbol.toLowerCase() === assetToUse.toLowerCase())
+            (a) => a.name.toLowerCase() === assetToUse.toLowerCase()
         );
 
         if (existingAsset) {
@@ -221,7 +218,6 @@ export function ImportTradesModal({
             const result = await createAsset({
                 journalId: journalId || "",
                 name: assetToUse,
-                symbol: assetToUse,
                 type: "forex",
             });
 
@@ -441,17 +437,16 @@ export function ImportTradesModal({
                 }
 
                 await createTrade({
-                    tradeDate,
-                    assetId: assetId || undefined,
-                    symbol,
-                    sessionId: sessionId || undefined,
-                    setupId: setupId || undefined,
+                    tradeDate: new Date(tradeDate),
+                    assetId,
+                    sessionId: sessionId ?? undefined,
+                    setupId: setupId ?? undefined,
                     riskInput,
-                    profitLossAmount: profitLossPercentage,
+                    profitLossAmount: "",
                     profitLossPercentage,
-                    exitReason,
-                    tradingviewLink: trade.TradingViewLink || undefined,
-                    notes: trade.Notes || undefined,
+                    exitReason: exitReason || "Manual",
+                    tradingviewLink: trade.TradingViewLink,
+                    notes: trade.Notes,
                     journalId,
                     isClosed: true,
                 });

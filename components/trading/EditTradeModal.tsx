@@ -140,8 +140,8 @@ export function EditTradeModal({
                 assetId: formData.assetId || undefined,
                 sessionId: formData.sessionId || undefined,
                 setupId: formData.setupId || undefined,
-                riskInput: formData.riskPercentage || undefined,
-                profitLossPercentage: formData.resultPercentage || undefined,
+                riskInput: String(formData.riskPercentage),
+                profitLossPercentage: String(formData.resultPercentage),
                 exitReason:
                     (formData.exitReason as "TP" | "BE" | "SL" | "Manual") ||
                     undefined,

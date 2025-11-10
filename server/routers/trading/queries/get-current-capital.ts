@@ -49,9 +49,7 @@ export const getCurrentCapitalHandler = getCurrentCapitalBase.handler(
             .orderBy(asc(advancedTrades.tradeDate));
 
         const totalPnLPercentage = closedTradesData.reduce((sum, trade) => {
-            const pnlPercentage = trade.profitLossPercentage
-                ? Number.parseFloat(trade.profitLossPercentage) || 0
-                : 0;
+            const pnlPercentage = Number(trade.profitLossPercentage);
             return sum + pnlPercentage;
         }, 0);
 
