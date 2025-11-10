@@ -10,7 +10,6 @@ import { PAGES } from "@/constants/pages";
 import { getServerSession } from "@/lib/auth/utils";
 import { tryCatch } from "@/lib/try-catch";
 import { api } from "@/orpc/server";
-import { DashboardHeading } from "../_components/dashboard-heading";
 
 async function DeepworkStats() {
     const session = await getServerSession();
@@ -117,10 +116,22 @@ export default async function ProfilePage() {
         <div className="min-h-screen bg-pure-black text-pure-white">
             <div className="relative mx-auto w-full">
                 {/* Header */}
-                <DashboardHeading
-                    description="Your account information and activity overview."
-                    title="Profile"
-                />
+                <div className="relative mb-8 border-white/10 border-b">
+                    <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent" />
+                    <div className="relative mx-auto max-w-7xl px-6 py-8">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h1 className="font-argesta font-bold text-3xl tracking-tight">
+                                    Profile
+                                </h1>
+                                <p className="mt-2 text-sm text-white/60">
+                                    Your account information and activity
+                                    overview.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 {/* Profile Card */}
                 <div className="mx-auto mb-8 max-w-7xl">

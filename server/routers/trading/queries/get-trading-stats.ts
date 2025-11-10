@@ -11,7 +11,7 @@ import {
   sql,
   sum,
 } from "drizzle-orm";
-import { advancedTrades, tradingJournals } from "@/server/db/schema";
+import { advancedTrades, tradingJournals } from "@/server/db/schema/index";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
 import { tradingStatsSchema } from "../validators";
 
@@ -39,10 +39,14 @@ export const getTradingStatsHandler = getTradingStatsBase.handler(
       whereConditions.push(inArray(advancedTrades.setupId, input.setupIds));
     }
     if (input.startDate) {
-      whereConditions.push(gte(advancedTrades.tradeDate, input.startDate));
+      whereConditions.push(
+        gte(advancedTrades.tradeDate, new Date(input.startDate))
+      );
     }
     if (input.endDate) {
-      whereConditions.push(lte(advancedTrades.tradeDate, input.endDate));
+      whereConditions.push(
+        lte(advancedTrades.tradeDate, new Date(input.endDate))
+      );
     }
 
     let journal = null;
@@ -109,7 +113,7 @@ export const getTradingStatsHandler = getTradingStatsBase.handler(
 
     const tradesBySymbol = await db
       .select({
-        symbol: advancedTrades.symbol,
+        assetId: advancedTrades.assetId,
         count: count(),
         totalPnL: sum(
           sql`CAST(${advancedTrades.profitLossPercentage} AS DECIMAL)`
@@ -117,7 +121,7 @@ export const getTradingStatsHandler = getTradingStatsBase.handler(
       })
       .from(advancedTrades)
       .where(and(...whereConditions))
-      .groupBy(advancedTrades.symbol)
+      .groupBy(advancedTrades.assetId)
       .orderBy(desc(count()));
 
     const tradesBySetup = await db

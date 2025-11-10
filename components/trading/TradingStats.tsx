@@ -15,7 +15,8 @@ interface TradingStatsProps extends React.ComponentProps<"div"> {
         losingTrades: number;
         winRate: number;
         tradesBySymbol: Array<{
-            assetId: string | null;
+            assetId?: string | null;
+            symbol?: string | null;
             count: number;
             totalPnL: string | null;
         }>;
