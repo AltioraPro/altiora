@@ -101,7 +101,7 @@ function filterTradesByDate(
                 const monthIndex = monthNames.indexOf(dateFilter.month);
                 return (
                     tradeDate.getFullYear() ===
-                        Number.parseInt(dateFilter.year, 10) &&
+                    Number.parseInt(dateFilter.year, 10) &&
                     tradeDate.getMonth() === monthIndex
                 );
             }
@@ -151,7 +151,8 @@ type TradingStatsType = {
     losingTrades: number;
     winRate: number;
     tradesBySymbol: Array<{
-        assetId: string | null;
+        assetId?: string | null;
+        symbol?: string | null;
         count: number;
         totalPnL: string | null;
     }>;
@@ -174,9 +175,9 @@ function calculateStatsFromTrades(
     totalPerformance: number,
     selectedJournal:
         | {
-              usePercentageCalculation?: boolean;
-              startingCapital?: string | null;
-          }
+            usePercentageCalculation?: boolean;
+            startingCapital?: string | null;
+        }
         | undefined,
     backendStats: TradingStatsType | undefined
 ): TradingStatsType | null {
@@ -235,11 +236,11 @@ function calculateStatsFromTrades(
                 .length,
             journal: selectedJournal
                 ? {
-                      usePercentageCalculation:
-                          selectedJournal.usePercentageCalculation,
-                      startingCapital:
-                          selectedJournal.startingCapital || undefined,
-                  }
+                    usePercentageCalculation:
+                        selectedJournal.usePercentageCalculation,
+                    startingCapital:
+                        selectedJournal.startingCapital || undefined,
+                }
                 : undefined,
         };
     }
