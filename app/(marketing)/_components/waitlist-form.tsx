@@ -12,15 +12,21 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast";
 import { AUTH_ERRORS } from "@/constants/auth-errors";
 import { authClient } from "@/lib/auth-client";
+import { cn, getNameFromEmail } from "@/lib/utils";
 import {
     type WaitlistInput,
     waitlistSchema,
 } from "@/server/routers/auth/validators";
 
+type SuccessState = {
+    name: string;
+    email: string;
+};
+
 export function WaitlistForm() {
     const { addToast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
+    const [success, setSuccess] = useState<SuccessState | null>(null);
 
     const { register, handleSubmit, reset } = useForm({
         resolver: zodResolver(waitlistSchema),
@@ -76,7 +82,10 @@ export function WaitlistForm() {
             reset();
 
             setIsLoading(false);
-            setSuccess(true);
+            setSuccess({
+                name: getNameFromEmail(values.email),
+                email: values.email,
+            });
         } catch {
             addToast({
                 type: "error",
@@ -91,26 +100,36 @@ export function WaitlistForm() {
 
     return (
         <form
-            className="flex items-center justify-center"
+            className="flex w-full items-center justify-center"
             onSubmit={handleSubmit(onSubmit)}
         >
-            <div className="mt-12 flex min-w-md flex-col gap-4 sm:flex-row">
+            <div className="mt-12 w-full max-w-md">
                 <BorderGradient
-                    className="flex w-full items-center p-0 pr-2 opacity-70"
+                    className={cn(
+                        "flex w-full items-center p-0 pr-2 opacity-70",
+                        success && "px-2"
+                    )}
                     containerClassName="w-full overflow-hidden rounded-none"
                 >
                     <Input
                         {...register("email")}
                         autoComplete="off"
                         autoFocus
-                        className="w-full rounded-none border-none py-7 pl-6 text-base focus-visible:border-none focus-visible:outline-none focus-visible:ring-0"
+                        className={cn(
+                            "w-full rounded-none border-none py-7 pl-6 text-base focus-visible:border-none focus-visible:outline-none focus-visible:ring-0",
+                            success && "invisible mr-0 w-0 px-0"
+                        )}
                         placeholder="Enter your email"
                     />
 
                     <Button
                         asChild
-                        className="rounded-none"
-                        disabled={isLoading || success}
+                        className={cn(
+                            "rounded-none",
+                            success &&
+                                "w-full justify-center disabled:opacity-100"
+                        )}
+                        disabled={isLoading || !!success}
                         size="lg"
                         type="submit"
                         variant="primary"
@@ -124,7 +143,7 @@ export function WaitlistForm() {
                                             y: 0,
                                             filter: "blur(0px)",
                                         }}
-                                        className="flex w-full items-center gap-2"
+                                        className="flex w-full items-center justify-center gap-2"
                                         initial={{
                                             opacity: 0,
                                             y: 10,
@@ -133,11 +152,17 @@ export function WaitlistForm() {
                                         key="success"
                                         transition={{
                                             duration: 0.3,
-                                            delay: 0.2,
+                                            delay: 0.4,
                                         }}
                                     >
                                         <Check className="size-5" />
-                                        You're on the waitlist!
+                                        <span className="truncate">
+                                            You're on the waitlist,{" "}
+                                            <span className="font-bold">
+                                                {success.name}{" "}
+                                            </span>
+                                            !
+                                        </span>
                                     </motion.span>
                                 )}
                                 {isLoading && (
@@ -148,12 +173,12 @@ export function WaitlistForm() {
                                             filter: "blur(0px)",
                                         }}
                                         className="flex items-center gap-2"
-                                        exit={{
-                                            opacity: 0,
-                                            y: -10,
-                                            filter: "blur(4px)",
-                                            transition: { duration: 0.2 },
-                                        }}
+                                        // exit={{
+                                        //     opacity: 0,
+                                        //     y: -10,
+                                        //     filter: "blur(4px)",
+                                        //     transition: { duration: 0.2 },
+                                        // }}
                                         initial={{
                                             opacity: 0,
                                             y: 10,
