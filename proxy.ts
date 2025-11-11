@@ -13,7 +13,7 @@ const authPaths = [
 
 export function proxy(request: NextRequest) {
     // In production only, we will redirect all auth paths to the home page
-    if (process.env.NODE_ENV === "development") {
+    if (process.env.NODE_ENV === "production") {
         const path = request.nextUrl.pathname;
 
         if (authPaths.includes(path)) {
