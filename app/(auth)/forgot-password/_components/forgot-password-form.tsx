@@ -22,44 +22,36 @@ const forgotPasswordSchema = z.object({
 
 type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
 
-export default function ForgotPasswordPage() {
+export default function ForgotPasswordForm({ error }: { error?: string }) {
     const [isLoading, setIsLoading] = useState(false);
-    const [isSuccess, setIsSuccess] = useState(false);
+    const [success, setSuccess] = useState(false);
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors, isSubmitting },
-        getValues,
-        setError,
-    } = useForm<ForgotPasswordFormValues>({
+    const form = useForm({
         resolver: zodResolver(forgotPasswordSchema),
         defaultValues: {
             email: "",
         },
     });
 
-    const onSubmit = async (data: ForgotPasswordFormValues) => {
+    async function onSubmit(values: ForgotPasswordFormValues) {
         setIsLoading(true);
-
-        const { error } = await authClient.requestPasswordReset({
-            email: data.email,
-            redirectTo: PAGES.RESET_PASSWORD,
+        const { error: forgetPasswordError } = await authClient.forgetPassword({
+            email: values.email,
+            redirectTo: "/reset-password",
         });
 
-        if (error) {
-            setError("email", {
-                message: error.message,
+        if (forgetPasswordError) {
+            form.setError("email", {
+                message: forgetPasswordError.message,
             });
-
-            return;
+        } else {
+            setSuccess(true);
         }
 
-        setIsSuccess(true);
         setIsLoading(false);
-    };
+    }
 
-    if (isSuccess) {
+    if (success) {
         return (
             <div className="relative min-h-screen overflow-hidden bg-pure-black text-pure-white">
                 {/* Éléments décoratifs géométriques */}
@@ -97,7 +89,7 @@ export default function ForgotPasswordPage() {
                                 We&apos;ve sent a password reset link to:
                             </p>
                             <p className="font-medium text-white">
-                                {getValues("email")}
+                                {form.getValues("email")}
                             </p>
                             <p className="mt-4 text-gray-400 text-sm">
                                 Click the link in the email to reset your
@@ -110,7 +102,7 @@ export default function ForgotPasswordPage() {
                             <button
                                 className="w-full rounded-lg border border-white/20 bg-transparent py-3 text-white transition-all duration-300 hover:border-white/40 hover:bg-white/5"
                                 onClick={() => {
-                                    setIsSuccess(false);
+                                    setSuccess(false);
                                 }}
                                 type="button"
                             >
@@ -138,7 +130,7 @@ export default function ForgotPasswordPage() {
                                 <button
                                     className="text-white underline hover:text-gray-300"
                                     onClick={() => {
-                                        setIsSuccess(false);
+                                        setSuccess(false);
                                     }}
                                     type="button"
                                 >
@@ -223,19 +215,17 @@ export default function ForgotPasswordPage() {
                         </div>
 
                         {/* Message d'erreur global */}
-                        {errors.email && (
+                        {error && (
                             <div className="mb-6 flex items-start space-x-3 rounded-lg border border-red-500/20 bg-red-500/10 p-4">
                                 <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />
-                                <p className="text-red-400 text-sm">
-                                    {errors.email.message}
-                                </p>
+                                <p className="text-red-400 text-sm">{error}</p>
                             </div>
                         )}
 
                         {/* Form */}
                         <form
                             className="space-y-6"
-                            onSubmit={handleSubmit(onSubmit)}
+                            onSubmit={form.handleSubmit(onSubmit)}
                         >
                             {/* Email */}
                             <div>
@@ -248,15 +238,15 @@ export default function ForgotPasswordPage() {
                                 <div className="relative">
                                     <Mail className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
                                     <input
-                                        {...register("email")}
+                                        {...form.register("email")}
                                         className="w-full rounded-lg border border-white/20 bg-transparent py-3 pr-3 pl-10 text-white placeholder-white/40 transition-all duration-300 focus:border-white focus:outline-hidden"
                                         placeholder="your@email.com"
                                         type="email"
                                     />
                                 </div>
-                                {errors.email && (
+                                {form.formState.errors.email && (
                                     <p className="mt-1 text-red-400 text-sm">
-                                        {errors.email.message}
+                                        {form.formState.errors.email.message}
                                     </p>
                                 )}
                             </div>
@@ -264,14 +254,17 @@ export default function ForgotPasswordPage() {
                             {/* Send reset link button */}
                             <button
                                 className="group relative w-full overflow-hidden rounded-lg border border-white/30 bg-transparent py-4 transition-all duration-300 hover:border-white disabled:cursor-not-allowed disabled:opacity-50"
-                                disabled={isSubmitting || isLoading}
+                                disabled={
+                                    form.formState.isSubmitting || isLoading
+                                }
                                 type="submit"
                             >
                                 {/* Hover effects */}
                                 <div className="absolute inset-0 translate-y-full transform bg-white/10 transition-transform duration-300 group-hover:translate-y-0" />
 
                                 <div className="relative flex items-center justify-center space-x-3">
-                                    {isSubmitting || isLoading ? (
+                                    {form.formState.isSubmitting ||
+                                    isLoading ? (
                                         <>
                                             <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/20 border-t-white" />
                                             <span className="tracking-widest">
