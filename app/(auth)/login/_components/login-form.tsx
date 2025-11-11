@@ -239,6 +239,7 @@ export function LoginForm() {
                                         type="email"
                                     />
                                 </div>
+
                                 {formState.errors.email && (
                                     <p className="mt-1 text-red-400 text-sm">
                                         {formState.errors.email.message}
