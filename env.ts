@@ -4,14 +4,14 @@ import { z } from "zod";
 export const env = createEnv({
     server: {
         NODE_ENV: z.enum(["development", "production"]),
-        DATABASE_URL: z.string().url(),
+        DATABASE_URL: z.url(),
 
         BETTER_AUTH_SECRET: z.string().min(1),
 
         RESEND_API_KEY: z.string().min(1),
-        ADMIN_EMAIL: z.string().email(),
+        ADMIN_EMAIL: z.email(),
 
-        REDIS_URL: z.string().url(),
+        REDIS_URL: z.url(),
 
         AUTUMN_SECRET_KEY: z.string().min(1),
 

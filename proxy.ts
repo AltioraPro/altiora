@@ -1,5 +1,28 @@
-// biome-ignore lint/suspicious/noEmptyBlockStatements: proxy is not used
-export function proxy() {}
+import { type NextRequest, NextResponse } from "next/server";
+
+const authPaths = [
+    "/login",
+    "/register",
+    "/forgot-password",
+    "/reset-password",
+    "/verify-email",
+    "/check-email",
+    "/confirm-2fa",
+    "/error",
+];
+
+export function proxy(request: NextRequest) {
+    // In production only, we will redirect all auth paths to the home page
+    if (process.env.NODE_ENV === "production") {
+        const path = request.nextUrl.pathname;
+
+        if (authPaths.includes(path)) {
+            return NextResponse.redirect(new URL("/", request.url));
+        }
+    }
+
+    return NextResponse.next();
+}
 
 export const config = {
     matcher: [

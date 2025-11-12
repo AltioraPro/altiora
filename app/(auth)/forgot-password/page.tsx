@@ -12,10 +12,12 @@ import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { Button } from "@/components/ui/button";
 import { PAGES } from "@/constants/pages";
+import { authClient } from "@/lib/auth-client";
 
 const forgotPasswordSchema = z.object({
-    email: z.string().email("Invalid email address"),
+    email: z.email("Invalid email address"),
 });
 
 type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
@@ -23,13 +25,13 @@ type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
 export default function ForgotPasswordPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
-    const [error, setError] = useState<string | null>(null);
 
     const {
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
         getValues,
+        setError,
     } = useForm<ForgotPasswordFormValues>({
         resolver: zodResolver(forgotPasswordSchema),
         defaultValues: {
@@ -39,33 +41,22 @@ export default function ForgotPasswordPage() {
 
     const onSubmit = async (data: ForgotPasswordFormValues) => {
         setIsLoading(true);
-        setError(null);
 
-        try {
-            const response = await fetch("/api/auth/reset-password", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email: data.email }),
+        const { error } = await authClient.requestPasswordReset({
+            email: data.email,
+            redirectTo: PAGES.RESET_PASSWORD,
+        });
+
+        if (error) {
+            setError("email", {
+                message: error.message,
             });
 
-            const result = await response.json();
-
-            if (!response.ok) {
-                throw new Error(result.message || "Failed to send reset email");
-            }
-
-            setIsSuccess(true);
-        } catch (error: unknown) {
-            const errorMessage =
-                error instanceof Error
-                    ? error.message
-                    : "Failed to send reset email";
-            setError(errorMessage);
-        } finally {
-            setIsLoading(false);
+            return;
         }
+
+        setIsSuccess(true);
+        setIsLoading(false);
     };
 
     if (isSuccess) {
@@ -120,7 +111,6 @@ export default function ForgotPasswordPage() {
                                 className="w-full rounded-lg border border-white/20 bg-transparent py-3 text-white transition-all duration-300 hover:border-white/40 hover:bg-white/5"
                                 onClick={() => {
                                     setIsSuccess(false);
-                                    setError(null);
                                 }}
                                 type="button"
                             >
@@ -149,7 +139,6 @@ export default function ForgotPasswordPage() {
                                     className="text-white underline hover:text-gray-300"
                                     onClick={() => {
                                         setIsSuccess(false);
-                                        setError(null);
                                     }}
                                     type="button"
                                 >
@@ -222,17 +211,6 @@ export default function ForgotPasswordPage() {
                             </p>
                         </div>
 
-                        {/* Back link */}
-                        <div className="mb-6">
-                            <Link
-                                className="inline-flex items-center space-x-2 text-sm text-white/60 transition-colors hover:text-white"
-                                href={PAGES.SIGN_IN}
-                            >
-                                <ArrowLeft className="h-4 w-4" />
-                                <span>Back to login</span>
-                            </Link>
-                        </div>
-
                         {/* Form title */}
                         <div className="mb-8 text-center">
                             <h2 className="mb-2 font-bold text-2xl text-white">
@@ -245,10 +223,12 @@ export default function ForgotPasswordPage() {
                         </div>
 
                         {/* Message d'erreur global */}
-                        {error && (
+                        {errors.email && (
                             <div className="mb-6 flex items-start space-x-3 rounded-lg border border-red-500/20 bg-red-500/10 p-4">
                                 <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />
-                                <p className="text-red-400 text-sm">{error}</p>
+                                <p className="text-red-400 text-sm">
+                                    {errors.email.message}
+                                </p>
                             </div>
                         )}
 
@@ -310,27 +290,14 @@ export default function ForgotPasswordPage() {
                             </button>
                         </form>
 
-                        {/* Login link */}
-                        <div className="mt-8 text-center">
-                            <p className="text-gray-400">
-                                Remember your password?{" "}
-                                <Link
-                                    className="font-medium text-white transition-colors hover:text-gray-300"
-                                    href={PAGES.SIGN_IN}
-                                >
-                                    Sign in
-                                </Link>
-                            </p>
-                        </div>
-
                         {/* Back to home */}
                         <div className="mt-6 text-center">
-                            <Link
-                                className="text-sm text-white/60 transition-colors hover:text-white/80"
-                                href={PAGES.LANDING_PAGE}
-                            >
-                                ← Back to home
-                            </Link>
+                            <Button asChild variant="dim">
+                                <Link href={PAGES.SIGN_IN}>
+                                    <ArrowLeft className="size-4" />
+                                    Back to login
+                                </Link>
+                            </Button>
                         </div>
                     </div>
                 </div>

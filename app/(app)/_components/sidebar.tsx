@@ -1,0 +1,45 @@
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+import { Logo } from "@/components/logo";
+import { PAGES } from "@/constants/pages";
+import { cn } from "@/lib/utils";
+import { MainMenu } from "./main-menu";
+
+export function Sidebar() {
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    return (
+        // biome-ignore lint/a11y/noNoninteractiveElementInteractions: sidebar is interactive
+        <aside
+            className={cn(
+                "fixed top-0 z-50 hidden h-screen shrink-0 flex-col items-center justify-between desktop:overflow-hidden desktop:rounded-tl-[10px] desktop:rounded-bl-[10px] pb-4 transition-all duration-200 ease-&lsqb;cubic-bezier(0.4,0,0.2,1)&rsqb; md:flex",
+                "border-border border-r bg-background",
+                isExpanded ? "w-[240px]" : "w-[70px]"
+            )}
+            onMouseEnter={() => setIsExpanded(true)}
+            onMouseLeave={() => setIsExpanded(false)}
+        >
+            <div
+                className={cn(
+                    "absolute top-0 left-0 flex h-[70px] items-center justify-center border-border border-b bg-background transition-all duration-200 ease-&lsqb;cubic-bezier(0.4,0,0.2,1)&rsqb;",
+                    isExpanded ? "w-full" : "w-[69px]"
+                )}
+            >
+                <Link
+                    className="absolute left-[15px] transition-none"
+                    href={PAGES.LANDING_PAGE}
+                >
+                    <Logo />
+                </Link>
+            </div>
+
+            <div className="flex w-full flex-1 flex-col pt-[70px]">
+                <MainMenu isExpanded={isExpanded} />
+            </div>
+
+            {/* <TeamDropdown isExpanded={isExpanded} /> */}
+        </aside>
+    );
+}
