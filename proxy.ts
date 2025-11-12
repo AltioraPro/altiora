@@ -16,7 +16,7 @@ export function proxy(request: NextRequest) {
     if (process.env.NODE_ENV === "production") {
         const path = request.nextUrl.pathname;
 
-        if (path !== "/" && !authPaths.includes(path)) {
+        if (authPaths.some((p) => path.startsWith(p))) {
             return NextResponse.redirect(new URL("/", request.url));
         }
     }
