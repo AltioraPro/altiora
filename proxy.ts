@@ -1,7 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 
 const authPaths = [
-    "/login",
     "/register",
     "/forgot-password",
     "/reset-password",
