@@ -38,7 +38,6 @@ const userAdditionalFields = {
 
 export const auth = betterAuth({
     baseURL: getBaseUrl(),
-    secret: env.BETTER_AUTH_SECRET,
     trustedOrigins: [getBaseUrl()],
     database: drizzleAdapter(db, {
         provider: "pg",
@@ -77,17 +76,6 @@ export const auth = betterAuth({
             clientSecret: env.GOOGLE_CLIENT_SECRET,
         },
     },
-
-    advanced: {
-        crossSubDomainCookies: {
-            enabled: true,
-        },
-        useSecureCookies: env.NODE_ENV === "production",
-    },
-
-    ...(process.env.NODE_ENV === "development" && {
-        debug: true,
-    }),
 
     plugins: [
         autumn(),

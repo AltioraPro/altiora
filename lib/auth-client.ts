@@ -1,6 +1,9 @@
 "use client";
 
-import { inferAdditionalFields } from "better-auth/client/plugins";
+import {
+    emailOTPClient,
+    inferAdditionalFields,
+} from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 import type { auth } from "./auth";
 import { whitelistClient } from "./auth/plugins/whitelist/client";
@@ -23,7 +26,11 @@ function resolveBaseUrl(): string {
 
 export const authClient = createAuthClient({
     baseURL: resolveBaseUrl(),
-    plugins: [inferAdditionalFields<typeof auth>(), whitelistClient()],
+    plugins: [
+        emailOTPClient(),
+        whitelistClient(),
+        inferAdditionalFields<typeof auth>(),
+    ],
 });
 
 export const { signIn, signUp, signOut, useSession, getSession } = authClient;
