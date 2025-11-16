@@ -1,9 +1,9 @@
-import Image from "next/image";
 import Link from "next/link";
 import { PAGES } from "@/constants/pages";
 import { getServerSession } from "@/lib/auth/utils";
 import { cn } from "@/lib/utils";
 import { DropdownUser } from "./dropdown-user";
+import { Logo } from "./logo";
 
 export const Header = ({
     className,
@@ -41,14 +41,7 @@ export const Header = ({
                             className="mx-8 flex items-center justify-center"
                             href={PAGES.LANDING_PAGE}
                         >
-                            <Image
-                                alt="Altiora Logo"
-                                className="h-10 shrink-0"
-                                height={40}
-                                priority
-                                src="/img/logo.png"
-                                width={40}
-                            />
+                            <Logo className="h-6 w-fit shrink-0" />
                         </Link>
                         <div className="flex flex-1 items-center gap-4">
                             <Link

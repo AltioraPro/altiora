@@ -7,7 +7,6 @@ import {
     TrendingUp,
     Zap,
 } from "lucide-react";
-import { Suspense } from "react";
 import { Header } from "@/components/header";
 import BlurText from "@/components/landing/BlurText";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
@@ -17,7 +16,7 @@ import { WaitlistForm } from "./_components/waitlist-form";
 
 export default function HomePage() {
     return (
-        <Suspense>
+        <>
             <Header />
 
             <section className="relative flex h-[calc(100vh-64px)] w-full items-center justify-center overflow-hidden bg-center bg-cover bg-no-repeat grayscale">
@@ -127,6 +126,6 @@ export default function HomePage() {
             </section>
 
             <FeaturesSection />
-        </Suspense>
+        </>
     );
 }
