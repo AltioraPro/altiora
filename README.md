@@ -38,13 +38,19 @@ copy .env.example .env
 bun install
 ```
 
-5. Push the database schema (Drizzle + PostgreSQL)
+5. Start Docker Compose
+
+```bash
+docker compose up -d
+```
+
+6. Push the database schema (Drizzle + PostgreSQL)
 
 ```bash
 bun db:push
 ```
 
-6. Start the development server
+7. Start the development server
 
 ```bash
 bun dev
@@ -54,8 +60,9 @@ The app serves on `http://localhost:3000`.
 
 ## Quality and Contributions
 
+- Start all services : `bun dev`
 - Formatting and linting: `bun checks`
-- Drizzle migrations: `bun db:migrate`
+- Generate migrations: `bun db:generate`
 - Database studio: `bun db:studio`
 
 ## License
