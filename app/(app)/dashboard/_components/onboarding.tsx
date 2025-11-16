@@ -1,4 +1,4 @@
-import { Sparkles } from "lucide-react";
+import { RiSparklingLine } from "@remixicon/react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PAGES } from "@/constants/pages";
@@ -22,7 +22,7 @@ export function OnboardingContent() {
 
                 <div className="mb-16">
                     <div className="mb-8 flex items-center gap-2">
-                        <Sparkles className="h-5 w-5 text-white/50" />
+                        <RiSparklingLine className="h-5 w-5 text-white/50" />
                         <h2 className="font-semibold text-lg text-white/90">
                             Get Started
                         </h2>

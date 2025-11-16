@@ -1,16 +1,16 @@
 "use client";
 
+import {
+    RiAlertLine,
+    RiArrowLeftSLine,
+    RiArrowRightSLine,
+    RiBrush2Line,
+    RiEditLine,
+    RiExternalLinkLine,
+} from "@remixicon/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { enUS } from "date-fns/locale";
-import {
-    AlertTriangle,
-    ChevronLeft,
-    ChevronRight,
-    Edit,
-    ExternalLink,
-    Trash2,
-} from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -210,7 +210,7 @@ export function TradesTable({ journalId }: TradesTableProps) {
                                     size="sm"
                                     variant="destructive"
                                 >
-                                    <Trash2 className="mr-1 h-4 w-4" />
+                                    <RiBrush2Line className="mr-1 h-4 w-4" />
                                     Delete Selected
                                 </Button>
                             </div>
@@ -420,7 +420,7 @@ export function TradesTable({ journalId }: TradesTableProps) {
                                                             size="sm"
                                                             variant="ghost"
                                                         >
-                                                            <Edit className="h-4 w-4" />
+                                                            <RiEditLine className="h-4 w-4" />
                                                         </Button>
                                                         <Button
                                                             className="h-8 w-8 p-1 text-red-400 hover:bg-red-500/10 hover:text-red-300"
@@ -432,7 +432,7 @@ export function TradesTable({ journalId }: TradesTableProps) {
                                                             size="sm"
                                                             variant="ghost"
                                                         >
-                                                            <Trash2 className="h-4 w-4" />
+                                                            <RiBrush2Line className="h-4 w-4" />
                                                         </Button>
                                                         {trade.tradingviewLink && (
                                                             <a
@@ -447,7 +447,7 @@ export function TradesTable({ journalId }: TradesTableProps) {
                                                                     size="sm"
                                                                     variant="ghost"
                                                                 >
-                                                                    <ExternalLink className="h-4 w-4" />
+                                                                    <RiExternalLinkLine className="h-4 w-4" />
                                                                 </Button>
                                                             </a>
                                                         )}
@@ -481,7 +481,7 @@ export function TradesTable({ journalId }: TradesTableProps) {
                                             size="sm"
                                             variant="outline"
                                         >
-                                            <ChevronLeft className="mr-1 h-4 w-4" />
+                                            <RiArrowLeftSLine className="mr-1 h-4 w-4" />
                                             Previous
                                         </Button>
                                         <div className="flex items-center space-x-1">
@@ -546,7 +546,7 @@ export function TradesTable({ journalId }: TradesTableProps) {
                                             variant="outline"
                                         >
                                             Next
-                                            <ChevronRight className="ml-1 h-4 w-4" />
+                                            <RiArrowRightSLine className="ml-1 h-4 w-4" />
                                         </Button>
                                     </div>
                                 </div>
@@ -554,7 +554,7 @@ export function TradesTable({ journalId }: TradesTableProps) {
                         </div>
                     ) : (
                         <div className="py-8 text-center">
-                            <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-white/40" />
+                            <RiAlertLine className="mx-auto mb-4 h-12 w-12 text-white/40" />
                             <p className="text-white/60">No trades found</p>
                             <p className="text-sm text-white/40">
                                 Start by creating your first trade

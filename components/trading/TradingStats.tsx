@@ -1,6 +1,11 @@
 "use client";
 
-import { Activity, BarChart3, Target, TrendingUp } from "lucide-react";
+import {
+    RiBarChartLine,
+    RiPulseLine,
+    RiStockLine,
+    RiTargetLine,
+} from "@remixicon/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
@@ -67,7 +72,7 @@ export function TradingStats({
                         <CardTitle className="font-medium text-sm text-white/90">
                             Performance
                         </CardTitle>
-                        <TrendingUp className="h-4 w-4 text-white/60" />
+                        <RiStockLine className="size-4 text-white/60" />
                     </CardHeader>
                     <CardContent className="space-y-2 px-0 pb-0">
                         <div
@@ -100,7 +105,7 @@ export function TradingStats({
                         <CardTitle className="font-medium text-sm text-white/90">
                             Win Rate
                         </CardTitle>
-                        <Target className="h-4 w-4 text-white/60" />
+                        <RiTargetLine className="h-4 w-4 text-white/60" />
                     </CardHeader>
                     <CardContent className="space-y-2 px-0 pb-0">
                         <div className="font-bold text-3xl text-white">
@@ -117,7 +122,7 @@ export function TradingStats({
                         <CardTitle className="font-medium text-sm text-white/90">
                             Trades
                         </CardTitle>
-                        <BarChart3 className="h-4 w-4 text-white/60" />
+                        <RiBarChartLine className="h-4 w-4 text-white/60" />
                     </CardHeader>
                     <CardContent className="space-y-2 px-0 pb-0">
                         <div className="font-bold text-3xl text-white">
@@ -134,7 +139,7 @@ export function TradingStats({
                         <CardTitle className="font-medium text-sm text-white/90">
                             Profit Factor
                         </CardTitle>
-                        <Activity className="h-4 w-4 text-white/60" />
+                        <RiPulseLine className="h-4 w-4 text-white/60" />
                     </CardHeader>
                     <CardContent className="space-y-2 px-0 pb-0">
                         <div className="font-bold text-3xl text-white">

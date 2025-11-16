@@ -1,16 +1,16 @@
 "use client";
 
 import {
-    Award,
-    BarChart3,
-    CheckCircle,
-    Clock,
-    Crown,
-    MessageCircle,
-    User,
-    Users,
-    X,
-} from "lucide-react";
+    RiAwardLine,
+    RiBarChart2Line,
+    RiCheckboxCircleLine,
+    RiCloseLine,
+    RiMessageLine,
+    RiTeamLine,
+    RiTimeLine,
+    RiUserLine,
+    RiVipCrownLine,
+} from "@remixicon/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -49,33 +49,35 @@ export function DiscordWelcomePopup({
         };
     }, [isOpen]);
 
-    if (!isOpen) return null;
+    if (!isOpen) {
+        return null;
+    }
 
     const features = [
         {
-            icon: Users,
+            icon: RiTeamLine,
             title: "Exclusive community",
             description:
                 "Join a community of passionate traders and developers",
         },
         {
-            icon: Crown,
+            icon: RiVipCrownLine,
             title: "Ranking system",
             description:
                 "Progress through 9 different ranks based on your performance",
         },
         {
-            icon: Clock,
+            icon: RiTimeLine,
             title: "Pomodoro tracking",
             description: "Automatically sync your work sessions",
         },
         {
-            icon: BarChart3,
+            icon: RiBarChart2Line,
             title: "Advanced analytics",
             description: "Access detailed statistics on your progress",
         },
         {
-            icon: Award,
+            icon: RiAwardLine,
             title: "Exclusive roles",
             description: "Unlock special roles based on your level",
         },
@@ -97,6 +99,12 @@ export function DiscordWelcomePopup({
         <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs"
             onClick={onClose}
+            onKeyDown={(e) => {
+                if (e.key === "Escape") {
+                    onClose();
+                }
+            }}
+            tabIndex={0}
         >
             <Card
                 className="max-h-[90vh] w-full max-w-2xl overflow-y-auto border border-white/20 bg-pure-black text-pure-white"
@@ -106,15 +114,16 @@ export function DiscordWelcomePopup({
                     <button
                         className="absolute top-4 right-4 rounded-lg p-2 transition-colors hover:bg-white/10"
                         onClick={onClose}
+                        type="button"
                     >
-                        <X className="h-5 w-5" />
+                        <RiCloseLine className="size-5" />
                     </button>
 
                     <div className="text-center">
                         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center">
                             {imageError ? (
                                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/10">
-                                    <User className="h-8 w-8 text-white/60" />
+                                    <RiUserLine className="size-8 text-white/60" />
                                 </div>
                             ) : (
                                 <Image
@@ -163,7 +172,7 @@ export function DiscordWelcomePopup({
                     {/* Benefits List */}
                     <div className="rounded-lg border border-white/10 bg-white/5 p-3">
                         <h3 className="mb-2 flex items-center font-semibold text-sm text-white">
-                            <CheckCircle className="mr-2 h-4 w-4 text-green-400" />
+                            <RiCheckboxCircleLine className="mr-2 size-4 text-green-400" />
                             Benefits of Discord connection
                         </h3>
                         <ul className="space-y-1 text-white/80 text-xs">
@@ -201,7 +210,7 @@ export function DiscordWelcomePopup({
                             className="flex-1 bg-[#5865F2] py-2 text-white hover:bg-[#4752C4]"
                             onClick={handleConnect}
                         >
-                            <MessageCircle className="mr-2 h-4 w-4" />
+                            <RiMessageLine className="mr-2 size-4" />
                             Connect Discord now
                         </Button>
                         <Button

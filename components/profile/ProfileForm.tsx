@@ -1,7 +1,15 @@
 "use client";
 
+import {
+    RiCalendarLine,
+    RiEditLine,
+    RiMailLine,
+    RiSaveLine,
+    RiShieldLine,
+    RiUserLine,
+    RiXingLine,
+} from "@remixicon/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Calendar, Edit3, Mail, Save, Shield, User, X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { orpc } from "@/orpc/client";
@@ -112,7 +120,7 @@ export function ProfileForm() {
                 />
             );
         }
-        return <User className="h-8 w-8 text-white/60" />;
+        return <RiUserLine className="size-8 text-white/60" />;
     };
 
     return (
@@ -163,7 +171,7 @@ export function ProfileForm() {
                         onClick={() => setIsEditing(true)}
                         type="button"
                     >
-                        <Edit3 className="h-5 w-5 text-white/60 transition-colors group-hover:text-white" />
+                        <RiEditLine className="size-5 text-white/60 transition-colors group-hover:text-white" />
                     </button>
                 )}
             </div>
@@ -173,7 +181,7 @@ export function ProfileForm() {
                 <div className="rounded-xl border border-white/10 bg-white/5 p-6">
                     <div className="mb-4 flex items-center space-x-3">
                         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">
-                            <Mail className="h-4 w-4 text-white/60" />
+                            <RiMailLine className="size-4 text-white/60" />
                         </div>
                         <span className="text-sm text-white/60 tracking-wide">
                             EMAIL ADDRESS
@@ -185,7 +193,7 @@ export function ProfileForm() {
                 <div className="rounded-xl border border-white/10 bg-white/5 p-6">
                     <div className="mb-4 flex items-center space-x-3">
                         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">
-                            <Calendar className="h-4 w-4 text-white/60" />
+                            <RiCalendarLine className="size-4 text-white/60" />
                         </div>
                         <span className="text-sm text-white/60 tracking-wide">
                             MEMBER SINCE
@@ -197,7 +205,7 @@ export function ProfileForm() {
                 <div className="rounded-xl border border-white/10 bg-white/5 p-6">
                     <div className="mb-4 flex items-center space-x-3">
                         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">
-                            <Shield className="h-4 w-4 text-white/60" />
+                            <RiShieldLine className="size-4 text-white/60" />
                         </div>
                         <span className="text-sm text-white/60 tracking-wide">
                             ACCOUNT STATUS
@@ -220,7 +228,7 @@ export function ProfileForm() {
                 <div className="rounded-xl border border-white/10 bg-white/5 p-6">
                     <div className="mb-4 flex items-center space-x-3">
                         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">
-                            <User className="h-4 w-4 text-white/60" />
+                            <RiUserLine className="size-4 text-white/60" />
                         </div>
                         <span className="text-sm text-white/60 tracking-wide">
                             DISPLAY NAME
@@ -245,7 +253,7 @@ export function ProfileForm() {
                             }}
                             type="button"
                         >
-                            <X className="h-4 w-4 text-white/60" />
+                            <RiXingLine className="size-4 text-white/60" />
                         </button>
                     </div>
 
@@ -274,7 +282,7 @@ export function ProfileForm() {
                                 disabled={updateProfile.isPending}
                                 type="submit"
                             >
-                                <Save className="h-4 w-4" />
+                                <RiSaveLine className="size-4" />
                                 <span>
                                     {updateProfile.isPending
                                         ? "SAVING..."

@@ -1,7 +1,7 @@
 "use client";
 
+import { RiCloseCircleLine } from "@remixicon/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useToast } from "@/components/ui/toast";
 import { orpc } from "@/orpc/client";
@@ -363,7 +363,7 @@ export function EditHabitModal() {
                                 onClick={handleClose}
                                 type="button"
                             >
-                                <X className="h-3 w-3 text-white/60" />
+                                <RiCloseCircleLine className="size-3 text-white/60" />
                             </button>
                         </div>
 

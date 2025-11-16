@@ -1,12 +1,12 @@
 import {
-    BarChart3,
-    ChevronDown,
-    Clock,
-    Star,
-    Target,
-    TrendingUp,
-    Zap,
-} from "lucide-react";
+    RiArrowDownSLine,
+    RiBarChart2Line,
+    RiShiningLine,
+    RiStarLine,
+    RiStockLine,
+    RiTargetLine,
+    RiTimeLine,
+} from "@remixicon/react";
 import { Header } from "@/components/header";
 import BlurText from "@/components/landing/BlurText";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
@@ -41,15 +41,15 @@ export default function HomePage() {
                 <div className="-translate-y-1/2 absolute top-1/2 left-8 z-20 transform space-y-8 opacity-60">
                     <div className="flex flex-col space-y-6">
                         <div className="flex items-center space-x-3">
-                            <TrendingUp className="h-6 w-6 text-white" />
+                            <RiStockLine className="size-6 text-white" />
                             <span className="text-sm text-white">TRADING</span>
                         </div>
                         <div className="flex items-center space-x-3">
-                            <Target className="h-6 w-6 text-white" />
+                            <RiTargetLine className="size-6 text-white" />
                             <span className="text-sm text-white">GOALS</span>
                         </div>
                         <div className="flex items-center space-x-3">
-                            <Zap className="h-6 w-6 text-white" />
+                            <RiShiningLine className="size-6 text-white" />
                             <span className="text-sm text-white">HABITS</span>
                         </div>
                     </div>
@@ -69,15 +69,15 @@ export default function HomePage() {
                             <span className="text-sm text-white">
                                 ANALYTICS
                             </span>
-                            <BarChart3 className="h-6 w-6 text-white" />
+                            <RiBarChart2Line className="size-6 text-white" />
                         </div>
                         <div className="flex items-center space-x-3">
                             <span className="text-sm text-white">TRACKING</span>
-                            <Clock className="h-6 w-6 text-white" />
+                            <RiTimeLine className="size-6 text-white" />
                         </div>
                         <div className="flex items-center space-x-3">
                             <span className="text-sm text-white">PROGRESS</span>
-                            <Star className="h-6 w-6 text-white" />
+                            <RiStarLine className="size-6 text-white" />
                         </div>
                     </div>
 
@@ -120,7 +120,7 @@ export default function HomePage() {
                         <span className="text-white/50 text-xs tracking-widest">
                             EXPLORE
                         </span>
-                        <ChevronDown className="h-5 w-5 text-white/50" />
+                        <RiArrowDownSLine className="size-5 text-white/50" />
                     </div>
                 </div>
             </section>

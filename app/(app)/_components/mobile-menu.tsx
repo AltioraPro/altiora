@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu } from "lucide-react";
+import { RiMenuLine } from "@remixicon/react";
 import { useState } from "react";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ export function MobileMenu() {
                     size="icon"
                     variant="outline"
                 >
-                    <Menu size={16} />
+                    <RiMenuLine size={16} />
                 </Button>
             </div>
             <SheetContent

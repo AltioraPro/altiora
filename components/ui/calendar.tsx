@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { RiArrowLeftSLine, RiArrowRightSLine } from '@remixicon/react';
 import { DayPicker } from 'react-day-picker';
 
 function Calendar({ className, classNames, showOutsideDays = true, ...props }: React.ComponentProps<typeof DayPicker>) {
@@ -42,9 +42,9 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: R
       components={{
         Chevron: (props) => {
           if (props.orientation === 'left') {
-            return <ChevronLeft className="h-4 w-4 rtl:rotate-180" />;
+            return <RiArrowLeftSLine className="h-4 w-4 rtl:rotate-180" />;
           } else {
-            return <ChevronRight className="h-4 w-4 rtl:rotate-180" />;
+            return <RiArrowRightSLine className="h-4 w-4 rtl:rotate-180" />;
           }
         },
       }}

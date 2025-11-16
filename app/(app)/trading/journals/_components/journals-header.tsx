@@ -1,4 +1,4 @@
-import { BarChart3 } from "lucide-react";
+import { RiBarChartLine } from "@remixicon/react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PAGES } from "@/constants/pages";
@@ -22,7 +22,7 @@ export function JournalsHeader() {
                         className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white"
                         variant="outline"
                     >
-                        <BarChart3 className="mr-2 h-4 w-4" />
+                        <RiBarChartLine className="mr-2 h-4 w-4" />
                         Calendar
                     </Button>
                 </Link>
@@ -31,7 +31,7 @@ export function JournalsHeader() {
                         className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white"
                         variant="outline"
                     >
-                        <BarChart3 className="mr-2 h-4 w-4" />
+                        <RiBarChartLine className="mr-2 h-4 w-4" />
                         Dashboard
                     </Button>
                 </Link>

@@ -1,12 +1,12 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import {
-    Calendar as CalendarIcon,
-    ChevronLeft,
-    ChevronRight,
-    Filter,
-} from "lucide-react";
+    RiArrowLeftSLine,
+    RiArrowRightSLine,
+    RiCalendarLine,
+    RiFilterLine,
+} from "@remixicon/react";
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -344,7 +344,7 @@ export default function TradingCalendarPage() {
                             className="border-white/20 bg-transparent text-white hover:bg-white/10"
                             variant="outline"
                         >
-                            <Filter className="mr-2 h-4 w-4" />
+                            <RiFilterLine className="mr-2 size-4" />
                             Journals filter
                             {selectedJournalIds.length > 0 && (
                                 <span className="ml-2 h-2 w-2 rounded-full bg-green-500" />
@@ -428,7 +428,7 @@ export default function TradingCalendarPage() {
                             className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white"
                             variant="outline"
                         >
-                            <ChevronLeft className="mr-2 h-4 w-4" />
+                            <RiArrowLeftSLine className="mr-2 size-4" />
                             Back to Journals
                         </Button>
                     </Link>
@@ -611,7 +611,7 @@ export default function TradingCalendarPage() {
                                         size="sm"
                                         variant="outline"
                                     >
-                                        <ChevronLeft className="h-4 w-4" />
+                                        <RiArrowLeftSLine className="size-4" />
                                     </Button>
                                     <Button
                                         className="border-white/20 bg-transparent text-white hover:bg-white/10"
@@ -629,7 +629,7 @@ export default function TradingCalendarPage() {
                                         size="sm"
                                         variant="outline"
                                     >
-                                        <ChevronRight className="h-4 w-4" />
+                                        <RiArrowRightSLine className="size-4" />
                                     </Button>
                                 </div>
                             </div>
@@ -731,7 +731,7 @@ export default function TradingCalendarPage() {
                                     size="sm"
                                     variant="outline"
                                 >
-                                    <ChevronLeft className="h-4 w-4" />
+                                    <RiArrowLeftSLine className="size-4" />
                                 </Button>
                                 <Button
                                     className="border-white/20 bg-transparent text-white hover:bg-white/10"
@@ -747,7 +747,7 @@ export default function TradingCalendarPage() {
                                     size="sm"
                                     variant="outline"
                                 >
-                                    <ChevronRight className="h-4 w-4" />
+                                    <RiArrowRightSLine className="size-4" />
                                 </Button>
                             </div>
                         </div>
@@ -876,7 +876,7 @@ export default function TradingCalendarPage() {
             ) : (
                 <div className="mb-6 py-8 text-center">
                     <div className="inline-flex items-center space-x-2 text-white/40">
-                        <CalendarIcon className="h-5 w-5" />
+                        <RiCalendarLine className="size-5" />
                         <span className="text-sm">No journals selected</span>
                     </div>
                     <p className="mt-2 text-white/30 text-xs">
