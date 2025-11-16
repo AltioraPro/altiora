@@ -2,7 +2,7 @@ import { render } from "@react-email/components";
 import { autumn } from "autumn-js/better-auth";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { emailOTP } from "better-auth/plugins";
+import { admin, emailOTP } from "better-auth/plugins";
 import { PAGES } from "@/constants/pages";
 import { PROJECT } from "@/constants/project";
 import ResetPasswordTemplate from "@/emails/reset-password";
@@ -79,6 +79,7 @@ export const auth = betterAuth({
 
     plugins: [
         autumn(),
+        admin(),
         emailOTP({
             async sendVerificationOTP({ email, otp }, request) {
                 const host = request?.headers.get("host") ?? "localhost:3000";

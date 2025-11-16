@@ -2,6 +2,7 @@ import {
     LayoutDashboard,
     LogOut,
     Settings,
+    ShieldCheck,
     User2,
     User as UserIcon,
 } from "lucide-react";
@@ -48,6 +49,12 @@ export function DropdownUser({ user }: { user: User }) {
                         <Link href={PAGES.PROFILE}>
                             <User2 className="size-4" />
                             Profile
+                        </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                        <Link href={PAGES.ADMIN}>
+                            <ShieldCheck className="size-4" />
+                            Admin
                         </Link>
                     </DropdownMenuItem>
                 </DropdownMenuGroup>

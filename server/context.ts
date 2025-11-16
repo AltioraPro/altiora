@@ -1,13 +1,19 @@
 import { os } from "@orpc/server";
 import z from "zod";
+import type { UserRole } from "@/constants/roles";
 import type { Session } from "@/lib/auth";
 import type { Database } from "@/server/db";
+
+interface Meta {
+    roles?: UserRole[];
+}
 
 export const base = os
     .$context<{
         headers: Headers;
         db: Database;
         session?: Session | null;
+        userRole?: UserRole;
     }>()
     .errors({
         RATE_LIMIT_EXCEEDED: {
@@ -30,4 +36,5 @@ export const base = os
         FORBIDDEN: {
             status: 403,
         },
-    });
+    })
+    .$meta<Meta>({ roles: undefined });

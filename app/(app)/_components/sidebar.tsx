@@ -14,7 +14,7 @@ export function Sidebar() {
         // biome-ignore lint/a11y/noNoninteractiveElementInteractions: sidebar is interactive
         <aside
             className={cn(
-                "fixed top-0 z-50 hidden h-screen shrink-0 flex-col items-center justify-between desktop:overflow-hidden desktop:rounded-tl-[10px] desktop:rounded-bl-[10px] pb-4 transition-all duration-200 ease-&lsqb;cubic-bezier(0.4,0,0.2,1)&rsqb; md:flex",
+                "fixed top-0 z-50 hidden h-screen shrink-0 flex-col items-center justify-between pb-4 transition-all duration-200 ease-&lsqb;cubic-bezier(0.4,0,0.2,1)&rsqb; md:flex xl:overflow-hidden xl:rounded-tl-[10px] xl:rounded-bl-[10px]",
                 "border-border border-r bg-background",
                 isExpanded ? "w-[240px]" : "w-[70px]"
             )}
