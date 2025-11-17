@@ -3,7 +3,7 @@
 import {
     RiCalendarLine,
     RiCheckboxLine,
-    RiHomeLine,
+    RiDashboardLine,
     RiSettings3Line,
     RiShieldLine,
     RiStockLine,
@@ -19,7 +19,7 @@ import { useSession } from "@/lib/auth-client";
 import { Item } from "./menu-item";
 
 export const MENU_ITEMS = {
-    [PAGES.DASHBOARD]: () => <RiHomeLine size={20} />,
+    [PAGES.DASHBOARD]: () => <RiDashboardLine size={20} />,
     [PAGES.PROFILE]: () => <RiUserLine size={20} />,
     [PAGES.GOALS]: () => <RiTargetLine size={20} />,
     [PAGES.HABITS]: () => <RiCheckboxLine size={20} />,
@@ -36,10 +36,7 @@ const items = [
         path: PAGES.DASHBOARD,
         name: "Overview",
     },
-    {
-        path: PAGES.PROFILE,
-        name: "Profile",
-    },
+
     {
         path: PAGES.GOALS,
         name: "Goals",
@@ -63,6 +60,10 @@ const items = [
     {
         path: PAGES.LEADERBOARD,
         name: "Leaderboard",
+    },
+    {
+        path: PAGES.PROFILE,
+        name: "Profile",
     },
     {
         path: PAGES.SETTINGS,

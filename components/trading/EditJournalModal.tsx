@@ -28,7 +28,7 @@ import {
     type UpdateTradingJournalInput,
     updateTradingJournalSchema,
 } from "@/server/routers/trading/validators";
-import { useEditJournalStore } from "@/stores/edit-journal-store";
+import { useEditJournalStore } from "@/store/edit-journal-store";
 
 export function EditJournalModal() {
     const { isOpen, journal, close } = useEditJournalStore();

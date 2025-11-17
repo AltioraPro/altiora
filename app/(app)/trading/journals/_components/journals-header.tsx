@@ -6,16 +6,7 @@ import { NewJournalButton } from "./new-journal-button";
 
 export function JournalsHeader() {
     return (
-        <div className="mb-8 flex items-center justify-between">
-            <div>
-                <h1 className="mb-2 font-argesta font-bold text-3xl text-white">
-                    Trading Journals
-                </h1>
-                <p className="text-white/60">
-                    Manage your trading journals and track performance
-                </p>
-            </div>
-
+        <div className="mb-6 flex items-center justify-end">
             <div className="flex items-center space-x-2">
                 <Link href={PAGES.TRADING_CALENDAR}>
                     <Button

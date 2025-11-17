@@ -147,7 +147,7 @@ export function LoginForm() {
     };
 
     return (
-        <div className="relative min-h-screen overflow-hidden bg-pure-black text-pure-white">
+        <div className="relative min-h-screen overflow-hidden text-pure-white">
             {/* Éléments décoratifs géométriques */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
                 <div className="absolute top-32 right-32 h-6 w-6 rotate-12 border border-white/15" />

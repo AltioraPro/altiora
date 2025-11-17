@@ -18,6 +18,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { PAGES } from "@/constants/pages";
 import { orpc } from "@/orpc/client";
 
 interface DayPerformance {
@@ -327,23 +328,17 @@ export default function TradingCalendarPage() {
     }
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="mb-8 flex items-center justify-between">
-                <div>
-                    <h1 className="mb-2 font-argesta font-bold text-3xl text-white">
-                        Trading Calendar
-                    </h1>
-                    <p className="text-white/60">
-                        Track your daily trading performance
-                    </p>
-                </div>
-
-                <div className="flex items-center space-x-2">
+        <div>
+            <div className="mb-6 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                    <Button asChild variant="ghost">
+                        <Link href={PAGES.TRADING_JOURNALS}>
+                            <RiArrowLeftSLine className="mr-2 size-4" />
+                            Back to Journals
+                        </Link>
+                    </Button>
                     <div className="group relative">
-                        <Button
-                            className="border-white/20 bg-transparent text-white hover:bg-white/10"
-                            variant="outline"
-                        >
+                        <Button variant="outline">
                             <RiFilterLine className="mr-2 size-4" />
                             Journals filter
                             {selectedJournalIds.length > 0 && (
@@ -422,16 +417,6 @@ export default function TradingCalendarPage() {
                             </div>
                         )}
                     </div>
-
-                    <Link href="/trading/journals">
-                        <Button
-                            className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white"
-                            variant="outline"
-                        >
-                            <RiArrowLeftSLine className="mr-2 size-4" />
-                            Back to Journals
-                        </Button>
-                    </Link>
                 </div>
             </div>
 
@@ -481,7 +466,7 @@ export default function TradingCalendarPage() {
                     All Time Stats
                 </h2>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <Card className="border border-white/10 bg-pure-black">
+                    <Card className="border border-white/10">
                         <CardHeader className="pb-2">
                             <CardTitle className="font-medium text-gray-300 text-sm">
                                 Positive Days
@@ -504,7 +489,7 @@ export default function TradingCalendarPage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="border border-white/10 bg-pure-black">
+                    <Card className="border border-white/10">
                         <CardHeader className="pb-2">
                             <CardTitle className="font-medium text-gray-300 text-sm">
                                 Negative Days
@@ -527,7 +512,7 @@ export default function TradingCalendarPage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="border border-white/10 bg-pure-black">
+                    <Card className="border border-white/10">
                         <CardHeader className="pb-2">
                             <CardTitle className="font-medium text-gray-300 text-sm">
                                 Neutral Days
@@ -550,7 +535,7 @@ export default function TradingCalendarPage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="border border-white/10 bg-pure-black">
+                    <Card className="border border-white/10">
                         <CardHeader className="pb-2">
                             <CardTitle className="font-medium text-gray-300 text-sm">
                                 Total Days

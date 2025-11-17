@@ -31,39 +31,24 @@ export default function LeaderboardPage() {
     }, []);
 
     return (
-        <div className="mb-20 min-h-screen bg-pure-black text-pure-white">
+        <div className="mb-20 min-h-screen text-pure-white">
             <div className="relative mx-auto w-full">
-                <div className="relative mb-8 border-white/10 border-b">
-                    <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent" />
-                    <div className="relative mx-auto max-w-7xl px-6 py-8">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h1 className="font-argesta font-bold text-3xl tracking-tight">
-                                    Leaderboard
-                                </h1>
-                                <p className="mt-2 text-sm text-white/60">
-                                    Top performers ranked by total deep work
-                                    hours.
-                                </p>
-                            </div>
-
-                            {/* Period Filter */}
-                            <div className="flex items-center gap-2">
-                                <RiCalendarLine className="h-4 w-4 text-white/40" />
-                                <select
-                                    className="rounded-lg border border-white/20 bg-black/20 px-3 py-2 text-sm text-white transition-colors focus:border-white/40 focus:outline-hidden"
-                                    onChange={(e) =>
-                                        setPeriod(e.target.value as Period)
-                                    }
-                                    value={period}
-                                >
-                                    <option value="all">All Time</option>
-                                    <option value="week">This Week</option>
-                                    <option value="month">This Month</option>
-                                    <option value="year">This Year</option>
-                                </select>
-                            </div>
-                        </div>
+                <div className="relative mb-6 flex items-center justify-end">
+                    {/* Period Filter */}
+                    <div className="flex items-center gap-2">
+                        <RiCalendarLine className="h-4 w-4 text-white/40" />
+                        <select
+                            className="rounded-lg border border-white/20 bg-black/20 px-3 py-2 text-sm text-white transition-colors focus:border-white/40 focus:outline-hidden"
+                            onChange={(e) =>
+                                setPeriod(e.target.value as Period)
+                            }
+                            value={period}
+                        >
+                            <option value="all">All Time</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            <option value="year">This Year</option>
+                        </select>
                     </div>
                 </div>
 

@@ -1,5 +1,4 @@
 @import "tailwindcss";
-
 @plugin 'tailwindcss-animate';
 
 @custom-variant dark (&:is(.dark *));
@@ -179,11 +178,6 @@
         min-height: 100vh;
     }
 
-    body {
-        background-color: var(--pure-black);
-        color: var(--pure-white);
-    }
-
     @keyframes scroll {
         to {
             transform: translate(calc(-50% - 0.5rem));
@@ -275,7 +269,7 @@
         --chart-5: 27 87% 67%;
     }
     .dark {
-        --background: 0 0% 3.9%;
+        --background: 0 0% 7%;
         --foreground: 0 0% 98%;
         --card: 0 0% 3.9%;
         --card-foreground: 0 0% 98%;

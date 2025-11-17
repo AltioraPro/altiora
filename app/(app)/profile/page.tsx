@@ -113,105 +113,86 @@ export default async function ProfilePage() {
     };
 
     return (
-        <div className="min-h-screen bg-pure-black text-pure-white">
+        <div className="min-h-screen text-pure-white">
             <div className="relative mx-auto w-full">
-                {/* Header */}
-                <div className="relative mb-8 border-white/10 border-b">
-                    <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent" />
-                    <div className="relative mx-auto max-w-7xl px-6 py-8">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h1 className="font-argesta font-bold text-3xl tracking-tight">
-                                    Profile
-                                </h1>
-                                <p className="mt-2 text-sm text-white/60">
-                                    Your account information and activity
-                                    overview.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 {/* Profile Card */}
-                <div className="mx-auto mb-8 max-w-7xl">
-                    <Card className="border border-white/10 bg-black/20">
-                        <CardContent className="p-8">
-                            <div className="flex justify-between gap-8">
-                                {/* Left Side - Avatar + Info + Heatmap */}
-                                <div className="flex-1 space-y-6">
-                                    {/* Avatar + Info */}
-                                    <div className="flex items-center gap-8 md:items-start">
-                                        {/* Avatar */}
-                                        <div className="relative">
-                                            <div className="flex h-32 w-32 items-center justify-center overflow-hidden rounded-full border-2 border-white/20 bg-white/5">
-                                                {renderAvatar()}
-                                            </div>
-                                            {user.discordProfile
-                                                ?.discordConnected && (
-                                                <div className="absolute right-1 bottom-1 flex h-8 w-8 items-center justify-center rounded-full border-2 border-black bg-[#5865F2]">
-                                                    <div className="h-3 w-3 rounded-full bg-white" />
-                                                </div>
-                                            )}
-                                        </div>
 
-                                        {/* User Info */}
-                                        <div className="flex-1">
-                                            <div className="mb-4">
-                                                <div className="mb-2 flex items-center gap-3">
-                                                    <h2 className="font-argesta font-bold text-3xl text-white">
-                                                        {user.name}
-                                                    </h2>
-                                                    <span className="rounded-md border border-white/10 bg-white/5 px-3 py-1 font-medium text-white/60 text-xs uppercase tracking-wider">
-                                                        {user.rank}
-                                                    </span>
-                                                </div>
-                                                <p className="text-white/60">
-                                                    {user.email}
-                                                </p>
-                                            </div>
-
-                                            {/* Member Since */}
-                                            <div className="mt-4">
-                                                <p className="text-sm text-white/40">
-                                                    Member since{" "}
-                                                    {formatDate(user.createdAt)}
-                                                </p>
-                                            </div>
+                <Card className="mb-8 border border-white/10 bg-black/20">
+                    <CardContent className="p-8">
+                        <div className="flex justify-between gap-8">
+                            {/* Left Side - Avatar + Info + Heatmap */}
+                            <div className="flex-1 space-y-6">
+                                {/* Avatar + Info */}
+                                <div className="flex items-center gap-8 md:items-start">
+                                    {/* Avatar */}
+                                    <div className="relative">
+                                        <div className="flex h-32 w-32 items-center justify-center overflow-hidden rounded-full border-2 border-white/20 bg-white/5">
+                                            {renderAvatar()}
                                         </div>
+                                        {user.discordProfile
+                                            ?.discordConnected && (
+                                            <div className="absolute right-1 bottom-1 flex h-8 w-8 items-center justify-center rounded-full border-2 border-black bg-[#5865F2]">
+                                                <div className="h-3 w-3 rounded-full bg-white" />
+                                            </div>
+                                        )}
                                     </div>
 
-                                    {/* Habit Heatmap */}
-                                    <div>
-                                        <Suspense
-                                            fallback={
-                                                <div className="animate-pulse">
-                                                    <div className="mb-4 h-6 w-40 rounded bg-white/10" />
-                                                    <div className="h-32 rounded bg-white/10" />
-                                                </div>
-                                            }
-                                        >
-                                            <HabitHeatmap />
-                                        </Suspense>
+                                    {/* User Info */}
+                                    <div className="flex-1">
+                                        <div className="mb-4">
+                                            <div className="mb-2 flex items-center gap-3">
+                                                <h2 className="font-argesta font-bold text-3xl text-white">
+                                                    {user.name}
+                                                </h2>
+                                                <span className="rounded-md border border-white/10 bg-white/5 px-3 py-1 font-medium text-white/60 text-xs uppercase tracking-wider">
+                                                    {user.rank}
+                                                </span>
+                                            </div>
+                                            <p className="text-white/60">
+                                                {user.email}
+                                            </p>
+                                        </div>
+
+                                        {/* Member Since */}
+                                        <div className="mt-4">
+                                            <p className="text-sm text-white/40">
+                                                Member since{" "}
+                                                {formatDate(user.createdAt)}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
 
-                                {/* Right Side - Deepwork Stats */}
-                                <div className="w-56">
+                                {/* Habit Heatmap */}
+                                <div>
                                     <Suspense
                                         fallback={
-                                            <div className="h-full animate-pulse rounded-lg bg-black/5 p-4">
-                                                <div className="h-20 rounded bg-white/5" />
+                                            <div className="animate-pulse">
+                                                <div className="mb-4 h-6 w-40 rounded bg-white/10" />
+                                                <div className="h-32 rounded bg-white/10" />
                                             </div>
                                         }
                                     >
-                                        <DeepworkStats />
+                                        <HabitHeatmap />
                                     </Suspense>
                                 </div>
                             </div>
-                        </CardContent>
-                    </Card>
-                </div>
+
+                            {/* Right Side - Deepwork Stats */}
+                            <div className="w-56">
+                                <Suspense
+                                    fallback={
+                                        <div className="h-full animate-pulse rounded-lg bg-black/5 p-4">
+                                            <div className="h-20 rounded bg-white/5" />
+                                        </div>
+                                    }
+                                >
+                                    <DeepworkStats />
+                                </Suspense>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
 
                 {/* Activity Stats */}
                 <div className="mx-auto mb-8 max-w-7xl">
