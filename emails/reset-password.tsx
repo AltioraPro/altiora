@@ -1,4 +1,3 @@
-import { getEmailUrl } from "@/lib/urls";
 import { Logomark } from "./common/logomark";
 import { Card } from "./components/card";
 import { EmailButton } from "./components/email-button";
@@ -11,8 +10,6 @@ interface ResetPasswordTemplateProps {
     name: string;
 }
 
-const baseUrl = getEmailUrl();
-
 export default function ResetPasswordTemplate({
     url,
     host,
@@ -21,7 +18,7 @@ export default function ResetPasswordTemplate({
     return (
         <EmailLayout previewText={`Reset your password for ${host}`}>
             <div className="flex w-full items-center justify-center">
-                <Logomark logoUrl={`${baseUrl}/img/logo.png`} />
+                <Logomark />
             </div>
 
             <Card>

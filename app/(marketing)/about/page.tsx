@@ -1,6 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { Header } from "@/components/layout/Header";
+import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import {
     Card,

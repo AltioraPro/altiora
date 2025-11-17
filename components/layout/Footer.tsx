@@ -16,10 +16,10 @@ import {
     Users,
     Zap,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { PAGES } from "@/constants/pages";
+import { Logo } from "../logo";
 
 const DiscordIcon = ({ className }: { className?: string }) => (
     <svg className={className} fill="currentColor" viewBox="0 0 24 24">
@@ -166,14 +166,7 @@ export const Footer = () => {
                         {/* Brand Section */}
                         <div className="space-y-6 lg:col-span-1">
                             <div className="mb-6 flex items-center space-x-3">
-                                <Image
-                                    alt="Altiora Logo"
-                                    className="h-12 w-auto"
-                                    height={22}
-                                    priority
-                                    src="/img/logo.png"
-                                    width={80}
-                                />
+                                <Logo className="h-8 w-fit sm:h-12" />
                             </div>
 
                             <p className="text-sm text-white/70 leading-relaxed">

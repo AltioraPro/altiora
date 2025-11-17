@@ -1,7 +1,7 @@
 import { Check, Crown, MessageCircle, Sparkles, Zap } from "lucide-react";
 import Link from "next/link";
+import { Header } from "@/components/header";
 import ShinyText from "@/components/landing/ShinyText";
-import { Header } from "@/components/layout/Header";
 import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
 import { PAGES } from "@/constants/pages";
 import { ProButton } from "./_components/pro-button";

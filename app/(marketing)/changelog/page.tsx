@@ -1,6 +1,6 @@
 import { Bug, Plus, Star, Zap } from "lucide-react";
+import { Header } from "@/components/header";
 import { Footer } from "@/components/layout/Footer";
-import { Header } from "@/components/layout/Header";
 
 export default function ChangelogPage() {
     const releases = [

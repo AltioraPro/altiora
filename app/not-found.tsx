@@ -1,7 +1,7 @@
 import Link from "next/link";
+import { Header } from "@/components/header";
 import BlurText from "@/components/landing/BlurText";
 import ShinyText from "@/components/landing/ShinyText";
-import { Header } from "@/components/layout/Header";
 import Silk from "@/components/Silk/Silk";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 
