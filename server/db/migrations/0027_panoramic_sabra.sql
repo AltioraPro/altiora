@@ -32,5 +32,5 @@ ALTER TABLE "advanced_trade" ALTER COLUMN "updated_at" SET DATA TYPE timestamp;-
 ALTER TABLE "advanced_trade" ALTER COLUMN "updated_at" SET DEFAULT now();--> statement-breakpoint
 ALTER TABLE "trading_asset" ALTER COLUMN "created_at" SET DEFAULT now();--> statement-breakpoint
 ALTER TABLE "trading_asset" ALTER COLUMN "updated_at" SET DEFAULT now();--> statement-breakpoint
-ALTER TABLE "advanced_trade" DROP COLUMN "symbol";--> statement-breakpoint
-ALTER TABLE "trading_asset" DROP COLUMN "symbol";
+ALTER TABLE "advanced_trade" DROP COLUMN IF EXISTS "symbol";--> statement-breakpoint
+ALTER TABLE "trading_asset" DROP COLUMN IF EXISTS "symbol";
