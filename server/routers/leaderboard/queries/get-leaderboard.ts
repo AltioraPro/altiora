@@ -1,18 +1,18 @@
-import { and, desc, eq, gte, sql } from "drizzle-orm";
+import { and, desc, eq, gte, sum } from "drizzle-orm";
 import {
     discordPomodoroSessions,
     discordProfile,
     user,
 } from "@/server/db/schema";
 import { publicProcedure } from "@/server/procedure/public.procedure";
-import { getLeaderboardSchema, type Period } from "../validators";
+import { getLeaderboardSchema } from "../validators";
 
 export const getLeaderboardBase = publicProcedure.input(getLeaderboardSchema);
 
 export const getLeaderboardHandler = getLeaderboardBase.handler(
     async ({ context, input }) => {
         const { db } = context;
-        const period: Period = input.period;
+        const period = input.period;
 
         const now = new Date();
         let startDate: Date | null = null;
@@ -32,6 +32,15 @@ export const getLeaderboardHandler = getLeaderboardBase.handler(
                 break;
         }
 
+        // Build join conditions, filtering out undefined values
+        const joinConditions = [eq(discordPomodoroSessions.format, "deepwork")];
+
+        if (startDate) {
+            joinConditions.push(
+                gte(discordPomodoroSessions.startedAt, startDate)
+            );
+        }
+
         const leaderboardData = await db
             .select({
                 userId: user.id,
@@ -41,22 +50,10 @@ export const getLeaderboardHandler = getLeaderboardBase.handler(
                 image: user.image,
                 discordAvatar: discordProfile.discordAvatar,
                 discordId: discordProfile.discordId,
-                totalWorkTime:
-                    sql<number>`COALESCE(SUM(${discordPomodoroSessions.totalWorkTime}), 0)`.as(
-                        "total_work_time"
-                    ),
+                totalWorkTime: sum(discordPomodoroSessions.totalWorkTime),
             })
             .from(user)
-            .leftJoin(
-                discordPomodoroSessions,
-                and(
-                    eq(discordPomodoroSessions.userId, user.id),
-                    eq(discordPomodoroSessions.format, "deepwork"),
-                    startDate
-                        ? gte(discordPomodoroSessions.startedAt, startDate)
-                        : undefined
-                )
-            )
+            .leftJoin(discordPomodoroSessions, and(...joinConditions))
             .leftJoin(discordProfile, eq(discordProfile.userId, user.id))
             .where(eq(user.isLeaderboardPublic, true))
             .groupBy(
@@ -68,11 +65,7 @@ export const getLeaderboardHandler = getLeaderboardBase.handler(
                 discordProfile.discordAvatar,
                 discordProfile.discordId
             )
-            .orderBy(
-                desc(
-                    sql`COALESCE(SUM(${discordPomodoroSessions.totalWorkTime}), 0)`
-                )
-            )
+            .orderBy(desc(sum(discordPomodoroSessions.totalWorkTime)))
             .limit(100);
 
         return leaderboardData.map((entry, index) => ({
@@ -80,11 +73,10 @@ export const getLeaderboardHandler = getLeaderboardBase.handler(
             userId: entry.userId,
             name: entry.discordUsername || entry.name,
             userRank: entry.rank,
-            image: entry.image,
-            discordAvatar: entry.discordAvatar,
+            image: entry.discordAvatar || entry.image,
             discordId: entry.discordId,
-            totalWorkHours: Math.floor((entry.totalWorkTime || 0) / 60),
-            totalWorkMinutes: (entry.totalWorkTime || 0) % 60,
+            totalWorkHours: Math.floor(Number(entry.totalWorkTime) / 60),
+            totalWorkMinutes: Number(entry.totalWorkTime) % 60,
         }));
     }
 );
