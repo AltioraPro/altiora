@@ -1,6 +1,7 @@
 "use client";
 
 import {
+    adminClient,
     emailOTPClient,
     inferAdditionalFields,
 } from "better-auth/client/plugins";
@@ -28,6 +29,7 @@ export const authClient = createAuthClient({
     baseURL: resolveBaseUrl(),
     plugins: [
         emailOTPClient(),
+        adminClient(),
         whitelistClient(),
         inferAdditionalFields<typeof auth>(),
     ],

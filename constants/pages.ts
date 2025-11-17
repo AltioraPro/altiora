@@ -43,6 +43,7 @@ export const SETTINGS_PAGES = {
 };
 
 export const ADMIN_PAGES = {
+    ADMIN: route("/admin"),
     ADMIN_USERS: route("/admin/users"),
     ADMIN_WAITLIST: route("/admin/waitlist"),
 };

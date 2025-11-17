@@ -1,12 +1,17 @@
 import { call } from "@orpc/server";
+import { USER_ROLES } from "@/constants/roles";
 import { base } from "@/server/context";
 import {
+    banMultipleUsersBase,
+    banMultipleUsersHandler,
     sendVerificationEmailBase,
     sendVerificationEmailHandler,
     syncUserBase,
     syncUserHandler,
     updateLeaderboardVisibilityBase,
     updateLeaderboardVisibilityHandler,
+    updateMultipleUsersStatusBase,
+    updateMultipleUsersStatusHandler,
     updateProfileBase,
     updateProfileHandler,
     updateRankBase,
@@ -14,14 +19,39 @@ import {
     verifyEmailBase,
     verifyEmailHandler,
 } from "./mutations";
-import { getMeBase, getMeHandler } from "./queries/get-me";
+import { getMeBase, getMeHandler } from "./queries";
 import {
     getUserEmailStatusBase,
     getUserEmailStatusHandler,
-} from "./queries/get-user-email-status";
+    listUsersBase,
+    listUsersHandler,
+    listWaitlistBase,
+    listWaitlistHandler,
+} from "./queries/";
 
 export const authRouter = base.router({
     // Queries
+
+    listUsers: listUsersBase
+        .route({ method: "GET" })
+        .meta({ roles: [USER_ROLES.ADMIN] })
+        .handler(
+            async ({ input, context }) =>
+                await call(listUsersHandler, input, {
+                    context,
+                })
+        ),
+
+    listWaitlist: listWaitlistBase
+        .route({ method: "GET" })
+        .meta({ roles: [USER_ROLES.ADMIN] })
+        .handler(
+            async ({ input, context }) =>
+                await call(listWaitlistHandler, input, {
+                    context,
+                })
+        ),
+
     getCurrentUser: getMeBase
         .route({ method: "GET" })
         .handler(
@@ -77,6 +107,26 @@ export const authRouter = base.router({
         .handler(
             async ({ context, input }) =>
                 await call(updateLeaderboardVisibilityHandler, input, {
+                    context,
+                })
+        ),
+
+    banMultipleUsers: banMultipleUsersBase
+        .route({ method: "PATCH" })
+        .meta({ roles: [USER_ROLES.ADMIN] })
+        .handler(
+            async ({ input, context }) =>
+                await call(banMultipleUsersHandler, input, {
+                    context,
+                })
+        ),
+
+    updateMultipleUsersStatus: updateMultipleUsersStatusBase
+        .route({ method: "PATCH" })
+        .meta({ roles: [USER_ROLES.ADMIN] })
+        .handler(
+            async ({ input, context }) =>
+                await call(updateMultipleUsersStatusHandler, input, {
                     context,
                 })
         ),
