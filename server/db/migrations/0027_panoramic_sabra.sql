@@ -15,8 +15,8 @@ END;
 ALTER TABLE "advanced_trade" DROP COLUMN IF EXISTS "symbol";
 --------------------------------
 
-DROP INDEX "advanced_trade_symbol_idx";--> statement-breakpoint
-DROP INDEX "trading_asset_symbol_idx";--> statement-breakpoint
+DROP INDEX IF EXISTS "advanced_trade_symbol_idx";--> statement-breakpoint
+DROP INDEX IF EXISTS "trading_asset_symbol_idx";--> statement-breakpoint
 ALTER TABLE "advanced_trade" ALTER COLUMN "trade_date" SET DATA TYPE timestamp with time zone;--> statement-breakpoint
 ALTER TABLE "advanced_trade" ALTER COLUMN "trade_date" SET DEFAULT now();--> statement-breakpoint
 ALTER TABLE "advanced_trade" ALTER COLUMN "risk_input" SET DATA TYPE text;--> statement-breakpoint
