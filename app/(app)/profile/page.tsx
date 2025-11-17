@@ -1,5 +1,5 @@
 import { ORPCError } from "@orpc/server";
-import { User } from "lucide-react";
+import { RiUserLine } from "@remixicon/react";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
@@ -109,7 +109,7 @@ export default async function ProfilePage() {
             );
         }
 
-        return <User className="h-16 w-16 text-white/40" />;
+        return <RiUserLine className="h-16 w-16 text-white/40" />;
     };
 
     return (

@@ -1,4 +1,4 @@
-import { Header } from "@/components/layout/Header";
+import { Header } from "@/components/header";
 import { ContactForm } from "./_components/contact-form";
 import { ContactHeader } from "./_components/contact-header";
 import { FloatingElements } from "./_components/floating-elements";

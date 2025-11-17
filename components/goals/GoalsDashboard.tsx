@@ -1,16 +1,16 @@
 "use client";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
 import {
-    Calendar,
-    CheckCircle,
-    Circle,
-    Edit,
-    Search,
-    Sparkles,
-    Trash2,
-    TrendingUp,
-} from "lucide-react";
+    RiCalendarLine,
+    RiCheckboxCircleFill,
+    RiCircleLine,
+    RiDeleteBin2Line,
+    RiEditLine,
+    RiSearchLine,
+    RiSparklingLine,
+    RiStockLine,
+} from "@remixicon/react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -88,14 +88,14 @@ function QuarterlyGoalItem({
                             type="button"
                         >
                             {goal.isCompleted ? (
-                                <CheckCircle className="h-4 w-4 text-green-400" />
+                                <RiCheckboxCircleFill className="size-4 text-green-400" />
                             ) : (
-                                <Circle className="h-4 w-4 text-white/40 transition-colors hover:text-green-400" />
+                                <RiCircleLine className="size-4 text-white/40 transition-colors hover:text-green-400" />
                             )}
                         </button>
 
                         <h4
-                            className={`line-clamp-1 wrap-break-word font-medium text-sm ${goal.isCompleted ? "text-white/50 line-through" : "text-white/90"}`}
+                            className={`wrap-break-word line-clamp-1 font-medium text-sm ${goal.isCompleted ? "text-white/50 line-through" : "text-white/90"}`}
                             title={goal.title}
                         >
                             {goal.title}
@@ -105,7 +105,7 @@ function QuarterlyGoalItem({
                     <div className="flex items-center gap-4 text-white/50 text-xs">
                         {goal.deadline && (
                             <div className="flex items-center gap-1">
-                                <Calendar className="h-3 w-3" />
+                                <RiCalendarLine className="size-3" />
                                 <span>
                                     {new Date(goal.deadline).toLocaleDateString(
                                         "en-US",
@@ -143,7 +143,7 @@ function QuarterlyGoalItem({
                         size="sm"
                         variant="ghost"
                     >
-                        <Edit className="h-3 w-3" />
+                        <RiEditLine className="size-3" />
                     </Button>
                     <Button
                         className="h-6 w-6 p-0 text-white/40 hover:bg-red-400/10 hover:text-red-400"
@@ -151,7 +151,7 @@ function QuarterlyGoalItem({
                         size="sm"
                         variant="ghost"
                     >
-                        <Trash2 className="h-3 w-3" />
+                        <RiDeleteBin2Line className="size-3" />
                     </Button>
                 </div>
             </div>
@@ -257,7 +257,7 @@ export function GoalsDashboard() {
         return (
             <div className="relative rounded-xl border border-white/10 bg-white/2 p-8 text-center">
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/5">
-                    <TrendingUp className="h-8 w-8 text-white/40" />
+                    <RiStockLine className="size-8 text-white/40" />
                 </div>
                 <p className="font-medium text-red-400">Error loading goals</p>
             </div>
@@ -293,7 +293,7 @@ export function GoalsDashboard() {
             return (
                 <div className="relative rounded-xl border border-white/10 bg-white/2 p-12 text-center backdrop-blur-xs">
                     <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full border border-white/10 bg-linear-to-br from-white/10 to-white/5">
-                        <Search className="h-10 w-10 text-white/40" />
+                        <RiSearchLine className="size-10 text-white/40" />
                     </div>
                     <h3 className="mb-3 font-bold text-2xl text-white">
                         No goals found
@@ -305,7 +305,7 @@ export function GoalsDashboard() {
                     </p>
                     {!search && (
                         <div className="flex items-center justify-center gap-2 text-white/40">
-                            <Sparkles className="h-5 w-5" />
+                            <RiSparklingLine className="size-5" />
                             <span className="text-sm">
                                 Ready to achieve something amazing?
                             </span>

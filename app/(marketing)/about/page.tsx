@@ -1,6 +1,6 @@
-import { ArrowLeft } from "lucide-react";
+import { RiArrowLeftLine } from "@remixicon/react";
 import Link from "next/link";
-import { Header } from "@/components/layout/Header";
+import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -95,7 +95,7 @@ export default function AboutPage() {
                             className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white"
                             variant="outline"
                         >
-                            <ArrowLeft className="mr-2 h-4 w-4" />
+                            <RiArrowLeftLine className="size-4" />
                             Back to home
                         </Button>
                     </Link>

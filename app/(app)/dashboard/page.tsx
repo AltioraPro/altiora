@@ -1,4 +1,4 @@
-import { ArrowLeft } from "lucide-react";
+import { RiArrowLeftLine } from "@remixicon/react";
 import Link from "next/link";
 import { DiscordWelcomeChecker } from "@/components/auth/DiscordWelcomeChecker";
 import { GlobalTradingCharts } from "@/components/trading/GlobalTradingCharts";
@@ -38,7 +38,7 @@ export default async function GlobalDashboardPage() {
                         size="sm"
                         variant="ghost"
                     >
-                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        <RiArrowLeftLine className="mr-2 h-4 w-4" />
                         Journals
                     </Button>
                 </Link>

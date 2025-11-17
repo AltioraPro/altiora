@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
+import { RiArrowDownSLine } from "@remixicon/react";
 import { useEffect, useRef, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -70,7 +70,7 @@ export function JournalFilter({ journals }: JournalFilterProps) {
                             {selectedJournalIds.length > 1 &&
                                 `${selectedJournalIds.length} journals selected`}
                         </span>
-                        <ChevronDown
+                        <RiArrowDownSLine
                             className={`h-4 w-4 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`}
                         />
                     </button>

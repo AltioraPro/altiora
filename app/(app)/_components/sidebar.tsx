@@ -28,10 +28,10 @@ export function Sidebar() {
                 )}
             >
                 <Link
-                    className="absolute left-[15px] transition-none"
+                    className="absolute left-[17px] transition-none"
                     href={PAGES.LANDING_PAGE}
                 >
-                    <Logo />
+                    <Logo className="h-5 w-fit" />
                 </Link>
             </div>
 

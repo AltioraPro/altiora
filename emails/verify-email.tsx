@@ -1,4 +1,3 @@
-import { getEmailUrl } from "@/lib/urls";
 import { Logomark } from "./common/logomark";
 import { Card } from "./components/card";
 import { EmailButton } from "./components/email-button";
@@ -12,8 +11,6 @@ interface VerifyEmailTemplateProps {
     email: string;
 }
 
-const baseUrl = getEmailUrl();
-
 export default function VerifyEmailTemplate({
     otp,
     host,
@@ -22,7 +19,7 @@ export default function VerifyEmailTemplate({
     return (
         <EmailLayout previewText="Verify your email address">
             <div className="flex w-full items-center justify-center">
-                <Logomark logoUrl={`${baseUrl}/img/logo.png`} />
+                <Logomark />
             </div>
 
             <Card>

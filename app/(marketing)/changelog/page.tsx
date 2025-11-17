@@ -1,6 +1,11 @@
-import { Bug, Plus, Star, Zap } from "lucide-react";
+import {
+    RiAddLine,
+    RiBugLine,
+    RiLightbulbFlashLine,
+    RiStarLine,
+} from "@remixicon/react";
+import { Header } from "@/components/header";
 import { Footer } from "@/components/layout/Footer";
-import { Header } from "@/components/layout/Header";
 
 export default function ChangelogPage() {
     const releases = [
@@ -115,13 +120,15 @@ export default function ChangelogPage() {
     const getTypeIcon = (type: string) => {
         switch (type) {
             case "feature":
-                return <Plus className="h-4 w-4 text-green-400" />;
+                return <RiAddLine className="size-4 text-green-400" />;
             case "improvement":
-                return <Zap className="h-4 w-4 text-blue-400" />;
+                return (
+                    <RiLightbulbFlashLine className="size-4 text-blue-400" />
+                );
             case "fix":
-                return <Bug className="h-4 w-4 text-red-400" />;
+                return <RiBugLine className="size-4 text-red-400" />;
             default:
-                return <Star className="h-4 w-4 text-white/60" />;
+                return <RiStarLine className="size-4 text-white/60" />;
         }
     };
 
@@ -213,19 +220,19 @@ export default function ChangelogPage() {
                         </h3>
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                             <div className="flex items-center space-x-3">
-                                <Plus className="h-4 w-4 text-green-400" />
+                                <RiAddLine className="size-4 text-green-400" />
                                 <span className="text-sm text-white/70">
                                     New Feature
                                 </span>
                             </div>
                             <div className="flex items-center space-x-3">
-                                <Zap className="h-4 w-4 text-blue-400" />
+                                <RiLightbulbFlashLine className="size-4 text-blue-400" />
                                 <span className="text-sm text-white/70">
                                     Improvement
                                 </span>
                             </div>
                             <div className="flex items-center space-x-3">
-                                <Bug className="h-4 w-4 text-red-400" />
+                                <RiBugLine className="size-4 text-red-400" />
                                 <span className="text-sm text-white/70">
                                     Bug Fix
                                 </span>

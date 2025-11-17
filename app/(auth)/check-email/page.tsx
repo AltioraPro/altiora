@@ -1,14 +1,14 @@
 "use client";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
 import {
-    AlertCircle,
-    ArrowLeft,
-    CheckCircle,
-    ExternalLink,
-    Mail,
-    RefreshCw,
-} from "lucide-react";
+    RiAlertLine,
+    RiArrowLeftSLine,
+    RiCheckboxCircleFill,
+    RiExternalLinkLine,
+    RiMailLine,
+    RiRefreshLine,
+} from "@remixicon/react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
@@ -155,7 +155,7 @@ function CheckEmailContent() {
                         <div className="mt-8 space-y-4">
                             <div className="flex items-center space-x-4">
                                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20">
-                                    <CheckCircle className="h-4 w-4 text-white" />
+                                    <RiCheckboxCircleFill className="h-4 w-4 text-white" />
                                 </div>
                                 <span className="text-sm text-white/70">
                                     Account created
@@ -163,7 +163,7 @@ function CheckEmailContent() {
                             </div>
                             <div className="flex items-center space-x-4">
                                 <div className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-white">
-                                    <Mail className="h-4 w-4 text-black" />
+                                    <RiMailLine className="h-4 w-4 text-black" />
                                 </div>
                                 <span className="font-medium text-sm text-white">
                                     Email verification
@@ -211,7 +211,7 @@ function CheckEmailContent() {
                                 <>
                                     <div className="relative mx-auto mb-6 inline-flex h-20 w-20 items-center justify-center">
                                         <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-green-500/40 bg-green-500/20 backdrop-blur-xs">
-                                            <CheckCircle className="h-8 w-8 text-green-400" />
+                                            <RiCheckboxCircleFill className="h-8 w-8 text-green-400" />
                                         </div>
                                     </div>
 
@@ -228,7 +228,7 @@ function CheckEmailContent() {
                                     <div className="relative mx-auto mb-6 inline-flex h-20 w-20 items-center justify-center">
                                         <div className="absolute inset-0 animate-ping rounded-full border-2 border-white/20" />
                                         <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur-xs">
-                                            <Mail className="h-8 w-8 text-white" />
+                                            <RiMailLine className="h-8 w-8 text-white" />
                                         </div>
                                     </div>
 
@@ -259,7 +259,7 @@ function CheckEmailContent() {
                                         title="Open email provider"
                                         type="button"
                                     >
-                                        <ExternalLink className="h-4 w-4" />
+                                        <RiExternalLinkLine className="h-4 w-4" />
                                     </button>
                                 </div>
                             </div>
@@ -270,7 +270,7 @@ function CheckEmailContent() {
                             {/* Error message */}
                             {error && (
                                 <div className="flex items-start space-x-3 rounded-lg border border-red-500/20 bg-red-500/5 p-3">
-                                    <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
+                                    <RiAlertLine className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
                                     <p className="text-red-200 text-xs">
                                         {error}
                                     </p>
@@ -315,7 +315,7 @@ function CheckEmailContent() {
 
                                     {/* Warning for spam */}
                                     <div className="flex items-start space-x-3 rounded-lg border border-yellow-500/20 bg-yellow-500/5 p-3">
-                                        <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-yellow-400" />
+                                        <RiAlertLine className="mt-0.5 h-4 w-4 shrink-0 text-yellow-400" />
                                         <p className="text-xs text-yellow-200">
                                             Can&apos;t find the email? Check
                                             your spam or promotions folder.
@@ -327,7 +327,7 @@ function CheckEmailContent() {
                             {isAlreadyVerified && (
                                 <div className="rounded-lg border border-green-500/20 bg-green-500/5 p-4 backdrop-blur-xs">
                                     <div className="flex items-center space-x-3">
-                                        <CheckCircle className="h-5 w-5 text-green-400" />
+                                        <RiCheckboxCircleFill className="h-5 w-5 text-green-400" />
                                         <div>
                                             <h3 className="font-medium text-green-400 text-sm">
                                                 VERIFICATION COMPLETE
@@ -352,7 +352,7 @@ function CheckEmailContent() {
                                     onClick={() => router.push(PAGES.SIGN_IN)}
                                     type="button"
                                 >
-                                    <ArrowLeft className="h-4 w-4" />
+                                    <RiArrowLeftSLine className="h-4 w-4" />
                                     <span>Go to Login</span>
                                 </button>
                             ) : (
@@ -374,12 +374,12 @@ function CheckEmailContent() {
                                     >
                                         {isSendingVerificationEmail ? (
                                             <>
-                                                <RefreshCw className="h-4 w-4 animate-spin" />
+                                                <RiRefreshLine className="h-4 w-4 animate-spin" />
                                                 <span>Sending...</span>
                                             </>
                                         ) : (
                                             <>
-                                                <RefreshCw className="h-4 w-4" />
+                                                <RiRefreshLine className="h-4 w-4" />
                                                 <span>
                                                     {canResend
                                                         ? "Resend email"
@@ -396,9 +396,9 @@ function CheckEmailContent() {
                                             onClick={openEmailProvider}
                                             type="button"
                                         >
-                                            <Mail className="h-4 w-4" />
+                                            <RiMailLine className="h-4 w-4" />
                                             <span>Open Email App</span>
-                                            <ExternalLink className="h-3 w-3" />
+                                            <RiExternalLinkLine className="h-3 w-3" />
                                         </button>
                                     )}
 
@@ -410,7 +410,7 @@ function CheckEmailContent() {
                                         }
                                         type="button"
                                     >
-                                        <ArrowLeft className="h-4 w-4" />
+                                        <RiArrowLeftSLine className="h-4 w-4" />
                                         <span>Back to Login</span>
                                     </button>
                                 </>

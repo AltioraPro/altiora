@@ -1,7 +1,7 @@
 "use client";
 
+import { RiSparklingLine } from "@remixicon/react";
 import { useMutation } from "@tanstack/react-query";
-import { Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import SpotlightCard from "@/components/SpotlightCard";
 import { Button } from "@/components/ui/button";
@@ -194,7 +194,7 @@ export function CreateJournalCard() {
                         title="Generate example journal"
                         type="button"
                     >
-                        <Sparkles className="h-4 w-4" />
+                        <RiSparklingLine className="h-4 w-4" />
                         {isCreatingJournal
                             ? "Generating..."
                             : "Generate example"}

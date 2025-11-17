@@ -1,5 +1,8 @@
+import {
+    type RemixiconComponentType,
+    RiArrowDownSLine,
+} from "@remixicon/react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { ChevronDown, type LucideIcon } from "lucide-react";
 import { Slot as SlotPrimitive } from "radix-ui";
 import type * as React from "react";
 import { cn } from "@/lib/utils";
@@ -422,12 +425,13 @@ function Button({
     );
 }
 
-interface ButtonArrowProps extends React.SVGProps<SVGSVGElement> {
-    icon?: LucideIcon; // Allows passing any Lucide icon
+interface ButtonArrowProps
+    extends Omit<React.SVGProps<SVGSVGElement>, "children"> {
+    icon?: RemixiconComponentType; // Allows passing any icon component
 }
 
 function ButtonArrow({
-    icon: Icon = ChevronDown,
+    icon: Icon = RiArrowDownSLine,
     className,
     ...props
 }: ButtonArrowProps) {

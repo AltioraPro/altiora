@@ -1,22 +1,23 @@
 "use client";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
 import {
-    AlertCircle,
-    CheckCircle,
-    Crown,
-    ExternalLink,
-    MessageCircle,
-    RefreshCw,
-    Shield,
-    Sparkles,
-    Star,
-    Target,
-    TrendingUp,
-    Trophy,
-    XCircle,
-    Zap,
-} from "lucide-react";
+    RiAlertLine,
+    RiCheckLine,
+    RiCloseCircleLine,
+    RiExternalLinkLine,
+    RiLightbulbFlashLine,
+    RiMessageLine,
+    RiRefreshLine,
+    RiShieldLine,
+    RiSparklingLine,
+    RiStarLine,
+    RiStockLine,
+    RiTargetLine,
+    RiTrophyLine,
+    RiVipCrownLine,
+    RiXingLine,
+} from "@remixicon/react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,15 +31,15 @@ import { cn } from "@/lib/utils";
 import { orpc } from "@/orpc/client";
 
 const rankIcons: Record<string, React.ComponentType<{ className?: string }>> = {
-    NEW: Target,
-    BEGINNER: Target,
-    RISING: TrendingUp,
-    CHAMPION: Trophy,
-    EXPERT: Star,
-    LEGEND: Crown,
-    MASTER: Zap,
-    GRANDMASTER: Shield,
-    IMMORTAL: Sparkles,
+    NEW: RiTargetLine,
+    BEGINNER: RiTargetLine,
+    RISING: RiStockLine,
+    CHAMPION: RiTrophyLine,
+    EXPERT: RiStarLine,
+    LEGEND: RiVipCrownLine,
+    MASTER: RiLightbulbFlashLine,
+    GRANDMASTER: RiShieldLine,
+    IMMORTAL: RiSparklingLine,
 };
 
 export function DiscordConnection() {
@@ -93,13 +94,13 @@ export function DiscordConnection() {
     const RankIcon =
         connectionStatus?.currentRank && rankIcons[connectionStatus.currentRank]
             ? rankIcons[connectionStatus.currentRank]
-            : Target;
+            : RiTargetLine;
 
     return (
         <Card className="border border-white/10 bg-white/5 backdrop-blur-xs">
             <CardHeader>
                 <CardTitle className="flex items-center space-x-2 text-white">
-                    <MessageCircle className="h-5 w-5" />
+                    <RiMessageLine className="size-5" />
                     <span>DISCORD INTEGRATION</span>
                 </CardTitle>
                 <CardDescription className="text-white/60">
@@ -112,7 +113,7 @@ export function DiscordConnection() {
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">
-                                <CheckCircle className="h-5 w-5 text-green-400" />
+                                <RiCheckLine className="size-5 text-green-400" />
                                 <span className="font-medium text-green-400">
                                     Connected
                                 </span>
@@ -126,9 +127,9 @@ export function DiscordConnection() {
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">
                                 {connectionStatus.roleSynced ? (
-                                    <CheckCircle className="h-5 w-5 text-green-400" />
+                                    <RiCheckLine className="size-5 text-green-400" />
                                 ) : (
-                                    <AlertCircle className="h-5 w-5 text-yellow-400" />
+                                    <RiAlertLine className="size-5 text-yellow-400" />
                                 )}
                                 <span
                                     className={
@@ -145,7 +146,7 @@ export function DiscordConnection() {
 
                             {connectionStatus.currentRank && (
                                 <div className="flex items-center space-x-2">
-                                    <RankIcon className="h-4 w-4 text-white/60" />
+                                    <RankIcon className="size-4 text-white/60" />
                                     <span className="text-sm text-white/60">
                                         {connectionStatus.currentRank}
                                     </span>
@@ -170,7 +171,7 @@ export function DiscordConnection() {
                                 size="sm"
                                 variant="outline"
                             >
-                                <RefreshCw
+                                <RiRefreshLine
                                     className={cn(
                                         "size-4",
                                         isSyncingRank || isAutoSyncingRank
@@ -192,7 +193,7 @@ export function DiscordConnection() {
                                 size="sm"
                                 variant="outline"
                             >
-                                <RefreshCw
+                                <RiRefreshLine
                                     className={cn(
                                         "size-4",
                                         isSyncingRank || isAutoSyncingRank
@@ -209,7 +210,7 @@ export function DiscordConnection() {
                                 size="sm"
                                 variant="outline"
                             >
-                                <XCircle className="h-4 w-4" />
+                                <RiCloseCircleLine className="size-4" />
                                 <span>Disconnect</span>
                             </Button>
                         </div>
@@ -221,7 +222,7 @@ export function DiscordConnection() {
                                 rel="noopener noreferrer"
                                 target="_blank"
                             >
-                                <ExternalLink className="h-4 w-4" />
+                                <RiExternalLinkLine className="size-4" />
                                 <span>Join the Discord server</span>
                             </a>
                         </div>
@@ -229,7 +230,7 @@ export function DiscordConnection() {
                 ) : (
                     <div className="space-y-4">
                         <div className="flex items-center space-x-3">
-                            <XCircle className="h-5 w-5 text-white/40" />
+                            <RiXingLine className="size-5 text-white/40" />
                             <span className="text-white/40">Not connected</span>
                         </div>
 
@@ -237,15 +238,15 @@ export function DiscordConnection() {
                             <p>Connect your Discord account to:</p>
                             <ul className="ml-4 space-y-1">
                                 <li className="flex items-center space-x-2">
-                                    <div className="h-1 w-1 rounded-full bg-white/40" />
+                                    <div className="size-1 rounded-full bg-white/40" />
                                     <span>Automatically sync your rank</span>
                                 </li>
                                 <li className="flex items-center space-x-2">
-                                    <div className="h-1 w-1 rounded-full bg-white/40" />
+                                    <div className="size-1 rounded-full bg-white/40" />
                                     <span>Access exclusive roles</span>
                                 </li>
                                 <li className="flex items-center space-x-2">
-                                    <div className="h-1 w-1 rounded-full bg-white/40" />
+                                    <div className="size-1 rounded-full bg-white/40" />
                                     <span>Participate in the community</span>
                                 </li>
                             </ul>
@@ -256,7 +257,7 @@ export function DiscordConnection() {
                             disabled={isGettingAuthUrl}
                             onClick={handleConnect}
                         >
-                            <MessageCircle className="mr-2 size-4" />
+                            <RiMessageLine className="mr-2 size-4" />
                             {isGettingAuthUrl
                                 ? "Connecting..."
                                 : "Connect with Discord"}

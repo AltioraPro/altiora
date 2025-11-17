@@ -1,14 +1,14 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
 import {
-    AlertTriangle,
-    ArrowRight,
-    CheckCircle,
-    Mail,
-    RefreshCw,
-    XCircle,
-} from "lucide-react";
+    RiAlertLine,
+    RiArrowRightLine,
+    RiCheckboxCircleLine,
+    RiCloseCircleLine,
+    RiMailLine,
+    RiRefreshLine,
+} from "@remixicon/react";
+import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
@@ -114,7 +114,7 @@ function VerifyEmailContent() {
                         <div className="absolute inset-0 animate-ping rounded-full border-2 border-white/20" />
                         <div className="animation-delay-75 absolute inset-2 animate-ping rounded-full border-2 border-white/40" />
                         <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur-xs">
-                            <RefreshCw className="h-8 w-8 animate-spin text-white" />
+                            <RiRefreshLine className="size-8 animate-spin text-white" />
                         </div>
                     </div>
                 );
@@ -123,7 +123,7 @@ function VerifyEmailContent() {
                     <div className="relative mx-auto mb-8 inline-flex h-20 w-20 items-center justify-center">
                         <div className="absolute inset-0 animate-pulse rounded-full bg-green-500/20" />
                         <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-green-500/40 bg-green-500/20 backdrop-blur-xs">
-                            <CheckCircle className="h-8 w-8 text-green-400" />
+                            <RiCheckboxCircleLine className="size-8 text-green-400" />
                         </div>
                     </div>
                 );
@@ -131,7 +131,7 @@ function VerifyEmailContent() {
                 return (
                     <div className="relative mx-auto mb-8 inline-flex h-20 w-20 items-center justify-center">
                         <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-yellow-500/40 bg-yellow-500/20 backdrop-blur-xs">
-                            <AlertTriangle className="h-8 w-8 text-yellow-400" />
+                            <RiAlertLine className="size-8 text-yellow-400" />
                         </div>
                     </div>
                 );
@@ -139,7 +139,7 @@ function VerifyEmailContent() {
                 return (
                     <div className="relative mx-auto mb-8 inline-flex h-20 w-20 items-center justify-center">
                         <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-red-500/40 bg-red-500/20 backdrop-blur-xs">
-                            <XCircle className="h-8 w-8 text-red-400" />
+                            <RiCloseCircleLine className="size-8 text-red-400" />
                         </div>
                     </div>
                 );
@@ -220,7 +220,7 @@ function VerifyEmailContent() {
                         <div className="mt-8 space-y-4">
                             <div className="flex items-center space-x-4">
                                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20">
-                                    <CheckCircle className="h-4 w-4 text-white" />
+                                    <RiCheckboxCircleLine className="size-4 text-white" />
                                 </div>
                                 <span className="text-sm text-white/70">
                                     Account created
@@ -240,9 +240,9 @@ function VerifyEmailContent() {
                                     )}
                                 >
                                     {status === "success" ? (
-                                        <CheckCircle className="h-4 w-4 text-green-400" />
+                                        <RiCheckboxCircleLine className="size-4 text-green-400" />
                                     ) : (
-                                        <Mail className="h-4 w-4 text-black" />
+                                        <RiMailLine className="size-4 text-black" />
                                     )}
                                 </div>
                                 <span
@@ -445,7 +445,7 @@ function VerifyEmailContent() {
                                         <span className="tracking-widest">
                                             GO TO DASHBOARD
                                         </span>
-                                        <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                                        <RiArrowRightLine className="size-5 transition-transform duration-300 group-hover:translate-x-1" />
                                     </div>
                                 </button>
                             )}
@@ -463,7 +463,7 @@ function VerifyEmailContent() {
                                         <div className="relative flex items-center justify-center space-x-3">
                                             {isRetrying ? (
                                                 <>
-                                                    <RefreshCw className="h-5 w-5 animate-spin" />
+                                                    <RiRefreshLine className="size-5 animate-spin" />
                                                     <span className="tracking-widest">
                                                         RETRYING...
                                                     </span>
@@ -473,7 +473,7 @@ function VerifyEmailContent() {
                                                     <span className="tracking-widest">
                                                         TRY AGAIN
                                                     </span>
-                                                    <RefreshCw className="h-5 w-5 transition-transform duration-300 group-hover:rotate-180" />
+                                                    <RiRefreshLine className="size-5 transition-transform duration-300 group-hover:rotate-180" />
                                                 </>
                                             )}
                                         </div>
