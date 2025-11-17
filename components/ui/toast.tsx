@@ -1,6 +1,11 @@
 "use client";
 
-import { AlertCircle, CheckCircle, Info, X } from "lucide-react";
+import {
+    RiAlertLine,
+    RiCheckboxCircleFill,
+    RiInformationLine,
+    RiXingLine,
+} from "@remixicon/react";
 import {
     createContext,
     type ReactNode,
@@ -70,7 +75,9 @@ export function ToastProvider({ children }: ToastProviderProps) {
 function ToastContainer() {
     const { toasts, removeToast } = useToast();
 
-    if (toasts.length === 0) return null;
+    if (toasts.length === 0) {
+        return null;
+    }
 
     return (
         <div className="fixed top-4 right-4 z-99999 space-y-2">
@@ -94,11 +101,15 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
     const getIcon = () => {
         switch (toast.type) {
             case "success":
-                return <CheckCircle className="h-5 w-5 text-green-400" />;
+                return (
+                    <RiCheckboxCircleFill className="h-5 w-5 text-green-400" />
+                );
             case "error":
-                return <AlertCircle className="h-5 w-5 text-red-400" />;
+                return <RiAlertLine className="h-5 w-5 text-red-400" />;
             case "info":
-                return <Info className="h-5 w-5 text-blue-400" />;
+                return <RiInformationLine className="h-5 w-5 text-blue-400" />;
+            default:
+                return <RiAlertLine className="h-5 w-5 text-red-400" />;
         }
     };
 
@@ -110,6 +121,8 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
                 return "bg-red-500/10 border-red-500/20";
             case "info":
                 return "bg-blue-500/10 border-blue-500/20";
+            default:
+                return "bg-gray-500/10 border-gray-500/20";
         }
     };
 
@@ -132,8 +145,9 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
             <button
                 className="text-white/40 transition-colors hover:text-white/60"
                 onClick={() => onRemove(toast.id)}
+                type="button"
             >
-                <X className="h-4 w-4" />
+                <RiXingLine className="h-4 w-4" />
             </button>
         </div>
     );

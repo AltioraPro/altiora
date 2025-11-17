@@ -1,6 +1,6 @@
 "use client";
 
-import { X } from "lucide-react";
+import { RiCloseLine } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -20,7 +20,7 @@ export function ClearFiltersButton({
             type="button"
             variant="outline"
         >
-            <X className="mr-2 h-4 w-4" />
+            <RiCloseLine className="mr-2 h-4 w-4" />
             Clear filters
         </Button>
     );

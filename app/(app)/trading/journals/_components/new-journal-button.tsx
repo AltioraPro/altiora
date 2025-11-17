@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { RiAddLine } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
 import { useCreateJournalStore } from "@/stores/create-journal-store";
 
@@ -9,7 +9,7 @@ export function NewJournalButton() {
 
     return (
         <Button onClick={open} variant="primary">
-            <Plus className="mr-2 size-4" />
+            <RiAddLine className="mr-2 size-4" />
             New Journal
         </Button>
     );

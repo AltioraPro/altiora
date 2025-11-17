@@ -1,7 +1,7 @@
 "use client";
 
+import { RiCheckLine, RiCircleLine } from "@remixicon/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Check, Circle } from "lucide-react";
 import { memo, useCallback, useMemo, useRef } from "react";
 import { useToast } from "@/components/ui/toast";
 import { orpc } from "@/orpc/client";
@@ -52,7 +52,7 @@ const HabitItem = memo<HabitItemProps>(({ habit, isOptimistic, onToggle }) => {
                 </div>
                 {habit.isCompleted && (
                     <div className="-top-1 -right-1 absolute flex h-6 w-6 items-center justify-center rounded-full bg-green-500">
-                        <Check className="h-3 w-3 text-white" />
+                        <RiCheckLine className="size-3 text-white" />
                     </div>
                 )}
             </div>
@@ -89,7 +89,7 @@ const HabitItem = memo<HabitItemProps>(({ habit, isOptimistic, onToggle }) => {
                 {isTempHabit ? (
                     <div className="h-3 w-3 animate-spin rounded-full border border-white/40 border-t-transparent" />
                 ) : (
-                    habit.isCompleted && <Check className="h-4 w-4" />
+                    habit.isCompleted && <RiCheckLine className="size-4" />
                 )}
             </button>
         </div>
@@ -303,7 +303,7 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
 
                             <div className="absolute inset-0 flex items-center justify-center">
                                 {completionPercentage === 100 ? (
-                                    <Check className="h-6 w-6 text-green-400" />
+                                    <RiCheckLine className="size-6 text-green-400" />
                                 ) : (
                                     <span className="font-bold text-sm">
                                         {Math.round(completionPercentage)}
@@ -317,7 +317,7 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
                 <div className="space-y-4">
                     {habitsList.length === 0 ? (
                         <div className="py-8 text-center text-white/50">
-                            <Circle className="mx-auto mb-4 h-12 w-12 opacity-30" />
+                            <RiCircleLine className="mx-auto mb-4 size-12 opacity-30" />
                             <p className="">No habits configured</p>
                             <p className="mt-1 text-sm">
                                 Create your first habit to get started

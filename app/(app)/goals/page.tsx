@@ -1,7 +1,13 @@
 "use client";
 
+import {
+    RiAddLine,
+    RiCalendarLine,
+    RiSparklingLine,
+    RiStockLine,
+    RiTargetLine,
+} from "@remixicon/react";
 import { useQuery } from "@tanstack/react-query";
-import { Calendar, Plus, Sparkles, Target, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CreateGoalModal } from "@/components/goals/CreateGoalModal";
 import { GoalsDashboard } from "@/components/goals/GoalsDashboard";
@@ -103,7 +109,7 @@ export default function GoalsPage() {
                             >
                                 <div className="absolute inset-0 bg-linear-to-r from-white/5 via-white/10 to-white/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                                 <div className="relative flex items-center gap-2">
-                                    <Plus className="h-4 w-4 transition-transform group-hover:scale-110" />
+                                    <RiAddLine className="size-4 transition-transform group-hover:scale-110" />
                                     <span>New Goal</span>
                                 </div>
                             </Button>
@@ -116,7 +122,7 @@ export default function GoalsPage() {
                     {/* Active Goals */}
                     <div className="relative rounded-lg border border-white/10 bg-black/20 p-6">
                         <div className="absolute top-4 right-4">
-                            <Target className="h-4 w-4 text-white" />
+                            <RiTargetLine className="size-4 text-white" />
                         </div>
                         <div>
                             <p className="mb-2 font-medium text-sm text-white/60">
@@ -131,7 +137,7 @@ export default function GoalsPage() {
                     {/* Completed Goals */}
                     <div className="relative rounded-lg border border-white/10 bg-black/20 p-6">
                         <div className="absolute top-4 right-4">
-                            <TrendingUp className="h-4 w-4 text-white" />
+                            <RiStockLine className="size-4 text-white" />
                         </div>
                         <div>
                             <p className="mb-2 font-medium text-sm text-white/60">
@@ -146,7 +152,7 @@ export default function GoalsPage() {
                     {/* Overdue Goals */}
                     <div className="relative rounded-lg border border-white/10 bg-black/20 p-6">
                         <div className="absolute top-4 right-4">
-                            <Calendar className="h-4 w-4 text-white" />
+                            <RiCalendarLine className="size-4 text-white" />
                         </div>
                         <div>
                             <p className="mb-2 font-medium text-sm text-white/60">
@@ -161,7 +167,7 @@ export default function GoalsPage() {
                     {/* Success Rate */}
                     <div className="relative rounded-lg border border-white/10 bg-black/20 p-6">
                         <div className="absolute top-4 right-4">
-                            <Sparkles className="h-4 w-4 text-white" />
+                            <RiSparklingLine className="size-4 text-white" />
                         </div>
                         <div>
                             <p className="mb-2 font-medium text-sm text-white/60">

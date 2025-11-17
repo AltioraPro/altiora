@@ -1,7 +1,13 @@
 "use client";
 
+import {
+    RiArrowDownSLine,
+    RiArrowUpSLine,
+    RiFilterLine,
+    RiRefreshLine,
+    RiXingLine,
+} from "@remixicon/react";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronDown, ChevronUp, Filter, RotateCcw, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -139,7 +145,7 @@ export function AdvancedFilters({
                     size="sm"
                     variant="outline"
                 >
-                    <Filter className="mr-1.5 h-3 w-3" />
+                    <RiFilterLine className="mr-1.5 h-3 w-3" />
                     <span className="font-medium text-xs">Filters</span>
                     {totalFilters > 0 && (
                         <span className="ml-1.5 rounded-full bg-white/25 px-1.5 py-0.5 text-white text-xs">
@@ -147,9 +153,9 @@ export function AdvancedFilters({
                         </span>
                     )}
                     {isExpanded ? (
-                        <ChevronUp className="ml-1 h-3 w-3" />
+                        <RiArrowUpSLine className="ml-1 h-3 w-3" />
                     ) : (
-                        <ChevronDown className="ml-1 h-3 w-3" />
+                        <RiArrowDownSLine className="ml-1 h-3 w-3" />
                     )}
                 </Button>
 
@@ -160,7 +166,7 @@ export function AdvancedFilters({
                         size="sm"
                         variant="ghost"
                     >
-                        <RotateCcw className="h-3 w-3" />
+                        <RiRefreshLine className="h-3 w-3" />
                     </Button>
                 )}
             </div>
@@ -342,7 +348,7 @@ export function AdvancedFilters({
                                                     S:
                                                 </span>
                                                 {session.name}
-                                                <X
+                                                <RiXingLine
                                                     className="ml-1 h-3 w-3 cursor-pointer transition-colors duration-200 hover:text-red-300"
                                                     onClick={() =>
                                                         handleSessionToggle(
@@ -366,7 +372,7 @@ export function AdvancedFilters({
                                                     St:
                                                 </span>
                                                 {setup.name}
-                                                <X
+                                                <RiXingLine
                                                     className="ml-1 h-3 w-3 cursor-pointer transition-colors duration-200 hover:text-red-300"
                                                     onClick={() =>
                                                         handleSetupToggle(
@@ -390,8 +396,8 @@ export function AdvancedFilters({
                                                     A:
                                                 </span>
                                                 {asset.name}
-                                                <X
-                                                    className="ml-1 h-3 w-3 cursor-pointer transition-colors duration-200 hover:text-red-300"
+                                                <RiXingLine
+                                                    className="ml-1 size-3 cursor-pointer transition-colors duration-200 hover:text-red-300"
                                                     onClick={() =>
                                                         handleAssetToggle(
                                                             assetId

@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart3, Plus } from "lucide-react";
+import { RiAddLine, RiBarChartLine } from "@remixicon/react";
 
 interface TradingTabsProps {
     activeTab: "trades" | "assets" | "sessions" | "setups";
@@ -9,10 +9,10 @@ interface TradingTabsProps {
 
 export function TradingTabs({ activeTab, onTabChange }: TradingTabsProps) {
     const tabs = [
-        { id: "trades" as const, label: "Trades", icon: BarChart3 },
-        { id: "assets" as const, label: "Assets", icon: Plus },
-        { id: "sessions" as const, label: "Sessions", icon: Plus },
-        { id: "setups" as const, label: "Setups", icon: Plus },
+        { id: "trades" as const, label: "Trades", icon: RiBarChartLine },
+        { id: "assets" as const, label: "Assets", icon: RiAddLine },
+        { id: "sessions" as const, label: "Sessions", icon: RiAddLine },
+        { id: "setups" as const, label: "Setups", icon: RiAddLine },
     ];
 
     return (

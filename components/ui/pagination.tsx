@@ -1,8 +1,8 @@
 import {
-    ChevronLeftIcon,
-    ChevronRightIcon,
-    MoreHorizontalIcon,
-} from "lucide-react";
+    RiArrowLeftSLine,
+    RiArrowRightSLine,
+    RiMore2Fill,
+} from "@remixicon/react";
 import type * as React from "react";
 import { type Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -76,7 +76,7 @@ function PaginationPrevious({
             size="md"
             {...props}
         >
-            <ChevronLeftIcon size={16} />
+            <RiArrowLeftSLine size={16} />
             <span>Previous</span>
         </PaginationLink>
     );
@@ -94,7 +94,7 @@ function PaginationNext({
             {...props}
         >
             <span>Next</span>
-            <ChevronRightIcon size={16} />
+            <RiArrowRightSLine size={16} />
         </PaginationLink>
     );
 }
@@ -110,7 +110,7 @@ function PaginationEllipsis({
             data-slot="pagination-ellipsis"
             {...props}
         >
-            <MoreHorizontalIcon size={16} />
+            <RiMore2Fill size={16} />
             <span className="sr-only">More pages</span>
         </span>
     );

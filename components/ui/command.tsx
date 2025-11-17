@@ -1,8 +1,12 @@
 "use client";
 
 import type { DialogProps } from "@radix-ui/react-dialog";
+import {
+    type RemixiconComponentType,
+    RiCheckLine,
+    RiSearchLine,
+} from "@remixicon/react";
 import { Command as CommandPrimitive } from "cmdk";
-import { Check, type LucideIcon, Search } from "lucide-react";
 import type React from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
@@ -51,7 +55,7 @@ function CommandInput({
             cmdk-input-wrapper=""
             data-slot="command-input"
         >
-            <Search className="me-2 h-4 w-4 shrink-0 opacity-50" />
+            <RiSearchLine className="me-2 h-4 w-4 shrink-0 opacity-50" />
             <CommandPrimitive.Input
                 className={cn(
                     "flex h-11 w-full rounded-md bg-transparent py-3 text-foreground text-sm outline-hidden placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
@@ -151,12 +155,13 @@ const CommandShortcut = ({
     />
 );
 
-interface ButtonArrowProps extends React.SVGProps<SVGSVGElement> {
-    icon?: LucideIcon; // Allows passing any Lucide icon
+interface ButtonArrowProps
+    extends Omit<React.SVGProps<SVGSVGElement>, "children"> {
+    icon?: RemixiconComponentType; // Allows passing any icon component
 }
 
 function CommandCheck({
-    icon: Icon = Check,
+    icon: Icon = RiCheckLine,
     className,
     ...props
 }: ButtonArrowProps) {

@@ -1,14 +1,8 @@
 "use client";
 
-import { BarChart3, Plus } from "lucide-react";
+import { RiAddLine, RiBarChartLine } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 
 interface EmptyTradingStateProps {
     onCreateJournal: () => void;
@@ -27,13 +21,14 @@ export function EmptyTradingState({
                         Trading Dashboard
                     </h1>
                     <p className="text-white/60">
-                        Start your trading journey by creating your first journal
+                        Start your trading journey by creating your first
+                        journal
                     </p>
                 </div>
 
                 <Card className="border border-white/10 bg-black/20 p-8">
                     <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-white/10">
-                        <BarChart3 className="h-8 w-8 text-white/60" />
+                        <RiBarChartLine className="size-8 text-white/60" />
                     </div>
                     <h3 className="mb-4 text-white text-xl">
                         No Journal Created
@@ -48,7 +43,7 @@ export function EmptyTradingState({
                         disabled={isCreating}
                         onClick={onCreateJournal}
                     >
-                        <Plus className="mr-2 h-4 w-4" />
+                        <RiAddLine className="mr-2 size-4" />
                         Create First Journal
                     </Button>
                 </Card>
@@ -56,4 +51,3 @@ export function EmptyTradingState({
         </div>
     );
 }
-

@@ -1,7 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
-import { CalendarIcon, X } from "lucide-react";
+import { RiCalendarLine, RiCloseLine } from "@remixicon/react";
 import { useId, useState } from "react";
 import {
     Controller,
@@ -88,7 +88,7 @@ export function FormDateInput<
                                         type="button"
                                         variant="outline"
                                     >
-                                        <CalendarIcon />
+                                        <RiCalendarLine />
                                         {field.value ? (
                                             format(
                                                 new Date(field.value),
@@ -109,7 +109,7 @@ export function FormDateInput<
                                             type="button"
                                             variant="dim"
                                         >
-                                            <X />
+                                            <RiCloseLine />
                                         </Button>
                                     )}
                                 </div>

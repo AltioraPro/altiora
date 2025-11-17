@@ -1,5 +1,5 @@
 import { ORPCError } from "@orpc/server";
-import { CreditCard, MessageCircle, Shield, User } from "lucide-react";
+import { RiBankCardLine, RiMessage3Line, RiShieldLine, RiUserLine } from "@remixicon/react";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { DiscordWelcomeChecker } from "@/components/auth/DiscordWelcomeChecker";
@@ -52,7 +52,7 @@ export default async function SettingsPage() {
                                 <Card className="border border-white/10 bg-black/20">
                                     <CardHeader>
                                         <CardTitle className="flex items-center space-x-2 text-white">
-                                            <User className="h-5 w-5" />
+                                            <RiUserLine className="h-5 w-5" />
                                             <span>Account Information</span>
                                         </CardTitle>
                                     </CardHeader>
@@ -71,7 +71,7 @@ export default async function SettingsPage() {
                                 <Card className="border border-white/10 bg-black/20">
                                     <CardHeader>
                                         <CardTitle className="flex items-center space-x-2 text-white">
-                                            <MessageCircle className="h-5 w-5" />
+                                            <RiMessage3Line className="h-5 w-5" />
                                             <span>Discord Integration</span>
                                         </CardTitle>
                                     </CardHeader>
@@ -92,7 +92,7 @@ export default async function SettingsPage() {
                                 <Card className="border border-white/10 bg-black/20">
                                     <CardHeader>
                                         <CardTitle className="flex items-center space-x-2 text-white">
-                                            <CreditCard className="h-5 w-5" />
+                                            <RiBankCardLine className="h-5 w-5" />
                                             <span>Subscription</span>
                                         </CardTitle>
                                     </CardHeader>
@@ -110,7 +110,7 @@ export default async function SettingsPage() {
                                 <Card className="border border-white/10 bg-black/20">
                                     <CardHeader>
                                         <CardTitle className="flex items-center space-x-2 text-white">
-                                            <Shield className="h-5 w-5" />
+                                            <RiShieldLine className="h-5 w-5" />
                                             <span>Privacy</span>
                                         </CardTitle>
                                     </CardHeader>

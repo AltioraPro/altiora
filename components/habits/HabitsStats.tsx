@@ -1,18 +1,18 @@
 "use client";
 
 import {
-    Calendar,
-    Crown,
-    Info,
-    Shield,
-    Sparkles,
-    Star,
-    Target,
-    TrendingUp,
-    Trophy,
-    X,
-    Zap,
-} from "lucide-react";
+    RiCalendarLine,
+    RiCloseLine,
+    RiInformationLine,
+    RiLightbulbFlashLine,
+    RiShieldLine,
+    RiSparklingLine,
+    RiStarLine,
+    RiStockLine,
+    RiTargetLine,
+    RiTrophyLine,
+    RiVipCrownLine,
+} from "@remixicon/react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { HabitStatsOverview } from "@/server/routers/habits/types";
@@ -98,7 +98,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
     const rankSystem: RankInfo[] = [
         {
             name: "NEW",
-            icon: Target,
+            icon: RiTargetLine,
             color: "text-white/40",
             bgColor: "bg-white/5",
             borderColor: "border-white/10",
@@ -109,7 +109,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
         },
         {
             name: "BEGINNER",
-            icon: Target,
+            icon: RiTargetLine,
             color: "text-white/60",
             bgColor: "bg-white/5",
             borderColor: "border-white/20",
@@ -120,7 +120,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
         },
         {
             name: "RISING",
-            icon: TrendingUp,
+            icon: RiStockLine,
             color: "text-blue-400",
             bgColor: "bg-blue-500/10",
             borderColor: "border-blue-500/30",
@@ -131,7 +131,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
         },
         {
             name: "CHAMPION",
-            icon: Trophy,
+            icon: RiTrophyLine,
             color: "text-green-400",
             bgColor: "bg-green-500/10",
             borderColor: "border-green-500/30",
@@ -146,7 +146,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
         },
         {
             name: "EXPERT",
-            icon: Star,
+            icon: RiStarLine,
             color: "text-purple-400",
             bgColor: "bg-purple-500/10",
             borderColor: "border-purple-500/30",
@@ -162,7 +162,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
         },
         {
             name: "LEGEND",
-            icon: Crown,
+            icon: RiVipCrownLine,
             color: "text-yellow-400",
             bgColor: "bg-yellow-500/10",
             borderColor: "border-yellow-500/30",
@@ -178,7 +178,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
         },
         {
             name: "MASTER",
-            icon: Zap,
+            icon: RiLightbulbFlashLine,
             color: "text-orange-400",
             bgColor: "bg-orange-500/10",
             borderColor: "border-orange-500/30",
@@ -196,7 +196,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
         },
         {
             name: "GRANDMASTER",
-            icon: Shield,
+            icon: RiShieldLine,
             color: "text-red-400",
             bgColor: "bg-red-500/10",
             borderColor: "border-red-500/30",
@@ -214,7 +214,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
         },
         {
             name: "IMMORTAL",
-            icon: Sparkles,
+            icon: RiSparklingLine,
             color: "text-pink-400",
             bgColor: "bg-pink-500/10",
             borderColor: "border-pink-500/30",
@@ -246,14 +246,14 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
 
     const stats: StatItem[] = [
         {
-            icon: Target,
+            icon: RiTargetLine,
             label: "HABITS",
             value: totalActiveHabits,
             suffix: "",
             color: "text-white",
         },
         {
-            icon: TrendingUp,
+            icon: RiStockLine,
             label: "CURRENT SERIES",
             value: optimisticCurrentStreak,
             suffix: "d",
@@ -266,7 +266,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
             showPulse: willContinueStreak && optimisticCurrentStreak > 0,
         },
         {
-            icon: Trophy,
+            icon: RiTrophyLine,
             label: "BEST SERIES",
             value: longestStreak,
             suffix: "d",
@@ -278,7 +278,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                       : "text-white",
         },
         {
-            icon: Calendar,
+            icon: RiCalendarLine,
             label: "AVERAGE RATE",
             value: averageCompletionRate,
             suffix: "%",
@@ -313,7 +313,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                             <span className={`text-xs ${currentRank.color}`}>
                                 {currentRank.name}
                             </span>
-                            <Info className="h-3 w-3 animate-pulse text-white/40 transition-colors group-hover:text-white/60" />
+                            <RiInformationLine className="size-3 animate-pulse text-white/40 transition-colors group-hover:text-white/60" />
                         </button>
                     </div>
 
@@ -436,7 +436,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                             {/* Rank-specific messages */}
                             {currentRank.name === "IMMORTAL" && (
                                 <div className="flex items-center space-x-3 text-sm">
-                                    <Sparkles className="h-4 w-4 text-pink-400" />
+                                    <RiSparklingLine className="size-4 text-pink-400" />
                                     <span className="text-pink-400">
                                         You&apos;re an immortal legend! Your
                                         discipline transcends time.
@@ -446,7 +446,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
 
                             {currentRank.name === "GRANDMASTER" && (
                                 <div className="flex items-center space-x-3 text-sm">
-                                    <Shield className="h-4 w-4 text-red-400" />
+                                    <RiShieldLine className="size-4 text-red-400" />
                                     <span className="text-red-400">
                                         Grandmaster status! You&apos;re a master
                                         of life and productivity.
@@ -456,7 +456,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
 
                             {currentRank.name === "MASTER" && (
                                 <div className="flex items-center space-x-3 text-sm">
-                                    <Zap className="h-4 w-4 text-orange-400" />
+                                    <RiLightbulbFlashLine className="size-4 text-orange-400" />
                                     <span className="text-orange-400">
                                         Master level achieved! Your consistency
                                         is legendary.
@@ -466,7 +466,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
 
                             {currentRank.name === "LEGEND" && (
                                 <div className="flex items-center space-x-3 text-sm">
-                                    <Crown className="h-4 w-4 text-yellow-400" />
+                                    <RiVipCrownLine className="size-4 text-yellow-400" />
                                     <span className="text-yellow-400">
                                         You&apos;re a true legend! Your
                                         discipline is unmatched.
@@ -476,7 +476,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
 
                             {currentRank.name === "EXPERT" && (
                                 <div className="flex items-center space-x-3 text-sm">
-                                    <Star className="h-4 w-4 text-purple-400" />
+                                    <RiStarLine className="size-4 text-purple-400" />
                                     <span className="text-purple-400">
                                         Expert level achieved! You&apos;re
                                         mastering your habits.
@@ -486,7 +486,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
 
                             {currentRank.name === "CHAMPION" && (
                                 <div className="flex items-center space-x-3 text-sm">
-                                    <Trophy className="h-4 w-4 text-green-400" />
+                                    <RiTrophyLine className="size-4 text-green-400" />
                                     <span className="text-green-400">
                                         Champion status! You&apos;re building
                                         lasting habits.
@@ -513,7 +513,7 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                                     onClick={() => setIsRankModalOpen(false)}
                                     type="button"
                                 >
-                                    <X className="h-5 w-5 text-white/60" />
+                                    <RiCloseLine className="size-5 text-white/60" />
                                 </button>
                             </div>
 

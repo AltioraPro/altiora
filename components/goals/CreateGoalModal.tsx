@@ -1,6 +1,10 @@
 "use client";
 
-import { AlertCircle, Crown, X } from "lucide-react";
+import {
+    RiAlertLine,
+    RiCloseCircleLine,
+    RiVipCrownLine,
+} from "@remixicon/react";
 import type React from "react";
 import { useState } from "react";
 import { useOptimizedGoalMutation } from "@/hooks/useOptimizedGoalMutation";
@@ -139,7 +143,7 @@ export function CreateGoalModal({
                             onClick={onClose}
                             type="button"
                         >
-                            <X className="h-4 w-4 text-white/60" />
+                            <RiCloseCircleLine className="size-4 text-white/60" />
                         </button>
                     </div>
 
@@ -257,7 +261,7 @@ export function CreateGoalModal({
                             ) && ( */}
                             <div className="mt-3 rounded-lg border border-yellow-500/20 bg-yellow-500/10 p-3">
                                 <div className="flex items-start gap-2">
-                                    <Crown className="mt-0.5 h-4 w-4 shrink-0 text-yellow-400" />
+                                    <RiVipCrownLine className="mt-0.5 size-4 shrink-0 text-yellow-400" />
                                     <div className="text-sm">
                                         <p className="mb-1 font-medium text-yellow-400">
                                             Plan Limitations
@@ -444,7 +448,7 @@ export function CreateGoalModal({
                         {createError && (
                             <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3">
                                 <div className="flex items-start gap-2">
-                                    <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
+                                    <RiAlertLine className="mt-0.5 size-4 shrink-0 text-red-400" />
                                     <div className="text-sm">
                                         <p className="mb-1 font-medium text-red-400">
                                             Error

@@ -1,7 +1,13 @@
 "use client";
 
+import {
+    RiAddLine,
+    RiAlertLine,
+    RiBrush3Line,
+    RiLoader2Line,
+    RiSearchLine,
+} from "@remixicon/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { AlertTriangle, Loader2, Plus, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -135,7 +141,7 @@ export function SetupsManager({ journalId }: SetupsManagerProps) {
                             setIsCreatingModalOpen(!isCreatingModalOpen)
                         }
                     >
-                        <Plus className="mr-2 h-4 w-4" />
+                        <RiAddLine className="mr-2 h-4 w-4" />
                         Add Setup
                     </Button>
                 </div>
@@ -143,7 +149,7 @@ export function SetupsManager({ journalId }: SetupsManagerProps) {
             <CardContent className="space-y-4">
                 {/* Search */}
                 <div className="relative">
-                    <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
+                    <RiSearchLine className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
                     <Input
                         className="border-white/30 bg-black pl-10 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -218,9 +224,9 @@ export function SetupsManager({ journalId }: SetupsManagerProps) {
                                     variant="ghost"
                                 >
                                     {isDeletingSetup ? (
-                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        <RiLoader2Line className="h-4 w-4 animate-spin" />
                                     ) : (
-                                        <Trash2 className="h-4 w-4" />
+                                        <RiBrush3Line className="h-4 w-4" />
                                     )}
                                 </Button>
                             </div>
@@ -228,7 +234,7 @@ export function SetupsManager({ journalId }: SetupsManagerProps) {
                     </div>
                 ) : (
                     <div className="py-8 text-center">
-                        <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-white/40" />
+                        <RiAlertLine className="mx-auto mb-4 h-12 w-12 text-white/40" />
                         <p className="text-white/60">
                             {searchTerm
                                 ? "No setups found matching your search"

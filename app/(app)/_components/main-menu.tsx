@@ -1,16 +1,16 @@
 "use client";
 
 import {
-    Calendar,
-    CheckSquare,
-    Home,
-    Settings2,
-    Shield,
-    Target,
-    TrendingUp,
-    Trophy,
-    User,
-} from "lucide-react";
+    RiCalendarLine,
+    RiCheckboxLine,
+    RiHomeLine,
+    RiSettings3Line,
+    RiShieldLine,
+    RiStockLine,
+    RiTargetLine,
+    RiTrophyLine,
+    RiUserLine,
+} from "@remixicon/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { PAGES } from "@/constants/pages";
@@ -19,16 +19,16 @@ import { useSession } from "@/lib/auth-client";
 import { Item } from "./menu-item";
 
 export const MENU_ITEMS = {
-    [PAGES.DASHBOARD]: () => <Home size={20} />,
-    [PAGES.PROFILE]: () => <User size={20} />,
-    [PAGES.GOALS]: () => <Target size={20} />,
-    [PAGES.HABITS]: () => <CheckSquare size={20} />,
-    [PAGES.TRADING]: () => <TrendingUp size={20} />,
-    [PAGES.TRADING_JOURNALS]: () => <TrendingUp size={20} />,
-    [PAGES.TRADING_CALENDAR]: () => <Calendar size={20} />,
-    [PAGES.LEADERBOARD]: () => <Trophy size={20} />,
-    [PAGES.SETTINGS]: () => <Settings2 size={20} />,
-    [PAGES.ADMIN]: () => <Shield size={20} />,
+    [PAGES.DASHBOARD]: () => <RiHomeLine size={20} />,
+    [PAGES.PROFILE]: () => <RiUserLine size={20} />,
+    [PAGES.GOALS]: () => <RiTargetLine size={20} />,
+    [PAGES.HABITS]: () => <RiCheckboxLine size={20} />,
+    [PAGES.TRADING]: () => <RiStockLine size={20} />,
+    [PAGES.TRADING_JOURNALS]: () => <RiStockLine size={20} />,
+    [PAGES.TRADING_CALENDAR]: () => <RiCalendarLine size={20} />,
+    [PAGES.LEADERBOARD]: () => <RiTrophyLine size={20} />,
+    [PAGES.SETTINGS]: () => <RiSettings3Line size={20} />,
+    [PAGES.ADMIN]: () => <RiShieldLine size={20} />,
 } as const;
 
 const items = [

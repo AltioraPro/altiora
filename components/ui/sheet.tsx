@@ -1,7 +1,7 @@
 "use client";
 
 import { cva, type VariantProps } from "class-variance-authority";
-import { X } from "lucide-react";
+import { RiCloseLine } from "@remixicon/react";
 import { Dialog as SheetPrimitive } from "radix-ui";
 import type * as React from "react";
 import { cn } from "@/lib/utils";
@@ -89,7 +89,7 @@ function SheetContent({
                         className="absolute end-5 top-4 cursor-pointer rounded-sm opacity-60 ring-offset-background transition-opacity hover:opacity-100 focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary"
                         data-slot="sheet-close"
                     >
-                        <X className="h-4 w-4" />
+                        <RiCloseLine className="h-4 w-4" />
                         <span className="sr-only">Close</span>
                     </SheetPrimitive.Close>
                 )}

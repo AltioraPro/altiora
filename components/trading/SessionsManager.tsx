@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { AlertTriangle, Plus, Search, Trash2 } from "lucide-react";
+import { RiErrorWarningLine, RiAddLine, RiSearchLine, RiDeleteBinLine } from "@remixicon/react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -147,7 +147,7 @@ export function SessionsManager({ journalId }: SessionsManagerProps) {
                         className="bg-white text-black hover:bg-gray-200"
                         onClick={() => setIsCreating(!isCreating)}
                     >
-                        <Plus className="mr-2 h-4 w-4" />
+                        <RiAddLine className="mr-2 h-4 w-4" />
                         Add Session
                     </Button>
                 </div>
@@ -155,7 +155,7 @@ export function SessionsManager({ journalId }: SessionsManagerProps) {
             <CardContent className="space-y-4">
                 {/* Search */}
                 <div className="relative">
-                    <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
+                    <RiSearchLine className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
                     <Input
                         className="border-white/30 bg-black pl-10 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -238,7 +238,7 @@ export function SessionsManager({ journalId }: SessionsManagerProps) {
                                     size="sm"
                                     variant="ghost"
                                 >
-                                    <Trash2 className="h-4 w-4" />
+                                    <RiDeleteBinLine className="h-4 w-4" />
                                 </Button>
 
                                 {/* Tooltip détaillé au hover */}
@@ -268,7 +268,7 @@ export function SessionsManager({ journalId }: SessionsManagerProps) {
                     </div>
                 ) : (
                     <div className="py-8 text-center">
-                        <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-white/40" />
+                        <RiErrorWarningLine className="mx-auto mb-4 h-12 w-12 text-white/40" />
                         <p className="text-white/60">
                             {searchTerm
                                 ? "No sessions found matching your search"

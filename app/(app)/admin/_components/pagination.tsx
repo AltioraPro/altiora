@@ -1,9 +1,9 @@
 import {
-    ChevronFirstIcon,
-    ChevronLastIcon,
-    ChevronLeftIcon,
-    ChevronRightIcon,
-} from "lucide-react";
+    RiArrowLeftSFill,
+    RiArrowLeftSLine,
+    RiArrowRightSFill,
+    RiArrowRightSLine,
+} from "@remixicon/react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -100,7 +100,7 @@ export default function TablePagination({
                                 size="icon"
                                 variant="outline"
                             >
-                                <ChevronFirstIcon
+                                <RiArrowLeftSFill
                                     aria-hidden="true"
                                     size={16}
                                 />
@@ -116,7 +116,10 @@ export default function TablePagination({
                                 size="icon"
                                 variant="outline"
                             >
-                                <ChevronLeftIcon aria-hidden="true" size={16} />
+                                <RiArrowLeftSLine
+                                    aria-hidden="true"
+                                    size={16}
+                                />
                             </Button>
                         </PaginationItem>
                         {/* Next page button */}
@@ -129,7 +132,7 @@ export default function TablePagination({
                                 size="icon"
                                 variant="outline"
                             >
-                                <ChevronRightIcon
+                                <RiArrowRightSLine
                                     aria-hidden="true"
                                     size={16}
                                 />
@@ -145,7 +148,10 @@ export default function TablePagination({
                                 size="icon"
                                 variant="outline"
                             >
-                                <ChevronLastIcon aria-hidden="true" size={16} />
+                                <RiArrowRightSFill
+                                    aria-hidden="true"
+                                    size={16}
+                                />
                             </Button>
                         </PaginationItem>
                     </PaginationContent>

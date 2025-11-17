@@ -1,11 +1,10 @@
 import {
-    LayoutDashboard,
-    LogOut,
-    Settings,
-    ShieldCheck,
-    User2,
-    User as UserIcon,
-} from "lucide-react";
+    RiDashboardLine,
+    RiLogoutBoxLine,
+    RiSettingsLine,
+    RiShieldCheckLine,
+    RiUserLine,
+} from "@remixicon/react";
 import Link from "next/link";
 import { PAGES } from "@/constants/pages";
 import type { User } from "@/lib/auth";
@@ -24,7 +23,7 @@ export function DropdownUser({ user }: { user: User }) {
         <DropdownMenu>
             <DropdownMenuTrigger className="flex items-center gap-2 rounded-xl border border-white/20 px-3 py-2 text-sm text-white/80 hover:border-white/40 hover:bg-white/5 hover:text-white">
                 <div className="flex size-6 items-center justify-center rounded-full bg-white/10">
-                    <UserIcon className="size-3" />
+                    <RiUserLine className="size-3" />
                 </div>
                 {user.name.split(" ")[0]}
             </DropdownMenuTrigger>
@@ -41,19 +40,19 @@ export function DropdownUser({ user }: { user: User }) {
                 <DropdownMenuGroup>
                     <DropdownMenuItem asChild>
                         <Link href={PAGES.DASHBOARD}>
-                            <LayoutDashboard className="size-4" />
+                            <RiDashboardLine className="size-4" />
                             Dashboard
                         </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                         <Link href={PAGES.PROFILE}>
-                            <User2 className="size-4" />
+                            <RiUserLine className="size-4" />
                             Profile
                         </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                         <Link href={PAGES.ADMIN}>
-                            <ShieldCheck className="size-4" />
+                            <RiShieldCheckLine className="size-4" />
                             Admin
                         </Link>
                     </DropdownMenuItem>
@@ -61,13 +60,13 @@ export function DropdownUser({ user }: { user: User }) {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                     <Link href={PAGES.SETTINGS}>
-                        <Settings className="size-4" />
+                        <RiSettingsLine className="size-4" />
                         Settings
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem variant="destructive">
                     <LogoutButton className="flex h-full w-full items-center gap-2">
-                        <LogOut className="text-destructive" />
+                        <RiLogoutBoxLine className="text-destructive" />
                         Sign Out
                     </LogoutButton>
                 </DropdownMenuItem>

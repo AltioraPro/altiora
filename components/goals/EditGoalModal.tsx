@@ -1,7 +1,7 @@
 "use client";
 
+import { RiCloseCircleLine } from "@remixicon/react";
 import { useMutation } from "@tanstack/react-query";
-import { X } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { orpc } from "@/orpc/client";
@@ -94,7 +94,7 @@ export function EditGoalModal({
                             onClick={onClose}
                             type="button"
                         >
-                            <X className="h-4 w-4 text-white/60" />
+                            <RiCloseCircleLine className="size-4 text-white/60" />
                         </button>
                     </div>
 

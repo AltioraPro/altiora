@@ -1,12 +1,12 @@
 "use client";
 
+import { RiCheckboxCircleFill, RiCheckboxCircleLine } from "@remixicon/react";
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 import {
     flexRender,
     getCoreRowModel,
     useReactTable,
 } from "@tanstack/react-table";
-import { CheckCircleIcon, XCircleIcon } from "lucide-react";
 import { useQueryStates } from "nuqs";
 import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
@@ -160,7 +160,7 @@ export default function WaitlistTable() {
                                 onClick={handleApprove}
                                 variant="outline"
                             >
-                                <CheckCircleIcon
+                                <RiCheckboxCircleFill
                                     aria-hidden="true"
                                     className="-ms-1 opacity-60"
                                     size={16}
@@ -172,7 +172,7 @@ export default function WaitlistTable() {
                                 onClick={handleReject}
                                 variant="outline"
                             >
-                                <XCircleIcon
+                                <RiCheckboxCircleLine
                                     aria-hidden="true"
                                     className="-ms-1 opacity-60"
                                     size={16}

@@ -1,8 +1,14 @@
 "use client";
 
+import {
+    RiCalendarLine,
+    RiStockLine,
+    RiTargetLine,
+    RiTrophyLine,
+    RiVipCrownLine,
+} from "@remixicon/react";
 import { useQuery } from "@tanstack/react-query";
 import { useCustomer } from "autumn-js/react";
-import { Calendar, Crown, Target, TrendingUp, Trophy } from "lucide-react";
 import { orpc } from "@/orpc/client";
 
 export function ActivityStats() {
@@ -60,7 +66,7 @@ export function ActivityStats() {
             {/* Active Habits */}
             <div className="relative rounded-lg border border-white/10 bg-black/20 p-6">
                 <div className="absolute top-4 right-4">
-                    <Target className="h-4 w-4 text-white/60" />
+                    <RiTargetLine className="size-4 text-white/60" />
                 </div>
                 <div>
                     <p className="mb-2 font-medium text-sm text-white/60">
@@ -75,7 +81,7 @@ export function ActivityStats() {
             {/* Trading Entries */}
             <div className="relative rounded-lg border border-white/10 bg-black/20 p-6">
                 <div className="absolute top-4 right-4">
-                    <TrendingUp className="h-4 w-4 text-white/60" />
+                    <RiStockLine className="size-4 text-white/60" />
                 </div>
                 <div>
                     <p className="mb-2 font-medium text-sm text-white/60">
@@ -90,7 +96,7 @@ export function ActivityStats() {
             {/* Current Rank */}
             <div className="relative rounded-lg border border-white/10 bg-black/20 p-6">
                 <div className="absolute top-4 right-4">
-                    <Trophy className="h-4 w-4 text-white/60" />
+                    <RiTrophyLine className="size-4 text-white/60" />
                 </div>
                 <div>
                     <p className="mb-2 font-medium text-sm text-white/60">
@@ -105,7 +111,7 @@ export function ActivityStats() {
             {/* Days Since Registration */}
             <div className="relative rounded-lg border border-white/10 bg-black/20 p-6">
                 <div className="absolute top-4 right-4">
-                    <Calendar className="h-4 w-4 text-white/60" />
+                    <RiCalendarLine className="h-4 w-4 text-white/60" />
                 </div>
                 <div>
                     <p className="mb-2 font-medium text-sm text-white/60">
@@ -120,7 +126,7 @@ export function ActivityStats() {
             {/* Total Habits Created */}
             <div className="relative rounded-lg border border-white/10 bg-black/20 p-6">
                 <div className="absolute top-4 right-4">
-                    <Target className="h-4 w-4 text-white/60" />
+                    <RiTargetLine className="size-4 text-white/60" />
                 </div>
                 <div>
                     <p className="mb-2 font-medium text-sm text-white/60">
@@ -135,7 +141,7 @@ export function ActivityStats() {
             {/* Subscription Status */}
             <div className="relative rounded-lg border border-white/10 bg-black/20 p-6">
                 <div className="absolute top-4 right-4">
-                    <Crown className="h-4 w-4 text-white/60" />
+                    <RiVipCrownLine className="size-4 text-white/60" />
                 </div>
                 <div>
                     <p className="mb-2 font-medium text-sm text-white/60">

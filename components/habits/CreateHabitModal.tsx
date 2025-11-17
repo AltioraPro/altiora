@@ -1,7 +1,7 @@
 "use client";
 
+import { RiXingLine } from "@remixicon/react";
 import { useMutation } from "@tanstack/react-query";
-import { X } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/components/ui/toast";
 import { orpc } from "@/orpc/client";
@@ -153,7 +153,7 @@ export function CreateHabitModal({ onSuccess }: CreateHabitModalProps = {}) {
                                 onClick={handleClose}
                                 type="button"
                             >
-                                <X className="h-3 w-3 text-white/60" />
+                                <RiXingLine className="size-3 text-white/60" />
                             </button>
                         </div>
 

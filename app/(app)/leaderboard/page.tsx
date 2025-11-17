@@ -1,7 +1,7 @@
 "use client";
 
+import { RiCalendarLine, RiTimerLine, RiUserLine } from "@remixicon/react";
 import { useQuery } from "@tanstack/react-query";
-import { Calendar, Clock, User } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -49,7 +49,7 @@ export default function LeaderboardPage() {
 
                             {/* Period Filter */}
                             <div className="flex items-center gap-2">
-                                <Calendar className="h-4 w-4 text-white/40" />
+                                <RiCalendarLine className="h-4 w-4 text-white/40" />
                                 <select
                                     className="rounded-lg border border-white/20 bg-black/20 px-3 py-2 text-sm text-white transition-colors focus:border-white/40 focus:outline-hidden"
                                     onChange={(e) =>
@@ -134,7 +134,7 @@ export default function LeaderboardPage() {
                                                             width={48}
                                                         />
                                                     ) : (
-                                                        <User className="h-6 w-6 text-white/40" />
+                                                        <RiUserLine className="h-6 w-6 text-white/40" />
                                                     )}
                                                 </div>
                                             </div>
@@ -151,7 +151,7 @@ export default function LeaderboardPage() {
                                             </div>
 
                                             <div className="flex items-center gap-2 text-right">
-                                                <Clock className="h-4 w-4 text-white/40" />
+                                                <RiTimerLine className="h-4 w-4 text-white/40" />
                                                 <div>
                                                     <p className="font-light font-mono text-white text-xl leading-none">
                                                         {entry.totalWorkHours}h
@@ -174,7 +174,7 @@ export default function LeaderboardPage() {
                         </div>
                     ) : (
                         <div className="py-20 text-center">
-                            <Clock className="mx-auto mb-4 h-16 w-16 text-white/20" />
+                            <RiTimerLine className="mx-auto mb-4 h-16 w-16 text-white/20" />
                             <h3 className="mb-2 font-argesta text-white/60 text-xl">
                                 No public rankings yet
                             </h3>

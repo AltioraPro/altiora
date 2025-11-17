@@ -1,12 +1,12 @@
 "use client";
 
-import { Plus, Upload } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { RiAddLine, RiUploadLine } from "@remixicon/react";
 import { AdvancedFilters } from "@/components/trading/AdvancedFilters";
 import {
     DateFilter,
     type DateFilterState,
 } from "@/components/trading/DateFilter";
+import { Button } from "@/components/ui/button";
 
 interface TradingFiltersBarProps {
     journalId: string | null;
@@ -58,7 +58,7 @@ export function TradingFiltersBar({
                     size="sm"
                     variant="outline"
                 >
-                    <Upload className="mr-2 h-4 w-4" />
+                    <RiUploadLine className="mr-2 size-4" />
                     Import Excel
                 </Button>
                 <Button
@@ -66,11 +66,10 @@ export function TradingFiltersBar({
                     onClick={onCreateTradeClick}
                     size="sm"
                 >
-                    <Plus className="mr-2 h-4 w-4" />
+                    <RiAddLine className="mr-2 size-4" />
                     New Trade
                 </Button>
             </div>
         </div>
     );
 }
-

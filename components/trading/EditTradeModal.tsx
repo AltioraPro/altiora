@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { X } from "lucide-react";
+import { RiCloseLine } from "@remixicon/react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -175,7 +175,7 @@ export function EditTradeModal({
                         size="sm"
                         variant="ghost"
                     >
-                        <X className="h-4 w-4" />
+                        <RiCloseLine className="h-4 w-4" />
                     </Button>
                 </CardHeader>
 

@@ -1,15 +1,15 @@
 "use client";
 
+import {
+    RiCameraLine,
+    RiDeleteBinLine,
+    RiEditLine,
+    RiExternalLinkLine,
+    RiLoader2Line,
+    RiStockLine,
+} from "@remixicon/react";
 import { useQuery } from "@tanstack/react-query";
 import html2canvas from "html2canvas";
-import {
-    Camera,
-    Edit,
-    ExternalLink,
-    Loader2,
-    Trash2,
-    TrendingUp,
-} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
@@ -106,10 +106,10 @@ export function JournalPerformanceCard({
     const bestTrade =
         tradesData && tradesData.length > 0
             ? tradesData.reduce((best, current) => {
-                const currentPnl = Number(current.profitLossPercentage || 0);
-                const bestPnl = Number(best.profitLossPercentage || 0);
-                return currentPnl > bestPnl ? current : best;
-            })
+                  const currentPnl = Number(current.profitLossPercentage || 0);
+                  const bestPnl = Number(best.profitLossPercentage || 0);
+                  return currentPnl > bestPnl ? current : best;
+              })
             : null;
 
     const finalCumulative =
@@ -181,31 +181,95 @@ export function JournalPerformanceCard({
                 }}
             >
                 <div style={{ marginBottom: "1rem", textAlign: "center" }}>
-                    <h2 style={{ marginBottom: "0.25rem", fontSize: "1.25rem", lineHeight: "1.75rem", color: "#ffffff" }}>{journal.name}</h2>
-                    <p style={{ fontSize: "0.75rem", lineHeight: "1rem", color: "rgba(255, 255, 255, 0.6)" }}>Trading Performance</p>
+                    <h2
+                        style={{
+                            marginBottom: "0.25rem",
+                            fontSize: "1.25rem",
+                            lineHeight: "1.75rem",
+                            color: "#ffffff",
+                        }}
+                    >
+                        {journal.name}
+                    </h2>
+                    <p
+                        style={{
+                            fontSize: "0.75rem",
+                            lineHeight: "1rem",
+                            color: "rgba(255, 255, 255, 0.6)",
+                        }}
+                    >
+                        Trading Performance
+                    </p>
                 </div>
 
                 {stats && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem" }}>
+                    <div
+                        style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "0.75rem",
+                        }}
+                    >
+                        <div
+                            style={{
+                                display: "grid",
+                                gridTemplateColumns: "repeat(3, 1fr)",
+                                gap: "1rem",
+                            }}
+                        >
                             <div style={{ textAlign: "center" }}>
-                                <div style={{ fontWeight: "bold", fontSize: "1.5rem", lineHeight: "2rem", color: "#4ade80" }}>
+                                <div
+                                    style={{
+                                        fontWeight: "bold",
+                                        fontSize: "1.5rem",
+                                        lineHeight: "2rem",
+                                        color: "#4ade80",
+                                    }}
+                                >
                                     {stats.winRate.toFixed(1)}%
                                 </div>
-                                <div style={{ marginTop: "0.25rem", fontSize: "0.75rem", lineHeight: "1rem", color: "rgba(255, 255, 255, 0.6)" }}>
+                                <div
+                                    style={{
+                                        marginTop: "0.25rem",
+                                        fontSize: "0.75rem",
+                                        lineHeight: "1rem",
+                                        color: "rgba(255, 255, 255, 0.6)",
+                                    }}
+                                >
                                     Win Rate
                                 </div>
                             </div>
                             <div style={{ textAlign: "center" }}>
-                                <div style={{ fontWeight: "bold", fontSize: "1.5rem", lineHeight: "2rem", color: "#ffffff" }}>
+                                <div
+                                    style={{
+                                        fontWeight: "bold",
+                                        fontSize: "1.5rem",
+                                        lineHeight: "2rem",
+                                        color: "#ffffff",
+                                    }}
+                                >
                                     {stats.totalTrades}
                                 </div>
-                                <div style={{ marginTop: "0.25rem", fontSize: "0.75rem", lineHeight: "1rem", color: "rgba(255, 255, 255, 0.6)" }}>
+                                <div
+                                    style={{
+                                        marginTop: "0.25rem",
+                                        fontSize: "0.75rem",
+                                        lineHeight: "1rem",
+                                        color: "rgba(255, 255, 255, 0.6)",
+                                    }}
+                                >
                                     Trades
                                 </div>
                             </div>
                             <div style={{ textAlign: "center" }}>
-                                <div style={{ fontWeight: "bold", fontSize: "1.5rem", lineHeight: "2rem", color: "#ffffff" }}>
+                                <div
+                                    style={{
+                                        fontWeight: "bold",
+                                        fontSize: "1.5rem",
+                                        lineHeight: "2rem",
+                                        color: "#ffffff",
+                                    }}
+                                >
                                     {(() => {
                                         if (!stats) {
                                             return "0.00";
@@ -214,8 +278,8 @@ export function JournalPerformanceCard({
                                         const totalPnL =
                                             typeof stats.totalPnL === "string"
                                                 ? Number.parseFloat(
-                                                    stats.totalPnL
-                                                ) || 0
+                                                      stats.totalPnL
+                                                  ) || 0
                                                 : stats.totalPnL;
                                         const avgWin =
                                             stats.winningTrades > 0
@@ -224,7 +288,7 @@ export function JournalPerformanceCard({
                                         const avgLoss =
                                             stats.losingTrades > 0
                                                 ? Math.abs(totalPnL) /
-                                                stats.losingTrades
+                                                  stats.losingTrades
                                                 : 0;
                                         const profitFactor =
                                             avgLoss > 0 ? avgWin / avgLoss : 0;
@@ -232,52 +296,141 @@ export function JournalPerformanceCard({
                                         return profitFactor.toFixed(2);
                                     })()}
                                 </div>
-                                <div style={{ marginTop: "0.25rem", fontSize: "0.75rem", lineHeight: "1rem", color: "rgba(255, 255, 255, 0.6)" }}>
+                                <div
+                                    style={{
+                                        marginTop: "0.25rem",
+                                        fontSize: "0.75rem",
+                                        lineHeight: "1rem",
+                                        color: "rgba(255, 255, 255, 0.6)",
+                                    }}
+                                >
                                     Profit Factor
                                 </div>
                             </div>
                         </div>
 
-                        <div style={{ borderTop: "1px solid rgba(255, 255, 255, 0.2)" }} />
+                        <div
+                            style={{
+                                borderTop: "1px solid rgba(255, 255, 255, 0.2)",
+                            }}
+                        />
 
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "0.5rem" }}>
+                        <div
+                            style={{
+                                display: "grid",
+                                gridTemplateColumns: "repeat(5, 1fr)",
+                                gap: "0.5rem",
+                            }}
+                        >
                             <div style={{ textAlign: "center" }}>
-                                <div style={{ fontWeight: "bold", fontSize: "1.25rem", lineHeight: "2rem", color: "#4ade80" }}>
-                                    {(stats as { maxWinningStreak?: number }).maxWinningStreak || 0}
+                                <div
+                                    style={{
+                                        fontWeight: "bold",
+                                        fontSize: "1.25rem",
+                                        lineHeight: "2rem",
+                                        color: "#4ade80",
+                                    }}
+                                >
+                                    {(stats as { maxWinningStreak?: number })
+                                        .maxWinningStreak || 0}
                                 </div>
-                                <div style={{ marginTop: "0.25rem", fontSize: "0.60rem", lineHeight: "1rem", color: "rgba(255, 255, 255, 0.6)" }}>
+                                <div
+                                    style={{
+                                        marginTop: "0.25rem",
+                                        fontSize: "0.60rem",
+                                        lineHeight: "1rem",
+                                        color: "rgba(255, 255, 255, 0.6)",
+                                    }}
+                                >
                                     Winning Streak
                                 </div>
                             </div>
                             <div style={{ textAlign: "center" }}>
-                                <div style={{ fontWeight: "bold", fontSize: "1.25rem", lineHeight: "2rem", color: "#4ade80" }}>
+                                <div
+                                    style={{
+                                        fontWeight: "bold",
+                                        fontSize: "1.25rem",
+                                        lineHeight: "2rem",
+                                        color: "#4ade80",
+                                    }}
+                                >
                                     {stats.tpTrades}
                                 </div>
-                                <div style={{ marginTop: "0.25rem", fontSize: "0.70rem", lineHeight: "1.25rem", color: "rgba(255, 255, 255, 0.6)" }}>
+                                <div
+                                    style={{
+                                        marginTop: "0.25rem",
+                                        fontSize: "0.70rem",
+                                        lineHeight: "1.25rem",
+                                        color: "rgba(255, 255, 255, 0.6)",
+                                    }}
+                                >
                                     TP
                                 </div>
                             </div>
                             <div style={{ textAlign: "center" }}>
-                                <div style={{ fontWeight: "bold", fontSize: "1.5rem", lineHeight: "2rem", color: "#ffffff" }}>
+                                <div
+                                    style={{
+                                        fontWeight: "bold",
+                                        fontSize: "1.5rem",
+                                        lineHeight: "2rem",
+                                        color: "#ffffff",
+                                    }}
+                                >
                                     {stats.beTrades}
                                 </div>
-                                <div style={{ marginTop: "0.25rem", fontSize: "0.70rem", lineHeight: "1.25rem", color: "rgba(255, 255, 255, 0.6)" }}>
+                                <div
+                                    style={{
+                                        marginTop: "0.25rem",
+                                        fontSize: "0.70rem",
+                                        lineHeight: "1.25rem",
+                                        color: "rgba(255, 255, 255, 0.6)",
+                                    }}
+                                >
                                     BE
                                 </div>
                             </div>
                             <div style={{ textAlign: "center" }}>
-                                <div style={{ fontWeight: "bold", fontSize: "1.5rem", lineHeight: "2rem", color: "#f87171" }}>
+                                <div
+                                    style={{
+                                        fontWeight: "bold",
+                                        fontSize: "1.5rem",
+                                        lineHeight: "2rem",
+                                        color: "#f87171",
+                                    }}
+                                >
                                     {stats.slTrades}
                                 </div>
-                                <div style={{ marginTop: "0.25rem", fontSize: "0.70rem", lineHeight: "1.25rem", color: "rgba(255, 255, 255, 0.6)" }}>
+                                <div
+                                    style={{
+                                        marginTop: "0.25rem",
+                                        fontSize: "0.70rem",
+                                        lineHeight: "1.25rem",
+                                        color: "rgba(255, 255, 255, 0.6)",
+                                    }}
+                                >
                                     SL
                                 </div>
                             </div>
                             <div style={{ textAlign: "center" }}>
-                                <div style={{ fontWeight: "bold", fontSize: "1.5rem", lineHeight: "2rem", color: "#f87171" }}>
-                                    {(stats as { maxLosingStreak?: number }).maxLosingStreak || 0}
+                                <div
+                                    style={{
+                                        fontWeight: "bold",
+                                        fontSize: "1.5rem",
+                                        lineHeight: "2rem",
+                                        color: "#f87171",
+                                    }}
+                                >
+                                    {(stats as { maxLosingStreak?: number })
+                                        .maxLosingStreak || 0}
                                 </div>
-                                <div style={{ marginTop: "0.25rem", fontSize: "0.60rem", lineHeight: "1rem", color: "rgba(255, 255, 255, 0.6)" }}>
+                                <div
+                                    style={{
+                                        marginTop: "0.25rem",
+                                        fontSize: "0.60rem",
+                                        lineHeight: "1rem",
+                                        color: "rgba(255, 255, 255, 0.6)",
+                                    }}
+                                >
                                     Losing Streak
                                 </div>
                             </div>
@@ -285,11 +438,42 @@ export function JournalPerformanceCard({
                     </div>
                 )}
 
-                <div style={{ marginTop: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
-                    <div style={{ borderRadius: "0.375rem", border: "1px solid rgba(255, 255, 255, 0.1)", backgroundColor: "rgba(0, 0, 0, 0.2)", padding: "1rem" }}>
-                        <div style={{ marginBottom: "0.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "0.75rem", lineHeight: "1rem", color: "rgba(255, 255, 255, 0.6)" }}>
+                <div
+                    style={{
+                        marginTop: "1.5rem",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "1rem",
+                    }}
+                >
+                    <div
+                        style={{
+                            borderRadius: "0.375rem",
+                            border: "1px solid rgba(255, 255, 255, 0.1)",
+                            backgroundColor: "rgba(0, 0, 0, 0.2)",
+                            padding: "1rem",
+                        }}
+                    >
+                        <div
+                            style={{
+                                marginBottom: "0.5rem",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                fontSize: "0.75rem",
+                                lineHeight: "1rem",
+                                color: "rgba(255, 255, 255, 0.6)",
+                            }}
+                        >
                             <span>Cumulative Performance (%)</span>
-                            <span style={{ fontWeight: "600", fontSize: "0.875rem", lineHeight: "1.25rem", color: isPositive ? "#4ade80" : "#f87171" }}>
+                            <span
+                                style={{
+                                    fontWeight: "600",
+                                    fontSize: "0.875rem",
+                                    lineHeight: "1.25rem",
+                                    color: isPositive ? "#4ade80" : "#f87171",
+                                }}
+                            >
                                 {finalCumulative >= 0 ? "+" : ""}
                                 {finalCumulative.toFixed(2)}%
                             </span>
@@ -377,7 +561,14 @@ export function JournalPerformanceCard({
                         </div>
                     </div>
 
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                    <div
+                        style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                        }}
+                    >
                         <Image
                             alt="Altiora"
                             height={16}
@@ -385,7 +576,13 @@ export function JournalPerformanceCard({
                             style={{ opacity: 0.6 }}
                             width={16}
                         />
-                        <span style={{ color: "rgba(255, 255, 255, 0.4)", fontSize: "0.75rem", lineHeight: "1rem" }}>
+                        <span
+                            style={{
+                                color: "rgba(255, 255, 255, 0.4)",
+                                fontSize: "0.75rem",
+                                lineHeight: "1rem",
+                            }}
+                        >
                             altiora.pro
                         </span>
                     </div>
@@ -443,41 +640,45 @@ export function JournalPerformanceCard({
 
                     {bestTrade && (
                         <div
-                            className={`mb-4 rounded-lg border p-3 ${Number(bestTrade.profitLossPercentage || 0) >= 0
-                                ? "border-green-500/20 bg-green-500/10"
-                                : "border-red-500/20 bg-red-500/10"
-                                }`}
+                            className={`mb-4 rounded-lg border p-3 ${
+                                Number(bestTrade.profitLossPercentage || 0) >= 0
+                                    ? "border-green-500/20 bg-green-500/10"
+                                    : "border-red-500/20 bg-red-500/10"
+                            }`}
                         >
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
-                                    <TrendingUp
-                                        className={`h-4 w-4 ${Number(
-                                            bestTrade.profitLossPercentage ||
-                                            0
-                                        ) >= 0
-                                            ? "text-green-400"
-                                            : "text-red-400"
-                                            }`}
+                                    <RiStockLine
+                                        className={`h-4 w-4 ${
+                                            Number(
+                                                bestTrade.profitLossPercentage ||
+                                                    0
+                                            ) >= 0
+                                                ? "text-green-400"
+                                                : "text-red-400"
+                                        }`}
                                     />
                                     <span
-                                        className={`text-sm ${Number(
-                                            bestTrade.profitLossPercentage ||
-                                            0
-                                        ) >= 0
-                                            ? "text-green-400"
-                                            : "text-red-400"
-                                            }`}
+                                        className={`text-sm ${
+                                            Number(
+                                                bestTrade.profitLossPercentage ||
+                                                    0
+                                            ) >= 0
+                                                ? "text-green-400"
+                                                : "text-red-400"
+                                        }`}
                                     >
                                         Best trade
                                     </span>
                                 </div>
                                 <Badge
-                                    className={`${Number(
-                                        bestTrade.profitLossPercentage || 0
-                                    ) >= 0
-                                        ? "border-green-500/30 bg-green-500/20 text-green-400"
-                                        : "border-red-500/30 bg-red-500/20 text-red-400"
-                                        }`}
+                                    className={`${
+                                        Number(
+                                            bestTrade.profitLossPercentage || 0
+                                        ) >= 0
+                                            ? "border-green-500/30 bg-green-500/20 text-green-400"
+                                            : "border-red-500/30 bg-red-500/20 text-red-400"
+                                    }`}
                                 >
                                     {Number(
                                         bestTrade.profitLossPercentage || 0
@@ -505,9 +706,9 @@ export function JournalPerformanceCard({
                                 variant="ghost"
                             >
                                 {isCapturing ? (
-                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    <RiLoader2Line className="h-4 w-4 animate-spin" />
                                 ) : (
-                                    <Camera className="h-4 w-4" />
+                                    <RiCameraLine className="h-4 w-4" />
                                 )}
                             </Button>
                         </div>
@@ -519,7 +720,7 @@ export function JournalPerformanceCard({
                                 size="sm"
                                 variant="ghost"
                             >
-                                <Edit className="h-4 w-4" />
+                                <RiEditLine className="h-4 w-4" />
                             </Button>
                             <Button
                                 className="text-red-400 hover:bg-red-500/10 hover:text-red-300"
@@ -527,11 +728,11 @@ export function JournalPerformanceCard({
                                 size="sm"
                                 variant="ghost"
                             >
-                                <Trash2 className="h-4 w-4" />
+                                <RiDeleteBinLine className="h-4 w-4" />
                             </Button>
                             <Button asChild size="sm">
                                 <Link href={PAGES.TRADING_JOURNAL(journal.id)}>
-                                    <ExternalLink className="mr-1 h-4 w-4" />
+                                    <RiExternalLinkLine className="mr-1 h-4 w-4" />
                                     Open
                                 </Link>
                             </Button>

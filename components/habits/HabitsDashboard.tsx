@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { RiAddLine } from "@remixicon/react";
 import { memo } from "react";
 import { useHabitsDashboard } from "@/lib/hooks/useHabitsQuery";
 import { CreateHabitModal } from "./CreateHabitModal";
@@ -45,8 +45,9 @@ const CreateHabitButton = memo(({ onClick }: { onClick: () => void }) => (
     <button
         className="group flex items-center space-x-2 rounded-xl border border-white/20 bg-white/10 px-6 py-3 transition-all duration-300 hover:border-white/40 hover:bg-white/20"
         onClick={onClick}
+        type="button"
     >
-        <Plus className="h-5 w-5 text-white/80 transition-colors group-hover:text-white" />
+        <RiAddLine className="size-5 text-white/80 transition-colors group-hover:text-white" />
         <span className="text-sm">NEW HABIT</span>
     </button>
 ));

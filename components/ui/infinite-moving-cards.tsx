@@ -1,6 +1,6 @@
 "use client";
 
-import { User } from "lucide-react";
+import { RiUserLine } from "@remixicon/react";
 import React, { useCallback, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -85,7 +85,7 @@ export const InfiniteMovingCards = ({
     return (
         <div
             className={cn(
-                "scroller relative z-20 w-full overflow-hidden mask-[linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]",
+                "scroller mask-[linear-gradient(to_right,transparent,white_20%,white_80%,transparent)] relative z-20 w-full overflow-hidden",
                 className
             )}
             ref={containerRef}
@@ -113,7 +113,7 @@ export const InfiniteMovingCards = ({
                             </span>
                             <div className="relative z-20 mt-6 flex flex-row items-center">
                                 <div className="mr-3 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-800">
-                                    <User className="h-4 w-4 text-gray-400" />
+                                    <RiUserLine className="h-4 w-4 text-gray-400" />
                                 </div>
                                 <span className="flex flex-col gap-1">
                                     <span className="font-normal text-gray-300 text-sm leading-[1.6]">

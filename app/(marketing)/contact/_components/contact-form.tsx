@@ -1,6 +1,12 @@
 "use client";
 
-import { Mail, MessageSquare, Phone, Send, User } from "lucide-react";
+import {
+    RiMailLine,
+    RiMessageLine,
+    RiPhoneLine,
+    RiSendPlaneLine,
+    RiUserLine,
+} from "@remixicon/react";
 import { type FormEvent, useState } from "react";
 
 interface FormData {
@@ -54,7 +60,7 @@ export const ContactForm = () => {
                         FULL NAME *
                     </label>
                     <div className="relative">
-                        <User className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
+                        <RiUserLine className="-translate-y-1/2 absolute top-1/2 left-3 size-4 transform text-white/40" />
                         <input
                             className={`w-full border-b-2 bg-transparent py-3 pr-3 pl-10 text-sm transition-all duration-300 focus:outline-hidden ${
                                 focusedField === "fullName"
@@ -87,7 +93,7 @@ export const ContactForm = () => {
                             EMAIL *
                         </label>
                         <div className="relative">
-                            <Mail className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
+                            <RiMailLine className="-translate-y-1/2 absolute top-1/2 left-3 size-4 transform text-white/40" />
                             <input
                                 className={`w-full border-b-2 bg-transparent py-3 pr-3 pl-10 text-sm transition-all duration-300 focus:outline-hidden ${
                                     focusedField === "email"
@@ -119,7 +125,7 @@ export const ContactForm = () => {
                             PHONE
                         </label>
                         <div className="relative">
-                            <Phone className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
+                            <RiPhoneLine className="-translate-y-1/2 absolute top-1/2 left-3 size-4 transform text-white/40" />
                             <input
                                 className={`w-full border-b-2 bg-transparent py-3 pr-3 pl-10 text-sm transition-all duration-300 focus:outline-hidden ${
                                     focusedField === "phone"
@@ -151,7 +157,7 @@ export const ContactForm = () => {
                         MESSAGE *
                     </label>
                     <div className="relative">
-                        <MessageSquare className="absolute top-4 left-3 h-4 w-4 text-white/40" />
+                        <RiMessageLine className="absolute top-4 left-3 size-4 text-white/40" />
                         <textarea
                             className={`w-full resize-none rounded-lg border-2 bg-transparent py-3 pr-3 pl-10 text-sm transition-all duration-300 focus:outline-hidden ${
                                 focusedField === "message"
@@ -199,9 +205,9 @@ export const ContactForm = () => {
                             ) : (
                                 <>
                                     <div className="relative">
-                                        <Send className="h-6 w-6 text-white transition-all duration-300 group-hover:rotate-12 group-hover:scale-110" />
+                                        <RiSendPlaneLine className="size-6 text-white transition-all duration-300 group-hover:rotate-12 group-hover:scale-110" />
                                         <div className="absolute inset-0 h-6 w-6 opacity-0 transition-opacity duration-300 group-hover:opacity-30">
-                                            <Send className="h-6 w-6 animate-pulse text-white" />
+                                            <RiSendPlaneLine className="size-6 animate-pulse text-white" />
                                         </div>
                                     </div>
                                     <span className="text-base text-white tracking-[0.2em] transition-all duration-300 group-hover:tracking-[0.3em]">
@@ -219,4 +225,3 @@ export const ContactForm = () => {
         </div>
     );
 };
-

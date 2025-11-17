@@ -1,7 +1,11 @@
 "use client";
 
+import {
+    RiBellLine,
+    RiNotificationOffLine,
+    RiTimeLine,
+} from "@remixicon/react";
 import { useMutation } from "@tanstack/react-query";
-import { Bell, BellOff, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 import { orpc } from "@/orpc/client";
@@ -113,7 +117,7 @@ export function GoalReminders({
     if (!isActive) {
         return (
             <div className="flex items-center gap-2 text-gray-500">
-                <BellOff className="h-4 w-4" />
+                <RiNotificationOffLine className="size-4" />
                 <span className="text-sm">Objectif inactif</span>
             </div>
         );
@@ -124,7 +128,7 @@ export function GoalReminders({
             {currentFrequency ? (
                 <div className="space-y-2">
                     <div className="flex items-center gap-2 text-green-600">
-                        <Bell className="h-4 w-4" />
+                        <RiBellLine className="size-4" />
                         <span className="font-medium text-sm">
                             Rappel {frequencyLabels[currentFrequency]} activé
                         </span>
@@ -132,7 +136,7 @@ export function GoalReminders({
 
                     {nextReminderDate && (
                         <div className="flex items-center gap-2 text-gray-600">
-                            <Clock className="h-4 w-4" />
+                            <RiTimeLine className="size-4" />
                             <span className="text-sm">
                                 Prochain rappel:{" "}
                                 {formatNextReminder(nextReminderDate)}
@@ -154,7 +158,7 @@ export function GoalReminders({
                             </>
                         ) : (
                             <>
-                                <BellOff className="mr-2 h-4 w-4" />
+                                <RiNotificationOffLine className="size-4" />
                                 Désactiver les rappels
                             </>
                         )}
@@ -163,7 +167,7 @@ export function GoalReminders({
             ) : (
                 <div className="space-y-2">
                     <div className="flex items-center gap-2 text-gray-600">
-                        <BellOff className="h-4 w-4" />
+                        <RiNotificationOffLine className="size-4" />
                         <span className="text-sm">Aucun rappel programmé</span>
                     </div>
 

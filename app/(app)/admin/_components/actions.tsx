@@ -1,6 +1,6 @@
+import { RiMoreLine } from "@remixicon/react";
 import { useMutation } from "@tanstack/react-query";
 import type { Row, Table } from "@tanstack/react-table";
-import { EllipsisIcon } from "lucide-react";
 import { useQueryStates } from "nuqs";
 import { Button } from "@/components/ui/button";
 import {
@@ -71,7 +71,7 @@ export default function RowActions({
                         size="icon"
                         variant="ghost"
                     >
-                        <EllipsisIcon aria-hidden="true" size={16} />
+                        <RiMoreLine aria-hidden="true" size={16} />
                     </Button>
                 </div>
             </DropdownMenuTrigger>

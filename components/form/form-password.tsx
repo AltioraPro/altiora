@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, EyeOff, Lock } from "lucide-react";
+import { RiEyeLine, RiEyeOffLine, RiLockLine } from "@remixicon/react";
 import { useId, useState } from "react";
 import {
     Controller,
@@ -80,7 +80,7 @@ export function FormPassword<
                         )}
                         <InputGroup aria-invalid={!!fieldState.error}>
                             <InputGroupAddon>
-                                <Lock />
+                                <RiLockLine />
                             </InputGroupAddon>
                             <InputGroupInput
                                 className="border-0 bg-transparent shadow-none focus-visible:ring-0"
@@ -106,7 +106,7 @@ export function FormPassword<
                                     }
                                     type="button"
                                 >
-                                    {showPassword ? <EyeOff /> : <Eye />}
+                                    {showPassword ? <RiEyeOffLine /> : <RiEyeLine />}
                                 </InputGroupButton>
                             </InputGroupAddon>
                         </InputGroup>

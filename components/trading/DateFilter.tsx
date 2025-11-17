@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar } from "lucide-react";
+import { RiCalendarLine } from "@remixicon/react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -86,7 +86,7 @@ export function DateFilter({
         >
             {/* Filter Label */}
             <div className="flex items-center space-x-2">
-                <Calendar className="h-4 w-4 text-white/60" />
+                <RiCalendarLine className="size-4 text-white/60" />
                 <span className="font-medium text-sm text-white/70">
                     Period:
                 </span>

@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import { RiArrowDownSLine } from "@remixicon/react";
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -89,7 +89,7 @@ export const Item = ({
                                     onClick={handleChevronClick}
                                     type="button"
                                 >
-                                    <ChevronDown size={16} />
+                                    <RiArrowDownSLine size={16} />
                                 </button>
                             )}
                         </div>

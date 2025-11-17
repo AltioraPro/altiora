@@ -1,14 +1,14 @@
 "use client";
 
 import {
-    Award,
-    CheckCircle,
-    Clock,
-    Filter,
-    Search,
-    Target,
-    X,
-} from "lucide-react";
+    RiAwardLine,
+    RiCheckboxCircleFill,
+    RiCloseLine,
+    RiFilterLine,
+    RiSearchLine,
+    RiTargetLine,
+    RiTimeLine,
+} from "@remixicon/react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 
@@ -90,7 +90,7 @@ export function GoalFilters({
             {/* Barre de recherche */}
             <div className="relative max-w-md flex-1">
                 <div className="relative">
-                    <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/50" />
+                    <RiSearchLine className="-translate-y-1/2 absolute top-1/2 left-3 size-4 transform text-white/50" />
                     <input
                         className="w-full rounded-lg border border-white/10 bg-white/5 py-2 pr-10 pl-10 text-white placeholder-white/50 transition-all duration-200 focus:border-white/20 focus:outline-hidden focus:ring-2 focus:ring-white/20"
                         onChange={(e) => setLocalSearch(e.target.value)}
@@ -102,8 +102,9 @@ export function GoalFilters({
                         <button
                             className="-translate-y-1/2 absolute top-1/2 right-3 transform text-white/50 transition-colors duration-200 hover:text-white/80"
                             onClick={clearSearch}
+                            type="button"
                         >
-                            <X className="h-4 w-4" />
+                            <RiCloseLine className="size-4" />
                         </button>
                     )}
                 </div>
@@ -119,7 +120,7 @@ export function GoalFilters({
                     size="sm"
                     variant="outline"
                 >
-                    <Filter className="mr-2 h-4 w-4" />
+                    <RiFilterLine className="mr-2 size-4" />
                     Filters
                     {hasActiveFilters && (
                         <div className="ml-2 h-2 w-2 rounded-full bg-white/80" />
@@ -142,6 +143,7 @@ export function GoalFilters({
                                     <button
                                         className="text-sm text-white/60 transition-colors hover:text-white/80"
                                         onClick={clearAllFilters}
+                                        type="button"
                                     >
                                         Clear all
                                     </button>
@@ -150,9 +152,21 @@ export function GoalFilters({
 
                             {/* Tri par type */}
                             <div>
-                                <label className="mb-2 block font-medium text-sm text-white/80">
+                                <label
+                                    className="mb-2 block font-medium text-sm text-white/80"
+                                    htmlFor="sort-type"
+                                >
                                     Sort by Type
                                 </label>
+                                <select
+                                    className="w-full rounded-lg border border-white/10 bg-white/5 py-2 pr-10 pl-3 text-white placeholder-white/50 transition-all duration-200 focus:border-white/20 focus:outline-hidden focus:ring-2 focus:ring-white/20"
+                                    id="sort-type"
+                                >
+                                    <option value="all">All</option>
+                                    <option value="annual">Annual</option>
+                                    <option value="quarterly">Quarterly</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
                                 <div className="grid grid-cols-3 gap-2">
                                     {[
                                         { value: "all", label: "All" },
@@ -180,6 +194,7 @@ export function GoalFilters({
                                                         | "monthly",
                                                 })
                                             }
+                                            type="button"
                                         >
                                             {label}
                                         </button>
@@ -189,7 +204,10 @@ export function GoalFilters({
 
                             {/* Filtre par statut */}
                             <div>
-                                <label className="mb-2 block font-medium text-sm text-white/80">
+                                <label
+                                    className="mb-2 block font-medium text-sm text-white/80"
+                                    htmlFor="status"
+                                >
                                     Status
                                 </label>
                                 <div className="grid grid-cols-2 gap-2">
@@ -197,22 +215,22 @@ export function GoalFilters({
                                         {
                                             value: "all",
                                             label: "All",
-                                            icon: Target,
+                                            icon: RiTargetLine,
                                         },
                                         {
                                             value: "active",
                                             label: "Active",
-                                            icon: Clock,
+                                            icon: RiTimeLine,
                                         },
                                         {
                                             value: "completed",
                                             label: "Completed",
-                                            icon: CheckCircle,
+                                            icon: RiCheckboxCircleFill,
                                         },
                                         {
                                             value: "overdue",
                                             label: "Overdue",
-                                            icon: Award,
+                                            icon: RiAwardLine,
                                         },
                                     ].map(({ value, label, icon: Icon }) => (
                                         <button
@@ -232,8 +250,9 @@ export function GoalFilters({
                                                         | "overdue",
                                                 })
                                             }
+                                            type="button"
                                         >
-                                            <Icon className="h-4 w-4" />
+                                            <Icon className="size-4" />
                                             {label}
                                         </button>
                                     ))}
@@ -242,7 +261,10 @@ export function GoalFilters({
 
                             {/* Filtre par rappels */}
                             <div>
-                                <label className="mb-2 block font-medium text-sm text-white/80">
+                                <label
+                                    className="mb-2 block font-medium text-sm text-white/80"
+                                    htmlFor="reminders"
+                                >
                                     Reminders
                                 </label>
                                 <div className="grid grid-cols-3 gap-2">
@@ -271,6 +293,7 @@ export function GoalFilters({
                                                     hasReminders: value,
                                                 })
                                             }
+                                            type="button"
                                         >
                                             {label}
                                         </button>
@@ -293,8 +316,9 @@ export function GoalFilters({
                                                             status: "all",
                                                         })
                                                     }
+                                                    type="button"
                                                 >
-                                                    <X className="h-3 w-3" />
+                                                    <RiCloseLine className="size-3" />
                                                 </button>
                                             </span>
                                         )}
@@ -309,8 +333,9 @@ export function GoalFilters({
                                                             type: "all",
                                                         })
                                                     }
+                                                    type="button"
                                                 >
-                                                    <X className="h-3 w-3" />
+                                                    <RiCloseLine className="size-3" />
                                                 </button>
                                             </span>
                                         )}
@@ -327,8 +352,9 @@ export function GoalFilters({
                                                             hasReminders: null,
                                                         })
                                                     }
+                                                    type="button"
                                                 >
-                                                    <X className="h-3 w-3" />
+                                                    <RiCloseLine className="size-3" />
                                                 </button>
                                             </span>
                                         )}
@@ -338,8 +364,9 @@ export function GoalFilters({
                                                 <button
                                                     className="hover:text-white"
                                                     onClick={clearSearch}
+                                                    type="button"
                                                 >
-                                                    <X className="h-3 w-3" />
+                                                    <RiCloseLine className="size-3" />
                                                 </button>
                                             </span>
                                         )}

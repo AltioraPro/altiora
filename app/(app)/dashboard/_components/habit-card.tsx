@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckSquare, Sparkles } from "lucide-react";
+import { RiSparklingLine, RiSquareFill, RiSquareLine } from "@remixicon/react";
 import { useHabits } from "@/components/habits/HabitsProvider";
 import SpotlightCard from "@/components/SpotlightCard";
 import { Button } from "@/components/ui/button";
@@ -38,50 +38,50 @@ export function HabitCard({ isGenerating, onGenerateExample }: HabitCardProps) {
 
                             <div className="flex justify-center gap-1">
                                 <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-linear-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
-                                    <CheckSquare className="h-3 w-3 text-green-400" />
+                                    <RiSquareLine className="h-3 w-3 text-green-400" />
                                 </div>
                                 <div className="h-7 w-7 rounded border border-white/20 bg-white/10 transition-all duration-300 group-hover:border-white/30 group-hover:bg-white/15" />
                                 <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-linear-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
-                                    <CheckSquare className="h-3 w-3 text-green-400" />
+                                    <RiSquareLine className="h-3 w-3 text-green-400" />
                                 </div>
                                 <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-linear-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
-                                    <CheckSquare className="h-3 w-3 text-green-400" />
+                                    <RiSquareLine className="h-3 w-3 text-green-400" />
                                 </div>
                                 <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-linear-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
-                                    <CheckSquare className="h-3 w-3 text-green-400" />
+                                    <RiSquareLine className="h-3 w-3 text-green-400" />
                                 </div>
                                 <div className="h-7 w-7 rounded border border-white/20 bg-white/10 transition-all duration-300 group-hover:border-white/30 group-hover:bg-white/15" />
                                 <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-linear-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
-                                    <CheckSquare className="h-3 w-3 text-green-400" />
+                                    <RiSquareLine className="h-3 w-3 text-green-400" />
                                 </div>
                             </div>
 
                             <div className="flex justify-center gap-1">
                                 <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-linear-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
-                                    <CheckSquare className="h-3 w-3 text-green-400" />
+                                    <RiSquareLine className="h-3 w-3 text-green-400" />
                                 </div>
                                 <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-linear-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
-                                    <CheckSquare className="h-3 w-3 text-green-400" />
+                                    <RiSquareLine className="h-3 w-3 text-green-400" />
                                 </div>
                                 <div className="h-7 w-7 rounded border border-white/20 bg-white/10 transition-all duration-300 group-hover:border-white/30 group-hover:bg-white/15" />
                                 <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-linear-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
-                                    <CheckSquare className="h-3 w-3 text-green-400" />
+                                    <RiSquareFill className="h-3 w-3 text-green-400" />
                                 </div>
                                 <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-linear-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
-                                    <CheckSquare className="h-3 w-3 text-green-400" />
+                                    <RiSquareFill className="h-3 w-3 text-green-400" />
                                 </div>
                                 <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-linear-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
-                                    <CheckSquare className="h-3 w-3 text-green-400" />
+                                    <RiSquareFill className="h-3 w-3 text-green-400" />
                                 </div>
                                 <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-linear-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
-                                    <CheckSquare className="h-3 w-3 text-green-400" />
+                                    <RiSquareFill className="h-3 w-3 text-green-400" />
                                 </div>
                             </div>
 
                             {/* Week 3 */}
                             <div className="flex justify-center gap-1">
                                 <div className="flex h-7 w-7 items-center justify-center rounded border border-green-400/50 bg-linear-to-br from-green-400/30 to-green-500/30 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:from-green-400/40 group-hover:to-green-500/40 group-hover:shadow-[0_0_12px_rgba(74,222,128,0.4)]">
-                                    <CheckSquare className="h-3 w-3 text-green-400" />
+                                    <RiSquareFill className="h-3 w-3 text-green-400" />
                                 </div>
                                 <div className="h-7 w-7 rounded border border-white/20 bg-white/10 transition-all duration-300 group-hover:border-white/30 group-hover:bg-white/15" />
                                 <div className="flex h-7 w-7 scale-110 transform items-center justify-center rounded border-2 border-blue-400 bg-linear-to-br from-blue-400/40 to-blue-500/40 shadow-xl transition-all duration-500 group-hover:scale-125 group-hover:border-blue-300 group-hover:shadow-[0_0_16px_rgba(96,165,250,0.6)]">
@@ -117,7 +117,7 @@ export function HabitCard({ isGenerating, onGenerateExample }: HabitCardProps) {
                         title="Generate example habit"
                         type="button"
                     >
-                        <Sparkles className="h-4 w-4" />
+                        <RiSparklingLine className="h-4 w-4" />
                         {isGenerating ? "Generating..." : "Generate example"}
                     </button>
                 </div>
