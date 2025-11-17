@@ -1,7 +1,13 @@
 "use client";
 
+import {
+    RiArrowLeftSLine,
+    RiArrowRightSLine,
+    RiDeleteBinLine,
+    RiEditLine,
+    RiSearchLine,
+} from "@remixicon/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, Edit, Search, Trash2 } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useToast } from "@/components/ui/toast";
 import { useDebounce } from "@/lib/hooks/useDebounce";
@@ -137,7 +143,7 @@ export function HabitsManager() {
             <div className="mb-4 flex items-center justify-between">
                 {/* Search Bar */}
                 <div className="relative max-w-sm flex-1">
-                    <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
+                    <RiSearchLine className="-translate-y-1/2 absolute top-1/2 left-3 size-4 transform text-white/40" />
                     <input
                         className="w-full rounded-lg border border-white/20 bg-white/10 py-2 pr-4 pl-10 text-sm text-white placeholder-white/40 transition-colors focus:border-white/40 focus:outline-hidden"
                         onChange={(e) => handleSearch(e.target.value)}
@@ -248,7 +254,7 @@ export function HabitsManager() {
                                     title="Edit habit"
                                     type="button"
                                 >
-                                    <Edit className="h-4 w-4" />
+                                    <RiEditLine className="size-4" />
                                 </button>
                                 <button
                                     className="rounded-lg p-2 text-red-400 transition-colors hover:bg-red-400/10 hover:text-red-300"
@@ -256,7 +262,7 @@ export function HabitsManager() {
                                     title="Delete habit"
                                     type="button"
                                 >
-                                    <Trash2 className="h-4 w-4" />
+                                    <RiDeleteBinLine className="size-4" />
                                 </button>
                             </div>
                         </div>
@@ -280,7 +286,7 @@ export function HabitsManager() {
                             onClick={() => handlePageChange(page - 1)}
                             type="button"
                         >
-                            <ChevronLeft className="h-4 w-4" />
+                            <RiArrowLeftSLine className="size-4" />
                         </button>
 
                         <div className="flex items-center space-x-1">
@@ -321,7 +327,7 @@ export function HabitsManager() {
                             onClick={() => handlePageChange(page + 1)}
                             type="button"
                         >
-                            <ChevronRight className="h-4 w-4" />
+                            <RiArrowRightSLine className="size-4" />
                         </button>
                     </div>
                 </div>

@@ -1,16 +1,16 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
 import {
-    Award,
-    Calendar,
-    CheckCircle,
-    Circle,
-    Clock,
-    Edit,
-    Target,
-    Trash2,
-} from "lucide-react";
+    RiAwardLine,
+    RiCalendarLine,
+    RiCheckboxCircleFill,
+    RiCircleLine,
+    RiDeleteBinLine,
+    RiEditLine,
+    RiTargetLine,
+    RiTimeLine,
+} from "@remixicon/react";
+import { useMutation } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -79,12 +79,12 @@ export function GoalCard({
 
     const getGoalIcon = () => {
         if (goal.isCompleted) {
-            return <Award className="h-5 w-5" />;
+            return <RiAwardLine className="size-5" />;
         }
         if (isOverdue) {
-            return <Clock className="h-5 w-5" />;
+            return <RiTimeLine className="size-5" />;
         }
-        return <Target className="h-5 w-5" />;
+        return <RiTargetLine className="size-5" />;
     };
 
     const handleMarkCompleted = async () => {
@@ -112,18 +112,18 @@ export function GoalCard({
                         >
                             {goal.isCompleted ? (
                                 <div className="flex h-6 w-6 items-center justify-center rounded-full border border-green-400/40 bg-linear-to-br from-green-500/30 to-green-400/20 shadow-green-500/20 shadow-lg transition-transform duration-300 group-hover/button:scale-110">
-                                    <CheckCircle className="h-4 w-4 text-green-400" />
+                                    <RiCheckboxCircleFill className="size-4 text-green-400" />
                                 </div>
                             ) : (
                                 <div className="flex h-6 w-6 items-center justify-center rounded-full border border-white/20 bg-white/5 transition-all duration-300 hover:border-green-400/40 hover:bg-green-500/10 group-hover/button:scale-110">
-                                    <Circle className="h-4 w-4 text-white/60 group-hover/button:text-green-400" />
+                                    <RiCircleLine className="size-4 text-white/60 group-hover/button:text-green-400" />
                                 </div>
                             )}
                         </button>
 
                         <div className="min-w-0 flex-1">
                             <h3
-                                className={`mb-2 line-clamp-2 wrap-break-word font-semibold text-lg ${goal.isCompleted ? "text-green-400/60 line-through" : "text-white"} transition-all duration-300`}
+                                className={`wrap-break-word mb-2 line-clamp-2 font-semibold text-lg ${goal.isCompleted ? "text-green-400/60 line-through" : "text-white"} transition-all duration-300`}
                                 title={goal.title}
                             >
                                 {goal.title}
@@ -150,7 +150,7 @@ export function GoalCard({
 
                             {goal.deadline && (
                                 <div className="mt-2 flex items-center gap-2">
-                                    <Calendar className="h-4 w-4 text-white/40" />
+                                    <RiCalendarLine className="size-4 text-white/40" />
                                     <span
                                         className={`text-sm ${isOverdue ? "text-white/60" : "text-white/40"}`}
                                     >
@@ -171,7 +171,7 @@ export function GoalCard({
                             size="sm"
                             variant="ghost"
                         >
-                            <Edit className="h-4 w-4" />
+                            <RiEditLine className="size-4" />
                         </Button>
                         <Button
                             className="text-white/60 transition-all duration-300 hover:bg-red-400/10 hover:text-red-400"
@@ -179,7 +179,7 @@ export function GoalCard({
                             size="sm"
                             variant="ghost"
                         >
-                            <Trash2 className="h-4 w-4" />
+                            <RiDeleteBinLine className="size-4" />
                         </Button>
                     </div>
                 </div>
@@ -216,7 +216,7 @@ export function GoalCard({
                             size="sm"
                             variant="ghost"
                         >
-                            <Edit className="h-4 w-4" />
+                            <RiEditLine className="size-4" />
                         </Button>
                         <Button
                             className="text-white/60 transition-all duration-300 hover:bg-red-400/10 hover:text-red-400"
@@ -224,14 +224,14 @@ export function GoalCard({
                             size="sm"
                             variant="ghost"
                         >
-                            <Trash2 className="h-4 w-4" />
+                            <RiDeleteBinLine className="size-4" />
                         </Button>
                     </div>
                 </div>
 
                 <div className="mb-4">
                     <h3
-                        className={`mb-2 line-clamp-3 wrap-break-word font-semibold text-lg ${goal.isCompleted ? "text-green-400/60 line-through" : "text-white"} transition-all duration-300`}
+                        className={`wrap-break-word mb-2 line-clamp-3 font-semibold text-lg ${goal.isCompleted ? "text-green-400/60 line-through" : "text-white"} transition-all duration-300`}
                         title={goal.title}
                     >
                         {goal.title}
@@ -263,7 +263,7 @@ export function GoalCard({
                     <div className="flex items-center justify-between">
                         {goal.deadline && (
                             <div className="flex items-center gap-2">
-                                <Calendar className="h-4 w-4 text-white/40" />
+                                <RiCalendarLine className="size-4 text-white/40" />
                                 <span
                                     className={`text-sm ${isOverdue ? "text-white/60" : "text-white/40"}`}
                                 >
@@ -287,14 +287,14 @@ export function GoalCard({
                         >
                             {goal.isCompleted ? (
                                 <>
-                                    <CheckCircle className="h-4 w-4 text-green-400" />
+                                    <RiCheckboxCircleFill className="size-4 text-green-400" />
                                     <span className="text-green-400 text-sm">
                                         Done
                                     </span>
                                 </>
                             ) : (
                                 <>
-                                    <Circle className="h-4 w-4 text-white/60 transition-colors group-hover/button:text-green-400" />
+                                    <RiCircleLine className="size-4 text-white/60 transition-colors group-hover/button:text-green-400" />
                                     <span className="text-sm text-white/60 transition-colors group-hover/button:text-green-400">
                                         Complete
                                     </span>

@@ -2,15 +2,15 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-    AlertCircle,
-    ArrowRight,
-    CheckCircle,
-    Eye,
-    EyeOff,
-    Lock,
-    Mail,
-    User,
-} from "lucide-react";
+    RiAlertLine,
+    RiArrowRightLine,
+    RiCheckboxCircleLine,
+    RiEyeLine,
+    RiEyeOffLine,
+    RiLockLine,
+    RiMailLine,
+    RiUserLine,
+} from "@remixicon/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -230,7 +230,7 @@ export default function RegisterPage() {
                                     className="flex items-center space-x-3"
                                     key={index}
                                 >
-                                    <CheckCircle className="h-4 w-4 text-white/60" />
+                                    <RiCheckboxCircleLine className="size-4 text-white/60" />
                                     <span className="text-sm text-white/70">
                                         {benefit}
                                     </span>
@@ -276,7 +276,7 @@ export default function RegisterPage() {
                         {/* Message d'erreur global */}
                         {authError && (
                             <div className="mb-6 flex items-start space-x-3 rounded-lg border border-red-500/20 bg-red-500/10 p-4">
-                                <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />
+                                <RiAlertLine className="mt-0.5 size-5 shrink-0 text-red-400" />
                                 <p className="text-red-400 text-sm">
                                     {authError}
                                 </p>
@@ -298,7 +298,7 @@ export default function RegisterPage() {
                                         FIRST NAME
                                     </label>
                                     <div className="relative">
-                                        <User className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
+                                        <RiUserLine className="-translate-y-1/2 absolute top-1/2 left-3 size-4 transform text-white/40" />
                                         <input
                                             {...register("firstName")}
                                             className="w-full rounded-lg border border-white/20 bg-transparent py-3 pr-3 pl-10 text-white placeholder-white/40 transition-all duration-300 focus:border-white focus:outline-hidden"
@@ -321,7 +321,7 @@ export default function RegisterPage() {
                                         LAST NAME
                                     </label>
                                     <div className="relative">
-                                        <User className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
+                                        <RiUserLine className="-translate-y-1/2 absolute top-1/2 left-3 size-4 transform text-white/40" />
                                         <input
                                             {...register("lastName")}
                                             className="w-full rounded-lg border border-white/20 bg-transparent py-3 pr-3 pl-10 text-white placeholder-white/40 transition-all duration-300 focus:border-white focus:outline-hidden"
@@ -346,7 +346,7 @@ export default function RegisterPage() {
                                     EMAIL
                                 </label>
                                 <div className="relative">
-                                    <Mail className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
+                                    <RiMailLine className="-translate-y-1/2 absolute top-1/2 left-3 size-4 transform text-white/40" />
                                     <input
                                         {...register("email")}
                                         className="w-full rounded-lg border border-white/20 bg-transparent py-3 pr-3 pl-10 text-white placeholder-white/40 transition-all duration-300 focus:border-white focus:outline-hidden"
@@ -370,7 +370,7 @@ export default function RegisterPage() {
                                     PASSWORD
                                 </label>
                                 <div className="relative">
-                                    <Lock className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
+                                    <RiLockLine className="-translate-y-1/2 absolute top-1/2 left-3 size-4 transform text-white/40" />
                                     <input
                                         {...register("password")}
                                         className="w-full rounded-lg border border-white/20 bg-transparent py-3 pr-12 pl-10 text-white placeholder-white/40 transition-all duration-300 focus:border-white focus:outline-hidden"
@@ -387,9 +387,9 @@ export default function RegisterPage() {
                                         type="button"
                                     >
                                         {showPassword ? (
-                                            <EyeOff className="h-4 w-4" />
+                                            <RiEyeOffLine className="size-4" />
                                         ) : (
-                                            <Eye className="h-4 w-4" />
+                                            <RiEyeLine className="size-4" />
                                         )}
                                     </button>
                                 </div>
@@ -409,7 +409,7 @@ export default function RegisterPage() {
                                     CONFIRM PASSWORD
                                 </label>
                                 <div className="relative">
-                                    <Lock className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
+                                    <RiLockLine className="-translate-y-1/2 absolute top-1/2 left-3 size-4 transform text-white/40" />
                                     <input
                                         {...register("confirmPassword")}
                                         className="w-full rounded-lg border border-white/20 bg-transparent py-3 pr-12 pl-10 text-white placeholder-white/40 transition-all duration-300 focus:border-white focus:outline-hidden"
@@ -430,9 +430,9 @@ export default function RegisterPage() {
                                         type="button"
                                     >
                                         {showConfirmPassword ? (
-                                            <EyeOff className="h-4 w-4" />
+                                            <RiEyeOffLine className="size-4" />
                                         ) : (
-                                            <Eye className="h-4 w-4" />
+                                            <RiEyeLine className="size-4" />
                                         )}
                                     </button>
                                 </div>
@@ -497,7 +497,7 @@ export default function RegisterPage() {
                                             <span className="tracking-widest">
                                                 CREATE ACCOUNT
                                             </span>
-                                            <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                                            <RiArrowRightLine className="size-5 transition-transform duration-300 group-hover:translate-x-1" />
                                         </>
                                     )}
                                 </div>

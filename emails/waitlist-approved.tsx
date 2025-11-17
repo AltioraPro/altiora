@@ -1,6 +1,5 @@
 import { Button, Link } from "@react-email/components";
 import { PROJECT } from "@/constants/project";
-import { getEmailUrl } from "@/lib/urls";
 import { Logomark } from "./common/logomark";
 import { Card } from "./components/card";
 import { EmailButton } from "./components/email-button";
@@ -13,8 +12,6 @@ interface WaitlistApprovedTemplateProps {
     discordUrl?: string;
 }
 
-const baseUrl = getEmailUrl();
-
 export default function WaitlistApprovedTemplate({
     signUpUrl,
     email,
@@ -25,7 +22,7 @@ export default function WaitlistApprovedTemplate({
             previewText={`Welcome to ${PROJECT.NAME} - Your waitlist application has been approved`}
         >
             <div className="flex w-full items-center justify-center">
-                <Logomark logoUrl={`${baseUrl}/img/logo.png`} />
+                <Logomark />
             </div>
 
             <Card>

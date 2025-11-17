@@ -1,7 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, X } from "lucide-react";
+import { RiCalendarLine, RiCloseLine } from "@remixicon/react";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -30,7 +30,7 @@ export default function DatePickerDemo() {
                         type="button"
                         variant="outline"
                     >
-                        <CalendarIcon />
+                        <RiCalendarLine />
                         {date ? format(date, "PPP") : <span>Pick a date</span>}
                     </Button>
                     {date && (
@@ -41,7 +41,7 @@ export default function DatePickerDemo() {
                             type="button"
                             variant="dim"
                         >
-                            <X />
+                            <RiCloseLine />
                         </Button>
                     )}
                 </div>

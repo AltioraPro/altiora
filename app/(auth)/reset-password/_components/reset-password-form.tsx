@@ -2,13 +2,13 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-    AlertCircle,
-    ArrowLeft,
-    ArrowRight,
-    Eye,
-    EyeOff,
-    Lock,
-} from "lucide-react";
+    RiAlertLine,
+    RiArrowLeftLine,
+    RiArrowRightLine,
+    RiEyeLine,
+    RiEyeOffLine,
+    RiLockLine,
+} from "@remixicon/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
@@ -157,7 +157,7 @@ export default function ResetPasswordForm() {
                         {/* Message d'erreur global */}
                         {errors.password && (
                             <div className="mb-6 flex items-start space-x-3 rounded-lg border border-red-500/20 bg-red-500/10 p-4">
-                                <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />
+                                <RiAlertLine className="mt-0.5 size-5 shrink-0 text-red-400" />
                                 <p className="text-red-400 text-sm">
                                     {errors.password.message}
                                 </p>
@@ -178,7 +178,7 @@ export default function ResetPasswordForm() {
                                     NEW PASSWORD
                                 </label>
                                 <div className="relative">
-                                    <Lock className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
+                                    <RiLockLine className="-translate-y-1/2 absolute top-1/2 left-3 size-4 transform text-white/40" />
                                     <input
                                         {...register("password")}
                                         className="w-full rounded-lg border border-white/20 bg-transparent py-3 pr-12 pl-10 text-white placeholder-white/40 transition-all duration-300 focus:border-white focus:outline-hidden"
@@ -195,9 +195,9 @@ export default function ResetPasswordForm() {
                                         type="button"
                                     >
                                         {showPassword ? (
-                                            <EyeOff className="h-4 w-4" />
+                                            <RiEyeOffLine className="size-4" />
                                         ) : (
-                                            <Eye className="h-4 w-4" />
+                                            <RiEyeLine className="size-4" />
                                         )}
                                     </button>
                                 </div>
@@ -217,7 +217,7 @@ export default function ResetPasswordForm() {
                                     CONFIRM PASSWORD
                                 </label>
                                 <div className="relative">
-                                    <Lock className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
+                                    <RiLockLine className="-translate-y-1/2 absolute top-1/2 left-3 size-4 transform text-white/40" />
                                     <input
                                         {...register("confirmPassword")}
                                         className="w-full rounded-lg border border-white/20 bg-transparent py-3 pr-12 pl-10 text-white placeholder-white/40 transition-all duration-300 focus:border-white focus:outline-hidden"
@@ -238,9 +238,9 @@ export default function ResetPasswordForm() {
                                         type="button"
                                     >
                                         {showConfirmPassword ? (
-                                            <EyeOff className="h-4 w-4" />
+                                            <RiEyeOffLine className="size-4" />
                                         ) : (
-                                            <Eye className="h-4 w-4" />
+                                            <RiEyeLine className="size-4" />
                                         )}
                                     </button>
                                 </div>
@@ -273,7 +273,7 @@ export default function ResetPasswordForm() {
                                             <span className="tracking-widest">
                                                 RESET PASSWORD
                                             </span>
-                                            <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                                            <RiArrowRightLine className="size-5 transition-transform duration-300 group-hover:translate-x-1" />
                                         </>
                                     )}
                                 </div>
@@ -284,7 +284,7 @@ export default function ResetPasswordForm() {
                         <div className="mt-6 text-center">
                             <Button asChild variant="dim">
                                 <Link href={PAGES.SIGN_IN}>
-                                    <ArrowLeft className="size-4" />
+                                    <RiArrowLeftLine className="size-4" />
                                     Back to login
                                 </Link>
                             </Button>

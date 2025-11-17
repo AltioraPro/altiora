@@ -1,7 +1,7 @@
 "use client";
 
+import { RiSparklingLine, RiSquareFill } from "@remixicon/react";
 import { useMutation } from "@tanstack/react-query";
-import { CheckSquare, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CreateGoalModal } from "@/components/goals/CreateGoalModal";
@@ -66,7 +66,7 @@ export function CreateGoalCard() {
                                 <div className="rounded-lg border border-white/30 bg-linear-to-br from-white/15 to-white/5 p-3 shadow-lg transition-all duration-500 group-hover:translate-x-[-2px] group-hover:shadow-xl">
                                     <div className="flex items-start gap-2">
                                         <div className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 border-green-400 bg-green-400/20 transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_8px_rgba(74,222,128,0.6)]">
-                                            <CheckSquare className="h-2.5 w-2.5 text-green-400" />
+                                            <RiSquareFill className="h-2.5 w-2.5 text-green-400" />
                                         </div>
                                         <div className="flex-1 space-y-1.5">
                                             <div className="h-2 w-3/4 rounded bg-white/30 transition-all duration-300 group-hover:bg-white/40" />
@@ -146,7 +146,7 @@ export function CreateGoalCard() {
                             title="Generate example goal"
                             type="button"
                         >
-                            <Sparkles className="h-4 w-4" />
+                            <RiSparklingLine className="h-4 w-4" />
                             {isCreatingGoals
                                 ? "Generating..."
                                 : "Generate example"}

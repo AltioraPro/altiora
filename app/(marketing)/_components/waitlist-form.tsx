@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight, Check } from "lucide-react";
+import { RiArrowRightLine, RiCheckboxCircleLine } from "@remixicon/react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -155,7 +155,7 @@ export function WaitlistForm() {
                                             delay: 0.4,
                                         }}
                                     >
-                                        <Check className="size-5" />
+                                        <RiCheckboxCircleLine className="size-5" />
                                         <span className="truncate">
                                             You're on the waitlist,{" "}
                                             <span className="font-bold">
@@ -211,7 +211,7 @@ export function WaitlistForm() {
                                 )}
                             </AnimatePresence>
                             {showDefaultState && (
-                                <ButtonArrow icon={ArrowRight} />
+                                <ButtonArrow icon={RiArrowRightLine} />
                             )}
                         </motion.button>
                     </Button>

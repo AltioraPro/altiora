@@ -1,13 +1,14 @@
 "use client";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
 import {
-    AlertCircle,
-    CheckCircle,
-    FileSpreadsheet,
-    Upload,
-    X,
-} from "lucide-react";
+    RiAlertLine,
+    RiCheckboxCircleFill,
+    RiFileExcelLine,
+    RiInformationLine,
+    RiLoader2Line,
+    RiXingLine,
+} from "@remixicon/react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import * as XLSX from "xlsx";
 import { Button } from "@/components/ui/button";
@@ -494,13 +495,15 @@ export function ImportTradesModal({
     const getIcon = (type: "success" | "error" | "info") => {
         switch (type) {
             case "success":
-                return <CheckCircle className="h-5 w-5 text-green-400" />;
+                return (
+                    <RiCheckboxCircleFill className="h-5 w-5 text-green-400" />
+                );
             case "error":
-                return <AlertCircle className="h-5 w-5 text-red-400" />;
+                return <RiAlertLine className="h-5 w-5 text-red-400" />;
             case "info":
-                return <AlertCircle className="h-5 w-5 text-blue-400" />;
+                return <RiInformationLine className="h-5 w-5 text-blue-400" />;
             default:
-                return <AlertCircle className="h-5 w-5 text-blue-400" />;
+                return <RiInformationLine className="h-5 w-5 text-blue-400" />;
         }
     };
 
@@ -527,7 +530,7 @@ export function ImportTradesModal({
                             size="sm"
                             variant="ghost"
                         >
-                            <X className="h-4 w-4" />
+                            <RiXingLine className="h-4 w-4" />
                         </Button>
                     </div>
                 </CardHeader>
@@ -549,7 +552,7 @@ export function ImportTradesModal({
                                     className="cursor-pointer"
                                     htmlFor="file-upload"
                                 >
-                                    <FileSpreadsheet className="mx-auto mb-4 h-12 w-12 text-white/40" />
+                                    <RiFileExcelLine className="mx-auto mb-4 h-12 w-12 text-white/40" />
                                     <p className="mb-2 text-white/60">
                                         Click to select Excel file
                                     </p>
@@ -662,12 +665,12 @@ export function ImportTradesModal({
                             >
                                 {isImporting ? (
                                     <>
-                                        <Upload className="mr-2 h-4 w-4 animate-spin" />
+                                        <RiLoader2Line className="mr-2 h-4 w-4 animate-spin" />
                                         Importing...
                                     </>
                                 ) : (
                                     <>
-                                        <Upload className="mr-2 h-4 w-4" />
+                                        <RiFileExcelLine className="mr-2 h-4 w-4" />
                                         Import {tradesToImport.length} Trades
                                     </>
                                 )}

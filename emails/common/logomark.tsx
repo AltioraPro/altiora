@@ -1,22 +1,18 @@
 import type React from "react";
-
+import { Logo } from "@/components/logo";
 import { PROJECT } from "@/constants/project";
 import { cn } from "@/lib/utils";
-
-import { Logo } from "./logo";
 
 interface LogomarkProps {
     className?: string;
     logoClassName?: string;
     textClassName?: string;
-    logoUrl?: string;
 }
 
 function Logomark({
     className,
     logoClassName,
     textClassName,
-    logoUrl,
     ...props
 }: LogomarkProps & Omit<React.ComponentProps<"div">, "className">) {
     return (
@@ -24,10 +20,7 @@ function Logomark({
             className={cn("mt-4 flex items-center gap-4", className)}
             {...props}
         >
-            <Logo
-                className={cn("h-16 text-white", logoClassName)}
-                src={logoUrl}
-            />
+            <Logo className={cn("h-8 w-fit", logoClassName)} />
             <span
                 className={cn(
                     "m-0 font-medium text-lg text-white tracking-tight",

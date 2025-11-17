@@ -2,12 +2,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-    AlertCircle,
-    ArrowLeft,
-    ArrowRight,
-    CheckCircle,
-    Mail,
-} from "lucide-react";
+    RiAlertLine,
+    RiArrowLeftLine,
+    RiArrowRightLine,
+    RiCheckboxCircleFill,
+    RiMailLine,
+} from "@remixicon/react";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -84,7 +84,7 @@ export default function ForgotPasswordPage() {
                         {/* Success icon */}
                         <div className="mb-8 flex justify-center">
                             <div className="flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-white/10">
-                                <CheckCircle className="h-8 w-8 text-white" />
+                                <RiCheckboxCircleFill className="size-8 text-white" />
                             </div>
                         </div>
 
@@ -122,7 +122,7 @@ export default function ForgotPasswordPage() {
                                 href={PAGES.SIGN_IN}
                             >
                                 <div className="flex items-center justify-center space-x-3">
-                                    <ArrowLeft className="h-4 w-4" />
+                                    <RiArrowLeftLine className="size-4" />
                                     <span className="tracking-widest">
                                         BACK TO LOGIN
                                     </span>
@@ -225,7 +225,7 @@ export default function ForgotPasswordPage() {
                         {/* Message d'erreur global */}
                         {errors.email && (
                             <div className="mb-6 flex items-start space-x-3 rounded-lg border border-red-500/20 bg-red-500/10 p-4">
-                                <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />
+                                <RiAlertLine className="mt-0.5 size-5 shrink-0 text-red-400" />
                                 <p className="text-red-400 text-sm">
                                     {errors.email.message}
                                 </p>
@@ -246,7 +246,7 @@ export default function ForgotPasswordPage() {
                                     EMAIL
                                 </label>
                                 <div className="relative">
-                                    <Mail className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
+                                    <RiMailLine className="-translate-y-1/2 absolute top-1/2 left-3 size-4 transform text-white/40" />
                                     <input
                                         {...register("email")}
                                         className="w-full rounded-lg border border-white/20 bg-transparent py-3 pr-3 pl-10 text-white placeholder-white/40 transition-all duration-300 focus:border-white focus:outline-hidden"
@@ -273,7 +273,7 @@ export default function ForgotPasswordPage() {
                                 <div className="relative flex items-center justify-center space-x-3">
                                     {isSubmitting || isLoading ? (
                                         <>
-                                            <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+                                            <div className="size-5 animate-spin rounded-full border-2 border-white/20 border-t-white" />
                                             <span className="tracking-widest">
                                                 SENDING...
                                             </span>
@@ -283,7 +283,7 @@ export default function ForgotPasswordPage() {
                                             <span className="tracking-widest">
                                                 SEND RESET LINK
                                             </span>
-                                            <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                                            <RiArrowRightLine className="size-5 transition-transform duration-300 group-hover:translate-x-1" />
                                         </>
                                     )}
                                 </div>
@@ -294,7 +294,7 @@ export default function ForgotPasswordPage() {
                         <div className="mt-6 text-center">
                             <Button asChild variant="dim">
                                 <Link href={PAGES.SIGN_IN}>
-                                    <ArrowLeft className="size-4" />
+                                    <RiArrowLeftLine className="size-4" />
                                     Back to login
                                 </Link>
                             </Button>

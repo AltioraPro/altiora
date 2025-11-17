@@ -1,6 +1,10 @@
 "use client";
 
-import { Minus, TrendingDown, TrendingUp } from "lucide-react";
+import {
+    RiArrowRightDownLine,
+    RiArrowRightUpLine,
+    RiSubtractLine,
+} from "@remixicon/react";
 import { useMemo } from "react";
 import { useHabits } from "./HabitsProvider";
 
@@ -25,7 +29,9 @@ export function HabitsProgressChart({
     const optimisticData = getOptimisticRecentActivity(data, habits);
 
     const chartData = useMemo(() => {
-        if (!optimisticData || optimisticData.length === 0) return [];
+        if (!optimisticData || optimisticData.length === 0) {
+            return [];
+        }
 
         let filteredData = [...optimisticData];
 
@@ -36,12 +42,12 @@ export function HabitsProgressChart({
             const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
             monday.setDate(today.getDate() - daysToMonday);
 
-            const mondayStr = monday.toISOString().split("T")[0]!;
+            const mondayStr = monday.toISOString().split("T")[0];
             const sundayStr = new Date(
                 monday.getTime() + 6 * 24 * 60 * 60 * 1000
             )
                 .toISOString()
-                .split("T")[0]!;
+                .split("T")[0];
 
             filteredData = optimisticData.filter(
                 (item) => item.date >= mondayStr && item.date <= sundayStr
@@ -78,8 +84,8 @@ export function HabitsProgressChart({
             const thirtyDaysAgo = new Date(today);
             thirtyDaysAgo.setDate(today.getDate() - 29);
 
-            const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split("T")[0]!;
-            const todayStr = today.toISOString().split("T")[0]!;
+            const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split("T")[0];
+            const todayStr = today.toISOString().split("T")[0];
 
             filteredData = optimisticData.filter(
                 (item) => item.date >= thirtyDaysAgoStr && item.date <= todayStr
@@ -90,7 +96,7 @@ export function HabitsProgressChart({
                 const date = new Date(
                     thirtyDaysAgo.getTime() + i * 24 * 60 * 60 * 1000
                 );
-                const dateStr = date.toISOString().split("T")[0]!;
+                const dateStr = date.toISOString().split("T")[0];
                 const existingData = filteredData.find(
                     (item) => item.date === dateStr
                 );
@@ -112,7 +118,7 @@ export function HabitsProgressChart({
         }
 
         if (viewMode === "today") {
-            const today = new Date().toISOString().split("T")[0]!;
+            const today = new Date().toISOString().split("T")[0];
             const todayData = optimisticData.find(
                 (item) => item.date === today
             );
@@ -152,16 +158,17 @@ export function HabitsProgressChart({
     }, [optimisticData, viewMode]);
 
     const stats = useMemo(() => {
-        if (!chartData.length)
+        if (!chartData.length) {
             return { average: 0, trend: 0, bestDay: 0, worstDay: 0 };
+        }
 
         const percentages = chartData.map((d) => d.completionPercentage);
         const average =
             percentages.reduce((sum, p) => sum + p, 0) / percentages.length;
         const trend =
             chartData.length > 1
-                ? chartData[chartData.length - 1]!.completionPercentage -
-                  chartData[0]!.completionPercentage
+                ? (chartData.at(-1)?.completionPercentage || 0) -
+                  (chartData.at(0)?.completionPercentage || 0)
                 : 0;
         const bestDay = Math.max(...percentages);
         const worstDay = Math.min(...percentages);
@@ -209,11 +216,11 @@ export function HabitsProgressChart({
 
                         <div className="flex items-center space-x-2">
                             {stats.trend > 0 ? (
-                                <TrendingUp className="h-4 w-4 text-green-400" />
+                                <RiArrowRightUpLine className="size-4 text-green-400" />
                             ) : stats.trend < 0 ? (
-                                <TrendingDown className="h-4 w-4 text-red-400" />
+                                <RiArrowRightDownLine className="size-4 text-red-400" />
                             ) : (
-                                <Minus className="h-4 w-4 text-white/60" />
+                                <RiSubtractLine className="size-4 text-white/60" />
                             )}
                             <span
                                 className={` ${

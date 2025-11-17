@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
+import { RiArrowLeftLine } from "@remixicon/react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PAGES } from "@/constants/pages";
@@ -18,7 +18,7 @@ export function TradingPageHeader({
         <div className="mb-6 flex items-center space-x-4">
             <Link href={PAGES.TRADING_JOURNALS}>
                 <Button size="sm" variant="ghost">
-                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    <RiArrowLeftLine className="mr-2 size-4" />
                     Journals
                 </Button>
             </Link>

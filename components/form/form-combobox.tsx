@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { RiAddLine } from "@remixicon/react";
 import { useId, useState } from "react";
 import {
     Controller,
@@ -220,7 +220,7 @@ export function FormCombobox<
                                                         }
                                                         value="__create__"
                                                     >
-                                                        <Plus className="mr-2 h-4 w-4" />
+                                                        <RiAddLine className="mr-2 h-4 w-4" />
                                                         Create "
                                                         {searchValue.trim()}"
                                                     </CommandItem>
