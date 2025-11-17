@@ -12,6 +12,7 @@
 [Altiora](https://altiora.pro) is a self-coaching platform for traders and makers that merges productivity tooling, trading journals, and behavioral coaching.
 
 
+
 ## Getting Started
 
 1. Clone the repository
