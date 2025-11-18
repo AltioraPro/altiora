@@ -36,7 +36,18 @@ const items = [
         path: PAGES.DASHBOARD,
         name: "Overview",
     },
-
+    {
+        path: PAGES.TRADING,
+        name: "Trading",
+        children: [
+            { path: PAGES.TRADING_JOURNALS, name: "Journals" },
+            { path: PAGES.TRADING_CALENDAR, name: "Calendar" },
+        ],
+    },
+    {
+        path: PAGES.PROFILE,
+        name: "Profile",
+    },
     {
         path: PAGES.GOALS,
         name: "Goals",
@@ -49,14 +60,7 @@ const items = [
         //     { path: "/invoices?type=create", name: "Create new" },
         // ],
     },
-    {
-        path: PAGES.TRADING,
-        name: "Trading",
-        children: [
-            { path: PAGES.TRADING_JOURNALS, name: "Journals" },
-            { path: PAGES.TRADING_CALENDAR, name: "Calendar" },
-        ],
-    },
+
     {
         path: PAGES.LEADERBOARD,
         name: "Leaderboard",

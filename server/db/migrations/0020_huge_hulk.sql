@@ -1,14 +1,14 @@
-ALTER TABLE "user" ADD COLUMN "rank" text NOT NULL;--> statement-breakpoint
-ALTER TABLE "user" ADD COLUMN "subscription_plan" text NOT NULL;--> statement-breakpoint
-ALTER TABLE "user" ADD COLUMN "is_leaderboard_public" boolean NOT NULL;--> statement-breakpoint
-ALTER TABLE "user" ADD COLUMN "discord_id" text;--> statement-breakpoint
-ALTER TABLE "user" ADD COLUMN "discord_username" text;--> statement-breakpoint
-ALTER TABLE "user" ADD COLUMN "discord_discriminator" text;--> statement-breakpoint
-ALTER TABLE "user" ADD COLUMN "discord_avatar" text NOT NULL;--> statement-breakpoint
-ALTER TABLE "user" ADD COLUMN "discord_connected" boolean NOT NULL;--> statement-breakpoint
-ALTER TABLE "user" ADD COLUMN "discord_role_synced" boolean;--> statement-breakpoint
-ALTER TABLE "user" ADD COLUMN "last_discord_sync" text;--> statement-breakpoint
-ALTER TABLE "user" ADD COLUMN "stripe_customer_id" text;--> statement-breakpoint
-ALTER TABLE "user" ADD COLUMN "stripe_subscription_id" text NOT NULL;--> statement-breakpoint
-ALTER TABLE "user" ADD COLUMN "stripe_subscription_status" text;--> statement-breakpoint
-ALTER TABLE "user" ADD COLUMN "stripe_subscription_end_date" text;
+ALTER TABLE "user" ADD COLUMN IF NOT EXISTS "rank" text DEFAULT 'NEW' NOT NULL;--> statement-breakpoint
+ALTER TABLE "user" ADD COLUMN IF NOT EXISTS "subscription_plan" text DEFAULT 'FREE' NOT NULL;--> statement-breakpoint
+ALTER TABLE "user" ADD COLUMN IF NOT EXISTS "is_leaderboard_public" boolean DEFAULT false NOT NULL;--> statement-breakpoint
+ALTER TABLE "user" ADD COLUMN IF NOT EXISTS "discord_id" text;--> statement-breakpoint
+ALTER TABLE "user" ADD COLUMN IF NOT EXISTS "discord_username" text;--> statement-breakpoint
+ALTER TABLE "user" ADD COLUMN IF NOT EXISTS "discord_discriminator" text;--> statement-breakpoint
+ALTER TABLE "user" ADD COLUMN IF NOT EXISTS "discord_avatar" text DEFAULT '' NOT NULL;--> statement-breakpoint
+ALTER TABLE "user" ADD COLUMN IF NOT EXISTS "discord_connected" boolean DEFAULT false NOT NULL;--> statement-breakpoint
+ALTER TABLE "user" ADD COLUMN IF NOT EXISTS "discord_role_synced" boolean;--> statement-breakpoint
+ALTER TABLE "user" ADD COLUMN IF NOT EXISTS "last_discord_sync" text;--> statement-breakpoint
+ALTER TABLE "user" ADD COLUMN IF NOT EXISTS "stripe_customer_id" text;--> statement-breakpoint
+ALTER TABLE "user" ADD COLUMN IF NOT EXISTS "stripe_subscription_id" text DEFAULT '' NOT NULL;--> statement-breakpoint
+ALTER TABLE "user" ADD COLUMN IF NOT EXISTS "stripe_subscription_status" text;--> statement-breakpoint
+ALTER TABLE "user" ADD COLUMN IF NOT EXISTS "stripe_subscription_end_date" text;
