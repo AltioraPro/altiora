@@ -8,6 +8,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { PAGES } from "@/constants/pages";
+import { USER_ROLES } from "@/constants/roles";
 import type { User } from "@/lib/auth";
 import { LogoutButton } from "./logout-button";
 import {
@@ -60,12 +61,14 @@ export function DropdownUser({ user }: { user: User }) {
                             Profile
                         </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                        <Link href={PAGES.ADMIN}>
-                            <RiShieldCheckLine className="size-4" />
-                            Admin
-                        </Link>
-                    </DropdownMenuItem>
+                    {user.role === USER_ROLES.ADMIN && (
+                        <DropdownMenuItem asChild>
+                            <Link href={PAGES.ADMIN}>
+                                <RiShieldCheckLine className="size-4" />
+                                Admin
+                            </Link>
+                        </DropdownMenuItem>
+                    )}
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
