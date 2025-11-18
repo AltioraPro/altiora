@@ -45,20 +45,12 @@ const items = [
         ],
     },
     {
-        path: PAGES.PROFILE,
-        name: "Profile",
-    },
-    {
         path: PAGES.GOALS,
         name: "Goals",
     },
     {
         path: PAGES.HABITS,
         name: "Habits",
-        // children: [
-        //     { path: "/invoices/products", name: "Products" },
-        //     { path: "/invoices?type=create", name: "Create new" },
-        // ],
     },
 
     {
