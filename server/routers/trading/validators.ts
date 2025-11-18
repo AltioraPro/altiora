@@ -93,26 +93,21 @@ export const createAdvancedTradeSchema = z
     .object({
         journalId: z.string().min(1, "Journal ID is required"),
         assetId: z.string().min(1, "Asset ID is required"),
-        sessionId: z.string().min(1, "Session ID is required").optional(),
+        sessionId: z.string().min(1).optional(),
         setupId: z.string().optional(),
         tradeDate: z.date(),
         riskInput: z.string().optional(),
         profitLossAmount: z.string().optional(),
         profitLossPercentage: z.string().optional(),
         exitReason: z.enum(["TP", "BE", "SL", "Manual"]),
-        tradingviewLink: z.string().optional(),
+        tradingviewLink: z.url().optional(),
         notes: z.string().optional(),
         isClosed: z.boolean(),
     })
-    .refine(
-        (data) =>
-            (data.profitLossAmount && !data.profitLossAmount) ||
-            (data.profitLossPercentage && !data.profitLossPercentage),
-        {
-            message: "Either profit/loss amount or percentage is required",
-            path: ["profitLossAmount"],
-        }
-    );
+    .refine((data) => data.profitLossAmount || data.profitLossPercentage, {
+        message: "Either profit/loss amount or percentage is required",
+        path: ["profitLossAmount"],
+    });
 
 export const updateAdvancedTradeSchema = z.object({
     id: z.string().min(1, "Trade ID is required"),

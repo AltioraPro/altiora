@@ -51,7 +51,7 @@ export function CreateJournalCard() {
                     tradeDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
                         .toISOString()
                         .split("T")[0],
-                    symbol: "EURUSD",
+
                     profitLossPercentage: "2.5",
                     notes: "Perfect setup, clean breakout with strong momentum",
                     isClosed: true,
@@ -61,7 +61,7 @@ export function CreateJournalCard() {
                     tradeDate: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000)
                         .toISOString()
                         .split("T")[0],
-                    symbol: "GBPUSD",
+
                     profitLossPercentage: "-1.0",
                     notes: "Stopped out early, market conditions changed",
                     isClosed: true,
@@ -71,7 +71,7 @@ export function CreateJournalCard() {
                     tradeDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
                         .toISOString()
                         .split("T")[0],
-                    symbol: "USDJPY",
+
                     profitLossPercentage: "1.8",
                     notes: "Good entry, patience paid off",
                     isClosed: true,
@@ -81,7 +81,7 @@ export function CreateJournalCard() {
                     tradeDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
                         .toISOString()
                         .split("T")[0],
-                    symbol: "AUDUSD",
+
                     profitLossPercentage: "3.2",
                     notes: "Excellent risk/reward ratio on this one",
                     isClosed: true,
@@ -91,7 +91,7 @@ export function CreateJournalCard() {
                     tradeDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
                         .toISOString()
                         .split("T")[0],
-                    symbol: "EURJPY",
+
                     profitLossPercentage: "-0.8",
                     notes: "Small loss, cut quickly when setup invalidated",
                     isClosed: true,

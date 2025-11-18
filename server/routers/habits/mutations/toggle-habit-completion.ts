@@ -17,74 +17,64 @@ export const toggleHabitCompletionBase = protectedProcedure.input(
 
 export const toggleHabitCompletionHandler = toggleHabitCompletionBase.handler(
     async ({ context, input }) => {
-        try {
-            const { db, session } = context;
-            const userId = session.user.id;
+        const { db, session } = context;
+        const userId = session.user.id;
 
-            const { habitId, completionDate, isCompleted, notes } = input;
+        const { habitId, completionDate, isCompleted, notes } = input;
 
-            const existingHabit = await db
-                .select()
-                .from(habits)
-                .where(and(eq(habits.id, habitId), eq(habits.userId, userId)))
-                .limit(1);
+        const existingHabit = await db
+            .select()
+            .from(habits)
+            .where(and(eq(habits.id, habitId), eq(habits.userId, userId)))
+            .limit(1);
 
-            if (existingHabit.length === 0) {
-                throw new ORPCError("NOT_FOUND", {
-                    message: "Habit not found",
-                });
-            }
-
-            const existingCompletion = await db
-                .select()
-                .from(habitCompletions)
-                .where(
-                    and(
-                        eq(habitCompletions.userId, userId),
-                        eq(habitCompletions.habitId, habitId),
-                        eq(habitCompletions.completionDate, completionDate)
-                    )
-                )
-                .limit(1);
-
-            let completion: HabitCompletion | undefined;
-
-            if (existingCompletion.length > 0) {
-                [completion] = await db
-                    .update(habitCompletions)
-                    .set({
-                        isCompleted,
-                        notes,
-                        updatedAt: new Date(),
-                    })
-                    .where(eq(habitCompletions.id, existingCompletion[0].id))
-                    .returning();
-            } else {
-                const completionId = createId();
-                [completion] = await db
-                    .insert(habitCompletions)
-                    .values({
-                        id: completionId,
-                        userId,
-                        habitId,
-                        completionDate,
-                        isCompleted,
-                        notes,
-                    })
-                    .returning();
-            }
-
-            await call(updateUserRankHandler, undefined, { context });
-
-            return completion;
-        } catch (error) {
-            console.error("Error toggleHabitCompletion:", error);
-            if (error instanceof ORPCError) {
-                throw error;
-            }
-            throw new ORPCError("INTERNAL_SERVER_ERROR", {
-                message: "Failed to update completion",
+        if (existingHabit.length === 0) {
+            throw new ORPCError("NOT_FOUND", {
+                message: "Habit not found",
             });
         }
+
+        const existingCompletion = await db
+            .select()
+            .from(habitCompletions)
+            .where(
+                and(
+                    eq(habitCompletions.userId, userId),
+                    eq(habitCompletions.habitId, habitId),
+                    eq(habitCompletions.completionDate, completionDate)
+                )
+            )
+            .limit(1);
+
+        let completion: HabitCompletion | undefined;
+
+        if (existingCompletion.length > 0) {
+            [completion] = await db
+                .update(habitCompletions)
+                .set({
+                    isCompleted,
+                    notes,
+                    updatedAt: new Date(),
+                })
+                .where(eq(habitCompletions.id, existingCompletion[0].id))
+                .returning();
+        } else {
+            const completionId = createId();
+            [completion] = await db
+                .insert(habitCompletions)
+                .values({
+                    id: completionId,
+                    userId,
+                    habitId,
+                    completionDate,
+                    isCompleted,
+                    notes,
+                })
+                .returning();
+        }
+
+        await call(updateUserRankHandler, undefined, { context });
+
+        return completion;
     }
 );

@@ -72,9 +72,12 @@ export function HabitsDashboard() {
     }
 
     return (
-        <div className="mb-16">
+        <div className="mb-16 space-y-6">
+            {/* Limits Banner */}
+            {/* <LimitsBanner /> */}
+
             {/* Top Actions */}
-            <div className="mb-6 flex items-center justify-between">
+            <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                     {/* View Mode Toggle */}
                     <ViewModeToggle
@@ -82,6 +85,9 @@ export function HabitsDashboard() {
                         viewMode={viewMode}
                     />
                 </div>
+                {/* Create Habit Button */}
+                <CreateHabitButton onClick={openCreateModal} />
+            </div>
 
                 <Button onClick={openCreateModal}>
                     <RiAddLine />
