@@ -91,7 +91,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.6",
-    "@react-email/preview-server": "5.0.1",
+    "@react-email/preview-server": "5.0.4",
     "@types/node": "^22.7.4",
     "@types/pg": "^8.15.5",
     "@types/react": "19.2.2",

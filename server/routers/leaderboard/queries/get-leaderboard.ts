@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, sum } from "drizzle-orm";
+import { and, desc, eq, gte, sql } from "drizzle-orm";
 import {
     discordPomodoroSessions,
     discordProfile,
@@ -33,7 +33,10 @@ export const getLeaderboardHandler = getLeaderboardBase.handler(
         }
 
         // Build join conditions, filtering out undefined values
-        const joinConditions = [eq(discordPomodoroSessions.format, "deepwork")];
+        const joinConditions = [
+            eq(discordPomodoroSessions.userId, user.id),
+            eq(discordPomodoroSessions.format, "deepwork"),
+        ];
 
         if (startDate) {
             joinConditions.push(
@@ -50,7 +53,7 @@ export const getLeaderboardHandler = getLeaderboardBase.handler(
                 image: user.image,
                 discordAvatar: discordProfile.discordAvatar,
                 discordId: discordProfile.discordId,
-                totalWorkTime: sum(discordPomodoroSessions.totalWorkTime),
+                totalWorkTime: sql<number>`COALESCE(SUM(${discordPomodoroSessions.totalWorkTime}), 0)`,
             })
             .from(user)
             .leftJoin(discordPomodoroSessions, and(...joinConditions))
@@ -65,7 +68,11 @@ export const getLeaderboardHandler = getLeaderboardBase.handler(
                 discordProfile.discordAvatar,
                 discordProfile.discordId
             )
-            .orderBy(desc(sum(discordPomodoroSessions.totalWorkTime)))
+            .orderBy(
+                desc(
+                    sql<number>`COALESCE(SUM(${discordPomodoroSessions.totalWorkTime}), 0)`
+                )
+            )
             .limit(100);
 
         return leaderboardData.map((entry, index) => ({
