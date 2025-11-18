@@ -107,7 +107,7 @@ export function DiscordWelcomePopup({
             tabIndex={0}
         >
             <Card
-                className="max-h-[90vh] w-full max-w-2xl overflow-y-auto border border-white/20 bg-pure-black text-pure-white"
+                className="max-h-[90vh] w-full max-w-2xl overflow-y-auto border border-white/20 text-pure-white"
                 onClick={(e) => e.stopPropagation()}
             >
                 <CardHeader className="relative">
@@ -214,7 +214,7 @@ export function DiscordWelcomePopup({
                             Connect Discord now
                         </Button>
                         <Button
-                            className="flex-1 border-white/20 bg-pure-black py-2"
+                            className="flex-1 border-white/20 py-2"
                             onClick={handleSkip}
                             variant="outline"
                         >

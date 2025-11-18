@@ -348,7 +348,7 @@ export function EditHabitModal() {
 
             {/* Modal */}
             <div className="pointer-events-none fixed inset-0 z-10000 flex items-center justify-center p-4">
-                <div className="pointer-events-auto relative max-h-[90vh] w-full max-w-md overflow-hidden rounded-2xl border border-white/20 bg-pure-black">
+                <div className="pointer-events-auto relative max-h-[90vh] w-full max-w-md overflow-hidden rounded-2xl border border-white/20">
                     {/* Gradient accent */}
                     <div className="absolute top-0 left-0 h-px w-full bg-linear-to-r from-transparent via-white/20 to-transparent" />
 

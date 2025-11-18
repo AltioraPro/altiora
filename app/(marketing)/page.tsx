@@ -22,7 +22,7 @@ export default function HomePage() {
             <section className="relative flex h-[calc(100vh-64px)] w-full items-center justify-center overflow-hidden bg-center bg-cover bg-no-repeat grayscale">
                 <div className="absolute inset-0 h-full w-full">
                     <Silk
-                        color="#121112"
+                        color="#404040"
                         noiseIntensity={1.5}
                         rotation={0}
                         scale={1}

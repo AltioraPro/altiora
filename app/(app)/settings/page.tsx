@@ -1,5 +1,10 @@
 import { ORPCError } from "@orpc/server";
-import { RiBankCardLine, RiMessage3Line, RiShieldLine, RiUserLine } from "@remixicon/react";
+import {
+    RiBankCardLine,
+    RiMessage3Line,
+    RiShieldLine,
+    RiUserLine,
+} from "@remixicon/react";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { DiscordWelcomeChecker } from "@/components/auth/DiscordWelcomeChecker";
@@ -23,26 +28,8 @@ export default async function SettingsPage() {
 
     return (
         <>
-            <div className="min-h-screen bg-pure-black text-pure-white">
+            <div className="min-h-screen text-pure-white">
                 <div className="relative mx-auto w-full">
-                    {/* Header */}
-                    <div className="relative mb-8 border-white/10 border-b">
-                        <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent" />
-                        <div className="relative mx-auto max-w-7xl px-6 py-8">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <h1 className="font-argesta font-bold text-3xl tracking-tight">
-                                        Settings
-                                    </h1>
-                                    <p className="mt-2 text-sm text-white/60">
-                                        Manage your account, integrations and
-                                        subscription
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     {/* Main Content Grid */}
                     <div className="mx-auto max-w-7xl px-6">
                         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">

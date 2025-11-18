@@ -86,39 +86,18 @@ export default function GoalsPage() {
     }, [goalStats]);
 
     return (
-        <div className="min-h-screen bg-pure-black text-pure-white">
+        <div className="min-h-screen text-pure-white">
             {/* Main Content */}
             <div className="relative mx-auto w-full">
-                {/* Header */}
-                <div className="relative mb-8 border-white/10 border-b">
-                    <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent" />
-                    <div className="relative mx-auto max-w-7xl px-6 py-8">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h1 className="font-argesta font-bold text-3xl tracking-tight">
-                                    Goals Tracker
-                                </h1>
-                                <p className="mt-2 text-sm text-white/60">
-                                    Define your vision. Achieve your destiny.
-                                </p>
-                            </div>
-
-                            <Button
-                                className="group relative overflow-hidden rounded-lg border border-white/10 bg-white/10 px-6 py-3 font-semibold text-white transition-all duration-300 hover:border-white/20 hover:bg-white/20"
-                                onClick={() => setIsCreateModalOpen(true)}
-                            >
-                                <div className="absolute inset-0 bg-linear-to-r from-white/5 via-white/10 to-white/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                                <div className="relative flex items-center gap-2">
-                                    <RiAddLine className="size-4 transition-transform group-hover:scale-110" />
-                                    <span>New Goal</span>
-                                </div>
-                            </Button>
-                        </div>
-                    </div>
+                <div className="flex justify-end">
+                    <Button onClick={() => setIsCreateModalOpen(true)}>
+                        <RiAddLine className="size-4 transition-transform group-hover:scale-110" />
+                        New Goal
+                    </Button>
                 </div>
 
                 {/* Quick Stats Cards */}
-                <div className="mx-auto mb-12 grid max-w-7xl grid-cols-1 gap-6 md:grid-cols-4">
+                <div className="mt-6 mb-12 grid grid-cols-1 gap-6 md:grid-cols-4">
                     {/* Active Goals */}
                     <div className="relative rounded-lg border border-white/10 bg-black/20 p-6">
                         <div className="absolute top-4 right-4">

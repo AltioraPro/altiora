@@ -4,12 +4,13 @@ import BlurText from "@/components/landing/BlurText";
 import ShinyText from "@/components/landing/ShinyText";
 import Silk from "@/components/Silk/Silk";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
+import { PAGES } from "@/constants/pages";
 
 export default function NotFoundPage() {
     return (
         <>
             <Header />
-            <section className="relative flex h-screen w-full items-center justify-center overflow-hidden bg-pure-black">
+            <section className="relative flex h-screen w-full items-center justify-center overflow-hidden">
                 {/* Background Silk Animation */}
                 <div className="absolute inset-0 h-full w-full">
                     <Silk
@@ -65,10 +66,10 @@ export default function NotFoundPage() {
                     {/* Action Buttons */}
                     <div className="flex items-center justify-center">
                         <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-                            <Link href="/">
+                            <Link href={PAGES.LANDING_PAGE}>
                                 <HoverBorderGradient
-                                    className="bg-pure-black text-white opacity-70 transition-opacity duration-300 hover:opacity-90"
-                                    containerClassName="bg-pure-black"
+                                    className="text-white opacity-70 transition-opacity duration-300 hover:opacity-90"
+                                    containerClassName=""
                                 >
                                     <span className="px-4 py-2 text-sm">
                                         Go Home
@@ -78,7 +79,7 @@ export default function NotFoundPage() {
 
                             <Link href="/dashboard">
                                 <HoverBorderGradient
-                                    className="bg-pure-black text-white opacity-70 transition-opacity duration-300 hover:opacity-90"
+                                    className="text-white opacity-70 transition-opacity duration-300 hover:opacity-90"
                                     containerClassName="bg-pure-white"
                                 >
                                     <span className="px-4 py-2 text-sm">

@@ -2,7 +2,7 @@
 
 import { RiAddLine } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
-import { useCreateJournalStore } from "@/stores/create-journal-store";
+import { useCreateJournalStore } from "@/store/create-journal-store";
 
 export function NewJournalButton() {
     const { open } = useCreateJournalStore();

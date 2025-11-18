@@ -79,7 +79,7 @@ export function EditGoalModal({
 
     return (
         <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
-            <div className="relative max-h-[90vh] w-full max-w-md overflow-hidden rounded-2xl border border-white/20 bg-pure-black">
+            <div className="relative max-h-[90vh] w-full max-w-md overflow-hidden rounded-2xl border border-white/20">
                 {/* Gradient accent */}
                 <div className="absolute top-0 left-0 h-px w-full bg-linear-to-r from-transparent via-white/20 to-transparent" />
 

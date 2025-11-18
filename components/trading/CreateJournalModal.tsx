@@ -29,7 +29,7 @@ import {
     type CreateTradingJournalInput,
     createTradingJournalSchema,
 } from "@/server/routers/trading/validators";
-import { useCreateJournalStore } from "@/stores/create-journal-store";
+import { useCreateJournalStore } from "@/store/create-journal-store";
 
 export function CreateJournalModal() {
     const { isOpen, close } = useCreateJournalStore();

@@ -5,7 +5,7 @@ import { FloatingElements } from "./_components/floating-elements";
 
 export default function ContactPage() {
     return (
-        <div className="relative min-h-screen overflow-hidden bg-pure-black text-pure-white">
+        <div className="relative min-h-screen overflow-hidden text-pure-white">
             <Header />
 
             <div className="pointer-events-none absolute inset-0">
