@@ -17,6 +17,7 @@ export function Providers({ children }: ProvidersProps) {
                 <NuqsAdapter>
                     <AutumnProvider
                         betterAuthUrl={env.NEXT_PUBLIC_BETTER_AUTH_URL}
+                        includeCredentials={true}
                     >
                         <ToastProvider>{children}</ToastProvider>
                     </AutumnProvider>
