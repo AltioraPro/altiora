@@ -48,6 +48,10 @@ export function CreateTradeModal({
             tradingviewLink: "",
             notes: "",
             assetId: "",
+            sessionId: "",
+            setupId: "",
+            journalId,
+            isClosed: true,
         },
     });
 
@@ -143,8 +147,6 @@ export function CreateTradeModal({
     const handleSubmit = async (data: CreateTradeForm) => {
         await createTrade({
             ...data,
-            journalId,
-            isClosed: true,
         });
     };
 
