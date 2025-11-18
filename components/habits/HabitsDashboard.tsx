@@ -29,6 +29,7 @@ const ViewModeToggle = memo(
                     }`}
                     key={mode}
                     onClick={() => setViewMode(mode)}
+                    type="button"
                 >
                     {mode === "today" && "TODAY"}
                     {mode === "week" && "WEEK"}
@@ -74,6 +75,7 @@ export function HabitsDashboard() {
                 <button
                     className="rounded-lg bg-white/10 px-4 py-2 transition-colors hover:bg-white/20"
                     onClick={() => window.location.reload()}
+                    type="button"
                 >
                     Retry
                 </button>
@@ -82,51 +84,49 @@ export function HabitsDashboard() {
     }
 
     return (
-        <>
-            <div className="mb-16 space-y-6">
-                {/* Limits Banner */}
-                {/* <LimitsBanner /> */}
+        <div className="mb-16 space-y-6">
+            {/* Limits Banner */}
+            {/* <LimitsBanner /> */}
 
-                {/* Top Actions */}
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                        {/* View Mode Toggle */}
-                        <ViewModeToggle
-                            setViewMode={setViewMode}
-                            viewMode={viewMode}
-                        />
-                    </div>
-                    {/* Create Habit Button */}
-                    <CreateHabitButton onClick={openCreateModal} />
+            {/* Top Actions */}
+            <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                    {/* View Mode Toggle */}
+                    <ViewModeToggle
+                        setViewMode={setViewMode}
+                        viewMode={viewMode}
+                    />
                 </div>
-
-                {/* Bento Grid Layout */}
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-                    {/* Left column: Today's Habits + Progress */}
-                    <div className="space-y-6 lg:col-span-8">
-                        <TodayHabitsCard data={dashboardData?.todayStats} />
-                        <HabitsProgressChart
-                            data={dashboardData?.recentActivity}
-                            habits={dashboardData?.todayStats.habits}
-                            viewMode={viewMode}
-                        />
-                    </div>
-
-                    {/* Right column: Statistics + Habits Manager */}
-                    <div className="space-y-6 lg:col-span-4">
-                        <HabitsStats
-                            data={dashboardData?.stats}
-                            todayHabits={dashboardData?.todayStats.habits}
-                        />
-                        <HabitsManager />
-                    </div>
-                </div>
-
-                {/* Modals */}
-                <CreateHabitModal />
-                <EditHabitModal />
+                {/* Create Habit Button */}
+                <CreateHabitButton onClick={openCreateModal} />
             </div>
-        </>
+
+            {/* Bento Grid Layout */}
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+                {/* Left column: Today's Habits + Progress */}
+                <div className="space-y-6 lg:col-span-8">
+                    <TodayHabitsCard data={dashboardData?.todayStats} />
+                    <HabitsProgressChart
+                        data={dashboardData?.recentActivity}
+                        habits={dashboardData?.todayStats.habits}
+                        viewMode={viewMode}
+                    />
+                </div>
+
+                {/* Right column: Statistics + Habits Manager */}
+                <div className="space-y-6 lg:col-span-4">
+                    <HabitsStats
+                        data={dashboardData?.stats}
+                        todayHabits={dashboardData?.todayStats.habits}
+                    />
+                    <HabitsManager />
+                </div>
+            </div>
+
+            {/* Modals */}
+            <CreateHabitModal />
+            <EditHabitModal />
+        </div>
     );
 }
 
