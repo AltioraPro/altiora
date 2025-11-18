@@ -1,5 +1,3 @@
-"use client";
-
 import { AutumnProvider } from "autumn-js/react";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import type { ReactNode } from "react";
@@ -19,7 +17,6 @@ export function Providers({ children }: ProvidersProps) {
                 <NuqsAdapter>
                     <AutumnProvider
                         betterAuthUrl={env.NEXT_PUBLIC_BETTER_AUTH_URL}
-                        includeCredentials={true}
                     >
                         <ToastProvider>{children}</ToastProvider>
                     </AutumnProvider>
