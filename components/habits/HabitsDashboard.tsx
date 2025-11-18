@@ -85,9 +85,6 @@ export function HabitsDashboard() {
                         viewMode={viewMode}
                     />
                 </div>
-                {/* Create Habit Button */}
-                <CreateHabitButton onClick={openCreateModal} />
-            </div>
 
                 <Button onClick={openCreateModal}>
                     <RiAddLine />
