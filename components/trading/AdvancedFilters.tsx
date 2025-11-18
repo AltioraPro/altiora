@@ -136,11 +136,10 @@ export function AdvancedFilters({
         <div className={`relative ${className}`}>
             <div className="flex items-center space-x-2">
                 <Button
-                    className={`h-8 border-white/15 bg-black/40 px-3 text-white/80 transition-all duration-200 hover:border-white/25 hover:bg-white/10 hover:text-white ${
-                        isExpanded
-                            ? "border-white/25 bg-white/15 text-white"
-                            : ""
-                    }`}
+                    className={`h-8 border-white/15 bg-black/40 px-3 text-white/80 transition-all duration-200 hover:border-white/25 hover:bg-white/10 hover:text-white ${isExpanded
+                        ? "border-white/25 bg-white/15 text-white"
+                        : ""
+                        }`}
                     onClick={() => setIsExpanded(!isExpanded)}
                     size="sm"
                     variant="outline"
@@ -231,7 +230,7 @@ export function AdvancedFilters({
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
                                 <h4 className="font-medium text-white/90 text-xs">
-                                    Setups
+                                    Confirmations
                                 </h4>
                                 <div className="flex gap-1">
                                     <Button

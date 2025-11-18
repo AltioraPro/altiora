@@ -53,7 +53,7 @@ export function CreateJournalCard() {
                         .split("T")[0],
 
                     profitLossPercentage: "2.5",
-                    notes: "Perfect setup, clean breakout with strong momentum",
+                    notes: "Perfect confirmation, clean breakout with strong momentum",
                     isClosed: true,
                     journalId: journal.id,
                 },
@@ -93,7 +93,7 @@ export function CreateJournalCard() {
                         .split("T")[0],
 
                     profitLossPercentage: "-0.8",
-                    notes: "Small loss, cut quickly when setup invalidated",
+                    notes: "Small loss, cut quickly when confirmation invalidated",
                     isClosed: true,
                     journalId: journal.id,
                 },

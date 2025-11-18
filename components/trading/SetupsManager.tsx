@@ -110,9 +110,9 @@ export function SetupsManager({ journalId }: SetupsManagerProps) {
         return (
             <Card className="border border-white/10 bg-black/20">
                 <CardHeader>
-                    <CardTitle className="text-white">Setups</CardTitle>
+                    <CardTitle className="text-white">Confirmations</CardTitle>
                     <CardDescription className="text-white/60">
-                        Loading setups...
+                        Loading confirmations...
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -129,9 +129,9 @@ export function SetupsManager({ journalId }: SetupsManagerProps) {
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <div>
-                        <CardTitle className="text-white">Setups</CardTitle>
+                        <CardTitle className="text-white">Confirmations</CardTitle>
                         <CardDescription className="text-white/60">
-                            {setups?.length || 0} setups • Manage your trading
+                            {setups?.length || 0} confirmations • Manage your trading
                             strategies
                         </CardDescription>
                     </div>
@@ -142,7 +142,7 @@ export function SetupsManager({ journalId }: SetupsManagerProps) {
                         }
                     >
                         <RiAddLine className="mr-2 h-4 w-4" />
-                        Add Setup
+                        Add Confirmation
                     </Button>
                 </div>
             </CardHeader>
@@ -153,7 +153,7 @@ export function SetupsManager({ journalId }: SetupsManagerProps) {
                     <Input
                         className="border-white/30 bg-black pl-10 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder="Search setups..."
+                        placeholder="Search confirmations..."
                         value={searchTerm}
                     />
                 </div>
@@ -162,7 +162,7 @@ export function SetupsManager({ journalId }: SetupsManagerProps) {
                 {isCreatingModalOpen && (
                     <div className="rounded-lg border border-white/10 bg-black/20 p-4">
                         <h3 className="mb-4 font-medium text-white">
-                            Create New Setup
+                            Create New Confirmation
                         </h3>
                         <div className="space-y-4">
                             <div>
@@ -198,7 +198,7 @@ export function SetupsManager({ journalId }: SetupsManagerProps) {
                                 >
                                     {isCreatingSetup
                                         ? "Creating..."
-                                        : "Create Setup"}
+                                        : "Create Confirmation"}
                                 </Button>
                             </div>
                         </div>
@@ -237,13 +237,13 @@ export function SetupsManager({ journalId }: SetupsManagerProps) {
                         <RiAlertLine className="mx-auto mb-4 h-12 w-12 text-white/40" />
                         <p className="text-white/60">
                             {searchTerm
-                                ? "No setups found matching your search"
-                                : "No setups found"}
+                                ? "No confirmations found matching your search"
+                                : "No confirmations found"}
                         </p>
                         <p className="text-sm text-white/40">
                             {searchTerm
                                 ? "Try a different search term"
-                                : "Start by creating your first setup"}
+                                : "Start by creating your first confirmation"}
                         </p>
                     </div>
                 )}
