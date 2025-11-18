@@ -3,6 +3,7 @@
 import { RiAddLine } from "@remixicon/react";
 import { memo } from "react";
 import { useHabitsDashboard } from "@/lib/hooks/useHabitsQuery";
+import { Button } from "../ui/button";
 import { CreateHabitModal } from "./CreateHabitModal";
 import { EditHabitModal } from "./EditHabitModal";
 import { HabitsManager } from "./HabitsManager";
@@ -29,6 +30,7 @@ const ViewModeToggle = memo(
                     }`}
                     key={mode}
                     onClick={() => setViewMode(mode)}
+                    type="button"
                 >
                     {mode === "today" && "TODAY"}
                     {mode === "week" && "WEEK"}
@@ -40,19 +42,6 @@ const ViewModeToggle = memo(
 );
 
 ViewModeToggle.displayName = "ViewModeToggle";
-
-const CreateHabitButton = memo(({ onClick }: { onClick: () => void }) => (
-    <button
-        className="group flex items-center space-x-2 rounded-xl border border-white/20 bg-white/10 px-6 py-3 transition-all duration-300 hover:border-white/40 hover:bg-white/20"
-        onClick={onClick}
-        type="button"
-    >
-        <RiAddLine className="size-5 text-white/80 transition-colors group-hover:text-white" />
-        <span className="text-sm">NEW HABIT</span>
-    </button>
-));
-
-CreateHabitButton.displayName = "CreateHabitButton";
 
 export function HabitsDashboard() {
     const { openCreateModal, viewMode, setViewMode } = useHabits();
@@ -74,6 +63,7 @@ export function HabitsDashboard() {
                 <button
                     className="rounded-lg bg-white/10 px-4 py-2 transition-colors hover:bg-white/20"
                     onClick={() => window.location.reload()}
+                    type="button"
                 >
                     Retry
                 </button>
@@ -82,51 +72,49 @@ export function HabitsDashboard() {
     }
 
     return (
-        <>
-            <div className="mb-16 space-y-6">
-                {/* Limits Banner */}
-                {/* <LimitsBanner /> */}
-
-                {/* Top Actions */}
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                        {/* View Mode Toggle */}
-                        <ViewModeToggle
-                            setViewMode={setViewMode}
-                            viewMode={viewMode}
-                        />
-                    </div>
-                    {/* Create Habit Button */}
-                    <CreateHabitButton onClick={openCreateModal} />
+        <div className="mb-16">
+            {/* Top Actions */}
+            <div className="mb-6 flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                    {/* View Mode Toggle */}
+                    <ViewModeToggle
+                        setViewMode={setViewMode}
+                        viewMode={viewMode}
+                    />
                 </div>
 
-                {/* Bento Grid Layout */}
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-                    {/* Left column: Today's Habits + Progress */}
-                    <div className="space-y-6 lg:col-span-8">
-                        <TodayHabitsCard data={dashboardData?.todayStats} />
-                        <HabitsProgressChart
-                            data={dashboardData?.recentActivity}
-                            habits={dashboardData?.todayStats.habits}
-                            viewMode={viewMode}
-                        />
-                    </div>
-
-                    {/* Right column: Statistics + Habits Manager */}
-                    <div className="space-y-6 lg:col-span-4">
-                        <HabitsStats
-                            data={dashboardData?.stats}
-                            todayHabits={dashboardData?.todayStats.habits}
-                        />
-                        <HabitsManager />
-                    </div>
-                </div>
-
-                {/* Modals */}
-                <CreateHabitModal />
-                <EditHabitModal />
+                <Button onClick={openCreateModal}>
+                    <RiAddLine />
+                    New Habit
+                </Button>
             </div>
-        </>
+
+            {/* Bento Grid Layout */}
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+                {/* Left column: Today's Habits + Progress */}
+                <div className="space-y-6 lg:col-span-8">
+                    <TodayHabitsCard data={dashboardData?.todayStats} />
+                    <HabitsProgressChart
+                        data={dashboardData?.recentActivity}
+                        habits={dashboardData?.todayStats.habits}
+                        viewMode={viewMode}
+                    />
+                </div>
+
+                {/* Right column: Statistics + Habits Manager */}
+                <div className="space-y-6 lg:col-span-4">
+                    <HabitsStats
+                        data={dashboardData?.stats}
+                        todayHabits={dashboardData?.todayStats.habits}
+                    />
+                    <HabitsManager />
+                </div>
+            </div>
+
+            {/* Modals */}
+            <CreateHabitModal />
+            <EditHabitModal />
+        </div>
     );
 }
 

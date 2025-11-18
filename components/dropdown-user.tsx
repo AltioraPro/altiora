@@ -5,6 +5,7 @@ import {
     RiShieldCheckLine,
     RiUserLine,
 } from "@remixicon/react";
+import Image from "next/image";
 import Link from "next/link";
 import { PAGES } from "@/constants/pages";
 import type { User } from "@/lib/auth";
@@ -21,13 +22,22 @@ import {
 export function DropdownUser({ user }: { user: User }) {
     return (
         <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-2 rounded-xl border border-white/20 px-3 py-2 text-sm text-white/80 hover:border-white/40 hover:bg-white/5 hover:text-white">
-                <div className="flex size-6 items-center justify-center rounded-full bg-white/10">
-                    <RiUserLine className="size-3" />
-                </div>
-                {user.name.split(" ")[0]}
+            <DropdownMenuTrigger asChild className="cursor-pointer">
+                {user.image ? (
+                    <Image
+                        alt={user.name}
+                        className="size-6 rounded-full"
+                        height={32}
+                        src={user.image}
+                        width={32}
+                    />
+                ) : (
+                    <div className="flex size-8 items-center justify-center rounded-full bg-neutral-700">
+                        {user.name.charAt(0)}
+                    </div>
+                )}
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuContent align="end" className="w-56" sideOffset={16}>
                 <div className="flex w-full flex-col p-2 pb-1 text-sm">
                     <p className="truncate font-medium text-primary">
                         {user.name}

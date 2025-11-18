@@ -103,7 +103,7 @@ export const Footer = () => {
     return (
         <>
             <footer
-                className="relative overflow-hidden bg-pure-black text-pure-white"
+                className="relative overflow-hidden text-pure-white"
                 ref={footerRef}
             >
                 {/* Sophisticated "woaw" border with subtle animation */}
@@ -335,7 +335,7 @@ export const Footer = () => {
             {/* Scroll to Top Button */}
             <button
                 aria-label="Scroll to top"
-                className={`group fixed right-8 bottom-8 z-50 flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-pure-black/80 backdrop-blur-md transition-all duration-500 hover:scale-110 hover:border-white/40 hover:bg-white/10 ${
+                className={`group /80 fixed right-8 bottom-8 z-50 flex h-12 w-12 items-center justify-center rounded-full border border-white/20 backdrop-blur-md transition-all duration-500 hover:scale-110 hover:border-white/40 hover:bg-white/10 ${
                     isVisible
                         ? "translate-y-0 opacity-100"
                         : "pointer-events-none translate-y-4 opacity-0"

@@ -148,7 +148,7 @@ export default function ChangelogPage() {
     return (
         <>
             <Header />
-            <div className="min-h-screen bg-pure-black pt-20 text-pure-white">
+            <div className="min-h-screen pt-20 text-pure-white">
                 <div className="mx-auto max-w-4xl px-6 py-16">
                     <div className="mb-12 text-center">
                         <h1 className="mb-4 bg-linear-to-b from-white to-gray-400 bg-clip-text font-bold text-5xl text-transparent">

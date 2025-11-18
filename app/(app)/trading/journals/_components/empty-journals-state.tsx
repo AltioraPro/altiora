@@ -4,7 +4,7 @@ import { RiAddLine, RiBarChartLine, RiBookOpenLine } from "@remixicon/react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useCreateJournalStore } from "@/stores/create-journal-store";
+import { useCreateJournalStore } from "@/store/create-journal-store";
 
 export function EmptyJournalsState() {
     const openCreateModal = useCreateJournalStore((state) => state.open);

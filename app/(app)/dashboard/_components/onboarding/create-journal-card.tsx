@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import SpotlightCard from "@/components/SpotlightCard";
 import { Button } from "@/components/ui/button";
 import { orpc } from "@/orpc/client";
-import { useCreateJournalStore } from "@/stores/create-journal-store";
+import { useCreateJournalStore } from "@/store/create-journal-store";
 
 export function CreateJournalCard() {
     const router = useRouter();

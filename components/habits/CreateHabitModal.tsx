@@ -140,7 +140,7 @@ export function CreateHabitModal({ onSuccess }: CreateHabitModalProps = {}) {
             />
 
             <div className="pointer-events-none fixed inset-0 z-10000 flex items-center justify-center p-4">
-                <div className="pointer-events-auto relative max-h-[90vh] w-full max-w-md overflow-hidden rounded-2xl border border-white/20 bg-pure-black">
+                <div className="pointer-events-auto relative max-h-[90vh] w-full max-w-md overflow-hidden rounded-2xl border border-white/20">
                     <div className="absolute top-0 left-0 h-px w-full bg-linear-to-r from-transparent via-white/20 to-transparent" />
 
                     <div className="max-h-[calc(90vh-2rem)] overflow-y-auto p-4">
