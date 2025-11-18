@@ -3,6 +3,7 @@
 import { RiAddLine } from "@remixicon/react";
 import { memo } from "react";
 import { useHabitsDashboard } from "@/lib/hooks/useHabitsQuery";
+import { Button } from "../ui/button";
 import { CreateHabitModal } from "./CreateHabitModal";
 import { EditHabitModal } from "./EditHabitModal";
 import { HabitsManager } from "./HabitsManager";
@@ -41,19 +42,6 @@ const ViewModeToggle = memo(
 );
 
 ViewModeToggle.displayName = "ViewModeToggle";
-
-const CreateHabitButton = memo(({ onClick }: { onClick: () => void }) => (
-    <button
-        className="group flex items-center space-x-2 rounded-xl border border-white/20 bg-white/10 px-6 py-3 transition-all duration-300 hover:border-white/40 hover:bg-white/20"
-        onClick={onClick}
-        type="button"
-    >
-        <RiAddLine className="size-5 text-white/80 transition-colors group-hover:text-white" />
-        <span className="text-sm">NEW HABIT</span>
-    </button>
-));
-
-CreateHabitButton.displayName = "CreateHabitButton";
 
 export function HabitsDashboard() {
     const { openCreateModal, viewMode, setViewMode } = useHabits();
@@ -99,6 +87,12 @@ export function HabitsDashboard() {
                 </div>
                 {/* Create Habit Button */}
                 <CreateHabitButton onClick={openCreateModal} />
+            </div>
+
+                <Button onClick={openCreateModal}>
+                    <RiAddLine />
+                    New Habit
+                </Button>
             </div>
 
             {/* Bento Grid Layout */}

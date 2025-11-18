@@ -2,7 +2,7 @@
 
 import { DraggableJournalList } from "@/components/trading/DraggableJournalList";
 import type { TradingJournal } from "@/server/db/schema";
-import { useEditJournalStore } from "@/stores/edit-journal-store";
+import { useEditJournalStore } from "@/store/edit-journal-store";
 
 interface JournalsListProps {
     journals: TradingJournal[];

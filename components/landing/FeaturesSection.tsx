@@ -15,12 +15,7 @@ import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import SpotlightCard from "../SpotlightCard";
 
 export const FeaturesSection = () => (
-    <section
-        className="relative min-h-screen overflow-hidden text-pure-white"
-        style={{
-            background: "linear-gradient(220.55deg, #000000 0%, #0a0a0a 100%)",
-        }}
-    >
+    <section className="relative min-h-screen overflow-hidden text-pure-white">
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
             <div
                 className="absolute inset-0 opacity-[0.015]"
@@ -87,7 +82,7 @@ export const FeaturesSection = () => (
             <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
                 <AnimatedCard delay={0}>
                     <SpotlightCard
-                        className="custom-spotlight-card group relative h-[400px] bg-pure-black"
+                        className="custom-spotlight-card group relative h-[400px]"
                         spotlightColor="rgba(255, 255, 255, 0.2)"
                     >
                         <div className="relative mb-6">
@@ -126,7 +121,7 @@ export const FeaturesSection = () => (
 
                 <AnimatedCard delay={150}>
                     <SpotlightCard
-                        className="custom-spotlight-card group relative h-[400px] bg-pure-black"
+                        className="custom-spotlight-card group relative h-[400px]"
                         spotlightColor="rgba(255, 255, 255, 0.2)"
                     >
                         <div className="relative mb-6">
@@ -164,7 +159,7 @@ export const FeaturesSection = () => (
 
                 <AnimatedCard delay={300}>
                     <SpotlightCard
-                        className="custom-spotlight-card group relative h-[400px] bg-pure-black"
+                        className="custom-spotlight-card group relative h-[400px]"
                         spotlightColor="rgba(255, 255, 255, 0.2)"
                     >
                         <div className="relative mb-6">
@@ -202,7 +197,7 @@ export const FeaturesSection = () => (
 
                 <AnimatedCard delay={450}>
                     <SpotlightCard
-                        className="custom-spotlight-card group relative h-[400px] bg-pure-black"
+                        className="custom-spotlight-card group relative h-[400px]"
                         spotlightColor="rgba(255, 255, 255, 0.2)"
                     >
                         <div className="relative mb-6">
@@ -264,10 +259,7 @@ export const FeaturesSection = () => (
                         </p>
 
                         <Link href="/pricing">
-                            <HoverBorderGradient
-                                className="border border-white/10 bg-pure-black px-8 py-4 text-white"
-                                containerClassName="bg-pure-black"
-                            >
+                            <HoverBorderGradient className="border border-white/10 px-8 py-4 text-white">
                                 <span className="flex items-center gap-3 tracking-widest">
                                     START NOW
                                     <RiArrowRightLine className="size-5 transition-transform duration-300 group-hover:translate-x-1" />

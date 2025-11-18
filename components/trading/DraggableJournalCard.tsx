@@ -2,7 +2,7 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { RiDragMoveLine } from "@remixicon/react";
+import { RiDraggable } from "@remixicon/react";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { TradingJournal } from "@/server/db/schema";
 import { JournalPerformanceCard } from "./JournalPerformanceCard";
@@ -63,7 +63,7 @@ export function DraggableJournalCard({
                 {...listeners}
             >
                 <div className="rounded bg-black/50 p-1 backdrop-blur-xs">
-                    <RiDragMoveLine className="h-4 w-4 text-white/60" />
+                    <RiDraggable className="size-4 text-white/60" />
                 </div>
             </div>
 

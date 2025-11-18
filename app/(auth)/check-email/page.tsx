@@ -115,7 +115,7 @@ function CheckEmailContent() {
     };
 
     return (
-        <div className="relative min-h-screen overflow-hidden bg-pure-black text-pure-white">
+        <div className="relative min-h-screen overflow-hidden text-pure-white">
             {/* Geometric decorative elements */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
                 <div className="absolute top-32 right-32 h-6 w-6 rotate-12 border border-white/15" />
@@ -445,7 +445,7 @@ function CheckEmailContent() {
 
 function CheckEmailFallback() {
     return (
-        <div className="flex min-h-screen items-center justify-center bg-pure-black text-pure-white">
+        <div className="flex min-h-screen items-center justify-center text-pure-white">
             <div className="text-center">
                 <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-white" />
                 <p className="text-white/70">Loading...</p>

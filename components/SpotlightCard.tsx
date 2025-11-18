@@ -56,7 +56,7 @@ const SpotlightCard: React.FC<SpotlightCardProps> = ({
 
     return (
         <div
-            className={`relative overflow-hidden rounded-2xl border border-white/10 bg-pure-black p-8 ${className}`}
+            className={`relative overflow-hidden rounded-2xl border border-white/10 p-8 ${className}`}
             onBlur={handleBlur}
             onFocus={handleFocus}
             onMouseEnter={handleMouseEnter}
