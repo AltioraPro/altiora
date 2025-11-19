@@ -273,7 +273,7 @@ export function EditTradeModal({
 
                             <div>
                                 <Label className="text-white" htmlFor="setupId">
-                                    Setup
+                                    Confirmation
                                 </Label>
                                 <Select
                                     onValueChange={(value) =>
@@ -285,7 +285,7 @@ export function EditTradeModal({
                                     value={formData.setupId}
                                 >
                                     <SelectTrigger className="border-white/20 bg-black/50 text-white">
-                                        <SelectValue placeholder="Select a setup" />
+                                        <SelectValue placeholder="Select a confirmation" />
                                     </SelectTrigger>
                                     <SelectContent className="border-white/20 bg-black/90">
                                         {setups?.map((setup) => (

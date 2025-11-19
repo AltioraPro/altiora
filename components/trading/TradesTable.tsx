@@ -247,7 +247,7 @@ export function TradesTable({ journalId }: TradesTableProps) {
                                                 Session
                                             </th>
                                             <th className="px-4 py-3 text-left text-sm text-white/60">
-                                                Setup
+                                                Confirmation
                                             </th>
                                             <th className="px-4 py-3 text-left text-sm text-white/60">
                                                 Risk

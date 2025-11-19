@@ -248,14 +248,14 @@ export function CreateTradeModal({
                         <FormCombobox
                             control={form.control}
                             disabled={isCreatingTrade}
-                            emptyText="No setup found."
+                            emptyText="No confirmation found."
                             isCreating={isCreatingSetup}
-                            label="Setup"
+                            label="Confirmation"
                             name="setupId"
                             onCreate={(name) => handleCreateSetup(name)}
                             options={setupOptions}
-                            placeholder="Select a setup"
-                            searchPlaceholder="Search setup..."
+                            placeholder="Select a confirmation"
+                            searchPlaceholder="Search confirmation..."
                         />
 
                         <div className="grid grid-cols-2 gap-4">
@@ -269,7 +269,7 @@ export function CreateTradeModal({
                             />
 
                             {journal?.usePercentageCalculation &&
-                            journal?.startingCapital ? (
+                                journal?.startingCapital ? (
                                 <FormInput
                                     control={form.control}
                                     label="Result (€)"
