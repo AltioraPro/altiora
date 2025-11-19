@@ -51,7 +51,6 @@ const buttonVariants = cva(
                 false: "",
             },
             radius: {
-                md: "rounded-md",
                 full: "rounded-full",
             },
             mode: {
@@ -375,7 +374,6 @@ const buttonVariants = cva(
             variant: "primary",
             mode: "default",
             size: "md",
-            radius: "md",
             appearance: "default",
         },
     }

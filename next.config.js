@@ -1,3 +1,13 @@
+export async function redirects() {
+    return [
+        {
+            source: "/admin",
+            destination: "/admin/users",
+            permanent: true,
+        },
+    ];
+}
+
 const nextConfig = {
     experimental: {
         turbopackFileSystemCacheForDev: true,
@@ -21,6 +31,7 @@ const nextConfig = {
             },
         ],
     },
+    redirects,
 };
 
 export default nextConfig;
