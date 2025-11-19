@@ -26,7 +26,7 @@ export default function AboutPage() {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
                     <Card className="border border-white/10 bg-black/20">
                         <CardHeader>
                             <CardTitle className="text-white">Sx</CardTitle>
@@ -77,6 +77,34 @@ export default function AboutPage() {
                                 </span>
                                 <span className="rounded bg-white/10 px-2 py-1 text-white/70 text-xs">
                                     Mentoring
+                                </span>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="border border-white/10 bg-black/20">
+                        <CardHeader>
+                            <CardTitle className="text-white">Matteo</CardTitle>
+                            <CardDescription className="text-white/60">
+                                Developer
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="mb-4 text-white/80 leading-relaxed">
+                                Highly motivated developer who joined the project
+                                with exceptional skills and drive. Bringing fresh
+                                perspective and technical expertise to push
+                                Altiora forward.
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                                <span className="rounded bg-white/10 px-2 py-1 text-white/70 text-xs">
+                                    Full-Stack
+                                </span>
+                                <span className="rounded bg-white/10 px-2 py-1 text-white/70 text-xs">
+                                    Architecture
+                                </span>
+                                <span className="rounded bg-white/10 px-2 py-1 text-white/70 text-xs">
+                                    Excellence
                                 </span>
                             </div>
                         </CardContent>
