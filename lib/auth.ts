@@ -13,6 +13,8 @@ import { resend } from "@/lib/resend";
 import { db } from "@/server/db";
 import { whitelist } from "./auth/plugins/whitelist";
 
+const WWW_PREFIX_REGEX = /^www\./;
+
 export function getBaseUrl() {
     if (env.VERCEL_ENV === "preview") {
         return `https://${env.VERCEL_BRANCH_URL}`;
@@ -21,6 +23,32 @@ export function getBaseUrl() {
         return `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`;
     }
     return "http://localhost:3000";
+}
+
+function getTrustedOrigins(): string[] {
+    const baseUrl = getBaseUrl();
+
+    // In production, include both www and non-www versions to handle CORS
+    if (env.VERCEL_ENV === "production" || env.NODE_ENV === "production") {
+        try {
+            const url = new URL(baseUrl);
+            const hostname = url.hostname;
+
+            // If it's already www, return both versions
+            if (hostname.startsWith("www.")) {
+                const nonWww = hostname.replace(WWW_PREFIX_REGEX, "");
+                return [baseUrl, `https://${nonWww}`];
+            }
+
+            // If it's non-www, return both versions
+            return [baseUrl, `https://www.${hostname}`];
+        } catch {
+            // If URL parsing fails, just return the base URL
+            return [baseUrl];
+        }
+    }
+
+    return [baseUrl];
 }
 
 const userAdditionalFields = {
@@ -38,7 +66,7 @@ const userAdditionalFields = {
 
 export const auth = betterAuth({
     baseURL: getBaseUrl(),
-    trustedOrigins: [getBaseUrl()],
+    trustedOrigins: getTrustedOrigins(),
     database: drizzleAdapter(db, {
         provider: "pg",
     }),
