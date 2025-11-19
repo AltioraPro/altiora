@@ -6,6 +6,7 @@ export type Item = {
     name: string | null;
     email: string;
     role: string | null;
+    banned: boolean | null;
     createdAt: Date;
     accessStatus: {
         id: string;
@@ -21,7 +22,8 @@ export const multiColumnFilterFn: FilterFn<Item> = (
     _columnId,
     filterValue
 ) => {
-    const searchableRowContent = `${row.original.name ?? ""} ${row.original.email}`.toLowerCase();
+    const searchableRowContent =
+        `${row.original.name ?? ""} ${row.original.email}`.toLowerCase();
     const searchTerm = (filterValue ?? "").toLowerCase();
     return searchableRowContent.includes(searchTerm);
 };
@@ -59,4 +61,3 @@ export const roleFilterFn: FilterFn<Item> = (
     }
     return filterValue.includes(role as "admin" | "user");
 };
-
