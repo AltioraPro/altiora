@@ -141,112 +141,6 @@ function calculateCumulativePerformance(trades: AdvancedTrade[]) {
         );
 }
 
-type TradingStatsType = {
-    totalTrades: number;
-    closedTrades: number;
-    totalPnL: string | number;
-    avgPnL: string | number;
-    totalAmountPnL?: number;
-    winningTrades: number;
-    losingTrades: number;
-    winRate: number;
-    tradesBySymbol: Array<{
-        assetId?: string | null;
-        symbol?: string | null;
-        count: number;
-        totalPnL: string | null;
-    }>;
-    tradesBySetup: Array<{
-        setupId: string | null;
-        count: number;
-        totalPnL: string | null;
-    }>;
-    tpTrades: number;
-    beTrades: number;
-    slTrades: number;
-    journal?: {
-        usePercentageCalculation?: boolean;
-        startingCapital?: string;
-    };
-};
-
-function calculateStatsFromTrades(
-    filteredTrades: AdvancedTrade[] | undefined,
-    totalPerformance: number,
-    selectedJournal:
-        | {
-            usePercentageCalculation?: boolean;
-            startingCapital?: string | null;
-        }
-        | undefined,
-    backendStats: TradingStatsType | undefined
-): TradingStatsType | null {
-    if (filteredTrades && filteredTrades.length > 0) {
-        const winningTrades = filteredTrades.filter(
-            (t) => Number(t.profitLossPercentage) > 0
-        ).length;
-        const losingTrades = filteredTrades.filter(
-            (t) => Number(t.profitLossPercentage) < 0
-        ).length;
-        const winRate =
-            filteredTrades.length > 0
-                ? (winningTrades / filteredTrades.length) * 100
-                : 0;
-
-        const calculateTotalAmountPnL = () => {
-            if (!filteredTrades) {
-                return 0;
-            }
-
-            if (
-                selectedJournal?.usePercentageCalculation &&
-                selectedJournal?.startingCapital
-            ) {
-                const startingCapital = Number.parseFloat(
-                    selectedJournal.startingCapital
-                );
-                return (totalPerformance / 100) * startingCapital;
-            }
-
-            return filteredTrades.reduce(
-                (sum, t) => sum + Number(t.profitLossAmount || 0),
-                0
-            );
-        };
-
-        return {
-            totalTrades: filteredTrades.length,
-            closedTrades: filteredTrades.length,
-            winningTrades,
-            losingTrades,
-            winRate,
-            totalPnL: totalPerformance,
-            avgPnL:
-                filteredTrades.length > 0
-                    ? totalPerformance / filteredTrades.length
-                    : 0,
-            totalAmountPnL: calculateTotalAmountPnL(),
-            tradesBySymbol: [],
-            tradesBySetup: [],
-            tpTrades: filteredTrades.filter((t) => t.exitReason === "TP")
-                .length,
-            beTrades: filteredTrades.filter((t) => t.exitReason === "BE")
-                .length,
-            slTrades: filteredTrades.filter((t) => t.exitReason === "SL")
-                .length,
-            journal: selectedJournal
-                ? {
-                    usePercentageCalculation:
-                        selectedJournal.usePercentageCalculation,
-                    startingCapital:
-                        selectedJournal.startingCapital || undefined,
-                }
-                : undefined,
-        };
-    }
-    return backendStats ?? null;
-}
-
 interface JournalPageClientProps {
     journalId: string;
 }
@@ -328,19 +222,8 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
         [filteredTrades]
     );
 
-    const totalPerformance =
-        cumulativeData.length > 0 ? cumulativeData.at(-1)?.cumulative || 0 : 0;
-
-    const stats = useMemo(
-        () =>
-            calculateStatsFromTrades(
-                filteredTrades,
-                totalPerformance,
-                journal,
-                backendStats
-            ),
-        [filteredTrades, totalPerformance, journal, backendStats]
-    );
+    // Utiliser directement backendStats car les filtres sont déjà appliqués côté serveur
+    const stats = backendStats;
 
     const createJournalMutation = useMutation(
         orpc.trading.createJournal.mutationOptions()
