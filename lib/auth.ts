@@ -37,22 +37,26 @@ function getTrustedOrigins(): string[] {
             // If it's already www, return both versions
             if (hostname.startsWith("www.")) {
                 const nonWww = hostname.replace(WWW_PREFIX_REGEX, "");
-                return [baseUrl, `https://${nonWww}`, "http://www.altiora.pro"];
+                return [
+                    baseUrl,
+                    `https://${nonWww}`,
+                    "https://www.altiora.pro",
+                ];
             }
 
             // If it's non-www, return both versions
             return [
                 baseUrl,
                 `https://www.${hostname}`,
-                "http://www.altiora.pro",
+                "https://www.altiora.pro",
             ];
         } catch {
             // If URL parsing fails, just return the base URL
-            return [baseUrl, "http://www.altiora.pro"];
+            return [baseUrl, "https://www.altiora.pro"];
         }
     }
 
-    return [baseUrl, "http://www.altiora.pro"];
+    return [baseUrl, "https://www.altiora.pro"];
 }
 
 const userAdditionalFields = {

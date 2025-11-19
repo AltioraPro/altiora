@@ -1,59 +1,32 @@
-import { DiscordWelcomeChecker } from "@/components/auth/DiscordWelcomeChecker";
-import { GlobalTradingCharts } from "@/components/trading/GlobalTradingCharts";
-import { GlobalTradingStats } from "@/components/trading/GlobalTradingStats";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import { api } from "@/orpc/server";
-import { JournalFilter } from "./_components/journal-filter";
-import { OnboardingContent } from "./_components/onboarding";
+import { Suspense } from "react";
+import { orpc } from "@/orpc/client";
+import { getQueryClient, HydrateClient } from "@/orpc/query/hydration";
+import { DashboardPageClient } from "./page.client";
 
 export default async function GlobalDashboardPage() {
-    const journals = await api.trading.getJournals({ input: {} });
+    const queryClient = getQueryClient();
 
-    if (journals?.length === 0) {
-        return <OnboardingContent />;
-    }
+    await queryClient.prefetchQuery(
+        orpc.trading.getJournals.queryOptions({ input: {} })
+    );
 
-    const [sessions, trades, stats] = await Promise.all([
-        api.trading.getSessions({}),
-        api.trading.getTrades({}),
-        api.trading.getStats({}),
+    await Promise.all([
+        queryClient.prefetchQuery(
+            orpc.trading.getSessions.queryOptions({ input: {} })
+        ),
+        queryClient.prefetchQuery(
+            orpc.trading.getTrades.queryOptions({ input: {} })
+        ),
+        queryClient.prefetchQuery(
+            orpc.trading.getStats.queryOptions({ input: {} })
+        ),
     ]);
 
     return (
-        <div>
-            <JournalFilter journals={journals} />
-
-            {stats && <GlobalTradingStats className="mb-8" stats={stats} />}
-
-            {/* Charts */}
-            {stats && sessions && trades && (
-                <div className="mb-8">
-                    <Card className="border border-white/10 bg-black/20">
-                        <CardHeader>
-                            <CardTitle className="text-white">
-                                Performance Charts
-                            </CardTitle>
-                            <CardDescription className="text-white/60">
-                                Visual analysis of your overall performance
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <GlobalTradingCharts
-                                sessions={sessions}
-                                trades={trades}
-                            />
-                        </CardContent>
-                    </Card>
-                </div>
-            )}
-
-            <DiscordWelcomeChecker />
-        </div>
+        <HydrateClient client={queryClient}>
+            <Suspense>
+                <DashboardPageClient />
+            </Suspense>
+        </HydrateClient>
     );
 }
