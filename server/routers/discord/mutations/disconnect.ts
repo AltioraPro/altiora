@@ -11,7 +11,7 @@ export const disconnectHandler = disconnectBase.handler(async ({ context }) => {
     try {
         await auth.api.unlinkAccount({
             body: {
-                provider: "discord",
+                providerId: "discord",
             },
             headers: context.headers,
         });
