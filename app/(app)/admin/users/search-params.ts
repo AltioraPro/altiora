@@ -6,21 +6,22 @@ import {
 } from "nuqs/server";
 
 export const sortableColumns = [
-    "email",
+    "user",
+    "role",
     "waitlistStatus",
-    "registrationStatus",
     "createdAt",
 ];
 
 export type SortableColumn =
-    | "email"
+    | "user"
+    | "role"
     | "waitlistStatus"
-    | "registrationStatus"
     | "createdAt";
 
-export const adminWaitlistParsers = {
+export const adminUsersParsers = {
     // Filters
     search: parseAsString,
+    role: parseAsStringEnum(["admin", "user", "all"]).withDefault("all"),
     waitlistStatus: parseAsStringEnum([
         "approved",
         "pending",
@@ -37,5 +38,6 @@ export const adminWaitlistParsers = {
     sortOrder: parseAsStringEnum(["asc", "desc"]).withDefault("desc"),
 };
 
-export const adminWaitlistParsersCache =
-    createSearchParamsCache(adminWaitlistParsers);
+export const adminUsersParsersCache =
+    createSearchParamsCache(adminUsersParsers);
+

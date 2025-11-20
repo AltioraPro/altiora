@@ -1,7 +1,6 @@
 "use client";
 
-import { RiCheckboxCircleFill, RiCheckboxCircleLine } from "@remixicon/react";
-import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
     flexRender,
     getCoreRowModel,
@@ -9,9 +8,6 @@ import {
 } from "@tanstack/react-table";
 import { useQueryStates } from "nuqs";
 import { useMemo } from "react";
-import { Button } from "@/components/ui/button";
-import { ButtonGroup, ButtonGroupText } from "@/components/ui/button-group";
-import { Label } from "@/components/ui/label";
 import {
     Table,
     TableBody,
@@ -25,23 +21,19 @@ import {
     queryParamsToSortingState,
 } from "@/lib/table/sorting-state";
 import { orpc } from "@/orpc/client";
-import { adminWaitlistParsers } from "../search-params";
+import TablePagination from "../../waitlist/_components/pagination";
+import { adminUsersParsers } from "../search-params";
 import { columns } from "./columns";
 import type { Item } from "./filters";
 import { Filters } from "./filters/index";
-import TablePagination from "./pagination";
 
-type SortableColumn =
-    | "email"
-    | "waitlistStatus"
-    | "registrationStatus"
-    | "createdAt";
+type SortableColumn = "user" | "role" | "waitlistStatus" | "createdAt";
 
-export default function WaitlistTable() {
+export default function UsersTable() {
     const [
-        { search, sortBy, sortOrder, page, limit, waitlistStatus },
+        { search, sortBy, sortOrder, page, limit, role, waitlistStatus },
         setQueryStates,
-    ] = useQueryStates(adminWaitlistParsers);
+    ] = useQueryStates(adminUsersParsers);
 
     const setSortBy = (value: SortableColumn | null) => {
         setQueryStates({ sortBy: value });
@@ -58,15 +50,17 @@ export default function WaitlistTable() {
         setQueryStates({ limit: value });
     };
 
-    const { data: waitlist } = useQuery(
-        orpc.auth.listWaitlist.queryOptions({
+    const { data: usersData } = useQuery(
+        orpc.auth.listUsers.queryOptions({
             input: {
                 page,
                 limit,
                 sortBy: sortBy as SortableColumn,
                 sortOrder,
                 search,
-                waitlistStatus,
+                role: role === "all" ? undefined : role,
+                waitlistStatus:
+                    waitlistStatus === "all" ? undefined : waitlistStatus,
             },
             placeholderData: keepPreviousData,
         })
@@ -74,51 +68,16 @@ export default function WaitlistTable() {
 
     const data = useMemo(
         () =>
-            (waitlist?.waitlist ?? []).map((item) => ({
-                ...item,
-                status: item.status as Item["status"],
-                addedByUser: item.addedByUser
-                    ? {
-                          id: item.addedByUser.id,
-                          name: item.addedByUser.name ?? "",
-                          email: item.addedByUser.email ?? "",
-                          image: item.addedByUser.image,
-                      }
-                    : null,
+            (usersData?.users ?? []).map((user) => ({
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                createdAt: user.createdAt,
+                accessStatus: user.accessStatus,
             })) as Item[],
-        [waitlist]
+        [usersData]
     );
-
-    const { mutate: updateStatus, isPending: isUpdatingStatus } = useMutation(
-        orpc.auth.updateMultipleUsersStatus.mutationOptions({
-            meta: {
-                invalidateQueries: [
-                    orpc.auth.listWaitlist.queryKey({
-                        input: {
-                            page,
-                            limit,
-                            sortBy: sortBy as SortableColumn,
-                            sortOrder,
-                            search,
-                            waitlistStatus,
-                        },
-                    }),
-                ],
-            },
-        })
-    );
-
-    const handleApprove = () => {
-        const selectedRows = table.getSelectedRowModel().rows;
-        const emails = selectedRows.map((row) => row.original.email);
-        updateStatus({ emails, status: "approved" });
-    };
-
-    const handleReject = () => {
-        const selectedRows = table.getSelectedRowModel().rows;
-        const emails = selectedRows.map((row) => row.original.email);
-        updateStatus({ emails, status: "rejected" });
-    };
 
     const table = useReactTable<Item>({
         data,
@@ -145,47 +104,10 @@ export default function WaitlistTable() {
             {/* Filters */}
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <Filters />
-                <div className="flex items-center gap-3">
-                    {/* Approve/Reject button group */}
-                    {table.getSelectedRowModel().rows.length > 0 && (
-                        <ButtonGroup className="ml-auto">
-                            <ButtonGroupText>
-                                <Label>
-                                    {table.getSelectedRowModel().rows.length}{" "}
-                                    selected
-                                </Label>
-                            </ButtonGroupText>
-                            <Button
-                                disabled={isUpdatingStatus}
-                                onClick={handleApprove}
-                                variant="outline"
-                            >
-                                <RiCheckboxCircleFill
-                                    aria-hidden="true"
-                                    className="-ms-1 opacity-60"
-                                    size={16}
-                                />
-                                Approve
-                            </Button>
-                            <Button
-                                disabled={isUpdatingStatus}
-                                onClick={handleReject}
-                                variant="outline"
-                            >
-                                <RiCheckboxCircleLine
-                                    aria-hidden="true"
-                                    className="-ms-1 opacity-60"
-                                    size={16}
-                                />
-                                Reject
-                            </Button>
-                        </ButtonGroup>
-                    )}
-                </div>
             </div>
 
             {/* Table */}
-            <div className="overflow-hidden rounded-md border bg-background">
+            <div className="overflow-hidden border bg-background">
                 <Table className="table-fixed">
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -249,13 +171,13 @@ export default function WaitlistTable() {
                 </Table>
             </div>
 
-            {waitlist?.pagination && (
+            {usersData?.pagination && (
                 <TablePagination
                     limit={limit}
                     onLimitChange={setLimit}
                     onPageChange={setPage}
                     page={page}
-                    pagination={waitlist?.pagination}
+                    pagination={usersData?.pagination}
                 />
             )}
         </div>

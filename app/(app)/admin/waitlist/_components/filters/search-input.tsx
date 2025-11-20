@@ -1,6 +1,6 @@
 "use client";
 
-import { RiSearchLine, RiCloseLine } from "@remixicon/react";
+import { RiCloseLine, RiSearchLine } from "@remixicon/react";
 import type * as React from "react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";

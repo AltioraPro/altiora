@@ -2,16 +2,7 @@
 
 import { RiArrowDownSLine } from "@remixicon/react";
 import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 interface Journal {
     id: string;
@@ -65,44 +56,6 @@ export function JournalFilter({ journals }: JournalFilterProps) {
         <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-4">
                 <div className="relative" ref={dropdownRef}>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline">Open</Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-56">
-                            <DropdownMenuLabel>Appearance</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuCheckboxItem
-                                checked={
-                                    selectedJournalIds.length ===
-                                    journals?.length
-                                }
-                                onCheckedChange={handleSelectAll}
-                            >
-                                All journals
-                            </DropdownMenuCheckboxItem>
-                            <DropdownMenuCheckboxItem
-                                checked={selectedJournalIds.length === 0}
-                                disabled
-                                onCheckedChange={() =>
-                                    setSelectedJournalIds([])
-                                }
-                            >
-                                None
-                            </DropdownMenuCheckboxItem>
-                            <DropdownMenuCheckboxItem
-                                checked={selectedJournalIds.length > 0}
-                                onCheckedChange={() =>
-                                    setSelectedJournalIds(
-                                        journals.map((j) => j.id)
-                                    )
-                                }
-                            >
-                                Panel
-                            </DropdownMenuCheckboxItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-
                     <button
                         className="flex min-w-[200px] items-center justify-between rounded-lg border border-white/15 bg-black/40 px-4 py-2 text-white/80 transition-all duration-200 hover:border-white/25 hover:bg-white/10 hover:text-white"
                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}

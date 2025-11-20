@@ -69,10 +69,10 @@ const items = [
         path: PAGES.ADMIN,
         name: "Admin",
         requiredRole: USER_ROLES.ADMIN,
-        // children: [
-        //     { path: PAGES.ADMIN_USERS, name: "Users" },
-        //     { path: PAGES.ADMIN_WAITLIST, name: "Waitlist" },
-        // ],
+        children: [
+            { path: PAGES.ADMIN_USERS, name: "Users" },
+            { path: PAGES.ADMIN_WAITLIST, name: "Waitlist" },
+        ],
     },
 ];
 
