@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { authClient } from "@/lib/auth-client";
 import { orpc } from "@/orpc/client";
 import { DiscordWelcomePopup } from "./DiscordWelcomePopup";
 
@@ -35,8 +36,21 @@ export function DiscordWelcomeChecker({
         }
     }, [connectionStatus, forceShow]);
 
-    const handleDiscordConnect = () => {
-        window.location.href = "/api/auth/discord";
+    const handleDiscordConnect = async () => {
+        if (typeof window === "undefined") {
+            return;
+        }
+
+        try {
+            const origin = window.location.origin;
+            await authClient.linkSocial({
+                provider: "discord",
+                callbackURL: `${origin}/settings?discord=linked`,
+                errorCallbackURL: `${origin}/settings?discord=error`,
+            });
+        } catch {
+            // Ignore errors; user can retry from settings.
+        }
     };
 
     return (

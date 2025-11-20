@@ -140,7 +140,7 @@ export const updateUserRankHandler = updateUserRankBase.handler(
                         discordRoleSynced: true,
                         lastDiscordSync: now,
                     })
-                    .where(eq(discordProfile.id, userId));
+                    .where(eq(discordProfile.userId, userId));
             } catch (syncError) {
                 console.error("Error while syncing rank:", syncError);
             }
