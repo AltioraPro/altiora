@@ -68,8 +68,8 @@ export function DiscordWelcomePopup({
         },
         {
             icon: RiTimeLine,
-            title: "Pomodoro tracking",
-            description: "Automatically sync your work sessions",
+            title: "Deepwork sessions tracking",
+            description: "Automatically sync your deepwork sessions",
         },
         {
             icon: RiBarChart2Line,

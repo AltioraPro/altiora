@@ -30,7 +30,7 @@ export const getMeHandler = getMeBase.handler(async ({ context }) => {
     }
 
     const discordProfileData = await db.query.discordProfile.findFirst({
-        where: eq(discordProfile.id, session.user.id),
+        where: eq(discordProfile.userId, session.user.id),
     });
 
     return { ...currentUser, discordProfile: discordProfileData };

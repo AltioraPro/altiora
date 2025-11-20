@@ -18,6 +18,8 @@ import {
     RiXingLine,
 } from "@remixicon/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +29,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { orpc } from "@/orpc/client";
 
@@ -43,11 +46,14 @@ const rankIcons: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 export function DiscordConnection() {
+    const searchParams = useSearchParams();
+    const [linkError, setLinkError] = useState<string | null>(null);
+    const [isStartingLink, setIsStartingLink] = useState(false);
     const { data: connectionStatus, refetch } = useQuery(
         orpc.discord.getConnectionStatus.queryOptions({
             retry: false,
-            refetchOnWindowFocus: false,
-            refetchOnMount: false,
+            refetchOnWindowFocus: true,
+            refetchOnMount: true,
         })
     );
 
@@ -67,9 +73,63 @@ export function DiscordConnection() {
     );
     const { mutateAsync: autoSyncRank, isPending: isAutoSyncingRank } =
         useMutation(orpc.discord.autoSyncRank.mutationOptions());
+    const {
+        mutateAsync: finalizeDiscordLink,
+        isPending: isFinalizingLink,
+    } = useMutation(orpc.discord.finalizeLink.mutationOptions());
 
-    const handleConnect = () => {
-        window.location.href = "/api/auth/discord";
+    const clearDiscordQuery = () => {
+        if (typeof window === "undefined") {
+            return;
+        }
+        const params = new URLSearchParams(window.location.search);
+        params.delete("discord");
+        const query = params.toString();
+        const nextUrl = `${window.location.pathname}${query ? `?${query}` : ""
+            }`;
+        window.history.replaceState({}, "", nextUrl);
+    };
+
+    useEffect(() => {
+        if (!searchParams) {
+            return;
+        }
+        const status = searchParams.get("discord");
+        if (status === "linked") {
+            (async () => {
+                try {
+                    setLinkError(null);
+                    await finalizeDiscordLink({});
+                    await refetch();
+                } catch {
+                    setLinkError("Unable to finalize the Discord connection.");
+                } finally {
+                    clearDiscordQuery();
+                }
+            })();
+        } else if (status === "error") {
+            setLinkError("Discord authorization failed. Please try again.");
+            clearDiscordQuery();
+        }
+    }, [searchParams, finalizeDiscordLink, refetch]);
+
+    const handleConnect = async () => {
+        if (typeof window === "undefined") {
+            return;
+        }
+        setLinkError(null);
+        setIsStartingLink(true);
+        try {
+            const origin = window.location.origin;
+            await authClient.linkSocial({
+                provider: "discord",
+                callbackURL: `${origin}/settings?discord=linked`,
+                errorCallbackURL: `${origin}/settings?discord=error`,
+            });
+        } catch {
+            setIsStartingLink(false);
+            setLinkError("Unable to start the Discord authorization flow.");
+        }
     };
 
     const handleDisconnect = async () => {
@@ -105,6 +165,12 @@ export function DiscordConnection() {
             </CardHeader>
 
             <CardContent className="space-y-4">
+                {linkError && (
+                    <div className="flex items-start space-x-3 rounded-lg border border-red-400/30 bg-red-400/10 p-3 text-sm text-red-200">
+                        <RiAlertLine className="mt-0.5 size-4 shrink-0" />
+                        <span>{linkError}</span>
+                    </div>
+                )}
                 {connectionStatus?.connected ? (
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
@@ -250,10 +316,13 @@ export function DiscordConnection() {
 
                         <Button
                             className="w-full bg-[#5865F2] text-white hover:bg-[#4752C4]"
+                            disabled={isStartingLink || isFinalizingLink}
                             onClick={handleConnect}
                         >
                             <RiMessageLine className="mr-2 size-4" />
-                            Connect with Discord
+                            {isStartingLink || isFinalizingLink
+                                ? "Connecting..."
+                                : "Connect with Discord"}
                         </Button>
                     </div>
                 )}

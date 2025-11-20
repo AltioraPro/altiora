@@ -35,7 +35,7 @@ export const syncRankHandler = syncRankBase.handler(async ({ context }) => {
                 discordRoleSynced: true,
                 lastDiscordSync: now,
             })
-            .where(eq(discordProfile.id, session.user.id));
+            .where(eq(discordProfile.userId, session.user.id));
 
         return { success: true };
     } catch (error) {

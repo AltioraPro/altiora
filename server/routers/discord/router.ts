@@ -5,6 +5,8 @@ import {
     autoSyncRankHandler,
     disconnectBase,
     disconnectHandler,
+    finalizeDiscordLinkBase,
+    finalizeDiscordLinkHandler,
     syncAllUsersBase,
     syncAllUsersHandler,
     syncRankBase,
@@ -55,6 +57,15 @@ export const discordRouter = base.router({
         .handler(
             async ({ context }) =>
                 await call(autoSyncRankHandler, undefined, { context })
+        ),
+
+    finalizeLink: finalizeDiscordLinkBase
+        .route({ method: "POST" })
+        .handler(
+            async ({ context }) =>
+                await call(finalizeDiscordLinkHandler, undefined, {
+                    context,
+                })
         ),
 
     syncAllUsers: syncAllUsersBase
