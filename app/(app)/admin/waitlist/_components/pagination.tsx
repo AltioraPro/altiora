@@ -49,7 +49,7 @@ export default function TablePagination({
         <div className="flex items-center justify-between gap-8">
             {/* Results per page */}
             <div className="flex items-center gap-3">
-                <Label className="max-sm:sr-only" htmlFor="limit">
+                <Label className="shrink-0 max-sm:sr-only" htmlFor="limit">
                     <span className="capitalize">{itemName}</span> per page
                 </Label>
                 <Select
@@ -58,10 +58,7 @@ export default function TablePagination({
                     }}
                     value={limit.toString()}
                 >
-                    <SelectTrigger
-                        className="w-fit whitespace-nowrap"
-                        id="limit"
-                    >
+                    <SelectTrigger id="limit">
                         <SelectValue placeholder="Select number of results" />
                     </SelectTrigger>
                     <SelectContent className="[&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2 [&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8">
@@ -160,4 +157,3 @@ export default function TablePagination({
         </div>
     );
 }
-

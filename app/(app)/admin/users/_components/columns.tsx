@@ -107,6 +107,22 @@ export const columns: ColumnDef<Item>[] = [
         filterFn: statusFilterFn,
     },
     {
+        header: "Ban status",
+        accessorKey: "banned",
+        cell: ({ row }) => {
+            const banned = row.getValue("banned") as boolean | null;
+            return (
+                <Badge
+                    className={cn("flex w-fit items-center gap-2 capitalize")}
+                    variant={banned ? "destructive" : "outline"}
+                >
+                    {banned ? "Banned" : "Active"}
+                </Badge>
+            );
+        },
+        size: 100,
+    },
+    {
         header: "Created At",
         accessorKey: "createdAt",
         cell: ({ row }) => (
