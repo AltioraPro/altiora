@@ -50,6 +50,7 @@ async function DeepworkStats() {
                     </p>
                     <p className="mt-1.5 text-[10px] text-white/40 uppercase tracking-widest">
                         Focus Time
+                        
                     </p>
                 </div>
                 <div className="h-px w-full bg-white/10" />
@@ -69,7 +70,7 @@ async function DeepworkStats() {
 
 export default async function ProfilePage() {
     const [error, user] = await tryCatch(api.auth.getCurrentUser());
-
+    
     if (
         (error instanceof ORPCError && error.code === "UNAUTHORIZED") ||
         !user

@@ -68,12 +68,8 @@ export function DiscordConnection() {
     const { mutateAsync: autoSyncRank, isPending: isAutoSyncingRank } =
         useMutation(orpc.discord.autoSyncRank.mutationOptions());
 
-    const { mutateAsync: getAuthUrl, isPending: isGettingAuthUrl } =
-        useMutation(orpc.discord.getAuthUrl.mutationOptions());
-
-    const handleConnect = async () => {
-        const { authUrl } = await getAuthUrl({});
-        window.location.href = authUrl;
+    const handleConnect = () => {
+        window.location.href = "/api/auth/discord";
     };
 
     const handleDisconnect = async () => {
@@ -254,13 +250,10 @@ export function DiscordConnection() {
 
                         <Button
                             className="w-full bg-[#5865F2] text-white hover:bg-[#4752C4]"
-                            disabled={isGettingAuthUrl}
                             onClick={handleConnect}
                         >
                             <RiMessageLine className="mr-2 size-4" />
-                            {isGettingAuthUrl
-                                ? "Connecting..."
-                                : "Connect with Discord"}
+                            Connect with Discord
                         </Button>
                     </div>
                 )}
