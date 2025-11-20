@@ -5,8 +5,6 @@ import {
     autoSyncRankHandler,
     disconnectBase,
     disconnectHandler,
-    getAuthUrlBase,
-    getAuthUrlHandler,
     syncAllUsersBase,
     syncAllUsersHandler,
     syncRankBase,
@@ -64,12 +62,5 @@ export const discordRouter = base.router({
         .handler(
             async ({ context }) =>
                 await call(syncAllUsersHandler, undefined, { context })
-        ),
-
-    getAuthUrl: getAuthUrlBase
-        .route({ method: "POST" })
-        .handler(
-            async ({ context }) =>
-                await call(getAuthUrlHandler, undefined, { context })
         ),
 });
