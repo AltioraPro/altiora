@@ -129,7 +129,7 @@ export function TradingStats({
                             {stats.totalTrades}
                         </div>
                         <p className="text-sm text-white/60">
-                            {stats.closedTrades} closed
+                            {stats.closedTrades} Total Trades
                         </p>
                     </CardContent>
                 </Card>
