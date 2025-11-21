@@ -60,7 +60,7 @@ export const Item = ({
                     />
 
                     {/* Icon - always in same position from sidebar edge */}
-                    <div className="pointer-events-none absolute top-0 left-[15px] flex h-[40px] w-[40px] items-center justify-center text-black group-hover:text-primary! dark:text-[#666666]">
+                    <div className="pointer-events-none absolute top-0 left-[15px] flex h-[40px] w-[40px] items-center justify-center text-neutral-400 group-hover:text-pure-white!">
                         <div className={cn(isActive && "dark:text-white!")}>
                             <Icon />
                         </div>

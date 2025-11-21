@@ -97,39 +97,23 @@ export function ProfileForm() {
         );
     }
 
-    const renderAvatar = () => {
-        if (user.discordProfile?.discordAvatar) {
-            return (
-                <Image
-                    alt={user.name}
-                    className="h-20 w-20 rounded-full object-cover"
-                    height={80}
-                    src={`https://cdn.discordapp.com/avatars/${user.discordProfile.discordId}/${user.discordProfile.discordAvatar}.png`}
-                    width={80}
-                />
-            );
-        }
-        if (user.image) {
-            return (
-                <Image
-                    alt={user.name}
-                    className="h-20 w-20 rounded-full object-cover"
-                    height={80}
-                    src={user.image}
-                    width={80}
-                />
-            );
-        }
-        return <RiUserLine className="size-8 text-white/60" />;
-    };
-
     return (
         <div className="space-y-8">
             {/* Profile Header */}
             <div className="flex items-center space-x-6">
                 <div className="relative">
                     <div className="flex h-20 w-20 items-center justify-center rounded-full border border-white/20 bg-linear-to-br from-white/10 to-white/5">
-                        {renderAvatar()}
+                        {user.image ? (
+                            <Image
+                                alt={user.name}
+                                className="h-full w-full object-cover"
+                                height={80}
+                                src={user.image}
+                                width={80}
+                            />
+                        ) : (
+                            <RiUserLine className="size-8 text-white/60" />
+                        )}
                     </div>
                     {user.discordProfile?.discordConnected && (
                         <div className="-bottom-1 -right-1 absolute flex h-6 w-6 items-center justify-center rounded-full border border-white/20 bg-[#5865F2]">

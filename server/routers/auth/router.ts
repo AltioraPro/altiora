@@ -4,6 +4,8 @@ import { base } from "@/server/context";
 import {
     banMultipleUsersBase,
     banMultipleUsersHandler,
+    deleteAccountBase,
+    deleteAccountHandler,
     sendVerificationEmailBase,
     sendVerificationEmailHandler,
     syncUserBase,
@@ -19,7 +21,12 @@ import {
     verifyEmailBase,
     verifyEmailHandler,
 } from "./mutations";
-import { getMeBase, getMeHandler } from "./queries";
+import {
+    getMeBase,
+    getMeHandler,
+    getSessionsBase,
+    getSessionsHandler,
+} from "./queries";
 import {
     getUserEmailStatusBase,
     getUserEmailStatusHandler,
@@ -57,6 +64,13 @@ export const authRouter = base.router({
         .handler(
             async ({ context }) =>
                 await call(getMeHandler, undefined, { context })
+        ),
+
+    getSessions: getSessionsBase
+        .route({ method: "GET" })
+        .handler(
+            async ({ context }) =>
+                await call(getSessionsHandler, undefined, { context })
         ),
 
     getUserEmailStatus: getUserEmailStatusBase
@@ -129,5 +143,12 @@ export const authRouter = base.router({
                 await call(updateMultipleUsersStatusHandler, input, {
                     context,
                 })
+        ),
+
+    deleteAccount: deleteAccountBase
+        .route({ method: "POST" })
+        .handler(
+            async ({ context }) =>
+                await call(deleteAccountHandler, undefined, { context })
         ),
 });

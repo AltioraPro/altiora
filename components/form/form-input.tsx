@@ -64,7 +64,7 @@ export function FormInput<
                         <FieldLabel htmlFor={uniqueId}>
                             {label}
                             {required && (
-                                <span className="ml-1 text-destructive">*</span>
+                                <span className="text-destructive">*</span>
                             )}
                         </FieldLabel>
                     )}

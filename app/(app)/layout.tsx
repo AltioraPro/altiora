@@ -20,9 +20,13 @@ export default async function AppLayout({
         <ModalProvider>
             <div className="relative bg-background">
                 <Sidebar />
-                <div className="pb-8 md:ml-[70px]">
+
+                <div className="md:ml-[70px]">
+                    {/* {isImpersonating && (
+                        <ImpersonationBanner userName={session.user.name} />
+                    )} */}
                     <Header />
-                    <div className="mx-auto px-6 py-8">{children}</div>
+                    <main className="mx-auto">{children}</main>
                 </div>
             </div>
         </ModalProvider>

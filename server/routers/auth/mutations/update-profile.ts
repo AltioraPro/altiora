@@ -9,14 +9,24 @@ export const updateProfileBase = protectedProcedure.input(updateProfileSchema);
 export const updateProfileHandler = updateProfileBase.handler(
     async ({ context, input }) => {
         const { db, session } = context;
-        const { name } = input;
+        const { name, image } = input;
+
+        const updateData: {
+            name: string;
+            image?: string;
+            updatedAt: Date;
+        } = {
+            name,
+            updatedAt: new Date(),
+        };
+
+        if (image !== undefined) {
+            updateData.image = image;
+        }
 
         const [updatedUser] = await db
             .update(user)
-            .set({
-                name,
-                updatedAt: new Date(),
-            })
+            .set(updateData)
             .where(eq(user.id, session.user.id))
             .returning({
                 id: user.id,

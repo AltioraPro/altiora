@@ -72,7 +72,7 @@ export function HabitsDashboard() {
     }
 
     return (
-        <div className="mb-16 space-y-6">
+        <div className="mb-16 space-y-6 px-6 py-8">
             {/* Limits Banner */}
             {/* <LimitsBanner /> */}
 

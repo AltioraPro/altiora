@@ -1,4 +1,5 @@
 export * from "./ban-multiple-users";
+export * from "./delete-account";
 export * from "./send-verification-email";
 export * from "./sync-user";
 export * from "./update-leaderboard-visibility";

@@ -12,7 +12,7 @@ export default async function JournalsPage() {
     );
 
     return (
-        <div>
+        <div className="px-6 py-8">
             <JournalsHeader />
             <HydrateClient client={queryClient}>
                 <Suspense>

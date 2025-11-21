@@ -17,7 +17,7 @@ export function DashboardPageClient() {
     }
 
     return (
-        <div>
+        <div className="px-6 py-8">
             <JournalFilter journals={journals} />
 
             <DashboardContent />

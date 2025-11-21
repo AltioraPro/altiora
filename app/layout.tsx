@@ -22,7 +22,7 @@ export default function RootLayout({
         <html className="dark" lang="fr" style={{ colorScheme: "dark" }}>
             <body className="bg-background">
                 <Providers>
-                    <main>{children}</main>
+                    <div>{children}</div>
                 </Providers>
             </body>
         </html>

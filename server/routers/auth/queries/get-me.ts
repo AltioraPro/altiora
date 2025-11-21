@@ -30,8 +30,30 @@ export const getMeHandler = getMeBase.handler(async ({ context }) => {
     }
 
     const discordProfileData = await db.query.discordProfile.findFirst({
-        where: eq(discordProfile.userId, session.user.id),
+        where: eq(discordProfile.id, session.user.id),
+        columns: {
+            discordId: true,
+            discordUsername: true,
+            discordDiscriminator: true,
+            discordAvatar: true,
+            discordConnected: true,
+            discordRoleSynced: true,
+        },
     });
 
-    return { ...currentUser, discordProfile: discordProfileData };
+    const userData = {
+        ...currentUser,
+        image: discordProfileData?.discordConnected
+            ? discordProfileData?.discordAvatar
+            : currentUser.image,
+        discordProfile: {
+            discordId: discordProfileData?.discordId,
+            discordUsername: discordProfileData?.discordUsername,
+            discordDiscriminator: discordProfileData?.discordDiscriminator,
+            discordConnected: discordProfileData?.discordConnected,
+            discordRoleSynced: discordProfileData?.discordRoleSynced,
+        },
+    };
+
+    return userData;
 });

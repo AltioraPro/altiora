@@ -35,11 +35,7 @@ export const APPLICATION_PAGES = {
 };
 
 export const SETTINGS_PAGES = {
-    ACCOUNT_SETTINGS: route("/settings/account"),
-    NOTIFICATION_SETTINGS: route("/settings/notification"),
-    PRIVACY_SECURITY_SETTINGS: route("/settings/privacy-security"),
-    ORG_GENERAL_SETTINGS: route("/org-settings/general"),
-    ORG_MEMBERS_SETTINGS: route("/org-settings/members"),
+    SETTINGS: route("/settings"),
 };
 
 export const ADMIN_PAGES = {

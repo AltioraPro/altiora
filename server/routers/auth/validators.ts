@@ -66,6 +66,7 @@ export const updateProfileSchema = z.object({
         .string()
         .min(1, "Le nom est requis")
         .max(255, "Le nom est trop long"),
+    image: z.url("URL d'image invalide").optional(),
 });
 
 export const updateRankSchema = z.object({

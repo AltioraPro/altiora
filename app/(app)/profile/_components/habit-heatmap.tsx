@@ -1,11 +1,11 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { orpc } from "@/orpc/client";
 
 export function HabitHeatmap() {
-    const { data: heatmapData, isLoading } = useQuery(
-        orpc.profile.getHabitHeatmap.queryOptions()
+    const { data: heatmapData, isLoading } = useSuspenseQuery(
+        orpc.profile.getHabitHeatmap.queryOptions({})
     );
 
     if (isLoading) {

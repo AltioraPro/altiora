@@ -328,7 +328,7 @@ export default function TradingCalendarPage() {
     }
 
     return (
-        <div>
+        <div className="px-6 py-8">
             <div className="mb-6 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <Button asChild variant="ghost">

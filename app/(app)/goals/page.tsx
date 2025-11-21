@@ -86,7 +86,7 @@ export default function GoalsPage() {
     }, [goalStats]);
 
     return (
-        <div className="min-h-screen text-pure-white">
+        <div className="min-h-screen px-6 py-8 text-pure-white">
             {/* Main Content */}
             <div className="relative mx-auto w-full">
                 <div className="flex justify-end">

@@ -211,6 +211,13 @@
       "when": 1762990854638,
       "tag": "0029_condemned_pandemic",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1763673218110,
+      "tag": "0030_smart_harrier",
+      "breakpoints": true
     }
   ]
 }
