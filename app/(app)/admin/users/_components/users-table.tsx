@@ -73,6 +73,7 @@ export default function UsersTable() {
                 name: user.name,
                 email: user.email,
                 role: user.role,
+                banned: user.banned ?? false,
                 createdAt: user.createdAt,
                 accessStatus: user.accessStatus,
             })) as Item[],
