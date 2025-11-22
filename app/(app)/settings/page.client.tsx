@@ -18,7 +18,7 @@ export function SettingsPageClient() {
     );
 
     return (
-        <div className="overflow-y-scroll py-8">
+        <div className="max-w-4xl px-6 py-8">
             {page === "account-billing" && <AccountBillingSection />}
             {page === "security" && <SecuritySection />}
             {page === "contact" && <ContactSection />}

@@ -24,7 +24,7 @@ export default async function AppLayout({
             <div className="relative bg-background">
                 <Sidebar />
 
-                <div className="pb-8 md:ml-[70px]">
+                <div className="md:ml-[70px]">
                     {isImpersonating && (
                         <ImpersonationBanner userName={session.user.name} />
                     )}
