@@ -24,6 +24,7 @@ import { FieldGroup } from "@/components/ui/field";
 import { orpc } from "@/orpc/client";
 import { createAdvancedTradeSchema } from "@/server/routers/trading/validators";
 import { FormDateInput } from "../form/form-date-input";
+import { useToast } from "../ui/toast";
 
 type CreateTradeForm = z.infer<typeof createAdvancedTradeSchema>;
 
@@ -38,6 +39,8 @@ export function CreateTradeModal({
     onClose,
     journalId,
 }: CreateTradeModalProps) {
+    const { addToast } = useToast();
+
     const form = useForm<CreateTradeForm>({
         resolver: zodResolver(createAdvancedTradeSchema),
         defaultValues: {
@@ -48,8 +51,8 @@ export function CreateTradeModal({
             tradingviewLink: "",
             notes: "",
             assetId: "",
-            sessionId: "",
-            setupId: "",
+            sessionId: null,
+            setupId: null,
             journalId,
             isClosed: true,
         },
@@ -102,6 +105,14 @@ export function CreateTradeModal({
                     form.reset();
                     onClose();
                 },
+                onError: (error) => {
+                    console.error(error);
+                    addToast({
+                        type: "error",
+                        title: "Error",
+                        message: error.message || "Failed to create trade",
+                    });
+                },
             })
         );
 
@@ -145,9 +156,7 @@ export function CreateTradeModal({
         );
 
     const handleSubmit = async (data: CreateTradeForm) => {
-        await createTrade({
-            ...data,
-        });
+        await createTrade(data);
     };
 
     const handleClose = () => {
@@ -269,7 +278,7 @@ export function CreateTradeModal({
                             />
 
                             {journal?.usePercentageCalculation &&
-                                journal?.startingCapital ? (
+                            journal?.startingCapital ? (
                                 <FormInput
                                     control={form.control}
                                     label="Result (€)"
