@@ -1,7 +1,6 @@
 "use client";
 
-import { format } from "date-fns";
-import { RiCalendarLine, RiCloseLine } from "@remixicon/react";
+import { RiCalendarLine } from "@remixicon/react";
 import { useId, useState } from "react";
 import {
     Controller,
@@ -24,6 +23,11 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "../ui/button";
+import {
+    InputGroup,
+    InputGroupAddon,
+    InputGroupInput,
+} from "../ui/input-group";
 
 interface FormDateInputProps<
     TFieldValues extends FieldValues = FieldValues,
@@ -47,7 +51,6 @@ export function FormDateInput<
     label,
     required,
     description,
-    placeholder = "Select date...",
     disabled,
     dateFormat = "PPP", // Default to long date format
     className,
@@ -56,85 +59,103 @@ export function FormDateInput<
     const [open, setOpen] = useState(false);
     const uniqueId = useId();
 
+    const isDate = (value: unknown): value is Date =>
+        value !== null &&
+        value !== undefined &&
+        typeof value === "object" &&
+        "getTime" in value &&
+        typeof (value as Date).getTime === "function";
+
+    const formatDateForInput = (date: Date): string => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+    };
+
     return (
         <Controller
             control={control}
             name={name}
             {...controllerProps}
-            render={({ field, fieldState }) => (
-                <Field
-                    data-disabled={disabled}
-                    data-invalid={!!fieldState.error}
-                >
-                    {label && (
-                        <FieldLabel htmlFor={uniqueId}>
-                            {label}
-                            {required && (
-                                <span className="ml-1 text-destructive">*</span>
+            render={({ field, fieldState }) => {
+                const displayValue = isDate(field.value)
+                    ? formatDateForInput(field.value)
+                    : field.value || "";
+
+                return (
+                    <Field
+                        data-disabled={disabled}
+                        data-invalid={!!fieldState.error}
+                    >
+                        {label && (
+                            <FieldLabel htmlFor={uniqueId}>
+                                {label}
+                                {required && (
+                                    <span className="ml-1 text-destructive">
+                                        *
+                                    </span>
+                                )}
+                            </FieldLabel>
+                        )}
+                        <FieldContent>
+                            {description && (
+                                <FieldDescription>
+                                    {description}
+                                </FieldDescription>
                             )}
-                        </FieldLabel>
-                    )}
-                    <FieldContent>
-                        {description && (
-                            <FieldDescription>{description}</FieldDescription>
-                        )}
-                        <Popover onOpenChange={setOpen} open={open}>
-                            <PopoverTrigger asChild>
-                                <div className="relative">
-                                    <Button
-                                        className="w-full"
-                                        mode="input"
-                                        placeholder={!field.value}
-                                        type="button"
-                                        variant="outline"
-                                    >
-                                        <RiCalendarLine />
-                                        {field.value ? (
-                                            format(
-                                                new Date(field.value),
-                                                "dd MMM, yyyy"
-                                            )
-                                        ) : (
-                                            <span>Pick a date</span>
-                                        )}
-                                    </Button>
-                                    {field.value && (
-                                        <Button
-                                            className="-translate-y-1/2 absolute end-0 top-1/2"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                field.onChange("");
-                                            }}
-                                            size="sm"
-                                            type="button"
-                                            variant="dim"
-                                        >
-                                            <RiCloseLine />
-                                        </Button>
-                                    )}
-                                </div>
-                            </PopoverTrigger>
-                            <PopoverContent
-                                align="start"
-                                className="w-auto p-0"
-                            >
-                                <Calendar
-                                    autoFocus
-                                    mode="single"
-                                    onSelect={(date) => {
-                                        field.onChange(date);
-                                        setOpen(false);
-                                    }}
-                                    selected={field.value}
+
+                            <InputGroup>
+                                <InputGroupInput
+                                    className="w-full"
+                                    disabled={disabled}
+                                    id={uniqueId}
+                                    type="date"
+                                    {...field}
+                                    value={displayValue}
                                 />
-                            </PopoverContent>
-                        </Popover>
-                        {fieldState.error && (
-                            <FieldError>{fieldState.error.message}</FieldError>
-                        )}
-                    </FieldContent>
-                </Field>
-            )}
+                                <InputGroupAddon align="inline-end">
+                                    <Popover onOpenChange={setOpen} open={open}>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                className="-translate-y-1/2 absolute end-0 top-1/2"
+                                                size="sm"
+                                                type="button"
+                                                variant="dim"
+                                            >
+                                                <RiCalendarLine />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent
+                                            align="end"
+                                            className="w-auto p-0"
+                                            sideOffset={10}
+                                        >
+                                            <Calendar
+                                                autoFocus
+                                                mode="single"
+                                                onSelect={(date) => {
+                                                    if (date) {
+                                                        field.onChange(date);
+                                                        setOpen(false);
+                                                    }
+                                                }}
+                                                selected={field.value}
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                </InputGroupAddon>
+                            </InputGroup>
+
+                            {fieldState.error && (
+                                <FieldError>
+                                    {fieldState.error.message}
+                                </FieldError>
+                            )}
+                        </FieldContent>
+                    </Field>
+                );
+            }}
         />
     );
 }
