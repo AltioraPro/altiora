@@ -2,7 +2,7 @@ services:
     postgres:
         # you can connect with e.g.
         # psql -h localhost -p 5555 -U postgres -d db
-        image: postgres
+        image: postgres:16-alpine
         restart: always
         volumes:
             - postgres_data:/var/lib/postgresql/data

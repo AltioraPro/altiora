@@ -1,6 +1,5 @@
 import type { SearchParams } from "nuqs/server";
 import { Suspense } from "react";
-import { DiscordWelcomeChecker } from "@/components/auth/DiscordWelcomeChecker";
 import { orpc } from "@/orpc/client";
 import { getQueryClient, HydrateClient } from "@/orpc/query/hydration";
 import { SettingsSidebar } from "./_components/settings-sidebar";
@@ -42,7 +41,6 @@ export default async function SettingsPage({
                     </div>
                 </div>
             </div>
-            <DiscordWelcomeChecker forceShow={true} />
         </HydrateClient>
     );
 }

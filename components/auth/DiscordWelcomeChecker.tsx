@@ -45,8 +45,8 @@ export function DiscordWelcomeChecker({
             const origin = window.location.origin;
             await authClient.linkSocial({
                 provider: "discord",
-                callbackURL: `${origin}/settings?discord=linked`,
-                errorCallbackURL: `${origin}/settings?discord=error`,
+                callbackURL: `${origin}/settings?page=integrations&discord=linked`,
+                errorCallbackURL: `${origin}/settings?page=integrations&discord=error`,
             });
         } catch {
             // Ignore errors; user can retry from settings.
