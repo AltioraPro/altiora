@@ -44,7 +44,7 @@ export function CreateTradeModal({
     const form = useForm<CreateTradeForm>({
         resolver: zodResolver(createAdvancedTradeSchema),
         defaultValues: {
-            tradeDate: new Date(),
+            tradeDate: new Date().toISOString().split("T")[0],
             riskInput: "",
             profitLossAmount: "",
             profitLossPercentage: "",
@@ -349,7 +349,15 @@ export function CreateTradeModal({
                         />
                     </FieldGroup>
                     <DialogFooter>
+                        <Button
+                            disabled={isCreatingTrade}
+                            type="button"
+                            variant="outline"
+                        >
+                            Log form data
+                        </Button>
                         <DialogClose asChild>
+                            {/* Log the form data */}
                             <Button
                                 disabled={isCreatingTrade}
                                 onClick={handleClose}

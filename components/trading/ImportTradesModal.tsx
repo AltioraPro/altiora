@@ -438,7 +438,7 @@ export function ImportTradesModal({
                 }
 
                 await createTrade({
-                    tradeDate: new Date(tradeDate),
+                    tradeDate: new Date(tradeDate).toISOString().split("T")[0],
                     assetId,
                     sessionId: sessionId ?? undefined,
                     setupId: setupId ?? undefined,
@@ -472,7 +472,9 @@ export function ImportTradesModal({
             }
             createdSummary.push(`${createdItems.sessions.length} sessions`);
             if (createdItems.setups.length > 0) {
-                createdSummary.push(`${createdItems.setups.length} confirmations`);
+                createdSummary.push(
+                    `${createdItems.setups.length} confirmations`
+                );
             }
 
             const summaryText =
@@ -568,11 +570,11 @@ export function ImportTradesModal({
                                 className={cn(
                                     "rounded-lg border p-4",
                                     importStatus.type === "success" &&
-                                    "border-green-500/20 bg-green-500/10",
+                                        "border-green-500/20 bg-green-500/10",
                                     importStatus.type === "error" &&
-                                    "border-red-500/20 bg-red-500/10",
+                                        "border-red-500/20 bg-red-500/10",
                                     importStatus.type === "info" &&
-                                    "border-blue-500/20 bg-blue-500/10"
+                                        "border-blue-500/20 bg-blue-500/10"
                                 )}
                             >
                                 <div className="flex items-center space-x-2">

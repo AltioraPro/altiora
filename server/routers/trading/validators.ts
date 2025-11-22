@@ -95,7 +95,7 @@ export const createAdvancedTradeSchema = z
         assetId: z.string().min(1, "Asset ID is required"),
         sessionId: z.string().nullable().optional(),
         setupId: z.string().nullable().optional(),
-        tradeDate: z.date(),
+        tradeDate: z.iso.date(),
         riskInput: z.string().optional(),
         profitLossAmount: z.string().optional(),
         profitLossPercentage: z.string().optional(),

@@ -102,7 +102,9 @@ export function CreateJournalCard() {
             for (const trade of sampleTrades) {
                 await createTrade({
                     ...trade,
-                    tradeDate: new Date(trade.tradeDate),
+                    tradeDate: new Date(trade.tradeDate)
+                        .toISOString()
+                        .split("T")[0],
                     assetId: "123",
                     exitReason: "Manual",
                     profitLossPercentage: String(trade.profitLossPercentage),
