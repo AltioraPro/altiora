@@ -8,6 +8,7 @@ import type { z } from "zod";
 import {
     FormCombobox,
     FormInput,
+    FormMultiSelect,
     FormSelect,
     FormTextarea,
 } from "@/components/form";
@@ -52,7 +53,7 @@ export function CreateTradeModal({
             notes: "",
             assetId: "",
             sessionId: null,
-            confirmationId: null,
+            confirmationIds: [],
             journalId,
             isClosed: true,
         },
@@ -256,17 +257,16 @@ export function CreateTradeModal({
                             />
                         </div>
 
-                        <FormCombobox
+                        <FormMultiSelect
                             control={form.control}
                             disabled={isCreatingTrade}
-                            emptyText="No confirmation found."
+                            emptyText="No confirmations available. Type to create a new one."
                             isCreating={isCreatingConfirmation}
-                            label="Confirmation"
-                            name="confirmationId"
+                            label="Confirmations"
+                            name="confirmationIds"
                             onCreate={(name) => handleCreateConfirmation(name)}
                             options={confirmationOptions}
-                            placeholder="Select a confirmation"
-                            searchPlaceholder="Search confirmation..."
+                            placeholder="Select confirmations"
                         />
 
                         <div className="grid grid-cols-2 gap-4">
@@ -351,13 +351,6 @@ export function CreateTradeModal({
                         />
                     </FieldGroup>
                     <DialogFooter>
-                        <Button
-                            disabled={isCreatingTrade}
-                            type="button"
-                            variant="outline"
-                        >
-                            Log form data
-                        </Button>
                         <DialogClose asChild>
                             {/* Log the form data */}
                             <Button

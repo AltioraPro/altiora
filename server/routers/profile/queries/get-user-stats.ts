@@ -2,9 +2,9 @@ import { ORPCError } from "@orpc/client";
 import { and, count, eq, sql } from "drizzle-orm";
 
 import {
+    advancedTrades,
     discordPomodoroSessions,
     habits,
-    trades,
     user,
 } from "@/server/db/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
@@ -31,10 +31,10 @@ export const getUserStatsHandler = getUserStatsBase.handler(
 
             const tradesStats = await db
                 .select({
-                    totalTrades: count(trades.id),
+                    totalTrades: count(advancedTrades.id),
                 })
-                .from(trades)
-                .where(eq(trades.userId, session.user.id));
+                .from(advancedTrades)
+                .where(eq(advancedTrades.userId, session.user.id));
 
             const currentUser = await db.query.user.findFirst({
                 where: eq(user.id, session.user.id),

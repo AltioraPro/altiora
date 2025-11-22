@@ -8,44 +8,10 @@ import {
 } from "@remixicon/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import type { RouterOutput } from "@/orpc/client";
 
 interface TradingStatsProps extends React.ComponentProps<"div"> {
-    stats: {
-        totalTrades: number;
-        closedTrades: number;
-        totalPnL: string | number;
-        avgPnL: string | number;
-        totalAmountPnL?: number;
-        winningTrades: number;
-        losingTrades: number;
-        winRate: number;
-        tradesBySymbol: Array<{
-            assetId?: string | null;
-            symbol?: string | null;
-            count: number;
-            totalPnL: string | null;
-        }>;
-        tradesByConfirmation: Array<{
-            confirmationId: string | null;
-            count: number;
-            totalPnL: string | null;
-        }>;
-        tpTrades: number;
-        beTrades: number;
-        slTrades: number;
-        currentWinningStreak?: number;
-        currentLosingStreak?: number;
-        maxWinningStreak?: number;
-        maxLosingStreak?: number;
-        journal?: {
-            usePercentageCalculation?: boolean;
-            startingCapital?: string;
-        };
-        confirmations?: Array<{
-            id: string;
-            name: string;
-        }>;
-    };
+    stats: RouterOutput["trading"]["getStats"];
 }
 
 export function TradingStats({

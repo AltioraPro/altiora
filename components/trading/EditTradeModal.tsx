@@ -42,7 +42,6 @@ export function EditTradeModal({
         tradeDate: "",
         assetId: "",
         sessionId: "",
-        confirmationId: "",
         riskPercentage: "",
         resultPercentage: "",
         exitReason: "",
@@ -65,12 +64,6 @@ export function EditTradeModal({
         })
     );
 
-    const { data: confirmations } = useQuery(
-        orpc.trading.getConfirmations.queryOptions({
-            input: { journalId: trade?.journalId },
-        })
-    );
-
     const { data: assets } = useQuery(
         orpc.trading.getAssets.queryOptions({
             input: { journalId: trade?.journalId },
@@ -85,7 +78,7 @@ export function EditTradeModal({
                     : "",
                 assetId: trade.assetId || "",
                 sessionId: trade.sessionId || "",
-                confirmationId: trade.confirmationId || "",
+
                 riskPercentage: trade.riskInput?.toString() || "",
                 resultPercentage: trade.profitLossPercentage?.toString() || "",
                 exitReason: trade.exitReason || "",
@@ -137,7 +130,6 @@ export function EditTradeModal({
                 tradeDate: string;
                 assetId?: string;
                 sessionId?: string;
-                confirmationId?: string;
                 riskInput: string;
                 profitLossPercentage: string;
                 exitReason?: "TP" | "BE" | "SL" | "Manual";
@@ -155,9 +147,6 @@ export function EditTradeModal({
             }
             if (formData.sessionId) {
                 updateData.sessionId = formData.sessionId;
-            }
-            if (formData.confirmationId) {
-                updateData.confirmationId = formData.confirmationId;
             }
             if (formData.exitReason) {
                 updateData.exitReason = formData.exitReason as
@@ -291,39 +280,6 @@ export function EditTradeModal({
                                                 value={session.id}
                                             >
                                                 {session.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            <div>
-                                <Label
-                                    className="text-white"
-                                    htmlFor="confirmationId"
-                                >
-                                    Confirmation
-                                </Label>
-                                <Select
-                                    onValueChange={(value) =>
-                                        setFormData({
-                                            ...formData,
-                                            confirmationId: value,
-                                        })
-                                    }
-                                    value={formData.confirmationId}
-                                >
-                                    <SelectTrigger className="border-white/20 bg-black/50 text-white">
-                                        <SelectValue placeholder="Select a confirmation" />
-                                    </SelectTrigger>
-                                    <SelectContent className="border-white/20 bg-black/90">
-                                        {confirmations?.map((confirmation) => (
-                                            <SelectItem
-                                                className="text-white hover:bg-white/10"
-                                                key={confirmation.id}
-                                                value={confirmation.id}
-                                            >
-                                                {confirmation.name}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
