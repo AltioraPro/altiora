@@ -134,20 +134,48 @@ export function EditTradeModal({
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await updateTrade({
+            const updateData: {
+                id: string;
+                tradeDate: string;
+                assetId?: string;
+                sessionId?: string;
+                setupId?: string;
+                riskInput: string;
+                profitLossPercentage: string;
+                exitReason?: "TP" | "BE" | "SL" | "Manual";
+                tradingviewLink?: string;
+                notes?: string;
+            } = {
                 id: tradeId,
                 tradeDate: formData.tradeDate,
-                assetId: formData.assetId || undefined,
-                sessionId: formData.sessionId || undefined,
-                setupId: formData.setupId || undefined,
                 riskInput: String(formData.riskPercentage),
                 profitLossPercentage: String(formData.resultPercentage),
-                exitReason:
-                    (formData.exitReason as "TP" | "BE" | "SL" | "Manual") ||
-                    undefined,
-                tradingviewLink: formData.tradingViewLink || undefined,
-                notes: formData.notes || undefined,
-            });
+            };
+
+            if (formData.assetId) {
+                updateData.assetId = formData.assetId;
+            }
+            if (formData.sessionId) {
+                updateData.sessionId = formData.sessionId;
+            }
+            if (formData.setupId) {
+                updateData.setupId = formData.setupId;
+            }
+            if (formData.exitReason) {
+                updateData.exitReason = formData.exitReason as
+                    | "TP"
+                    | "BE"
+                    | "SL"
+                    | "Manual";
+            }
+            if (formData.tradingViewLink) {
+                updateData.tradingviewLink = formData.tradingViewLink;
+            }
+            if (formData.notes) {
+                updateData.notes = formData.notes;
+            }
+
+            await updateTrade(updateData);
         } catch (error) {
             console.error("Error updating trade:", error);
         } finally {
