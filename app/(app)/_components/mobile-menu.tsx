@@ -27,8 +27,8 @@ export function MobileMenu() {
                 side="left"
             >
                 <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
-                <div className="mb-8 ml-2">
-                    <Logo />
+                <div className="mb-8 ml-2 w-fit">
+                    <Logo className="h-5 w-auto shrink-0" />
                 </div>
 
                 <div className="-ml-2">
