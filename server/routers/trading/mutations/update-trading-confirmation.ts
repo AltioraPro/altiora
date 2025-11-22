@@ -1,36 +1,36 @@
 import { ORPCError } from "@orpc/client";
 import { and, eq } from "drizzle-orm";
-import { tradingSetups } from "@/server/db/schema";
+import { confirmations } from "@/server/db/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
-import { updateTradingSetupSchema } from "../validators";
+import { updateConfirmationSchema } from "../validators";
 
-export const updateTradingSetupBase = protectedProcedure.input(
-    updateTradingSetupSchema
+export const updateConfirmationBase = protectedProcedure.input(
+    updateConfirmationSchema
 );
 
-export const updateTradingSetupHandler = updateTradingSetupBase.handler(
+export const updateConfirmationHandler = updateConfirmationBase.handler(
     async ({ context, input }) => {
         const { db, session } = context;
         const userId = session.user.id;
         const { id, ...updateData } = input;
 
-        const [setup] = await db
-            .update(tradingSetups)
+        const [confirmation] = await db
+            .update(confirmations)
             .set({
                 ...updateData,
                 updatedAt: new Date(),
             })
             .where(
-                and(eq(tradingSetups.id, id), eq(tradingSetups.userId, userId))
+                and(eq(confirmations.id, id), eq(confirmations.userId, userId))
             )
             .returning();
 
-        if (!setup) {
+        if (!confirmation) {
             throw new ORPCError("NOT_FOUND", {
-                message: "Setup not found",
+                message: "Confirmation not found",
             });
         }
 
-        return setup;
+        return confirmation;
     }
 );

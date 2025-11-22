@@ -1,15 +1,18 @@
+import { sql } from "drizzle-orm";
 import {
     boolean,
     index,
+    integer,
     pgTable,
+    text,
     timestamp,
     varchar,
 } from "drizzle-orm/pg-core";
 import { user } from "@/server/db/schema";
-import { tradingJournals } from "../trading-journals/schema";
+import { tradingJournals } from "../journals/schema";
 
-export const tradingAssets = pgTable(
-    "trading_asset",
+export const confirmations = pgTable(
+    "confirmation",
     {
         id: varchar("id", { length: 255 }).primaryKey(),
         userId: varchar("user_id", { length: 255 })
@@ -19,18 +22,20 @@ export const tradingAssets = pgTable(
             .references(() => tradingJournals.id, { onDelete: "cascade" })
             .notNull(),
 
-        name: varchar("name", { length: 50 }).notNull(),
-        type: varchar("type", { length: 20 }).default("forex"),
+        name: varchar("name", { length: 100 }).notNull(),
+        description: text("description"),
+        strategy: text("strategy"),
+        successRate: integer("success_rate"),
         isActive: boolean("is_active").default(true).notNull(),
         createdAt: timestamp("created_at", { withTimezone: true })
-            .defaultNow()
+            .default(sql`CURRENT_TIMESTAMP`)
             .notNull(),
         updatedAt: timestamp("updated_at", { withTimezone: true })
-            .defaultNow()
+            .default(sql`CURRENT_TIMESTAMP`)
             .notNull(),
     },
     (table) => [
-        index("trading_asset_user_id_idx").on(table.userId),
-        index("trading_asset_journal_id_idx").on(table.journalId),
+        index("confirmation_user_id_idx").on(table.userId),
+        index("confirmation_journal_id_idx").on(table.journalId),
     ]
 );

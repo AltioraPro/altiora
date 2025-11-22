@@ -2,9 +2,9 @@
 
 import { Suspense } from "react";
 import { AssetsManager } from "@/components/trading/AssetsManager";
+import { ConfirmationsManager } from "@/components/trading/confirmations-manager";
 import type { DateFilterState } from "@/components/trading/DateFilter";
 import { SessionsManager } from "@/components/trading/SessionsManager";
-import { SetupsManager } from "@/components/trading/SetupsManager";
 import { TradesTable } from "@/components/trading/TradesTable";
 import { TradingCharts } from "@/components/trading/TradingCharts";
 import {
@@ -18,7 +18,7 @@ import type { AdvancedTrade } from "@/server/db/schema";
 
 interface TradingContentProps {
     journalId: string;
-    activeTab: "trades" | "assets" | "sessions" | "setups";
+    activeTab: "trades" | "assets" | "sessions" | "confirmations";
     filteredTrades: AdvancedTrade[] | undefined;
     stats: {
         totalTrades: number;
@@ -35,8 +35,8 @@ interface TradingContentProps {
             count: number;
             totalPnL: string | null;
         }>;
-        tradesBySetup: Array<{
-            setupId: string | null;
+        tradesByConfirmation: Array<{
+            confirmationId: string | null;
             count: number;
             totalPnL: string | null;
         }>;
@@ -49,7 +49,7 @@ interface TradingContentProps {
         };
     } | null;
     sessions: Array<{ id: string; name: string }> | undefined;
-    setups: Array<{ id: string; name: string }> | undefined;
+    confirmations: Array<{ id: string; name: string }> | undefined;
     dateFilter: DateFilterState;
 }
 
@@ -59,7 +59,7 @@ export function TradingContent({
     filteredTrades,
     stats,
     sessions,
-    setups,
+    confirmations,
     dateFilter,
 }: TradingContentProps) {
     return (
@@ -67,7 +67,7 @@ export function TradingContent({
             {stats &&
                 sessions &&
                 filteredTrades &&
-                setups &&
+                confirmations &&
                 activeTab === "trades" && (
                     <div className="mb-8">
                         <Card className="border border-white/10 bg-black/20">
@@ -106,8 +106,8 @@ export function TradingContent({
                     <SessionsManager journalId={journalId} />
                 )}
 
-                {activeTab === "setups" && (
-                    <SetupsManager journalId={journalId} />
+                {activeTab === "confirmations" && (
+                    <ConfirmationsManager journalId={journalId} />
                 )}
             </Suspense>
         </>

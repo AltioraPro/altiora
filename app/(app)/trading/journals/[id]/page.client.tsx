@@ -101,7 +101,7 @@ function filterTradesByDate(
                 const monthIndex = monthNames.indexOf(dateFilter.month);
                 return (
                     tradeDate.getFullYear() ===
-                    Number.parseInt(dateFilter.year, 10) &&
+                        Number.parseInt(dateFilter.year, 10) &&
                     tradeDate.getMonth() === monthIndex
                 );
             }
@@ -161,9 +161,9 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
 
     const [advancedFilters, setAdvancedFilters] = useState<{
         sessions: string[];
-        setups: string[];
+        confirmations: string[];
         assets: string[];
-    }>({ sessions: [], setups: [], assets: [] });
+    }>({ sessions: [], confirmations: [], assets: [] });
 
     const { data: journal } = useSuspenseQuery(
         orpc.trading.getJournalById.queryOptions({ input: { id: journalId } })
@@ -176,7 +176,7 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
             input: {
                 journalId,
                 sessionIds: advancedFilters.sessions,
-                setupIds: advancedFilters.setups,
+                confirmationIds: advancedFilters.confirmations,
                 assetIds: advancedFilters.assets,
                 startDate: dateRange.startDate,
                 endDate: dateRange.endDate,
@@ -194,7 +194,7 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
             input: {
                 journalId,
                 sessionIds: advancedFilters.sessions,
-                setupIds: advancedFilters.setups,
+                confirmationIds: advancedFilters.confirmations,
                 assetIds: advancedFilters.assets,
                 startDate: dateRange.startDate,
                 endDate: dateRange.endDate,
@@ -208,8 +208,8 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
         })
     );
 
-    const { data: setups } = useQuery(
-        orpc.trading.getSetups.queryOptions({
+    const { data: confirmations } = useQuery(
+        orpc.trading.getConfirmations.queryOptions({
             input: { journalId },
         })
     );
@@ -269,11 +269,11 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
 
             <TradingContent
                 activeTab={activeTab}
+                confirmations={confirmations}
                 dateFilter={dateFilter}
                 filteredTrades={filteredTrades}
                 journalId={journalId}
                 sessions={sessions}
-                setups={setups}
                 stats={stats}
             />
 

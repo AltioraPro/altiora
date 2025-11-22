@@ -52,7 +52,7 @@ export function CreateTradeModal({
             notes: "",
             assetId: "",
             sessionId: null,
-            setupId: null,
+            confirmationId: null,
             journalId,
             isClosed: true,
         },
@@ -69,8 +69,8 @@ export function CreateTradeModal({
             input: { journalId },
         })
     );
-    const { data: setups } = useQuery(
-        orpc.trading.getSetups.queryOptions({
+    const { data: confirmations } = useQuery(
+        orpc.trading.getConfirmations.queryOptions({
             input: { journalId },
         })
     );
@@ -142,18 +142,20 @@ export function CreateTradeModal({
             })
         );
 
-    const { mutateAsync: createSetup, isPending: isCreatingSetup } =
-        useMutation(
-            orpc.trading.createSetup.mutationOptions({
-                meta: {
-                    invalidateQueries: [
-                        orpc.trading.getSetups.queryKey({
-                            input: { journalId },
-                        }),
-                    ],
-                },
-            })
-        );
+    const {
+        mutateAsync: createConfirmation,
+        isPending: isCreatingConfirmation,
+    } = useMutation(
+        orpc.trading.createConfirmation.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.trading.getConfirmations.queryKey({
+                        input: { journalId },
+                    }),
+                ],
+            },
+        })
+    );
 
     const handleSubmit = async (data: CreateTradeForm) => {
         await createTrade(data);
@@ -185,12 +187,12 @@ export function CreateTradeModal({
         return newSession.id;
     };
 
-    const handleCreateSetup = async (name: string) => {
-        const newSetup = await createSetup({
+    const handleCreateConfirmation = async (name: string) => {
+        const newConfirmation = await createConfirmation({
             journalId,
             name: name.trim(),
         });
-        return newSetup.id;
+        return newConfirmation.id;
     };
 
     const assetOptions =
@@ -205,10 +207,10 @@ export function CreateTradeModal({
             label: session.name,
         })) || [];
 
-    const setupOptions =
-        setups?.map((setup) => ({
-            value: setup.id,
-            label: setup.name,
+    const confirmationOptions =
+        confirmations?.map((confirmation) => ({
+            value: confirmation.id,
+            label: confirmation.name,
         })) || [];
 
     return (
@@ -258,11 +260,11 @@ export function CreateTradeModal({
                             control={form.control}
                             disabled={isCreatingTrade}
                             emptyText="No confirmation found."
-                            isCreating={isCreatingSetup}
+                            isCreating={isCreatingConfirmation}
                             label="Confirmation"
-                            name="setupId"
-                            onCreate={(name) => handleCreateSetup(name)}
-                            options={setupOptions}
+                            name="confirmationId"
+                            onCreate={(name) => handleCreateConfirmation(name)}
+                            options={confirmationOptions}
                             placeholder="Select a confirmation"
                             searchPlaceholder="Search confirmation..."
                         />

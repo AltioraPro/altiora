@@ -34,11 +34,13 @@ export const getAdvancedTradesHandler = getAdvancedTradesBase.handler(
                 inArray(advancedTrades.sessionId, input.sessionIds)
             );
         }
-        if (input.setupId) {
-            whereConditions.push(eq(advancedTrades.setupId, input.setupId));
-        } else if (input.setupIds && input.setupIds.length > 0) {
+        if (input.confirmationId) {
             whereConditions.push(
-                inArray(advancedTrades.setupId, input.setupIds)
+                eq(advancedTrades.confirmationId, input.confirmationId)
+            );
+        } else if (input.confirmationIds && input.confirmationIds.length > 0) {
+            whereConditions.push(
+                inArray(advancedTrades.confirmationId, input.confirmationIds)
             );
         }
         if (input.startDate) {

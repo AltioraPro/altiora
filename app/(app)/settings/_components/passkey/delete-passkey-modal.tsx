@@ -1,7 +1,7 @@
 "use client";
 
+import type { Passkey } from "@better-auth/passkey";
 import { useQueryClient } from "@tanstack/react-query";
-import type { Passkey } from "better-auth/plugins/passkey";
 import type { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
 import { FormError } from "@/components/form/form-error";

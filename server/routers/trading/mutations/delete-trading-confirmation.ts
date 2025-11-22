@@ -1,24 +1,24 @@
 import { and, eq } from "drizzle-orm";
-import { tradingSetups } from "@/server/db/schema";
+import { confirmations } from "@/server/db/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
 import { idSchema } from "../validators";
 
-export const deleteTradingSetupBase = protectedProcedure.input(idSchema);
+export const deleteConfirmationBase = protectedProcedure.input(idSchema);
 
-export const deleteTradingSetupHandler = deleteTradingSetupBase.handler(
+export const deleteConfirmationHandler = deleteConfirmationBase.handler(
     async ({ context, input }) => {
         const { db, session } = context;
         const userId = session.user.id;
 
         await db
-            .delete(tradingSetups)
+            .delete(confirmations)
             .where(
                 and(
-                    eq(tradingSetups.id, input.id),
-                    eq(tradingSetups.userId, userId)
+                    eq(confirmations.id, input.id),
+                    eq(confirmations.userId, userId)
                 )
             );
 
-        return { success: true };
+        return;
     }
 );

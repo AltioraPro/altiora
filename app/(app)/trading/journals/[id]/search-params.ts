@@ -16,7 +16,7 @@ export const tradingJournalSearchParams = {
         "trades",
         "assets",
         "sessions",
-        "setups",
+        "confirmations",
     ]).withDefault("trades"),
     dateFilter: parseAsJson(dateFilterSchema).withDefault({ view: "all" }),
 };

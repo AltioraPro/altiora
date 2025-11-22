@@ -218,6 +218,20 @@
       "when": 1763673218110,
       "tag": "0030_smart_harrier",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1763838771336,
+      "tag": "0031_perpetual_krista_starr",
+      "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1763844714896,
+      "tag": "0032_uneven_rocket_raccoon",
+      "breakpoints": true
     }
   ]
 }

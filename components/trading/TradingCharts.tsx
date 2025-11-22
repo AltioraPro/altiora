@@ -38,8 +38,8 @@ interface TradingChartsProps {
             count: number;
             totalPnL: string | null;
         }>;
-        tradesBySetup: Array<{
-            setupId: string | null;
+        tradesByConfirmation: Array<{
+            confirmationId: string | null;
             count: number;
             totalPnL: string | null;
         }>;

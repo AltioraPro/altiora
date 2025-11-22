@@ -2,10 +2,10 @@ import { ORPCError } from "@orpc/client";
 import { and, desc, eq } from "drizzle-orm";
 import {
     advancedTrades,
+    confirmations,
     tradingAssets,
     tradingJournals,
     tradingSessions,
-    tradingSetups,
 } from "@/server/db/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
 import { journalIdSchema } from "../validators";
@@ -59,14 +59,14 @@ export const getJournalOverviewHandler = getJournalOverviewBase.handler(
 
             db
                 .select()
-                .from(tradingSetups)
+                .from(confirmations)
                 .where(
                     and(
-                        eq(tradingSetups.journalId, input.journalId),
-                        eq(tradingSetups.isActive, true)
+                        eq(confirmations.journalId, input.journalId),
+                        eq(confirmations.isActive, true)
                     )
                 )
-                .orderBy(tradingSetups.name),
+                .orderBy(confirmations.name),
 
             db
                 .select()

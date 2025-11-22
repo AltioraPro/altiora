@@ -13,13 +13,13 @@ interface TradingFiltersBarProps {
     dateFilter: DateFilterState;
     advancedFilters: {
         sessions: string[];
-        setups: string[];
+        confirmations: string[];
         assets: string[];
     };
     onDateFilterChange: (filter: DateFilterState) => void;
     onAdvancedFiltersChange: (filters: {
         sessions: string[];
-        setups: string[];
+        confirmations: string[];
         assets: string[];
     }) => void;
     onImportClick: () => void;
@@ -28,8 +28,6 @@ interface TradingFiltersBarProps {
 
 export function TradingFiltersBar({
     journalId,
-    dateFilter,
-    advancedFilters,
     onDateFilterChange,
     onAdvancedFiltersChange,
     onImportClick,

@@ -71,7 +71,7 @@ export const createAdvancedTradeHandler = createAdvancedTradeBase.handler(
                 journalId: input.journalId,
                 assetId,
                 sessionId: input.sessionId,
-                setupId: input.setupId,
+                confirmationId: input.confirmationId,
                 tradeDate: new Date(input.tradeDate),
                 riskInput: input.riskInput,
                 profitLossAmount: calculatedResults.profitLossAmount,

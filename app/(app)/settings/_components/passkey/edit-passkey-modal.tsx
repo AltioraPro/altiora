@@ -1,8 +1,8 @@
 "use client";
 
+import type { Passkey } from "@better-auth/passkey";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import type { Passkey } from "better-auth/plugins/passkey";
 import type { Dispatch, SetStateAction } from "react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";

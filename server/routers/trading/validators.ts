@@ -72,17 +72,21 @@ export const updateTradingSessionSchema = z.object({
     isActive: z.boolean().optional(),
 });
 
-export const createTradingSetupSchema = z.object({
+export const createConfirmationSchema = z.object({
     journalId: z.string().min(1, "Journal ID is required"),
-    name: z.string().min(1, "Setup name is required").max(100),
+    name: z.string().min(1, "Confirmation name is required").max(100),
     description: z.string().optional(),
     strategy: z.string().optional(),
     successRate: z.number().min(0).max(100).optional(),
 });
 
-export const updateTradingSetupSchema = z.object({
-    id: z.string().min(1, "Setup ID is required"),
-    name: z.string().min(1, "Setup name is required").max(100).optional(),
+export const updateConfirmationSchema = z.object({
+    id: z.string().min(1, "Confirmation ID is required"),
+    name: z
+        .string()
+        .min(1, "Confirmation name is required")
+        .max(100)
+        .optional(),
     description: z.string().optional(),
     strategy: z.string().optional(),
     successRate: z.number().min(0).max(100).optional(),
@@ -94,7 +98,7 @@ export const createAdvancedTradeSchema = z
         journalId: z.string().min(1, "Journal ID is required"),
         assetId: z.string().min(1, "Asset ID is required"),
         sessionId: z.string().nullable().optional(),
-        setupId: z.string().nullable().optional(),
+        confirmationId: z.string().nullable().optional(),
         tradeDate: z.iso.date(),
         riskInput: z.string().optional(),
         profitLossAmount: z.string().optional(),
@@ -113,7 +117,7 @@ export const updateAdvancedTradeSchema = z.object({
     id: z.string().min(1, "Trade ID is required"),
     assetId: z.string().optional(),
     sessionId: z.string().optional(),
-    setupId: z.string().optional(),
+    confirmationId: z.string().optional(),
 
     tradeDate: z
         .string()
@@ -136,8 +140,8 @@ export const filterTradesSchema = z.object({
     assetIds: z.array(z.string()).optional(),
     sessionId: z.string().optional(),
     sessionIds: z.array(z.string()).optional(),
-    setupId: z.string().optional(),
-    setupIds: z.array(z.string()).optional(),
+    confirmationId: z.string().optional(),
+    confirmationIds: z.array(z.string()).optional(),
     symbol: z.string().optional(),
     startDate: z
         .string()
@@ -157,7 +161,7 @@ export const tradingStatsSchema = z.object({
     journalIds: z.array(z.string()).optional(),
     assetIds: z.array(z.string()).optional(),
     sessionIds: z.array(z.string()).optional(),
-    setupIds: z.array(z.string()).optional(),
+    confirmationIds: z.array(z.string()).optional(),
     startDate: z
         .string()
         .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)")
@@ -207,8 +211,8 @@ export type CreateTradingSessionInput = z.infer<
 export type UpdateTradingSessionInput = z.infer<
     typeof updateTradingSessionSchema
 >;
-export type CreateTradingSetupInput = z.infer<typeof createTradingSetupSchema>;
-export type UpdateTradingSetupInput = z.infer<typeof updateTradingSetupSchema>;
+export type CreateConfirmationInput = z.infer<typeof createConfirmationSchema>;
+export type UpdateConfirmationInput = z.infer<typeof updateConfirmationSchema>;
 export type CreateAdvancedTradeInput = z.infer<
     typeof createAdvancedTradeSchema
 >;

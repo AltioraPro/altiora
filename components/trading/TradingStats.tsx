@@ -25,8 +25,8 @@ interface TradingStatsProps extends React.ComponentProps<"div"> {
             count: number;
             totalPnL: string | null;
         }>;
-        tradesBySetup: Array<{
-            setupId: string | null;
+        tradesByConfirmation: Array<{
+            confirmationId: string | null;
             count: number;
             totalPnL: string | null;
         }>;
@@ -41,7 +41,7 @@ interface TradingStatsProps extends React.ComponentProps<"div"> {
             usePercentageCalculation?: boolean;
             startingCapital?: string;
         };
-        setups?: Array<{
+        confirmations?: Array<{
             id: string;
             name: string;
         }>;

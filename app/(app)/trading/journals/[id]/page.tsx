@@ -37,7 +37,7 @@ export default async function JournalPage({
             })
         ),
         queryClient.prefetchQuery(
-            orpc.trading.getSetups.queryOptions({
+            orpc.trading.getConfirmations.queryOptions({
                 input: { journalId: id },
             })
         ),

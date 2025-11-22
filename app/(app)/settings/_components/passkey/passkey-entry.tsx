@@ -1,6 +1,5 @@
+import type { Passkey } from "@better-auth/passkey";
 import { RiDeleteBinLine, RiDeviceLine, RiEditLine } from "@remixicon/react";
-import type { CredentialDeviceType } from "better-auth/client/plugins";
-import type { Passkey } from "better-auth/plugins/passkey";
 import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DeletePasskeyModal } from "./delete-passkey-modal";
@@ -26,7 +25,7 @@ export function PasskeyEntry({ passkey, onRefetch }: PasskeyEntryProps) {
 
     const getDeviceIcon = (
         name: string | undefined,
-        deviceType: CredentialDeviceType
+        deviceType: Passkey["deviceType"]
     ) => {
         if (!name) {
             return RiDeviceLine;

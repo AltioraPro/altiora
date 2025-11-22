@@ -56,8 +56,8 @@ export function TradesTable({ journalId }: TradesTableProps) {
     const { data: sessions } = useQuery(
         orpc.trading.getSessions.queryOptions({ input: { journalId } })
     );
-    const { data: setups } = useQuery(
-        orpc.trading.getSetups.queryOptions({ input: { journalId } })
+    const { data: confirmations } = useQuery(
+        orpc.trading.getConfirmations.queryOptions({ input: { journalId } })
     );
 
     const { mutateAsync: deleteTrade } = useMutation(
@@ -309,10 +309,10 @@ export function TradesTable({ journalId }: TradesTableProps) {
                                                     )?.name || "-"}
                                                 </td>
                                                 <td className="px-4 py-3 text-sm text-white">
-                                                    {setups?.find(
+                                                    {confirmations?.find(
                                                         (s) =>
                                                             s.id ===
-                                                            trade.setupId
+                                                            trade.confirmationId
                                                     )?.name || "-"}
                                                 </td>
                                                 <td className="px-4 py-3 text-sm text-white">
