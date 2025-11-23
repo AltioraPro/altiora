@@ -10,7 +10,7 @@ import { PAGES } from "@/constants/pages";
 import { cn } from "@/lib/utils";
 import { withQuery } from "@/lib/utils/routes";
 
-const navigationItems = [
+export const navigationItems = [
     {
         label: "Account",
         items: [
@@ -49,12 +49,17 @@ const navigationItems = [
 ] as const;
 
 interface SettingsSidebarProps {
-    currentPage: string;
+    currentPage: string | null;
 }
 
 export function SettingsSidebar({ currentPage }: SettingsSidebarProps) {
     return (
-        <aside className="ml-6 w-64 shrink-0 pt-8">
+        <aside
+            className={cn(
+                "ml-6 hidden w-64 shrink-0 pt-8 md:block",
+                !currentPage && "hidden md:block"
+            )}
+        >
             <nav>
                 <div className="flex flex-col gap-4">
                     {navigationItems.map((item) => (
@@ -68,7 +73,11 @@ export function SettingsSidebar({ currentPage }: SettingsSidebarProps) {
 
                             <div className="flex flex-col gap-1">
                                 {item.items.map((item) => {
-                                    const isActive = currentPage === item.href;
+                                    const isActive =
+                                        currentPage === item.href ||
+                                        (!currentPage &&
+                                            item.href === "account-billing");
+
                                     const Icon = item.icon;
 
                                     return (

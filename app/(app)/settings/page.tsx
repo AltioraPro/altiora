@@ -14,32 +14,38 @@ export default async function SettingsPage({
     const queryClient = getQueryClient();
     const { page } = await searchParamsCache.parse(searchParams);
 
-    // Only prefetch essential data - checkBotStatus is slow and not needed for initial render
-    await Promise.all([
-        queryClient.prefetchQuery(orpc.auth.getCurrentUser.queryOptions({})),
-        queryClient.prefetchQuery(
-            orpc.discord.getConnectionStatus.queryOptions({})
-        ),
-        // Removed checkBotStatus - it has a 5s timeout and blocks rendering
-        // It will be fetched client-side when DiscordConnection component mounts
-    ]);
+    const prefetchPromises: Promise<unknown>[] = [];
+
+    if (page === "account-billing" || page === "privacy") {
+        prefetchPromises.push(
+            queryClient.prefetchQuery(orpc.auth.getCurrentUser.queryOptions({}))
+        );
+    }
+
+    if (page === "security") {
+        prefetchPromises.push(
+            queryClient.prefetchQuery(orpc.auth.getSessions.queryOptions({}))
+        );
+    }
+
+    if (prefetchPromises.length > 0) {
+        await Promise.all(prefetchPromises);
+    }
 
     return (
         <HydrateClient client={queryClient}>
             <div className="flex max-h-[calc(100vh-70px)] w-full">
                 <SettingsSidebar currentPage={page} />
 
-                <div className="flex-1 overflow-y-auto">
-                    <div className="max-w-4xl px-6">
-                        <Suspense
-                            fallback={
-                                <div className="h-32 animate-pulse rounded-lg bg-white/5" />
-                            }
-                        >
-                            <SettingsPageClient />
-                        </Suspense>
+                <Suspense
+                    fallback={
+                        <div className="h-32 animate-pulse rounded-lg bg-white/5" />
+                    }
+                >
+                    <div className="w-full overflow-y-scroll">
+                        <SettingsPageClient />
                     </div>
-                </div>
+                </Suspense>
             </div>
         </HydrateClient>
     );

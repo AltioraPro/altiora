@@ -88,6 +88,7 @@
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.181.0",
     "ulid": "^3.0.1",
+    "usehooks-ts": "^3.1.1",
     "xlsx": "^0.18.5",
     "zod": "^4.1.12",
     "zustand": "^5.0.8"
