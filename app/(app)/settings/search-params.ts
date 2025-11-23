@@ -7,7 +7,7 @@ export const settingsSearchParams = {
         "contact",
         "privacy",
         "integrations",
-    ]).withDefault("account-billing"),
+    ]),
 };
 
 export const searchParamsCache = createSearchParamsCache(settingsSearchParams);
