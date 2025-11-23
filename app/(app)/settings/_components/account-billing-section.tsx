@@ -11,11 +11,16 @@ import Image from "next/image";
 import { useState } from "react";
 import { EditProfileModal } from "@/app/(app)/settings/_components/edit-profile-modal";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { orpc } from "@/orpc/client";
 import { signOut } from "@/server/actions/sign-out";
 import { SettingsContentLayout } from "./settings-content-layout";
 
-export function AccountBillingSection() {
+export function AccountBillingSection({
+    currentPage,
+}: {
+    currentPage: string | null;
+}) {
     const { data: user } = useSuspenseQuery(
         orpc.auth.getCurrentUser.queryOptions({})
     );
@@ -23,7 +28,10 @@ export function AccountBillingSection() {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     return (
-        <SettingsContentLayout title="Account Information">
+        <SettingsContentLayout
+            className={cn(!currentPage && "hidden md:block")}
+            title="Account Information"
+        >
             <div className="flex flex-col gap-4">
                 <div className="flex items-center space-x-6">
                     <div className="relative">
