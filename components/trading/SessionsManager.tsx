@@ -1,7 +1,12 @@
 "use client";
 
+import {
+    RiAddLine,
+    RiDeleteBinLine,
+    RiErrorWarningLine,
+    RiSearchLine,
+} from "@remixicon/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { RiErrorWarningLine, RiAddLine, RiSearchLine, RiDeleteBinLine } from "@remixicon/react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -93,9 +98,11 @@ export function SessionsManager({ journalId }: SessionsManagerProps) {
     const sessionPerformances =
         sessions?.map((session) => {
             const sessionTrades =
-                trades?.filter((trade) => trade.sessionId === session.id) || [];
+                trades?.filter(
+                    (trade) => trade.advanced_trade.sessionId === session.id
+                ) || [];
             const totalPnL = sessionTrades.reduce((sum, trade) => {
-                const pnl = Number(trade.profitLossPercentage);
+                const pnl = Number(trade.advanced_trade.profitLossPercentage);
                 return sum + pnl;
             }, 0);
 

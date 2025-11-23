@@ -21,89 +21,97 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { orpc } from "@/orpc/client";
 
-interface SetupsManagerProps {
+interface ConfirmationsManagerProps {
     journalId: string;
 }
 
-export function SetupsManager({ journalId }: SetupsManagerProps) {
+export function ConfirmationsManager({ journalId }: ConfirmationsManagerProps) {
     const [isCreatingModalOpen, setIsCreatingModalOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
-    const [newSetup, setNewSetup] = useState({
+    const [newConfirmation, setNewConfirmation] = useState({
         name: "",
         description: "",
         strategy: "",
         successRate: "",
     });
 
-    const { data: setups, isLoading } = useQuery(
-        orpc.trading.getSetups.queryOptions({
+    const { data: confirmations, isLoading } = useQuery(
+        orpc.trading.getConfirmations.queryOptions({
             input: { journalId },
         })
     );
 
-    const { mutateAsync: createSetup, isPending: isCreatingSetup } =
-        useMutation(
-            orpc.trading.createSetup.mutationOptions({
-                meta: {
-                    invalidateQueries: [
-                        orpc.trading.getSetups.queryKey({
-                            input: { journalId },
-                        }),
-                    ],
-                },
-                onSuccess: () => {
-                    setNewSetup({
-                        name: "",
-                        description: "",
-                        strategy: "",
-                        successRate: "",
-                    });
-                },
-            })
-        );
+    const {
+        mutateAsync: createConfirmation,
+        isPending: isCreatingConfirmation,
+    } = useMutation(
+        orpc.trading.createConfirmation.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.trading.getConfirmations.queryKey({
+                        input: { journalId },
+                    }),
+                ],
+            },
+            onSuccess: () => {
+                setNewConfirmation({
+                    name: "",
+                    description: "",
+                    strategy: "",
+                    successRate: "",
+                });
+            },
+        })
+    );
 
-    const { mutateAsync: deleteSetup, isPending: isDeletingSetup } =
-        useMutation(
-            orpc.trading.deleteSetup.mutationOptions({
-                meta: {
-                    invalidateQueries: [
-                        orpc.trading.getSetups.queryKey({
-                            input: { journalId },
-                        }),
-                    ],
-                },
-            })
-        );
+    const {
+        mutateAsync: deleteConfirmation,
+        isPending: isDeletingConfirmation,
+    } = useMutation(
+        orpc.trading.deleteConfirmation.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.trading.getConfirmations.queryKey({
+                        input: { journalId },
+                    }),
+                ],
+            },
+        })
+    );
 
-    const handleCreateSetup = async () => {
-        if (!newSetup.name.trim()) {
+    const handleCreateConfirmation = async () => {
+        if (!newConfirmation.name.trim()) {
             return;
         }
 
-        await createSetup({
+        await createConfirmation({
             journalId,
-            name: newSetup.name.trim(),
-            description: newSetup.description.trim() || undefined,
-            strategy: newSetup.strategy.trim() || undefined,
-            successRate: newSetup.successRate
-                ? Number.parseFloat(newSetup.successRate)
+            name: newConfirmation.name.trim(),
+            description: newConfirmation.description.trim() || undefined,
+            strategy: newConfirmation.strategy.trim() || undefined,
+            successRate: newConfirmation.successRate
+                ? Number.parseFloat(newConfirmation.successRate)
                 : undefined,
         });
         setIsCreatingModalOpen(false);
     };
 
-    const handleDeleteSetup = async (setupId: string) => {
-        await deleteSetup({ id: setupId });
+    const handleDeleteConfirmation = async (confirmationId: string) => {
+        await deleteConfirmation({ id: confirmationId });
     };
 
-    const filteredSetups =
-        setups?.filter(
-            (setup) =>
-                setup.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                setup.description
+    const filteredConfirmations =
+        confirmations?.filter(
+            (confirmation) =>
+                confirmation.name
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase()) ||
+                confirmation.description
                     ?.toLowerCase()
                     .includes(searchTerm.toLowerCase()) ||
-                setup.strategy?.toLowerCase().includes(searchTerm.toLowerCase())
+                confirmation.strategy
+                    ?.toLowerCase()
+                    .includes(searchTerm.toLowerCase())
         ) || [];
 
     if (isLoading) {
@@ -129,10 +137,12 @@ export function SetupsManager({ journalId }: SetupsManagerProps) {
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <div>
-                        <CardTitle className="text-white">Confirmations</CardTitle>
+                        <CardTitle className="text-white">
+                            Confirmations
+                        </CardTitle>
                         <CardDescription className="text-white/60">
-                            {setups?.length || 0} confirmations • Manage your trading
-                            strategies
+                            {confirmations?.length || 0} confirmations • Manage
+                            your trading strategies
                         </CardDescription>
                     </div>
                     <Button
@@ -170,13 +180,13 @@ export function SetupsManager({ journalId }: SetupsManagerProps) {
                                 <Input
                                     className="border-white/30 bg-black text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
                                     onChange={(e) =>
-                                        setNewSetup((prev) => ({
+                                        setNewConfirmation((prev) => ({
                                             ...prev,
                                             name: e.target.value,
                                         }))
                                     }
                                     placeholder="Breakout Strategy"
-                                    value={newSetup.name}
+                                    value={newConfirmation.name}
                                 />
                             </div>
                             <div className="flex items-center justify-end space-x-2">
@@ -192,11 +202,12 @@ export function SetupsManager({ journalId }: SetupsManagerProps) {
                                 <Button
                                     className="bg-white text-black hover:bg-gray-200"
                                     disabled={
-                                        !newSetup.name.trim() || isCreatingSetup
+                                        !newConfirmation.name.trim() ||
+                                        isCreatingConfirmation
                                     }
-                                    onClick={handleCreateSetup}
+                                    onClick={handleCreateConfirmation}
                                 >
-                                    {isCreatingSetup
+                                    {isCreatingConfirmation
                                         ? "Creating..."
                                         : "Create Confirmation"}
                                 </Button>
@@ -206,24 +217,28 @@ export function SetupsManager({ journalId }: SetupsManagerProps) {
                 )}
 
                 {/* Setups list */}
-                {filteredSetups.length > 0 ? (
+                {filteredConfirmations.length > 0 ? (
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {filteredSetups.map((setup) => (
+                        {filteredConfirmations.map((confirmation) => (
                             <div
                                 className="flex items-center justify-between rounded-lg border border-white/10 bg-black/20 p-3 transition-colors hover:border-white/20"
-                                key={setup.id}
+                                key={confirmation.id}
                             >
                                 <span className="font-medium text-white">
-                                    {setup.name}
+                                    {confirmation.name}
                                 </span>
                                 <Button
                                     className="h-8 w-8 p-1 text-red-400 hover:bg-red-500/10 hover:text-red-300"
-                                    disabled={isDeletingSetup}
-                                    onClick={() => handleDeleteSetup(setup.id)}
+                                    disabled={isDeletingConfirmation}
+                                    onClick={() =>
+                                        handleDeleteConfirmation(
+                                            confirmation.id
+                                        )
+                                    }
                                     size="sm"
                                     variant="ghost"
                                 >
-                                    {isDeletingSetup ? (
+                                    {isDeletingConfirmation ? (
                                         <RiLoader2Line className="h-4 w-4 animate-spin" />
                                     ) : (
                                         <RiBrush3Line className="h-4 w-4" />
@@ -243,7 +258,7 @@ export function SetupsManager({ journalId }: SetupsManagerProps) {
                         <p className="text-sm text-white/40">
                             {searchTerm
                                 ? "Try a different search term"
-                                : "Start by creating your first confirmation"}
+                                : "Start by creating your first confirmations"}
                         </p>
                     </div>
                 )}

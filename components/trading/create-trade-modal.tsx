@@ -8,6 +8,7 @@ import type { z } from "zod";
 import {
     FormCombobox,
     FormInput,
+    FormMultiSelect,
     FormSelect,
     FormTextarea,
 } from "@/components/form";
@@ -52,7 +53,7 @@ export function CreateTradeModal({
             notes: "",
             assetId: "",
             sessionId: null,
-            setupId: null,
+            confirmationIds: [],
             journalId,
             isClosed: true,
         },
@@ -69,8 +70,8 @@ export function CreateTradeModal({
             input: { journalId },
         })
     );
-    const { data: setups } = useQuery(
-        orpc.trading.getSetups.queryOptions({
+    const { data: confirmations } = useQuery(
+        orpc.trading.getConfirmations.queryOptions({
             input: { journalId },
         })
     );
@@ -142,18 +143,20 @@ export function CreateTradeModal({
             })
         );
 
-    const { mutateAsync: createSetup, isPending: isCreatingSetup } =
-        useMutation(
-            orpc.trading.createSetup.mutationOptions({
-                meta: {
-                    invalidateQueries: [
-                        orpc.trading.getSetups.queryKey({
-                            input: { journalId },
-                        }),
-                    ],
-                },
-            })
-        );
+    const {
+        mutateAsync: createConfirmation,
+        isPending: isCreatingConfirmation,
+    } = useMutation(
+        orpc.trading.createConfirmation.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.trading.getConfirmations.queryKey({
+                        input: { journalId },
+                    }),
+                ],
+            },
+        })
+    );
 
     const handleSubmit = async (data: CreateTradeForm) => {
         await createTrade(data);
@@ -185,12 +188,12 @@ export function CreateTradeModal({
         return newSession.id;
     };
 
-    const handleCreateSetup = async (name: string) => {
-        const newSetup = await createSetup({
+    const handleCreateConfirmation = async (name: string) => {
+        const newConfirmation = await createConfirmation({
             journalId,
             name: name.trim(),
         });
-        return newSetup.id;
+        return newConfirmation.id;
     };
 
     const assetOptions =
@@ -205,10 +208,10 @@ export function CreateTradeModal({
             label: session.name,
         })) || [];
 
-    const setupOptions =
-        setups?.map((setup) => ({
-            value: setup.id,
-            label: setup.name,
+    const confirmationOptions =
+        confirmations?.map((confirmation) => ({
+            value: confirmation.id,
+            label: confirmation.name,
         })) || [];
 
     return (
@@ -254,17 +257,16 @@ export function CreateTradeModal({
                             />
                         </div>
 
-                        <FormCombobox
+                        <FormMultiSelect
                             control={form.control}
                             disabled={isCreatingTrade}
-                            emptyText="No confirmation found."
-                            isCreating={isCreatingSetup}
-                            label="Confirmation"
-                            name="setupId"
-                            onCreate={(name) => handleCreateSetup(name)}
-                            options={setupOptions}
-                            placeholder="Select a confirmation"
-                            searchPlaceholder="Search confirmation..."
+                            emptyText="No confirmations available. Type to create a new one."
+                            isCreating={isCreatingConfirmation}
+                            label="Confirmations"
+                            name="confirmationIds"
+                            onCreate={(name) => handleCreateConfirmation(name)}
+                            options={confirmationOptions}
+                            placeholder="Select confirmations"
                         />
 
                         <div className="grid grid-cols-2 gap-4">
@@ -349,13 +351,6 @@ export function CreateTradeModal({
                         />
                     </FieldGroup>
                     <DialogFooter>
-                        <Button
-                            disabled={isCreatingTrade}
-                            type="button"
-                            variant="outline"
-                        >
-                            Log form data
-                        </Button>
                         <DialogClose asChild>
                             {/* Log the form data */}
                             <Button

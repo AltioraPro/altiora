@@ -34,7 +34,7 @@ interface ExcelTrade {
     Asset?: string;
     Symbol?: string;
     Session?: string;
-    Setup?: string;
+    Confirmation?: string;
     Risk?: string | number;
     Result?: string | number;
     ExitReason?: string;
@@ -60,17 +60,17 @@ export function ImportTradesModal({
     const [createdItems, setCreatedItems] = useState<{
         assets: string[];
         sessions: string[];
-        setups: string[];
-    }>({ assets: [], sessions: [], setups: [] });
+        confirmations: string[];
+    }>({ assets: [], sessions: [], confirmations: [] });
 
     const localCacheRef = useRef<{
         assets: Map<string, string>;
         sessions: Map<string, string>;
-        setups: Map<string, string>;
+        confirmations: Map<string, string>;
     }>({
         assets: new Map(),
         sessions: new Map(),
-        setups: new Map(),
+        confirmations: new Map(),
     });
 
     const { mutateAsync: createTrade } = useMutation(
@@ -100,11 +100,13 @@ export function ImportTradesModal({
             },
         })
     );
-    const { mutateAsync: createSetup } = useMutation(
-        orpc.trading.createSetup.mutationOptions({
+    const { mutateAsync: createConfirmation } = useMutation(
+        orpc.trading.createConfirmation.mutationOptions({
             meta: {
                 invalidateQueries: [
-                    orpc.trading.getSetups.queryKey({ input: { journalId } }),
+                    orpc.trading.getConfirmations.queryKey({
+                        input: { journalId },
+                    }),
                 ],
             },
         })
@@ -116,8 +118,8 @@ export function ImportTradesModal({
     const { data: existingSessions } = useQuery(
         orpc.trading.getSessions.queryOptions({ input: { journalId } })
     );
-    const { data: existingSetups } = useQuery(
-        orpc.trading.getSetups.queryOptions({ input: { journalId } })
+    const { data: existingConfirmations } = useQuery(
+        orpc.trading.getConfirmations.queryOptions({ input: { journalId } })
     );
 
     const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -154,7 +156,7 @@ export function ImportTradesModal({
                         Session: String(row[11] || ""),
                         Risk: row[25] as string | number,
                         Result: row[28] as string | number,
-                        Setup: String(row[31] || ""),
+                        Confirmation: String(row[31] || ""),
                         Notes: String(row[45] || ""),
                         TradingViewLink: String(row[50] || ""),
                     };
@@ -163,12 +165,16 @@ export function ImportTradesModal({
                 }
 
                 setTradesToImport(processedTrades);
-                setCreatedItems({ assets: [], sessions: [], setups: [] });
+                setCreatedItems({
+                    assets: [],
+                    sessions: [],
+                    confirmations: [],
+                });
 
                 localCacheRef.current = {
                     assets: new Map(),
                     sessions: new Map(),
-                    setups: new Map(),
+                    confirmations: new Map(),
                 };
                 setImportStatus({
                     type: "info",
@@ -296,58 +302,58 @@ export function ImportTradesModal({
         }
     };
 
-    const findOrCreateSetup = async (setupName: string) => {
-        if (!setupName || typeof setupName !== "string") {
+    const findOrCreateConfirmation = async (confirmationName: string) => {
+        if (!confirmationName || typeof confirmationName !== "string") {
             return null;
         }
 
-        const setupToUse = setupName.trim();
-        if (!setupToUse) {
+        const confirmationToUse = confirmationName.trim();
+        if (!confirmationToUse) {
             return null;
         }
 
-        const cachedSetupId = localCacheRef.current.setups.get(
-            setupToUse.toLowerCase()
+        const cachedConfirmationId = localCacheRef.current.confirmations.get(
+            confirmationToUse.toLowerCase()
         );
-        if (cachedSetupId) {
-            return cachedSetupId;
+        if (cachedConfirmationId) {
+            return cachedConfirmationId;
         }
 
-        const existingSetup = existingSetups?.find(
-            (s) => s.name.toLowerCase() === setupToUse.toLowerCase()
+        const existingConfirmation = existingConfirmations?.find(
+            (s) => s.name.toLowerCase() === confirmationToUse.toLowerCase()
         );
 
-        if (existingSetup) {
-            localCacheRef.current.setups.set(
-                setupToUse.toLowerCase(),
-                existingSetup.id
+        if (existingConfirmation) {
+            localCacheRef.current.confirmations.set(
+                confirmationToUse.toLowerCase(),
+                existingConfirmation.id
             );
-            return existingSetup.id;
+            return existingConfirmation.id;
         }
 
         try {
-            const result = await createSetup({
+            const result = await createConfirmation({
                 journalId: journalId || "",
-                name: setupToUse,
-                description: `Imported confirmation: ${setupToUse}`,
+                name: confirmationToUse,
+                description: `Imported confirmation: ${confirmationToUse}`,
                 strategy: "Imported",
             });
 
-            localCacheRef.current.setups.set(
-                setupToUse.toLowerCase(),
+            localCacheRef.current.confirmations.set(
+                confirmationToUse.toLowerCase(),
                 result.id
             );
 
             setCreatedItems((prev) => ({
                 ...prev,
-                setups: prev.setups.includes(setupToUse)
-                    ? prev.setups
-                    : [...prev.setups, setupToUse],
+                confirmations: prev.confirmations.includes(confirmationToUse)
+                    ? prev.confirmations
+                    : [...prev.confirmations, confirmationToUse],
             }));
 
             return result.id;
         } catch (error) {
-            console.error("Error creating setup:", error);
+            console.error("Error creating confirmation:", error);
             return null;
         }
     };
@@ -403,8 +409,8 @@ export function ImportTradesModal({
                 const sessionId = trade.Session
                     ? await findOrCreateSession(trade.Session)
                     : null;
-                const setupId = trade.Setup
-                    ? await findOrCreateSetup(trade.Setup)
+                const confirmationId = trade.Confirmation
+                    ? await findOrCreateConfirmation(trade.Confirmation)
                     : null;
                 const cleanRiskValue = trade.Risk
                     ? String(trade.Risk).replace(/[%,]/g, "").trim()
@@ -441,7 +447,9 @@ export function ImportTradesModal({
                     tradeDate: new Date(tradeDate).toISOString().split("T")[0],
                     assetId,
                     sessionId: sessionId ?? undefined,
-                    setupId: setupId ?? undefined,
+                    confirmationIds: confirmationId
+                        ? [confirmationId]
+                        : undefined,
                     riskInput,
                     profitLossAmount: "",
                     profitLossPercentage,
@@ -471,9 +479,9 @@ export function ImportTradesModal({
                 createdSummary.push(`${createdItems.sessions.length} sessions`);
             }
             createdSummary.push(`${createdItems.sessions.length} sessions`);
-            if (createdItems.setups.length > 0) {
+            if (createdItems.confirmations.length > 0) {
                 createdSummary.push(
-                    `${createdItems.setups.length} confirmations`
+                    `${createdItems.confirmations.length} confirmations`
                 );
             }
 

@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { type InferSelectModel, sql } from "drizzle-orm";
 import {
     boolean,
     index,
@@ -9,24 +9,23 @@ import {
     varchar,
 } from "drizzle-orm/pg-core";
 import { user } from "@/server/db/schema";
-import { tradingJournals } from "../trading-journals/schema";
 
-export const tradingSetups = pgTable(
-    "trading_setup",
+export const tradingJournals = pgTable(
+    "journal",
     {
         id: varchar("id", { length: 255 }).primaryKey(),
         userId: varchar("user_id", { length: 255 })
             .references(() => user.id, { onDelete: "cascade" })
             .notNull(),
-        journalId: varchar("journal_id", { length: 255 })
-            .references(() => tradingJournals.id, { onDelete: "cascade" })
-            .notNull(),
 
-        name: varchar("name", { length: 100 }).notNull(),
+        name: varchar("name", { length: 255 }).notNull(),
         description: text("description"),
-        strategy: text("strategy"),
-        successRate: integer("success_rate"),
         isActive: boolean("is_active").default(true).notNull(),
+        order: integer("order").default(0).notNull(),
+        startingCapital: varchar("starting_capital", { length: 50 }),
+        usePercentageCalculation: boolean("use_percentage_calculation")
+            .default(false)
+            .notNull(),
         createdAt: timestamp("created_at", { withTimezone: true })
             .default(sql`CURRENT_TIMESTAMP`)
             .notNull(),
@@ -35,7 +34,9 @@ export const tradingSetups = pgTable(
             .notNull(),
     },
     (table) => [
-        index("trading_setup_user_id_idx").on(table.userId),
-        index("trading_setup_journal_id_idx").on(table.journalId),
+        index("journal_user_id_idx").on(table.userId),
+        index("journal_active_idx").on(table.isActive),
     ]
 );
+
+export type TradingJournal = InferSelectModel<typeof tradingJournals>;

@@ -6,15 +6,11 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import type { RouterOutput } from "@/orpc/client";
 
 interface DashboardChartsProps {
     sessions: Array<{ id: string; name: string }>;
-    trades: Array<{
-        id: string;
-        tradeDate: Date;
-        profitLossPercentage: string;
-        sessionId: string | null;
-    }>;
+    trades: RouterOutput["trading"]["getTrades"];
 }
 
 export function DashboardCharts({ sessions, trades }: DashboardChartsProps) {

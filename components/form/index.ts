@@ -4,6 +4,8 @@ export { FormCombobox } from "./form-combobox";
 
 export { FormInput } from "./form-input";
 
+export { FormMultiSelect } from "./form-multi-select";
+
 export { FormSelect } from "./form-select";
 
 export { FormTextarea } from "./form-textarea";

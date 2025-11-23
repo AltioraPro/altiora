@@ -56,8 +56,8 @@ export function TradesTable({ journalId }: TradesTableProps) {
     const { data: sessions } = useQuery(
         orpc.trading.getSessions.queryOptions({ input: { journalId } })
     );
-    const { data: setups } = useQuery(
-        orpc.trading.getSetups.queryOptions({ input: { journalId } })
+    const { data: confirmations } = useQuery(
+        orpc.trading.getConfirmations.queryOptions({ input: { journalId } })
     );
 
     const { mutateAsync: deleteTrade } = useMutation(
@@ -99,7 +99,9 @@ export function TradesTable({ journalId }: TradesTableProps) {
         if (selectedTrades.size === trades?.length) {
             setSelectedTrades(new Set());
         } else {
-            const allTradeIds = new Set(trades?.map((trade) => trade.id) || []);
+            const allTradeIds = new Set(
+                trades?.map((trade) => trade.advanced_trade.id) || []
+            );
             setSelectedTrades(allTradeIds);
         }
     };
@@ -270,17 +272,20 @@ export function TradesTable({ journalId }: TradesTableProps) {
                                         {trades.map((trade) => (
                                             <tr
                                                 className="border-white/5 border-b transition-colors hover:bg-white/5"
-                                                key={trade.id}
+                                                key={trade.advanced_trade.id}
                                             >
                                                 <td className="px-4 py-3">
                                                     <Checkbox
                                                         checked={selectedTrades.has(
-                                                            trade.id
+                                                            trade.advanced_trade
+                                                                .id
                                                         )}
                                                         className="border-white/30"
                                                         onCheckedChange={() =>
                                                             handleSelectTrade(
-                                                                trade.id
+                                                                trade
+                                                                    .advanced_trade
+                                                                    .id
                                                             )
                                                         }
                                                     />
@@ -288,7 +293,8 @@ export function TradesTable({ journalId }: TradesTableProps) {
                                                 <td className="px-4 py-3 text-sm text-white">
                                                     {format(
                                                         new Date(
-                                                            trade.tradeDate
+                                                            trade.advanced_trade
+                                                                .tradeDate
                                                         ),
                                                         "dd MMM yyyy",
                                                         { locale: enUS }
@@ -298,25 +304,30 @@ export function TradesTable({ journalId }: TradesTableProps) {
                                                     {assets?.find(
                                                         (a) =>
                                                             a.id ===
-                                                            trade.assetId
+                                                            trade.advanced_trade
+                                                                .assetId
                                                     )?.name || "-"}
                                                 </td>
                                                 <td className="px-4 py-3 text-sm text-white">
                                                     {sessions?.find(
                                                         (s) =>
                                                             s.id ===
-                                                            trade.sessionId
+                                                            trade.advanced_trade
+                                                                .sessionId
                                                     )?.name || "-"}
                                                 </td>
                                                 <td className="px-4 py-3 text-sm text-white">
-                                                    {setups?.find(
-                                                        (s) =>
-                                                            s.id ===
-                                                            trade.setupId
+                                                    {confirmations?.find(
+                                                        (c) =>
+                                                            c.id ===
+                                                            trade
+                                                                .trades_confirmation
+                                                                .confirmationId
                                                     )?.name || "-"}
                                                 </td>
                                                 <td className="px-4 py-3 text-sm text-white">
-                                                    {trade.riskInput || "-"}
+                                                    {trade.advanced_trade
+                                                        .riskInput || "-"}
                                                 </td>
                                                 <td className="px-4 py-3 text-sm">
                                                     <div className="space-y-1">
@@ -324,50 +335,67 @@ export function TradesTable({ journalId }: TradesTableProps) {
                                                             className={cn(
                                                                 "text-green-400",
                                                                 Number(
-                                                                    trade.profitLossPercentage ||
+                                                                    trade
+                                                                        .advanced_trade
+                                                                        .profitLossPercentage ||
                                                                         0
                                                                 ) > 0 &&
                                                                     "text-green-400",
                                                                 Number(
-                                                                    trade.profitLossPercentage ||
+                                                                    trade
+                                                                        .advanced_trade
+                                                                        .profitLossPercentage ||
                                                                         0
                                                                 ) < 0 &&
                                                                     "text-red-400",
                                                                 Number(
-                                                                    trade.profitLossPercentage ||
+                                                                    trade
+                                                                        .advanced_trade
+                                                                        .profitLossPercentage ||
                                                                         0
                                                                 ) === 0 &&
                                                                     "text-blue-400"
                                                             )}
                                                         >
                                                             {Number(
-                                                                trade.profitLossPercentage ||
+                                                                trade
+                                                                    .advanced_trade
+                                                                    .profitLossPercentage ||
                                                                     0
                                                             ) >= 0
                                                                 ? "+"
                                                                 : ""}
-                                                            {trade.profitLossPercentage ||
+                                                            {trade
+                                                                .advanced_trade
+                                                                .profitLossPercentage ||
                                                                 0}
                                                             %
                                                         </span>
-                                                        {trade.profitLossAmount &&
+                                                        {trade.advanced_trade
+                                                            .profitLossAmount &&
                                                             stats?.journal
                                                                 ?.usePercentageCalculation && (
                                                                 <div
                                                                     className={cn(
                                                                         "text-xs",
                                                                         Number(
-                                                                            trade.profitLossAmount ||
+                                                                            trade
+                                                                                .advanced_trade
+                                                                                .profitLossAmount ||
                                                                                 0
                                                                         ) > 0 &&
                                                                             "text-green-400",
                                                                         Number(
-                                                                            trade.profitLossAmount ||
+                                                                            trade
+                                                                                .advanced_trade
+                                                                                .profitLossAmount ||
                                                                                 0
                                                                         ) < 0 &&
                                                                             "text-red-400",
                                                                         Number(
-                                                                            trade.profitLossAmount ||
+                                                                            trade
+                                                                                .advanced_trade
+                                                                                .profitLossAmount ||
                                                                                 0
                                                                         ) ===
                                                                             0 &&
@@ -375,13 +403,17 @@ export function TradesTable({ journalId }: TradesTableProps) {
                                                                     )}
                                                                 >
                                                                     {Number(
-                                                                        trade.profitLossAmount ||
+                                                                        trade
+                                                                            .advanced_trade
+                                                                            .profitLossAmount ||
                                                                             0
                                                                     ) >= 0
                                                                         ? "+"
                                                                         : ""}
                                                                     {
-                                                                        trade.profitLossAmount
+                                                                        trade
+                                                                            .advanced_trade
+                                                                            .profitLossAmount
                                                                     }
                                                                     €
                                                                 </div>
@@ -390,19 +422,29 @@ export function TradesTable({ journalId }: TradesTableProps) {
                                                 </td>
                                                 <td className="px-4 py-3 text-sm">
                                                     {getExitReasonBadge(
-                                                        trade.exitReason
+                                                        trade.advanced_trade
+                                                            .exitReason
                                                     )}
                                                 </td>
                                                 <td className="max-w-[150px] px-4 py-3 text-sm text-white/70">
-                                                    {trade.notes ? (
+                                                    {trade.advanced_trade
+                                                        .notes ? (
                                                         <div
                                                             className="truncate"
-                                                            title={trade.notes}
+                                                            title={
+                                                                trade
+                                                                    .advanced_trade
+                                                                    .notes
+                                                            }
                                                         >
-                                                            {trade.notes
-                                                                .length > 30
-                                                                ? `${trade.notes.substring(0, 30)}...`
-                                                                : trade.notes}
+                                                            {trade
+                                                                .advanced_trade
+                                                                .notes.length >
+                                                            30
+                                                                ? `${trade.advanced_trade.notes.substring(0, 30)}...`
+                                                                : trade
+                                                                      .advanced_trade
+                                                                      .notes}
                                                         </div>
                                                     ) : (
                                                         "-"
@@ -414,7 +456,9 @@ export function TradesTable({ journalId }: TradesTableProps) {
                                                             className="h-8 w-8 p-1 text-white/60 hover:bg-white/10 hover:text-white"
                                                             onClick={() =>
                                                                 handleEditTrade(
-                                                                    trade.id
+                                                                    trade
+                                                                        .advanced_trade
+                                                                        .id
                                                                 )
                                                             }
                                                             size="sm"
@@ -426,7 +470,9 @@ export function TradesTable({ journalId }: TradesTableProps) {
                                                             className="h-8 w-8 p-1 text-red-400 hover:bg-red-500/10 hover:text-red-300"
                                                             onClick={() =>
                                                                 handleDeleteSingle(
-                                                                    trade.id
+                                                                    trade
+                                                                        .advanced_trade
+                                                                        .id
                                                                 )
                                                             }
                                                             size="sm"
@@ -434,10 +480,13 @@ export function TradesTable({ journalId }: TradesTableProps) {
                                                         >
                                                             <RiBrush2Line className="h-4 w-4" />
                                                         </Button>
-                                                        {trade.tradingviewLink && (
+                                                        {trade.advanced_trade
+                                                            .tradingviewLink && (
                                                             <a
                                                                 href={
-                                                                    trade.tradingviewLink
+                                                                    trade
+                                                                        .advanced_trade
+                                                                        .tradingviewLink
                                                                 }
                                                                 rel="noopener noreferrer"
                                                                 target="_blank"

@@ -2,6 +2,7 @@ import { ORPCError } from "@orpc/client";
 import { and, eq } from "drizzle-orm";
 import {
     advancedTrades,
+    tradesConfirmations,
     tradingAssets,
     tradingJournals,
 } from "@/server/db/schema";
@@ -71,7 +72,6 @@ export const createAdvancedTradeHandler = createAdvancedTradeBase.handler(
                 journalId: input.journalId,
                 assetId,
                 sessionId: input.sessionId,
-                setupId: input.setupId,
                 tradeDate: new Date(input.tradeDate),
                 riskInput: input.riskInput,
                 profitLossAmount: calculatedResults.profitLossAmount,
@@ -87,6 +87,19 @@ export const createAdvancedTradeHandler = createAdvancedTradeBase.handler(
                 .insert(advancedTrades)
                 .values(tradeValues)
                 .returning();
+
+            const confirmationValues = input.confirmationIds?.map(
+                (confirmationId) => ({
+                    id: crypto.randomUUID(),
+                    userId,
+                    advancedTradeId: trade.id,
+                    confirmationId,
+                })
+            );
+
+            if (confirmationValues && confirmationValues.length > 0) {
+                await db.insert(tradesConfirmations).values(confirmationValues);
+            }
 
             return trade;
         } catch (error) {

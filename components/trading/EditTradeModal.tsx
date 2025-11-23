@@ -1,7 +1,7 @@
 "use client";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { RiCloseLine } from "@remixicon/react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -42,7 +42,6 @@ export function EditTradeModal({
         tradeDate: "",
         assetId: "",
         sessionId: "",
-        setupId: "",
         riskPercentage: "",
         resultPercentage: "",
         exitReason: "",
@@ -65,12 +64,6 @@ export function EditTradeModal({
         })
     );
 
-    const { data: setups } = useQuery(
-        orpc.trading.getSetups.queryOptions({
-            input: { journalId: trade?.journalId },
-        })
-    );
-
     const { data: assets } = useQuery(
         orpc.trading.getAssets.queryOptions({
             input: { journalId: trade?.journalId },
@@ -85,13 +78,11 @@ export function EditTradeModal({
                     : "",
                 assetId: trade.assetId || "",
                 sessionId: trade.sessionId || "",
-                setupId: trade.setupId || "",
+
                 riskPercentage: trade.riskInput?.toString() || "",
                 resultPercentage: trade.profitLossPercentage?.toString() || "",
                 exitReason: trade.exitReason || "",
-                tradingViewLink:
-                    (trade as { tradingviewLink?: string }).tradingviewLink ||
-                    "",
+                tradingViewLink: trade.tradingviewLink || "",
                 notes: trade.notes || "",
             });
         }
@@ -139,7 +130,6 @@ export function EditTradeModal({
                 tradeDate: string;
                 assetId?: string;
                 sessionId?: string;
-                setupId?: string;
                 riskInput: string;
                 profitLossPercentage: string;
                 exitReason?: "TP" | "BE" | "SL" | "Manual";
@@ -157,9 +147,6 @@ export function EditTradeModal({
             }
             if (formData.sessionId) {
                 updateData.sessionId = formData.sessionId;
-            }
-            if (formData.setupId) {
-                updateData.setupId = formData.setupId;
             }
             if (formData.exitReason) {
                 updateData.exitReason = formData.exitReason as
@@ -293,36 +280,6 @@ export function EditTradeModal({
                                                 value={session.id}
                                             >
                                                 {session.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            <div>
-                                <Label className="text-white" htmlFor="setupId">
-                                    Confirmation
-                                </Label>
-                                <Select
-                                    onValueChange={(value) =>
-                                        setFormData({
-                                            ...formData,
-                                            setupId: value,
-                                        })
-                                    }
-                                    value={formData.setupId}
-                                >
-                                    <SelectTrigger className="border-white/20 bg-black/50 text-white">
-                                        <SelectValue placeholder="Select a confirmation" />
-                                    </SelectTrigger>
-                                    <SelectContent className="border-white/20 bg-black/90">
-                                        {setups?.map((setup) => (
-                                            <SelectItem
-                                                className="text-white hover:bg-white/10"
-                                                key={setup.id}
-                                                value={setup.id}
-                                            >
-                                                {setup.name}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>

@@ -7,8 +7,7 @@ import { CreateTradeModal } from "@/components/trading/create-trade-modal";
 import type { DateFilterState } from "@/components/trading/DateFilter";
 import { ImportTradesModal } from "@/components/trading/ImportTradesModal";
 import { TradingStats } from "@/components/trading/TradingStats";
-import { orpc } from "@/orpc/client";
-import type { AdvancedTrade } from "@/server/db/schema";
+import { orpc, type RouterOutput } from "@/orpc/client";
 import { EmptyTradingState } from "../../_components/empty-trading-state";
 import { TradingContent } from "../../_components/trading-content";
 import { TradingFiltersBar } from "../../_components/trading-filters-bar";
@@ -69,7 +68,7 @@ function useDateRange(dateFilter: DateFilterState) {
 }
 
 function filterTradesByDate(
-    trades: AdvancedTrade[] | undefined,
+    trades: RouterOutput["trading"]["getTrades"] | undefined,
     dateFilter: DateFilterState
 ) {
     if (!trades || dateFilter.view === "all") {
@@ -77,7 +76,7 @@ function filterTradesByDate(
     }
 
     return trades.filter((trade) => {
-        const tradeDate = new Date(trade.tradeDate);
+        const tradeDate = new Date(trade.advanced_trade.tradeDate);
 
         switch (dateFilter.view) {
             case "monthly": {
@@ -101,7 +100,7 @@ function filterTradesByDate(
                 const monthIndex = monthNames.indexOf(dateFilter.month);
                 return (
                     tradeDate.getFullYear() ===
-                    Number.parseInt(dateFilter.year, 10) &&
+                        Number.parseInt(dateFilter.year, 10) &&
                     tradeDate.getMonth() === monthIndex
                 );
             }
@@ -121,16 +120,18 @@ function filterTradesByDate(
     });
 }
 
-function calculateCumulativePerformance(trades: AdvancedTrade[]) {
+function calculateCumulativePerformance(
+    trades: RouterOutput["trading"]["getTrades"]
+) {
     return trades
         .sort(
             (a, b) =>
-                new Date(a.tradeDate).getTime() -
-                new Date(b.tradeDate).getTime()
+                new Date(a.advanced_trade.tradeDate).getTime() -
+                new Date(b.advanced_trade.tradeDate).getTime()
         )
         .reduce(
             (acc, trade) => {
-                const pnl = Number(trade.profitLossPercentage);
+                const pnl = Number(trade.advanced_trade.profitLossPercentage);
                 const previousCumulative =
                     acc.length > 0 ? acc.at(-1)?.cumulative || 0 : 0;
                 const cumulative = previousCumulative + pnl;
@@ -161,9 +162,9 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
 
     const [advancedFilters, setAdvancedFilters] = useState<{
         sessions: string[];
-        setups: string[];
+        confirmations: string[];
         assets: string[];
-    }>({ sessions: [], setups: [], assets: [] });
+    }>({ sessions: [], confirmations: [], assets: [] });
 
     const { data: journal } = useSuspenseQuery(
         orpc.trading.getJournalById.queryOptions({ input: { id: journalId } })
@@ -176,7 +177,7 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
             input: {
                 journalId,
                 sessionIds: advancedFilters.sessions,
-                setupIds: advancedFilters.setups,
+                confirmationIds: advancedFilters.confirmations,
                 assetIds: advancedFilters.assets,
                 startDate: dateRange.startDate,
                 endDate: dateRange.endDate,
@@ -194,7 +195,7 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
             input: {
                 journalId,
                 sessionIds: advancedFilters.sessions,
-                setupIds: advancedFilters.setups,
+                confirmationIds: advancedFilters.confirmations,
                 assetIds: advancedFilters.assets,
                 startDate: dateRange.startDate,
                 endDate: dateRange.endDate,
@@ -208,8 +209,8 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
         })
     );
 
-    const { data: setups } = useQuery(
-        orpc.trading.getSetups.queryOptions({
+    const { data: confirmations } = useQuery(
+        orpc.trading.getConfirmations.queryOptions({
             input: { journalId },
         })
     );
@@ -269,11 +270,11 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
 
             <TradingContent
                 activeTab={activeTab}
+                confirmations={confirmations}
                 dateFilter={dateFilter}
                 filteredTrades={filteredTrades}
                 journalId={journalId}
                 sessions={sessions}
-                setups={setups}
                 stats={stats}
             />
 

@@ -2,9 +2,9 @@
 
 import { Suspense } from "react";
 import { AssetsManager } from "@/components/trading/AssetsManager";
+import { ConfirmationsManager } from "@/components/trading/confirmations-manager";
 import type { DateFilterState } from "@/components/trading/DateFilter";
 import { SessionsManager } from "@/components/trading/SessionsManager";
-import { SetupsManager } from "@/components/trading/SetupsManager";
 import { TradesTable } from "@/components/trading/TradesTable";
 import { TradingCharts } from "@/components/trading/TradingCharts";
 import {
@@ -14,42 +14,15 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import type { AdvancedTrade } from "@/server/db/schema";
+import type { RouterOutput } from "@/orpc/client";
 
 interface TradingContentProps {
     journalId: string;
-    activeTab: "trades" | "assets" | "sessions" | "setups";
-    filteredTrades: AdvancedTrade[] | undefined;
-    stats: {
-        totalTrades: number;
-        closedTrades: number;
-        totalPnL: string | number;
-        avgPnL: string | number;
-        totalAmountPnL?: number;
-        winningTrades: number;
-        losingTrades: number;
-        winRate: number;
-        tradesBySymbol: Array<{
-            assetId?: string | null;
-            symbol?: string | null;
-            count: number;
-            totalPnL: string | null;
-        }>;
-        tradesBySetup: Array<{
-            setupId: string | null;
-            count: number;
-            totalPnL: string | null;
-        }>;
-        tpTrades: number;
-        beTrades: number;
-        slTrades: number;
-        journal?: {
-            usePercentageCalculation?: boolean;
-            startingCapital?: string;
-        };
-    } | null;
+    activeTab: "trades" | "assets" | "sessions" | "confirmations";
+    filteredTrades: RouterOutput["trading"]["getTrades"] | undefined;
+    stats: RouterOutput["trading"]["getStats"];
     sessions: Array<{ id: string; name: string }> | undefined;
-    setups: Array<{ id: string; name: string }> | undefined;
+    confirmations: Array<{ id: string; name: string }> | undefined;
     dateFilter: DateFilterState;
 }
 
@@ -59,7 +32,7 @@ export function TradingContent({
     filteredTrades,
     stats,
     sessions,
-    setups,
+    confirmations,
     dateFilter,
 }: TradingContentProps) {
     return (
@@ -67,7 +40,7 @@ export function TradingContent({
             {stats &&
                 sessions &&
                 filteredTrades &&
-                setups &&
+                confirmations &&
                 activeTab === "trades" && (
                     <div className="mb-8">
                         <Card className="border border-white/10 bg-black/20">
@@ -106,8 +79,8 @@ export function TradingContent({
                     <SessionsManager journalId={journalId} />
                 )}
 
-                {activeTab === "setups" && (
-                    <SetupsManager journalId={journalId} />
+                {activeTab === "confirmations" && (
+                    <ConfirmationsManager journalId={journalId} />
                 )}
             </Suspense>
         </>

@@ -1,14 +1,14 @@
 import { ORPCError } from "@orpc/client";
 import { and, eq } from "drizzle-orm";
-import { tradingJournals, tradingSetups } from "@/server/db/schema";
+import { confirmations, tradingJournals } from "@/server/db/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
-import { createTradingSetupSchema } from "../validators";
+import { createConfirmationSchema } from "../validators";
 
-export const createTradingSetupBase = protectedProcedure.input(
-    createTradingSetupSchema
+export const createConfirmationBase = protectedProcedure.input(
+    createConfirmationSchema
 );
 
-export const createTradingSetupHandler = createTradingSetupBase.handler(
+export const createConfirmationHandler = createConfirmationBase.handler(
     async ({ context, input }) => {
         const { db, session } = context;
         const userId = session.user.id;
@@ -30,8 +30,8 @@ export const createTradingSetupHandler = createTradingSetupBase.handler(
             });
         }
 
-        const [setup] = await db
-            .insert(tradingSetups)
+        const [confirmation] = await db
+            .insert(confirmations)
             .values({
                 id: crypto.randomUUID(),
                 userId,
@@ -45,6 +45,6 @@ export const createTradingSetupHandler = createTradingSetupBase.handler(
             })
             .returning();
 
-        return setup;
+        return confirmation;
     }
 );

@@ -3,16 +3,18 @@ import { base } from "@/server/context";
 import {
     createAdvancedTradeBase,
     createAdvancedTradeHandler,
+    createConfirmationBase,
+    createConfirmationHandler,
     createTradingAssetBase,
     createTradingAssetHandler,
     createTradingJournalBase,
     createTradingJournalHandler,
     createTradingSessionBase,
     createTradingSessionHandler,
-    createTradingSetupBase,
-    createTradingSetupHandler,
     deleteAdvancedTradeBase,
     deleteAdvancedTradeHandler,
+    deleteConfirmationBase,
+    deleteConfirmationHandler,
     deleteMultipleTradesBase,
     deleteMultipleTradesHandler,
     deleteTradingAssetBase,
@@ -21,20 +23,18 @@ import {
     deleteTradingJournalHandler,
     deleteTradingSessionBase,
     deleteTradingSessionHandler,
-    deleteTradingSetupBase,
-    deleteTradingSetupHandler,
     reorderJournalsBase,
     reorderJournalsHandler,
     updateAdvancedTradeBase,
     updateAdvancedTradeHandler,
+    updateConfirmationBase,
+    updateConfirmationHandler,
     updateTradingAssetBase,
     updateTradingAssetHandler,
     updateTradingJournalBase,
     updateTradingJournalHandler,
     updateTradingSessionBase,
     updateTradingSessionHandler,
-    updateTradingSetupBase,
-    updateTradingSetupHandler,
 } from "./mutations";
 import {
     getAdvancedTradeByIdBase,
@@ -61,6 +61,14 @@ import {
     getTradingAssetsHandler,
 } from "./queries/get-trading-assets";
 import {
+    getConfirmationByIdBase,
+    getConfirmationByIdHandler,
+} from "./queries/get-trading-confirmation-by-id";
+import {
+    getTradingConfirmationsBase,
+    getTradingConfirmationsHandler,
+} from "./queries/get-trading-confirmations";
+import {
     getTradingJournalByIdBase,
     getTradingJournalByIdHandler,
 } from "./queries/get-trading-journal-by-id";
@@ -76,14 +84,6 @@ import {
     getTradingSessionsBase,
     getTradingSessionsHandler,
 } from "./queries/get-trading-sessions";
-import {
-    getTradingSetupByIdBase,
-    getTradingSetupByIdHandler,
-} from "./queries/get-trading-setup-by-id";
-import {
-    getTradingSetupsBase,
-    getTradingSetupsHandler,
-} from "./queries/get-trading-setups";
 import {
     getTradingStatsBase,
     getTradingStatsHandler,
@@ -163,26 +163,26 @@ export const tradingRouter = base.router({
                 await call(deleteTradingSessionHandler, input, { context })
         ),
 
-    // Setup Mutations
-    createSetup: createTradingSetupBase
+    // Confirmation Mutations
+    createConfirmation: createConfirmationBase
         .route({ method: "POST" })
         .handler(
             async ({ context, input }) =>
-                await call(createTradingSetupHandler, input, { context })
+                await call(createConfirmationHandler, input, { context })
         ),
 
-    updateSetup: updateTradingSetupBase
+    updateConfirmation: updateConfirmationBase
         .route({ method: "POST" })
         .handler(
             async ({ context, input }) =>
-                await call(updateTradingSetupHandler, input, { context })
+                await call(updateConfirmationHandler, input, { context })
         ),
 
-    deleteSetup: deleteTradingSetupBase
+    deleteConfirmation: deleteConfirmationBase
         .route({ method: "POST" })
         .handler(
             async ({ context, input }) =>
-                await call(deleteTradingSetupHandler, input, { context })
+                await call(deleteConfirmationHandler, input, { context })
         ),
 
     // Trade Mutations
@@ -259,19 +259,19 @@ export const tradingRouter = base.router({
                 await call(getTradingSessionByIdHandler, input, { context })
         ),
 
-    // Setup Queries
-    getSetups: getTradingSetupsBase
+    // Confirmation Queries
+    getConfirmations: getTradingConfirmationsBase
         .route({ method: "GET" })
         .handler(
             async ({ context, input }) =>
-                await call(getTradingSetupsHandler, input, { context })
+                await call(getTradingConfirmationsHandler, input, { context })
         ),
 
-    getSetupById: getTradingSetupByIdBase
+    getConfirmationById: getConfirmationByIdBase
         .route({ method: "GET" })
         .handler(
             async ({ context, input }) =>
-                await call(getTradingSetupByIdHandler, input, { context })
+                await call(getConfirmationByIdHandler, input, { context })
         ),
 
     // Trade Queries

@@ -1,5 +1,5 @@
 import { and, desc, eq, gte, inArray, lte } from "drizzle-orm";
-import { advancedTrades } from "@/server/db/schema";
+import { advancedTrades, tradesConfirmations } from "@/server/db/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
 import { filterTradesSchema } from "../validators";
 
@@ -34,13 +34,7 @@ export const getAdvancedTradesHandler = getAdvancedTradesBase.handler(
                 inArray(advancedTrades.sessionId, input.sessionIds)
             );
         }
-        if (input.setupId) {
-            whereConditions.push(eq(advancedTrades.setupId, input.setupId));
-        } else if (input.setupIds && input.setupIds.length > 0) {
-            whereConditions.push(
-                inArray(advancedTrades.setupId, input.setupIds)
-            );
-        }
+
         if (input.startDate) {
             whereConditions.push(
                 gte(advancedTrades.tradeDate, new Date(input.startDate))
@@ -59,6 +53,10 @@ export const getAdvancedTradesHandler = getAdvancedTradesBase.handler(
             ? await db
                   .select()
                   .from(advancedTrades)
+                  .innerJoin(
+                      tradesConfirmations,
+                      eq(advancedTrades.id, tradesConfirmations.advancedTradeId)
+                  )
                   .where(and(...whereConditions))
                   .orderBy(
                       desc(advancedTrades.tradeDate),
@@ -69,6 +67,10 @@ export const getAdvancedTradesHandler = getAdvancedTradesBase.handler(
             : await db
                   .select()
                   .from(advancedTrades)
+                  .innerJoin(
+                      tradesConfirmations,
+                      eq(advancedTrades.id, tradesConfirmations.advancedTradeId)
+                  )
                   .where(and(...whereConditions))
                   .orderBy(
                       desc(advancedTrades.tradeDate),

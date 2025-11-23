@@ -18,7 +18,7 @@ interface AdvancedFiltersProps {
     journalId: string;
     onFiltersChange: (filters: {
         sessions: string[];
-        setups: string[];
+        confirmations: string[];
         assets: string[];
     }) => void;
     className?: string;
@@ -30,15 +30,17 @@ export function AdvancedFilters({
     className = "",
 }: AdvancedFiltersProps) {
     const [selectedSessions, setSelectedSessions] = useState<string[]>([]);
-    const [selectedSetups, setSelectedSetups] = useState<string[]>([]);
+    const [selectedConfirmations, setSelectedConfirmations] = useState<
+        string[]
+    >([]);
     const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
     const [isExpanded, setIsExpanded] = useState(false);
 
     const { data: sessions } = useQuery(
         orpc.trading.getSessions.queryOptions({ input: { journalId } })
     );
-    const { data: setups } = useQuery(
-        orpc.trading.getSetups.queryOptions({ input: { journalId } })
+    const { data: confirmations } = useQuery(
+        orpc.trading.getConfirmations.queryOptions({ input: { journalId } })
     );
     const { data: assets } = useQuery(
         orpc.trading.getAssets.queryOptions({ input: { journalId } })
@@ -52,7 +54,7 @@ export function AdvancedFilters({
             try {
                 const parsed = JSON.parse(savedFilters);
                 setSelectedSessions(parsed.sessions || []);
-                setSelectedSetups(parsed.setups || []);
+                setSelectedConfirmations(parsed.confirmations || []);
                 setSelectedAssets(parsed.assets || []);
             } catch (error) {
                 console.error("Error loading saved filters:", error);
@@ -63,7 +65,7 @@ export function AdvancedFilters({
     useEffect(() => {
         const filters = {
             sessions: selectedSessions,
-            setups: selectedSetups,
+            confirmations: selectedConfirmations,
             assets: selectedAssets,
         };
         localStorage.setItem(
@@ -73,7 +75,7 @@ export function AdvancedFilters({
         onFiltersChange(filters);
     }, [
         selectedSessions,
-        selectedSetups,
+        selectedConfirmations,
         selectedAssets,
         journalId,
         onFiltersChange,
@@ -87,11 +89,11 @@ export function AdvancedFilters({
         );
     };
 
-    const handleSetupToggle = (setupId: string) => {
-        setSelectedSetups((prev) =>
-            prev.includes(setupId)
-                ? prev.filter((id) => id !== setupId)
-                : [...prev, setupId]
+    const handleConfirmationToggle = (confirmationId: string) => {
+        setSelectedConfirmations((prev) =>
+            prev.includes(confirmationId)
+                ? prev.filter((id) => id !== confirmationId)
+                : [...prev, confirmationId]
         );
     };
 
@@ -103,21 +105,23 @@ export function AdvancedFilters({
         );
     };
 
-    const handleSelectAll = (type: "sessions" | "setups" | "assets") => {
+    const handleSelectAll = (type: "sessions" | "confirmations" | "assets") => {
         if (type === "sessions") {
             setSelectedSessions(sessions?.map((item) => item.id) || []);
-        } else if (type === "setups") {
-            setSelectedSetups(setups?.map((item) => item.id) || []);
+        } else if (type === "confirmations") {
+            setSelectedConfirmations(
+                confirmations?.map((item) => item.id) || []
+            );
         } else {
             setSelectedAssets(assets?.map((item) => item.id) || []);
         }
     };
 
-    const handleClearAll = (type: "sessions" | "setups" | "assets") => {
+    const handleClearAll = (type: "sessions" | "confirmations" | "assets") => {
         if (type === "sessions") {
             setSelectedSessions([]);
-        } else if (type === "setups") {
-            setSelectedSetups([]);
+        } else if (type === "confirmations") {
+            setSelectedConfirmations([]);
         } else {
             setSelectedAssets([]);
         }
@@ -125,21 +129,24 @@ export function AdvancedFilters({
 
     const handleResetAll = () => {
         setSelectedSessions([]);
-        setSelectedSetups([]);
+        setSelectedConfirmations([]);
         setSelectedAssets([]);
     };
 
     const totalFilters =
-        selectedSessions.length + selectedSetups.length + selectedAssets.length;
+        selectedSessions.length +
+        selectedConfirmations.length +
+        selectedAssets.length;
 
     return (
         <div className={`relative ${className}`}>
             <div className="flex items-center space-x-2">
                 <Button
-                    className={`h-8 border-white/15 bg-black/40 px-3 text-white/80 transition-all duration-200 hover:border-white/25 hover:bg-white/10 hover:text-white ${isExpanded
-                        ? "border-white/25 bg-white/15 text-white"
-                        : ""
-                        }`}
+                    className={`h-8 border-white/15 bg-black/40 px-3 text-white/80 transition-all duration-200 hover:border-white/25 hover:bg-white/10 hover:text-white ${
+                        isExpanded
+                            ? "border-white/25 bg-white/15 text-white"
+                            : ""
+                    }`}
                     onClick={() => setIsExpanded(!isExpanded)}
                     size="sm"
                     variant="outline"
@@ -236,7 +243,7 @@ export function AdvancedFilters({
                                     <Button
                                         className="h-6 px-2 text-white/60 text-xs transition-all duration-200 hover:bg-white/10 hover:text-white"
                                         onClick={() =>
-                                            handleSelectAll("setups")
+                                            handleSelectAll("confirmations")
                                         }
                                         size="sm"
                                         variant="ghost"
@@ -245,7 +252,9 @@ export function AdvancedFilters({
                                     </Button>
                                     <Button
                                         className="h-6 px-2 text-white/60 text-xs transition-all duration-200 hover:bg-white/10 hover:text-white"
-                                        onClick={() => handleClearAll("setups")}
+                                        onClick={() =>
+                                            handleClearAll("confirmations")
+                                        }
                                         size="sm"
                                         variant="ghost"
                                     >
@@ -254,26 +263,28 @@ export function AdvancedFilters({
                                 </div>
                             </div>
                             <div className="scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent max-h-24 space-y-1 overflow-y-auto">
-                                {setups?.map((setup) => (
+                                {confirmations?.map((confirmation) => (
                                     <div
                                         className="group flex items-center space-x-2 rounded p-1.5 transition-all duration-200 hover:bg-white/5"
-                                        key={setup.id}
+                                        key={confirmation.id}
                                     >
                                         <Checkbox
-                                            checked={selectedSetups.includes(
-                                                setup.id
+                                            checked={selectedConfirmations.includes(
+                                                confirmation.id
                                             )}
                                             className="h-4 w-4 border-white/30 transition-all duration-200 data-[state=checked]:border-white data-[state=checked]:bg-white data-[state=checked]:text-black"
-                                            id={`setup-${setup.id}`}
+                                            id={`confirmation-${confirmation.id}`}
                                             onCheckedChange={() =>
-                                                handleSetupToggle(setup.id)
+                                                handleConfirmationToggle(
+                                                    confirmation.id
+                                                )
                                             }
                                         />
                                         <label
                                             className="flex-1 cursor-pointer text-white/80 text-xs transition-colors duration-200 group-hover:text-white"
-                                            htmlFor={`setup-${setup.id}`}
+                                            htmlFor={`confirmation-${confirmation.id}`}
                                         >
-                                            {setup.name}
+                                            {confirmation.name}
                                         </label>
                                     </div>
                                 ))}
@@ -358,30 +369,34 @@ export function AdvancedFilters({
                                             </Badge>
                                         ) : null;
                                     })}
-                                    {selectedSetups.map((setupId) => {
-                                        const setup = setups?.find(
-                                            (s) => s.id === setupId
-                                        );
-                                        return setup ? (
-                                            <Badge
-                                                className="group border-white/30 bg-white/15 px-2 py-0.5 text-white text-xs transition-all duration-200 hover:bg-white/20"
-                                                key={setupId}
-                                            >
-                                                <span className="mr-1 text-white/70 text-xs">
-                                                    St:
-                                                </span>
-                                                {setup.name}
-                                                <RiXingLine
-                                                    className="ml-1 h-3 w-3 cursor-pointer transition-colors duration-200 hover:text-red-300"
-                                                    onClick={() =>
-                                                        handleSetupToggle(
-                                                            setupId
-                                                        )
-                                                    }
-                                                />
-                                            </Badge>
-                                        ) : null;
-                                    })}
+                                    {selectedConfirmations.map(
+                                        (confirmationId) => {
+                                            const confirmation =
+                                                confirmations?.find(
+                                                    (c) =>
+                                                        c.id === confirmationId
+                                                );
+                                            return confirmation ? (
+                                                <Badge
+                                                    className="group border-white/30 bg-white/15 px-2 py-0.5 text-white text-xs transition-all duration-200 hover:bg-white/20"
+                                                    key={confirmationId}
+                                                >
+                                                    <span className="mr-1 text-white/70 text-xs">
+                                                        C:
+                                                    </span>
+                                                    {confirmation.name}
+                                                    <RiXingLine
+                                                        className="ml-1 h-3 w-3 cursor-pointer transition-colors duration-200 hover:text-red-300"
+                                                        onClick={() =>
+                                                            handleConfirmationToggle(
+                                                                confirmationId
+                                                            )
+                                                        }
+                                                    />
+                                                </Badge>
+                                            ) : null;
+                                        }
+                                    )}
                                     {selectedAssets.map((assetId) => {
                                         const asset = assets?.find(
                                             (a) => a.id === assetId
