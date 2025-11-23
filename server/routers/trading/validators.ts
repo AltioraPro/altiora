@@ -98,7 +98,7 @@ export const createAdvancedTradeSchema = z
         journalId: z.string().min(1, "Journal ID is required"),
         assetId: z.string().min(1, "Asset ID is required"),
         sessionId: z.string().nullable().optional(),
-        confirmationId: z.string().nullable().optional(),
+        confirmationIds: z.array(z.string()).optional(),
         tradeDate: z.iso.date(),
         riskInput: z.string().optional(),
         profitLossAmount: z.string().optional(),

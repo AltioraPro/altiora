@@ -13,4 +13,5 @@ export * from "./monthly-usage";
 export * from "./pomodoro-sessions";
 export * from "./subgoals";
 export * from "./trades";
+export * from "./trades-confirmations";
 export * from "./trading-sessions";

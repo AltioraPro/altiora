@@ -31,15 +31,10 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { PAGES } from "@/constants/pages";
-import { orpc } from "@/orpc/client";
+import { orpc, type RouterOutput } from "@/orpc/client";
 
 interface JournalPerformanceCardProps {
-    journal: {
-        id: string;
-        name: string;
-        description: string | null;
-        order: number;
-    };
+    journal: RouterOutput["trading"]["getJournalById"];
     onEdit: () => void;
     onDelete: () => void;
 }
@@ -72,12 +67,14 @@ export function JournalPerformanceCard({
             .slice()
             .sort(
                 (a, b) =>
-                    new Date(a.tradeDate).getTime() -
-                    new Date(b.tradeDate).getTime()
+                    new Date(a.advanced_trade.tradeDate).getTime() -
+                    new Date(b.advanced_trade.tradeDate).getTime()
             )
             .reduce(
                 (acc, trade, index) => {
-                    const pnl = Number(trade.profitLossPercentage);
+                    const pnl = Number(
+                        trade.advanced_trade.profitLossPercentage
+                    );
 
                     const previous =
                         acc.length > 0 ? (acc.at(-1)?.cumulative ?? 0) : 0;
@@ -106,8 +103,12 @@ export function JournalPerformanceCard({
     const bestTrade =
         tradesData && tradesData.length > 0
             ? tradesData.reduce((best, current) => {
-                  const currentPnl = Number(current.profitLossPercentage || 0);
-                  const bestPnl = Number(best.profitLossPercentage || 0);
+                  const currentPnl = Number(
+                      current.advanced_trade.profitLossPercentage || 0
+                  );
+                  const bestPnl = Number(
+                      best.advanced_trade.profitLossPercentage || 0
+                  );
                   return currentPnl > bestPnl ? current : best;
               })
             : null;
@@ -641,7 +642,10 @@ export function JournalPerformanceCard({
                     {bestTrade && (
                         <div
                             className={`mb-4 rounded-lg border p-3 ${
-                                Number(bestTrade.profitLossPercentage || 0) >= 0
+                                Number(
+                                    bestTrade.advanced_trade
+                                        .profitLossPercentage || 0
+                                ) >= 0
                                     ? "border-green-500/20 bg-green-500/10"
                                     : "border-red-500/20 bg-red-500/10"
                             }`}
@@ -651,8 +655,8 @@ export function JournalPerformanceCard({
                                     <RiStockLine
                                         className={`h-4 w-4 ${
                                             Number(
-                                                bestTrade.profitLossPercentage ||
-                                                    0
+                                                bestTrade.advanced_trade
+                                                    .profitLossPercentage || 0
                                             ) >= 0
                                                 ? "text-green-400"
                                                 : "text-red-400"
@@ -661,8 +665,8 @@ export function JournalPerformanceCard({
                                     <span
                                         className={`text-sm ${
                                             Number(
-                                                bestTrade.profitLossPercentage ||
-                                                    0
+                                                bestTrade.advanced_trade
+                                                    .profitLossPercentage || 0
                                             ) >= 0
                                                 ? "text-green-400"
                                                 : "text-red-400"
@@ -674,23 +678,29 @@ export function JournalPerformanceCard({
                                 <Badge
                                     className={`${
                                         Number(
-                                            bestTrade.profitLossPercentage || 0
+                                            bestTrade.advanced_trade
+                                                .profitLossPercentage || 0
                                         ) >= 0
                                             ? "border-green-500/30 bg-green-500/20 text-green-400"
                                             : "border-red-500/30 bg-red-500/20 text-red-400"
                                     }`}
                                 >
                                     {Number(
-                                        bestTrade.profitLossPercentage || 0
+                                        bestTrade.advanced_trade
+                                            .profitLossPercentage || 0
                                     ) >= 0
                                         ? "+"
                                         : ""}
-                                    {bestTrade.profitLossPercentage}%
+                                    {
+                                        bestTrade.advanced_trade
+                                            .profitLossPercentage
+                                    }
+                                    %
                                 </Badge>
                             </div>
                             <div className="mt-1 text-sm text-white/80">
                                 {new Date(
-                                    bestTrade.tradeDate
+                                    bestTrade.advanced_trade.tradeDate
                                 ).toLocaleDateString("en-US")}
                             </div>
                         </div>

@@ -14,40 +14,13 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import type { AdvancedTrade } from "@/server/db/schema";
+import type { RouterOutput } from "@/orpc/client";
 
 interface TradingContentProps {
     journalId: string;
     activeTab: "trades" | "assets" | "sessions" | "confirmations";
-    filteredTrades: AdvancedTrade[] | undefined;
-    stats: {
-        totalTrades: number;
-        closedTrades: number;
-        totalPnL: string | number;
-        avgPnL: string | number;
-        totalAmountPnL?: number;
-        winningTrades: number;
-        losingTrades: number;
-        winRate: number;
-        tradesBySymbol: Array<{
-            assetId?: string | null;
-            symbol?: string | null;
-            count: number;
-            totalPnL: string | null;
-        }>;
-        tradesByConfirmation: Array<{
-            confirmationId: string | null;
-            count: number;
-            totalPnL: string | null;
-        }>;
-        tpTrades: number;
-        beTrades: number;
-        slTrades: number;
-        journal?: {
-            usePercentageCalculation?: boolean;
-            startingCapital?: string;
-        };
-    } | null;
+    filteredTrades: RouterOutput["trading"]["getTrades"] | undefined;
+    stats: RouterOutput["trading"]["getStats"];
     sessions: Array<{ id: string; name: string }> | undefined;
     confirmations: Array<{ id: string; name: string }> | undefined;
     dateFilter: DateFilterState;

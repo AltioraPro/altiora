@@ -237,10 +237,14 @@ const MultipleSelector = ({
                     input.value === "" &&
                     selected.length > 0
                 ) {
-                    const lastSelectOption = selected[selected.length - 1];
+                    const lastSelectOption = selected.at(-1);
+
+                    if (!lastSelectOption) {
+                        return;
+                    }
                     // If last item is fixed, we should not remove it.
                     if (!lastSelectOption.fixed) {
-                        handleUnselect(selected[selected.length - 1]);
+                        handleUnselect(lastSelectOption);
                     }
                 }
                 // This is not a default behavior of the <input /> field
@@ -338,7 +342,7 @@ const MultipleSelector = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [debouncedSearchTerm, groupBy, open, triggerSearchOnFocus]);
 
-    const CreatableItem = () => {
+    const CreatableItem = React.useCallback(() => {
         if (!creatable) {
             return;
         }
@@ -385,7 +389,18 @@ const MultipleSelector = ({
         }
 
         return;
-    };
+    }, [
+        creatable,
+        debouncedSearchTerm,
+        isLoading,
+        maxSelected,
+        onMaxSelected,
+        onChange,
+        options,
+        selected,
+        onSearch,
+        inputValue,
+    ]);
 
     const EmptyItem = React.useCallback(() => {
         if (!emptyIndicator) {

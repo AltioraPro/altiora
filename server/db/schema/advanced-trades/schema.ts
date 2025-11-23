@@ -8,7 +8,6 @@ import {
     varchar,
 } from "drizzle-orm/pg-core";
 import {
-    confirmations,
     tradingAssets,
     tradingJournals,
     tradingSessions,
@@ -33,10 +32,6 @@ export const advancedTrades = pgTable(
             () => tradingSessions.id,
             { onDelete: "set null" }
         ),
-        confirmationId: varchar("confirmation_id", { length: 255 }).references(
-            () => confirmations.id,
-            { onDelete: "set null" }
-        ),
         tradeDate: timestamp("trade_date", { withTimezone: true })
             .defaultNow()
             .notNull(),
@@ -59,7 +54,6 @@ export const advancedTrades = pgTable(
         index("advanced_trade_journal_id_idx").on(table.journalId),
         index("advanced_trade_asset_id_idx").on(table.assetId),
         index("advanced_trade_session_id_idx").on(table.sessionId),
-        index("advanced_trade_confirmation_id_idx").on(table.confirmationId),
         index("advanced_trade_date_idx").on(table.tradeDate),
     ]
 );

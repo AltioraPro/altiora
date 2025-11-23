@@ -447,7 +447,9 @@ export function ImportTradesModal({
                     tradeDate: new Date(tradeDate).toISOString().split("T")[0],
                     assetId,
                     sessionId: sessionId ?? undefined,
-                    confirmationId: confirmationId ?? undefined,
+                    confirmationIds: confirmationId
+                        ? [confirmationId]
+                        : undefined,
                     riskInput,
                     profitLossAmount: "",
                     profitLossPercentage,

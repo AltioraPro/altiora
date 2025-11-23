@@ -11,7 +11,11 @@ import {
     sql,
     sum,
 } from "drizzle-orm";
-import { advancedTrades, tradingJournals } from "@/server/db/schema/index";
+import {
+    advancedTrades,
+    tradesConfirmations,
+    tradingJournals,
+} from "@/server/db/schema/index";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
 import { tradingStatsSchema } from "../validators";
 
@@ -39,11 +43,6 @@ export const getTradingStatsHandler = getTradingStatsBase.handler(
         if (input.sessionIds && input.sessionIds.length > 0) {
             whereConditions.push(
                 inArray(advancedTrades.sessionId, input.sessionIds)
-            );
-        }
-        if (input.confirmationIds && input.confirmationIds.length > 0) {
-            whereConditions.push(
-                inArray(advancedTrades.confirmationId, input.confirmationIds)
             );
         }
         if (input.startDate) {
@@ -134,15 +133,18 @@ export const getTradingStatsHandler = getTradingStatsBase.handler(
 
         const tradesByConfirmation = await db
             .select({
-                confirmationId: advancedTrades.confirmationId,
                 count: count(),
                 totalPnL: sum(
                     sql`CAST(NULLIF(${advancedTrades.profitLossPercentage}, 'undefined') AS DECIMAL)`
                 ),
             })
             .from(advancedTrades)
+            .innerJoin(
+                tradesConfirmations,
+                eq(advancedTrades.id, tradesConfirmations.advancedTradeId)
+            )
             .where(and(...whereConditions))
-            .groupBy(advancedTrades.confirmationId)
+            .groupBy(tradesConfirmations.confirmationId)
             .orderBy(desc(count()));
 
         const [tpTrades] = await db

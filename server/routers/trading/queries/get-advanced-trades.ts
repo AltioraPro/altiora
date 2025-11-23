@@ -1,5 +1,5 @@
 import { and, desc, eq, gte, inArray, lte } from "drizzle-orm";
-import { advancedTrades } from "@/server/db/schema";
+import { advancedTrades, tradesConfirmations } from "@/server/db/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
 import { filterTradesSchema } from "../validators";
 
@@ -34,15 +34,7 @@ export const getAdvancedTradesHandler = getAdvancedTradesBase.handler(
                 inArray(advancedTrades.sessionId, input.sessionIds)
             );
         }
-        if (input.confirmationId) {
-            whereConditions.push(
-                eq(advancedTrades.confirmationId, input.confirmationId)
-            );
-        } else if (input.confirmationIds && input.confirmationIds.length > 0) {
-            whereConditions.push(
-                inArray(advancedTrades.confirmationId, input.confirmationIds)
-            );
-        }
+
         if (input.startDate) {
             whereConditions.push(
                 gte(advancedTrades.tradeDate, new Date(input.startDate))
@@ -61,6 +53,10 @@ export const getAdvancedTradesHandler = getAdvancedTradesBase.handler(
             ? await db
                   .select()
                   .from(advancedTrades)
+                  .innerJoin(
+                      tradesConfirmations,
+                      eq(advancedTrades.id, tradesConfirmations.advancedTradeId)
+                  )
                   .where(and(...whereConditions))
                   .orderBy(
                       desc(advancedTrades.tradeDate),
@@ -71,6 +67,10 @@ export const getAdvancedTradesHandler = getAdvancedTradesBase.handler(
             : await db
                   .select()
                   .from(advancedTrades)
+                  .innerJoin(
+                      tradesConfirmations,
+                      eq(advancedTrades.id, tradesConfirmations.advancedTradeId)
+                  )
                   .where(and(...whereConditions))
                   .orderBy(
                       desc(advancedTrades.tradeDate),
