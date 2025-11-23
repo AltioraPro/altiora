@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { env } from "./env";
 
 const authPaths = [
     "/register",
@@ -12,7 +13,7 @@ const authPaths = [
 
 export function proxy(request: NextRequest) {
     // In production only, we will redirect all auth paths to the home page
-    if (process.env.NODE_ENV === "production") {
+    if (env.VERCEL_ENV === "production") {
         const path = request.nextUrl.pathname;
 
         if (authPaths.some((p) => path.startsWith(p))) {
