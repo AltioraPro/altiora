@@ -14,7 +14,7 @@ import type { TradeItem } from "./columns";
 interface RowActionsProps {
     row: Row<TradeItem>;
     table: Table<TradeItem>;
-    onEdit: (tradeId: string) => void;
+    onEdit: (trade: TradeItem) => void;
     journalId: string;
 }
 
@@ -24,7 +24,7 @@ export default function RowActions({
     onEdit,
     journalId,
 }: RowActionsProps) {
-    const tradeId = row.original.advanced_trade.id;
+    const tradeId = row.original.id;
 
     const { mutate: deleteTrade, isPending: isDeleting } = useMutation(
         orpc.trading.deleteTrade.mutationOptions({
@@ -41,14 +41,14 @@ export default function RowActions({
     );
 
     const handleEdit = () => {
-        onEdit(tradeId);
+        onEdit(row.original);
     };
 
     const handleDelete = () => {
         deleteTrade({ id: tradeId });
     };
 
-    const tradingviewLink = row.original.advanced_trade.tradingviewLink;
+    const tradingviewLink = row.original.tradingviewLink;
 
     return (
         <div className="flex items-center space-x-1">

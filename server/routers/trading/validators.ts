@@ -117,8 +117,7 @@ export const updateAdvancedTradeSchema = z.object({
     id: z.string().min(1, "Trade ID is required"),
     assetId: z.string().optional(),
     sessionId: z.string().optional(),
-    confirmationId: z.string().optional(),
-
+    confirmationIds: z.array(z.string()).optional(),
     tradeDate: z
         .string()
         .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)")
@@ -127,7 +126,6 @@ export const updateAdvancedTradeSchema = z.object({
     profitLossAmount: z.string().optional(),
     profitLossPercentage: z.string().optional(),
     exitReason: z.enum(["TP", "BE", "SL", "Manual"]).optional(),
-
     tradingviewLink: z.string().optional(),
     notes: z.string().optional(),
     isClosed: z.boolean().optional(),
@@ -140,7 +138,6 @@ export const filterTradesSchema = z.object({
     assetIds: z.array(z.string()).optional(),
     sessionId: z.string().optional(),
     sessionIds: z.array(z.string()).optional(),
-    confirmationId: z.string().optional(),
     confirmationIds: z.array(z.string()).optional(),
     symbol: z.string().optional(),
     startDate: z

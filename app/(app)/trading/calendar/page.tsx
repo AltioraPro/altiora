@@ -56,20 +56,14 @@ export default function TradingCalendarPage() {
         const performanceMap = new Map<string, DayPerformance>();
 
         for (const trade of trades) {
-            if (
-                !(
-                    trade.advanced_trade.tradeDate &&
-                    trade.advanced_trade.isClosed
-                )
-            ) {
+            if (!(trade.tradeDate && trade.isClosed)) {
                 continue;
             }
 
-            const tradeDate = new Date(trade.advanced_trade.tradeDate)
+            const tradeDate = new Date(trade.tradeDate)
                 .toISOString()
                 .split("T")[0];
-            const pnlAmount =
-                Number(trade.advanced_trade.profitLossPercentage) || 0;
+            const pnlAmount = Number(trade.profitLossPercentage) || 0;
 
             const existing = performanceMap.get(tradeDate);
             if (existing) {

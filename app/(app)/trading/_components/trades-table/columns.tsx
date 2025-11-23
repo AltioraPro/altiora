@@ -12,16 +12,14 @@ export type TradeItem = RouterOutput["trading"]["getTrades"][number];
 interface ColumnsProps {
     assets?: RouterOutput["trading"]["getAssets"];
     sessions?: RouterOutput["trading"]["getSessions"];
-    confirmations?: RouterOutput["trading"]["getConfirmations"];
     stats?: RouterOutput["trading"]["getStats"];
-    onEdit: (tradeId: string) => void;
+    onEdit: (trade: TradeItem) => void;
     journalId: string;
 }
 
 export const createColumns = ({
     assets,
     sessions,
-    confirmations,
     stats,
     onEdit,
     journalId,
@@ -55,7 +53,7 @@ export const createColumns = ({
         header: "Date",
         accessorKey: "tradeDate",
         cell: ({ row }) => {
-            const tradeDate = row.original.advanced_trade.tradeDate;
+            const tradeDate = row.original.tradeDate;
             return (
                 <span className="text-sm text-white">
                     {format(new Date(tradeDate), "dd MMM yyyy", {
@@ -70,7 +68,7 @@ export const createColumns = ({
         header: "Asset",
         accessorKey: "assetId",
         cell: ({ row }) => {
-            const assetId = row.original.advanced_trade.assetId;
+            const assetId = row.original.assetId;
             const asset = assets?.find((a) => a.id === assetId);
             return (
                 <span className="text-sm text-white">{asset?.name || "-"}</span>
@@ -82,7 +80,7 @@ export const createColumns = ({
         header: "Session",
         accessorKey: "sessionId",
         cell: ({ row }) => {
-            const sessionId = row.original.advanced_trade.sessionId;
+            const sessionId = row.original.sessionId;
             const session = sessions?.find((s) => s.id === sessionId);
             return (
                 <span className="text-sm text-white">
@@ -92,28 +90,27 @@ export const createColumns = ({
         },
         size: 120,
     },
-    // {
-    //     header: "Confirmation",
-    //     accessorKey: "confirmationId",
-    //     cell: ({ row }) => {
-    //         const confirmationId =
-    //             row.original.trades_confirmation?.confirmationId;
-    //         const confirmation = confirmations?.find(
-    //             (c) => c.id === confirmationId
-    //         );
-    //         return (
-    //             <span className="text-sm text-white">
-    //                 {confirmation?.name || "-"}
-    //             </span>
-    //         );
-    //     },
-    //     size: 140,
-    // },
+    {
+        header: "Confirmation",
+        accessorKey: "confirmationId",
+        cell: ({ row }) => {
+            const confirmations = row.original.tradesConfirmations;
+
+            return (
+                <span className="text-sm text-white">
+                    {confirmations
+                        .map((confirmation) => confirmation.confirmations.name)
+                        .join(", ") || "-"}
+                </span>
+            );
+        },
+        size: 140,
+    },
     {
         header: "Risk",
         accessorKey: "riskInput",
         cell: ({ row }) => {
-            const riskInput = row.original.advanced_trade.riskInput;
+            const riskInput = row.original.riskInput;
             return (
                 <span className="text-sm text-white">{riskInput || "-"}</span>
             );
@@ -124,7 +121,7 @@ export const createColumns = ({
         header: "Result",
         accessorKey: "profitLossPercentage",
         cell: ({ row }) => {
-            const trade = row.original.advanced_trade;
+            const trade = row.original;
             const profitLossPercentage = Number(
                 trade.profitLossPercentage || 0
             );
@@ -143,7 +140,7 @@ export const createColumns = ({
                         )}
                     >
                         {profitLossPercentage >= 0 ? "+" : ""}
-                        {trade.profitLossPercentage || 0}%
+                        {trade.profitLossPercentage}%
                     </span>
                     {trade.profitLossAmount && usePercentageCalculation && (
                         <div
@@ -167,7 +164,7 @@ export const createColumns = ({
         header: "Exit",
         accessorKey: "exitReason",
         cell: ({ row }) => {
-            const exitReason = row.original.advanced_trade.exitReason;
+            const exitReason = row.original.exitReason;
             return getExitReasonBadge(exitReason);
         },
         size: 100,
@@ -176,7 +173,7 @@ export const createColumns = ({
         header: "Notes",
         accessorKey: "notes",
         cell: ({ row }) => {
-            const notes = row.original.advanced_trade.notes;
+            const notes = row.original.notes;
             if (!notes) {
                 return <span className="text-sm text-white/70">-</span>;
             }

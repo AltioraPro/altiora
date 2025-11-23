@@ -1,452 +1,393 @@
 "use client";
 
-import { RiCloseLine } from "@remixicon/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { DialogClose } from "@radix-ui/react-dialog";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import type { z } from "zod";
+import type { TradeItem } from "@/app/(app)/trading/_components/trades-table/columns";
+import {
+    FormCombobox,
+    FormInput,
+    FormMultiSelect,
+    FormSelect,
+    FormTextarea,
+} from "@/components/form";
 import { Button } from "@/components/ui/button";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/toast";
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { FieldGroup } from "@/components/ui/field";
 import { orpc } from "@/orpc/client";
+import { updateAdvancedTradeSchema } from "@/server/routers/trading/validators";
+import { FormDateInput } from "../form/form-date-input";
+import { useToast } from "../ui/toast";
+
+type UpdateTradeForm = z.infer<typeof updateAdvancedTradeSchema>;
 
 interface EditTradeModalProps {
-    isOpen: boolean;
     onClose: () => void;
-    tradeId: string;
-    onSuccess?: () => void;
+    trade: TradeItem | null;
 }
 
-export function EditTradeModal({
-    isOpen,
-    onClose,
-    tradeId,
-    onSuccess,
-}: EditTradeModalProps) {
-    const { addToast } = useToast();
-    const [formData, setFormData] = useState({
-        tradeDate: "",
-        assetId: "",
-        sessionId: "",
-        riskPercentage: "",
-        resultPercentage: "",
-        exitReason: "",
-        tradingViewLink: "",
-        notes: "",
-    });
-
-    const [isLoading, setIsLoading] = useState(false);
-
-    const { data: trade, isLoading: tradeLoading } = useQuery(
-        orpc.trading.getTradeById.queryOptions({
-            input: { id: tradeId },
-            enabled: isOpen && !!tradeId,
+function useTradeFormData(journalId: string | undefined) {
+    const { data: assets } = useQuery(
+        orpc.trading.getAssets.queryOptions({
+            input: { journalId: journalId ?? undefined },
+            enabled: !!journalId,
         })
     );
 
     const { data: sessions } = useQuery(
         orpc.trading.getSessions.queryOptions({
-            input: { journalId: trade?.journalId },
+            input: { journalId: journalId ?? undefined },
+            enabled: !!journalId,
         })
     );
 
-    const { data: assets } = useQuery(
-        orpc.trading.getAssets.queryOptions({
-            input: { journalId: trade?.journalId },
+    const { data: journal } = useQuery(
+        orpc.trading.getJournalById.queryOptions({
+            input: { id: journalId ?? "" },
+            enabled: !!journalId,
         })
     );
+
+    const { data: capitalData } = useQuery(
+        orpc.trading.getCurrentCapital.queryOptions({
+            input: { journalId: journalId ?? "" },
+            enabled: !!journalId && !!journal?.usePercentageCalculation,
+        })
+    );
+
+    const { data: confirmations } = useQuery(
+        orpc.trading.getConfirmations.queryOptions({
+            input: { journalId: journalId ?? "" },
+            enabled: !!journalId,
+        })
+    );
+
+    return { assets, sessions, journal, capitalData, confirmations };
+}
+
+export function EditTradeModal({ onClose, trade }: EditTradeModalProps) {
+    const { addToast } = useToast();
+
+    const form = useForm<UpdateTradeForm>({
+        resolver: zodResolver(updateAdvancedTradeSchema),
+    });
 
     useEffect(() => {
         if (trade) {
-            setFormData({
+            form.reset({
+                confirmationIds:
+                    trade.tradesConfirmations?.map(
+                        (confirmation) => confirmation.confirmationId
+                    ) || [],
+                assetId: trade.assetId || "",
+                sessionId: trade.sessionId || "",
                 tradeDate: trade.tradeDate
                     ? new Date(trade.tradeDate).toISOString().split("T")[0]
                     : "",
-                assetId: trade.assetId || "",
-                sessionId: trade.sessionId || "",
-
-                riskPercentage: trade.riskInput?.toString() || "",
-                resultPercentage: trade.profitLossPercentage?.toString() || "",
-                exitReason: trade.exitReason || "",
-                tradingViewLink: trade.tradingviewLink || "",
-                notes: trade.notes || "",
-            });
-        }
-    }, [trade]);
-
-    const { mutateAsync: updateTrade } = useMutation(
-        orpc.trading.updateTrade.mutationOptions({
-            meta: {
-                invalidateQueries: [
-                    orpc.trading.getTradeById.queryKey({
-                        input: { id: tradeId },
-                    }),
-                    orpc.trading.getTrades.queryKey({
-                        input: { journalId: trade?.journalId },
-                    }),
-                    orpc.trading.getStats.queryKey({
-                        input: { journalId: trade?.journalId },
-                    }),
-                ],
-            },
-            onSuccess: () => {
-                addToast({
-                    type: "success",
-                    title: "Success",
-                    message: "Trade updated successfully",
-                });
-                onSuccess?.();
-                onClose();
-            },
-            onError: (error) => {
-                addToast({
-                    type: "error",
-                    title: "Error",
-                    message: error.message || "Failed to update trade",
-                });
-            },
-        })
-    );
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            const updateData: {
-                id: string;
-                tradeDate: string;
-                assetId?: string;
-                sessionId?: string;
-                riskInput: string;
-                profitLossPercentage: string;
-                exitReason?: "TP" | "BE" | "SL" | "Manual";
-                tradingviewLink?: string;
-                notes?: string;
-            } = {
-                id: tradeId,
-                tradeDate: formData.tradeDate,
-                riskInput: String(formData.riskPercentage),
-                profitLossPercentage: String(formData.resultPercentage),
-            };
-
-            if (formData.assetId) {
-                updateData.assetId = formData.assetId;
-            }
-            if (formData.sessionId) {
-                updateData.sessionId = formData.sessionId;
-            }
-            if (formData.exitReason) {
-                updateData.exitReason = formData.exitReason as
+                riskInput: trade.riskInput || "",
+                profitLossAmount: trade.profitLossAmount || "",
+                profitLossPercentage: trade.profitLossPercentage || "",
+                exitReason: trade.exitReason as
                     | "TP"
                     | "BE"
                     | "SL"
-                    | "Manual";
-            }
-            if (formData.tradingViewLink) {
-                updateData.tradingviewLink = formData.tradingViewLink;
-            }
-            if (formData.notes) {
-                updateData.notes = formData.notes;
-            }
-
-            await updateTrade(updateData);
-        } catch (error) {
-            console.error("Error updating trade:", error);
-        } finally {
-            setIsLoading(false);
+                    | "Manual"
+                    | undefined,
+                tradingviewLink: trade.tradingviewLink || "",
+                notes: trade.notes || "",
+                isClosed: trade.isClosed || undefined,
+                id: trade.id || "",
+            });
         }
+    }, [trade, form]);
+
+    const journalId = trade?.journalId;
+    const { assets, sessions, journal, capitalData, confirmations } =
+        useTradeFormData(journalId);
+
+    const { mutateAsync: updateTrade, isPending: isUpdatingTrade } =
+        useMutation(
+            orpc.trading.updateTrade.mutationOptions({
+                meta: {
+                    invalidateQueries: [
+                        orpc.trading.getTrades.queryKey({
+                            input: { journalId: journalId ?? "" },
+                        }),
+                        orpc.trading.getStats.queryKey({
+                            input: { journalId: journalId ?? "" },
+                        }),
+                    ],
+                },
+                onSuccess: () => {
+                    addToast({
+                        type: "success",
+                        title: "Success",
+                        message: "Trade updated successfully",
+                    });
+                    form.reset();
+                    onClose();
+                },
+                onError: (error) => {
+                    console.error(error);
+                    addToast({
+                        type: "error",
+                        title: "Error",
+                        message: error.message || "Failed to update trade",
+                    });
+                },
+            })
+        );
+
+    const { mutateAsync: createAsset, isPending: isCreatingAsset } =
+        useMutation(
+            orpc.trading.createAsset.mutationOptions({
+                meta: {
+                    invalidateQueries: [
+                        orpc.trading.getAssets.queryKey({
+                            input: { journalId: journalId ?? "" },
+                        }),
+                    ],
+                },
+            })
+        );
+
+    const { mutateAsync: createSession, isPending: isCreatingSession } =
+        useMutation(
+            orpc.trading.createSession.mutationOptions({
+                meta: {
+                    invalidateQueries: [
+                        orpc.trading.getSessions.queryKey({
+                            input: { journalId: journalId ?? "" },
+                        }),
+                    ],
+                },
+            })
+        );
+
+    const handleSubmit = async (data: UpdateTradeForm) => {
+        await updateTrade(data);
     };
 
-    if (!isOpen) {
-        return null;
-    }
+    const handleClose = () => {
+        if (isUpdatingTrade) {
+            return;
+        }
+        form.reset();
+        onClose();
+    };
+
+    const handleCreateAsset = async (name: string) => {
+        if (!journalId) {
+            return "";
+        }
+        const newAsset = await createAsset({
+            journalId,
+            name: name.trim(),
+            type: "forex",
+        });
+        return newAsset.id;
+    };
+
+    const handleCreateSession = async (name: string) => {
+        if (!journalId) {
+            return "";
+        }
+        const newSession = await createSession({
+            journalId,
+            name: name.trim(),
+            timezone: "UTC",
+        });
+        return newSession.id;
+    };
+
+    const assetOptions =
+        assets?.map((asset) => ({
+            value: asset.id,
+            label: asset.name,
+        })) || [];
+
+    const sessionOptions =
+        sessions?.map((session) => ({
+            value: session.id,
+            label: session.name,
+        })) || [];
+
+    const confirmationOptions =
+        confirmations?.map((confirmation) => ({
+            value: confirmation.id,
+            label: confirmation.name,
+        })) || [];
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <Card className="max-h-[90vh] w-full max-w-2xl overflow-y-auto border border-white/10 bg-black/90">
-                <CardHeader className="flex flex-row items-center justify-between">
-                    <div>
-                        <CardTitle className="text-white">Edit Trade</CardTitle>
-                        <CardDescription className="text-white/60">
+        <Dialog onOpenChange={handleClose} open={!!trade}>
+            <form
+                id="edit-trade-form"
+                onSubmit={form.handleSubmit(handleSubmit)}
+            >
+                <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle>Edit Trade</DialogTitle>
+                        <DialogDescription>
                             Update trade details and performance
-                        </CardDescription>
-                    </div>
-                    <Button
-                        className="text-white/60 hover:text-white"
-                        onClick={onClose}
-                        size="sm"
-                        variant="ghost"
-                    >
-                        <RiCloseLine className="h-4 w-4" />
-                    </Button>
-                </CardHeader>
+                        </DialogDescription>
+                    </DialogHeader>
+                    <FieldGroup>
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormCombobox
+                                control={form.control}
+                                disabled={isUpdatingTrade}
+                                emptyText="No asset found. Type to create a new one."
+                                isCreating={isCreatingAsset}
+                                label="Asset"
+                                name="assetId"
+                                onCreate={(name) => handleCreateAsset(name)}
+                                options={assetOptions}
+                                placeholder="Select an asset"
+                                searchPlaceholder="Search asset..."
+                            />
 
-                <CardContent>
-                    {tradeLoading ? (
-                        <div className="flex items-center justify-center py-8">
-                            <div className="h-8 w-8 animate-spin rounded-full border-white border-b-2" />
+                            <FormCombobox
+                                control={form.control}
+                                disabled={isUpdatingTrade}
+                                emptyText="No session found. Type to create a new one."
+                                isCreating={isCreatingSession}
+                                label="Session"
+                                name="sessionId"
+                                onCreate={(name) => handleCreateSession(name)}
+                                options={sessionOptions}
+                                placeholder="Select a session"
+                                searchPlaceholder="Search session..."
+                            />
                         </div>
-                    ) : (
-                        <form className="space-y-6" onSubmit={handleSubmit}>
-                            <div>
-                                <Label
-                                    className="text-white"
-                                    htmlFor="tradeDate"
-                                >
-                                    Date *
-                                </Label>
-                                <Input
-                                    className="border-white/20 bg-black/50 text-white"
-                                    id="tradeDate"
-                                    onChange={(e) =>
-                                        setFormData({
-                                            ...formData,
-                                            tradeDate: e.target.value,
-                                        })
-                                    }
-                                    required
-                                    type="date"
-                                    value={formData.tradeDate}
+
+                        <FormMultiSelect
+                            control={form.control}
+                            label="Confirmations"
+                            name="confirmationIds"
+                            options={confirmationOptions}
+                            placeholder="Select confirmations"
+                        />
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormInput
+                                control={form.control}
+                                label="Risk (%)"
+                                name="riskInput"
+                                placeholder="2.0"
+                                step="0.1"
+                                type="number"
+                            />
+
+                            {journal?.usePercentageCalculation &&
+                            journal?.startingCapital ? (
+                                <FormInput
+                                    control={form.control}
+                                    label="Result (€)"
+                                    name="profitLossAmount"
+                                    placeholder="250.00"
+                                    step="0.01"
+                                    type="number"
                                 />
-                            </div>
-
-                            <div>
-                                <Label className="text-white" htmlFor="assetId">
-                                    Asset
-                                </Label>
-                                <Select
-                                    onValueChange={(value) =>
-                                        setFormData({
-                                            ...formData,
-                                            assetId: value,
-                                        })
-                                    }
-                                    value={formData.assetId}
-                                >
-                                    <SelectTrigger className="border-white/20 bg-black/50 text-white">
-                                        <SelectValue placeholder="Select an asset" />
-                                    </SelectTrigger>
-                                    <SelectContent className="border-white/20 bg-black/90">
-                                        {assets?.map((asset) => (
-                                            <SelectItem
-                                                className="text-white hover:bg-white/10"
-                                                key={asset.id}
-                                                value={asset.id}
-                                            >
-                                                {asset.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            <div>
-                                <Label
-                                    className="text-white"
-                                    htmlFor="sessionId"
-                                >
-                                    Session
-                                </Label>
-                                <Select
-                                    onValueChange={(value) =>
-                                        setFormData({
-                                            ...formData,
-                                            sessionId: value,
-                                        })
-                                    }
-                                    value={formData.sessionId}
-                                >
-                                    <SelectTrigger className="border-white/20 bg-black/50 text-white">
-                                        <SelectValue placeholder="Select a session" />
-                                    </SelectTrigger>
-                                    <SelectContent className="border-white/20 bg-black/90">
-                                        {sessions?.map((session) => (
-                                            <SelectItem
-                                                className="text-white hover:bg-white/10"
-                                                key={session.id}
-                                                value={session.id}
-                                            >
-                                                {session.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            {/* Risk and Result */}
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                <div>
-                                    <Label
-                                        className="text-white"
-                                        htmlFor="riskPercentage"
-                                    >
-                                        Risk (%)
-                                    </Label>
-                                    <Input
-                                        className="border-white/20 bg-black/50 text-white"
-                                        id="riskPercentage"
-                                        onChange={(e) =>
-                                            setFormData({
-                                                ...formData,
-                                                riskPercentage: e.target.value,
-                                            })
-                                        }
-                                        placeholder="2.0"
-                                        step="0.1"
-                                        type="number"
-                                        value={formData.riskPercentage}
-                                    />
-                                </div>
-
-                                <div>
-                                    <Label
-                                        className="text-white"
-                                        htmlFor="resultPercentage"
-                                    >
-                                        Result (%) • Backtest mode
-                                    </Label>
-                                    <Input
-                                        className="border-white/20 bg-black/50 text-white"
-                                        id="resultPercentage"
-                                        onChange={(e) =>
-                                            setFormData({
-                                                ...formData,
-                                                resultPercentage:
-                                                    e.target.value,
-                                            })
-                                        }
-                                        placeholder="2.5"
-                                        step="0.1"
-                                        type="number"
-                                        value={formData.resultPercentage}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Exit Reason */}
-                            <div>
-                                <Label
-                                    className="text-white"
-                                    htmlFor="exitReason"
-                                >
-                                    Exit reason
-                                </Label>
-                                <Select
-                                    onValueChange={(value) =>
-                                        setFormData({
-                                            ...formData,
-                                            exitReason: value,
-                                        })
-                                    }
-                                    value={formData.exitReason}
-                                >
-                                    <SelectTrigger className="border-white/20 bg-black/50 text-white">
-                                        <SelectValue placeholder="Select exit reason" />
-                                    </SelectTrigger>
-                                    <SelectContent className="border-white/20 bg-black/90">
-                                        <SelectItem
-                                            className="text-white hover:bg-white/10"
-                                            value="TP"
-                                        >
-                                            TP
-                                        </SelectItem>
-                                        <SelectItem
-                                            className="text-white hover:bg-white/10"
-                                            value="SL"
-                                        >
-                                            SL
-                                        </SelectItem>
-                                        <SelectItem
-                                            className="text-white hover:bg-white/10"
-                                            value="BE"
-                                        >
-                                            BE
-                                        </SelectItem>
-                                        <SelectItem
-                                            className="text-white hover:bg-white/10"
-                                            value="Manual"
-                                        >
-                                            Manual
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            <div>
-                                <Label
-                                    className="text-white"
-                                    htmlFor="tradingViewLink"
-                                >
-                                    TradingView link (optional)
-                                </Label>
-                                <Input
-                                    className="border-white/20 bg-black/50 text-white"
-                                    id="tradingViewLink"
-                                    onChange={(e) =>
-                                        setFormData({
-                                            ...formData,
-                                            tradingViewLink: e.target.value,
-                                        })
-                                    }
-                                    placeholder="https://www.tradingview.com/..."
-                                    type="url"
-                                    value={formData.tradingViewLink}
+                            ) : (
+                                <FormInput
+                                    control={form.control}
+                                    label="Result (%)"
+                                    name="profitLossPercentage"
+                                    placeholder="2.5"
+                                    step="0.01"
+                                    type="number"
                                 />
-                            </div>
+                            )}
+                        </div>
 
-                            <div>
-                                <Label className="text-white" htmlFor="notes">
-                                    Notes (optional)
-                                </Label>
-                                <Textarea
-                                    className="border-white/20 bg-black/50 text-white"
-                                    id="notes"
-                                    onChange={(e) =>
-                                        setFormData({
-                                            ...formData,
-                                            notes: e.target.value,
-                                        })
-                                    }
-                                    placeholder="Additional notes about this trade"
-                                    rows={3}
-                                    value={formData.notes}
-                                />
+                        {journal?.usePercentageCalculation && capitalData && (
+                            <div className="rounded border bg-muted p-2 text-muted-foreground text-xs">
+                                Current capital: {capitalData.currentCapital}€
+                                {capitalData.startingCapital && (
+                                    <span className="ml-2">
+                                        (Started with:{" "}
+                                        {capitalData.startingCapital}€)
+                                    </span>
+                                )}
                             </div>
+                        )}
 
-                            <div className="flex justify-end space-x-3 border-white/10 border-t pt-4">
-                                <Button
-                                    className="border-white/20 text-white hover:bg-white/10"
-                                    onClick={onClose}
-                                    type="button"
-                                    variant="outline"
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    className="bg-white text-black hover:bg-gray-200"
-                                    disabled={isLoading}
-                                    type="submit"
-                                >
-                                    {isLoading ? "Updating..." : "Update Trade"}
-                                </Button>
-                            </div>
-                        </form>
-                    )}
-                </CardContent>
-            </Card>
-        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormDateInput
+                                control={form.control}
+                                label="Date"
+                                name="tradeDate"
+                                placeholder="Select a date"
+                            />
+
+                            <FormSelect
+                                control={form.control}
+                                label="Exit reason"
+                                name="exitReason"
+                                options={[
+                                    { value: "TP", label: "TP (Take Profit)" },
+                                    { value: "BE", label: "BE (Break Even)" },
+                                    { value: "SL", label: "SL (Stop Loss)" },
+                                    {
+                                        value: "Manual",
+                                        label: "Manual",
+                                    },
+                                ]}
+                                placeholder="Select exit reason"
+                            />
+                        </div>
+
+                        <FormInput
+                            control={form.control}
+                            label="TradingView link"
+                            name="tradingviewLink"
+                            placeholder="https://www.tradingview.com/..."
+                            type="url"
+                        />
+
+                        <FormTextarea
+                            control={form.control}
+                            label="Notes"
+                            name="notes"
+                            placeholder="Trade notes..."
+                            rows={3}
+                        />
+                    </FieldGroup>
+                    <DialogFooter>
+                        <DialogClose asChild>
+                            <Button
+                                disabled={isUpdatingTrade}
+                                onClick={handleClose}
+                                type="button"
+                                variant="outline"
+                            >
+                                Cancel
+                            </Button>
+                        </DialogClose>
+                        <Button
+                            disabled={
+                                isUpdatingTrade ||
+                                !form.formState.isValid ||
+                                !form.formState.isDirty
+                            }
+                            form="edit-trade-form"
+                            type="submit"
+                        >
+                            {isUpdatingTrade ? "Updating..." : "Update trade"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </form>
+        </Dialog>
     );
 }

@@ -83,14 +83,33 @@ export const getTradingStatsHandler = getTradingStatsBase.handler(
 
         const [pnlStats] = await db
             .select({
+                // Replace lines 86-94 with:
                 totalPnL: sum(
-                    sql`CAST(NULLIF(${advancedTrades.profitLossPercentage}, 'undefined') AS DECIMAL)`
+                    sql`CASE 
+        WHEN ${advancedTrades.profitLossPercentage} IS NULL 
+        OR ${advancedTrades.profitLossPercentage} = '' 
+        OR ${advancedTrades.profitLossPercentage} = 'undefined'
+        THEN NULL 
+        ELSE CAST(${advancedTrades.profitLossPercentage} AS DECIMAL) 
+    END`
                 ),
                 avgPnL: avg(
-                    sql`CAST(NULLIF(${advancedTrades.profitLossPercentage}, 'undefined') AS DECIMAL)`
+                    sql`CASE 
+        WHEN ${advancedTrades.profitLossPercentage} IS NULL 
+        OR ${advancedTrades.profitLossPercentage} = '' 
+        OR ${advancedTrades.profitLossPercentage} = 'undefined'
+        THEN NULL 
+        ELSE CAST(${advancedTrades.profitLossPercentage} AS DECIMAL) 
+    END`
                 ),
                 totalAmountPnL: sum(
-                    sql`CAST(NULLIF(${advancedTrades.profitLossAmount}, 'undefined') AS DECIMAL)`
+                    sql`CASE 
+        WHEN ${advancedTrades.profitLossAmount} IS NULL 
+        OR ${advancedTrades.profitLossAmount} = '' 
+        OR ${advancedTrades.profitLossAmount} = 'undefined'
+        THEN NULL 
+        ELSE CAST(${advancedTrades.profitLossAmount} AS DECIMAL) 
+    END`
                 ),
             })
             .from(advancedTrades)

@@ -1,6 +1,10 @@
 import { ORPCError } from "@orpc/client";
 import { and, eq } from "drizzle-orm";
-import { advancedTrades, tradingJournals } from "@/server/db/schema";
+import {
+    advancedTrades,
+    tradesConfirmations,
+    tradingJournals,
+} from "@/server/db/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
 import { calculateTradeResults } from "@/server/services/trade-calculation";
 import { updateAdvancedTradeSchema } from "../validators";
@@ -79,6 +83,33 @@ export const updateAdvancedTradeHandler = updateAdvancedTradeBase.handler(
                 )
             )
             .returning();
+
+        if (updateData.confirmationIds !== undefined) {
+            await db
+                .delete(tradesConfirmations)
+                .where(
+                    and(
+                        eq(tradesConfirmations.advancedTradeId, id),
+                        eq(tradesConfirmations.userId, userId)
+                    )
+                );
+
+            if (updateData.confirmationIds.length > 0) {
+                const confirmationValues = updateData.confirmationIds.map(
+                    (confirmationId) => ({
+                        id: crypto.randomUUID(),
+                        userId,
+                        advancedTradeId: id,
+                        confirmationId,
+                    })
+                );
+
+                await db
+                    .insert(tradesConfirmations)
+                    .values(confirmationValues)
+                    .onConflictDoNothing();
+            }
+        }
 
         return updatedTrade;
     }

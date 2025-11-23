@@ -76,7 +76,7 @@ function filterTradesByDate(
     }
 
     return trades.filter((trade) => {
-        const tradeDate = new Date(trade.advanced_trade.tradeDate);
+        const tradeDate = new Date(trade.tradeDate);
 
         switch (dateFilter.view) {
             case "monthly": {
@@ -126,12 +126,12 @@ function calculateCumulativePerformance(
     return trades
         .sort(
             (a, b) =>
-                new Date(a.advanced_trade.tradeDate).getTime() -
-                new Date(b.advanced_trade.tradeDate).getTime()
+                new Date(a.tradeDate).getTime() -
+                new Date(b.tradeDate).getTime()
         )
         .reduce(
             (acc, trade) => {
-                const pnl = Number(trade.advanced_trade.profitLossPercentage);
+                const pnl = Number(trade.profitLossPercentage);
                 const previousCumulative =
                     acc.length > 0 ? acc.at(-1)?.cumulative || 0 : 0;
                 const cumulative = previousCumulative + pnl;
@@ -215,14 +215,6 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
         })
     );
 
-    const cumulativeData = useMemo(
-        () =>
-            filteredTrades
-                ? calculateCumulativePerformance(filteredTrades)
-                : [],
-        [filteredTrades]
-    );
-
     // Utiliser directement backendStats car les filtres sont déjà appliqués côté serveur
     const stats = backendStats;
 
@@ -248,7 +240,7 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
     }
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="px-6 py-8">
             <TradingPageHeader
                 journalDescription={journal.description || undefined}
                 journalName={journal.name}
