@@ -103,14 +103,14 @@ export function JournalPerformanceCard({
     const bestTrade =
         tradesData && tradesData.length > 0
             ? tradesData.reduce((best, current) => {
-                  const currentPnl = Number(
-                      current.advanced_trade.profitLossPercentage || 0
-                  );
-                  const bestPnl = Number(
-                      best.advanced_trade.profitLossPercentage || 0
-                  );
-                  return currentPnl > bestPnl ? current : best;
-              })
+                const currentPnl = Number(
+                    current.advanced_trade.profitLossPercentage || 0
+                );
+                const bestPnl = Number(
+                    best.advanced_trade.profitLossPercentage || 0
+                );
+                return currentPnl > bestPnl ? current : best;
+            })
             : null;
 
     const finalCumulative =
@@ -276,23 +276,8 @@ export function JournalPerformanceCard({
                                             return "0.00";
                                         }
 
-                                        const totalPnL =
-                                            typeof stats.totalPnL === "string"
-                                                ? Number.parseFloat(
-                                                      stats.totalPnL
-                                                  ) || 0
-                                                : stats.totalPnL;
-                                        const avgWin =
-                                            stats.winningTrades > 0
-                                                ? totalPnL / stats.winningTrades
-                                                : 0;
-                                        const avgLoss =
-                                            stats.losingTrades > 0
-                                                ? Math.abs(totalPnL) /
-                                                  stats.losingTrades
-                                                : 0;
-                                        const profitFactor =
-                                            avgLoss > 0 ? avgWin / avgLoss : 0;
+                                        // Use profitFactor calculated on the server (Gains totaux / Pertes totales)
+                                        const profitFactor = stats.profitFactor ?? 0;
 
                                         return profitFactor.toFixed(2);
                                     })()}
@@ -641,49 +626,45 @@ export function JournalPerformanceCard({
 
                     {bestTrade && (
                         <div
-                            className={`mb-4 rounded-lg border p-3 ${
-                                Number(
-                                    bestTrade.advanced_trade
-                                        .profitLossPercentage || 0
-                                ) >= 0
-                                    ? "border-green-500/20 bg-green-500/10"
-                                    : "border-red-500/20 bg-red-500/10"
-                            }`}
+                            className={`mb-4 rounded-lg border p-3 ${Number(
+                                bestTrade.advanced_trade
+                                    .profitLossPercentage || 0
+                            ) >= 0
+                                ? "border-green-500/20 bg-green-500/10"
+                                : "border-red-500/20 bg-red-500/10"
+                                }`}
                         >
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
                                     <RiStockLine
-                                        className={`h-4 w-4 ${
-                                            Number(
-                                                bestTrade.advanced_trade
-                                                    .profitLossPercentage || 0
-                                            ) >= 0
-                                                ? "text-green-400"
-                                                : "text-red-400"
-                                        }`}
+                                        className={`h-4 w-4 ${Number(
+                                            bestTrade.advanced_trade
+                                                .profitLossPercentage || 0
+                                        ) >= 0
+                                            ? "text-green-400"
+                                            : "text-red-400"
+                                            }`}
                                     />
                                     <span
-                                        className={`text-sm ${
-                                            Number(
-                                                bestTrade.advanced_trade
-                                                    .profitLossPercentage || 0
-                                            ) >= 0
-                                                ? "text-green-400"
-                                                : "text-red-400"
-                                        }`}
+                                        className={`text-sm ${Number(
+                                            bestTrade.advanced_trade
+                                                .profitLossPercentage || 0
+                                        ) >= 0
+                                            ? "text-green-400"
+                                            : "text-red-400"
+                                            }`}
                                     >
                                         Best trade
                                     </span>
                                 </div>
                                 <Badge
-                                    className={`${
-                                        Number(
-                                            bestTrade.advanced_trade
-                                                .profitLossPercentage || 0
-                                        ) >= 0
-                                            ? "border-green-500/30 bg-green-500/20 text-green-400"
-                                            : "border-red-500/30 bg-red-500/20 text-red-400"
-                                    }`}
+                                    className={`${Number(
+                                        bestTrade.advanced_trade
+                                            .profitLossPercentage || 0
+                                    ) >= 0
+                                        ? "border-green-500/30 bg-green-500/20 text-green-400"
+                                        : "border-red-500/30 bg-red-500/20 text-red-400"
+                                        }`}
                                 >
                                     {Number(
                                         bestTrade.advanced_trade

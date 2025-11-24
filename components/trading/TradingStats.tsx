@@ -24,10 +24,8 @@ export function TradingStats({
             ? Number.parseFloat(stats.totalPnL) || 0
             : stats.totalPnL;
 
-    // Calculate total gains and total losses separately
-    const totalGains = stats.winningTrades > 0 ? totalPnL : 0;
-    const totalLosses = stats.losingTrades > 0 ? Math.abs(totalPnL) : 0;
-    const profitFactor = totalLosses > 0 ? totalGains / totalLosses : 0;
+    // Use profitFactor calculated on the server (Gains totaux / Pertes totales)
+    const profitFactor = stats.profitFactor ?? 0;
 
     return (
         <div className={cn("space-y-8", className)} {...props}>

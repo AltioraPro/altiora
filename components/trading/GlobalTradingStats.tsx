@@ -22,22 +22,8 @@ export function GlobalTradingStats({
             ? Number.parseFloat(stats.totalPnL) || 0
             : stats.totalPnL;
 
-    // const avgWin =
-    //     typeof stats.avgGain === "number"
-    //         ? stats.avgGain
-    //         : stats.winningTrades > 0
-    //           ? totalPnL / stats.winningTrades
-    //           : 0;
-    // const avgLoss =
-    //     typeof stats.avgLoss === "number"
-    //         ? stats.avgLoss
-    //         : stats.losingTrades > 0
-    //           ? Math.abs(totalPnL) / stats.losingTrades
-    //           : 0;
-
-    const totalGains = stats.winningTrades > 0 ? totalPnL : 0;
-    const totalLosses = stats.losingTrades > 0 ? Math.abs(totalPnL) : 0;
-    const profitFactor = totalLosses > 0 ? totalGains / totalLosses : 0;
+    // Use profitFactor calculated on the server (Gains totaux / Pertes totales)
+    const profitFactor = stats.profitFactor ?? 0;
 
     return (
         <div className={cn("space-y-6", className)} {...props}>
