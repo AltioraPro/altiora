@@ -15,7 +15,7 @@ export function SettingsPageClient() {
     const [page] = useQueryState("page", settingsSearchParams.page);
 
     const { data: user } = useSuspenseQuery(
-        orpc.auth.getCurrentUser.queryOptions({})
+        orpc.auth.getCurrentUser.queryOptions()
     );
 
     return (
@@ -23,11 +23,11 @@ export function SettingsPageClient() {
             {!page && (
                 <>
                     <MobileSettingsMenu />
-                    <AccountBillingSection currentPage={page} />
+                    <AccountBillingSection currentPage={page} user={user} />
                 </>
             )}
             {page === "account-billing" && (
-                <AccountBillingSection currentPage={page} />
+                <AccountBillingSection currentPage={page} user={user} />
             )}
             {page === "security" && <SecuritySection />}
             {page === "contact" && <ContactSection />}

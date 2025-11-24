@@ -3,8 +3,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useQueryStates } from "nuqs";
+import { impersonateUser } from "@/app/(app)/_lib/impersonate-user";
 import { useToast } from "@/components/ui/toast";
-import { PAGES } from "@/constants/pages";
 import type { UserRole } from "@/constants/roles";
 import { authClient } from "@/lib/auth-client";
 import { orpc } from "@/orpc/client";
@@ -118,33 +118,6 @@ export function useUserTableActions(user: Item) {
         },
     });
 
-    // Impersonate user (using authClient directly)
-    const impersonateMutation = useMutation({
-        mutationFn: async () => {
-            const response = await authClient.admin.impersonateUser({
-                userId: user.id,
-            });
-
-            if (!response.data) {
-                throw new Error("Failed to impersonate user");
-            }
-
-            return response.data;
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["user"] });
-            router.push(PAGES.DASHBOARD);
-            router.refresh();
-        },
-        onError: () => {
-            addToast({
-                type: "error",
-                title: "Failed to impersonate",
-                message: `Failed to impersonate ${user.email}`,
-            });
-        },
-    });
-
     const handleBanUser = () => {
         if (currentUser?.id === user.id) {
             addToast({
@@ -174,15 +147,7 @@ export function useUserTableActions(user: Item) {
     };
 
     const handleImpersonate = () => {
-        if (currentUser?.id === user.id) {
-            addToast({
-                type: "error",
-                title: "Cannot impersonate yourself",
-                message: "You cannot impersonate your own account",
-            });
-            return;
-        }
-        impersonateMutation.mutate();
+        impersonateUser(user.id, queryClient, router);
     };
 
     return {
@@ -193,6 +158,5 @@ export function useUserTableActions(user: Item) {
         isBanning: banUserMutation.isPending,
         isUnbanning: unbanUserMutation.isPending,
         isChangingRole: changeRoleMutation.isPending,
-        isImpersonating: impersonateMutation.isPending,
     };
 }

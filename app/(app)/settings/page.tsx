@@ -16,15 +16,15 @@ export default async function SettingsPage({
 
     const prefetchPromises: Promise<unknown>[] = [];
 
-    if (page === "account-billing" || page === "privacy") {
+    if (!page || page === "account-billing" || page === "privacy") {
         prefetchPromises.push(
-            queryClient.prefetchQuery(orpc.auth.getCurrentUser.queryOptions({}))
+            queryClient.prefetchQuery(orpc.auth.getCurrentUser.queryOptions())
         );
     }
 
     if (page === "security") {
         prefetchPromises.push(
-            queryClient.prefetchQuery(orpc.auth.getSessions.queryOptions({}))
+            queryClient.prefetchQuery(orpc.auth.getSessions.queryOptions())
         );
     }
 
