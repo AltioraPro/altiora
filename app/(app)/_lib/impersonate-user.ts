@@ -2,7 +2,7 @@
 
 import type { QueryClient } from "@tanstack/react-query";
 import type { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { useToast } from "@/components/ui/toast";
 import { AUTH_ERRORS } from "@/constants/auth-errors";
 import { PAGES } from "@/constants/pages";
 import { authClient } from "@/lib/auth-client";
@@ -12,15 +12,25 @@ export async function impersonateUser(
     queryClient: QueryClient,
     router: ReturnType<typeof useRouter>
 ) {
+    const { addToast } = useToast();
+
     const { error } = await authClient.admin.impersonateUser({
         userId,
     });
 
     if (error) {
         if (error.code === AUTH_ERRORS.BANNED_USER) {
-            toast.error(`Failed to impersonate user: ${error.message}`);
+            addToast({
+                type: "error",
+                title: "Failed to impersonate user",
+                message: `${error.message}`,
+            });
         } else {
-            toast.error("Failed to impersonate user");
+            addToast({
+                type: "error",
+                title: "Failed to impersonate user",
+                message: "Failed to impersonate user",
+            });
         }
         return;
     }
