@@ -11,11 +11,12 @@ import {
     RiTrophyLine,
     RiUserLine,
 } from "@remixicon/react";
+import { useQuery } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { PAGES } from "@/constants/pages";
 import { USER_ROLES } from "@/constants/roles";
-import { useSession } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth-client";
 import { Item } from "./menu-item";
 
 export const MENU_ITEMS = {
@@ -83,7 +84,15 @@ type Props = {
 
 export function MainMenu({ onSelect, isExpanded = false }: Props) {
     const pathname = usePathname();
-    const { data: session } = useSession();
+
+    const { data: session } = useQuery({
+        queryKey: ["user"],
+        queryFn: async () => {
+            const session = await authClient.getSession();
+            return session?.data;
+        },
+    });
+
     const part = pathname?.split("/")[1];
     const [expandedItem, setExpandedItem] = useState<string | null>(null);
 
@@ -104,7 +113,7 @@ export function MainMenu({ onSelect, isExpanded = false }: Props) {
                                 item.path.startsWith(`/${part}`));
 
                         const hasRequiredRole = item.requiredRole
-                            ? session?.user?.role === item.requiredRole
+                            ? session?.user.role === item.requiredRole
                             : true;
 
                         if (!hasRequiredRole) {

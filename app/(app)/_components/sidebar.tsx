@@ -38,8 +38,6 @@ export function Sidebar() {
             <div className="flex w-full flex-1 flex-col pt-[70px]">
                 <MainMenu isExpanded={isExpanded} />
             </div>
-
-            {/* <TeamDropdown isExpanded={isExpanded} /> */}
         </aside>
     );
 }

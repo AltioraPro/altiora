@@ -1,10 +1,9 @@
 "use client";
 
 import { RiAdminLine } from "@remixicon/react";
-import { useMutation } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { PAGES } from "@/constants/pages";
-import { authClient } from "@/lib/auth-client";
+import { stopImpersonating } from "@/app/(app)/_lib/stop-impersonating";
 
 interface ImpersonationBannerProps {
     userName: string;
@@ -12,31 +11,10 @@ interface ImpersonationBannerProps {
 
 export function ImpersonationBanner({ userName }: ImpersonationBannerProps) {
     const router = useRouter();
+    const queryClient = useQueryClient();
 
-    const stopImpersonatingMutation = useMutation({
-        mutationFn: async () => {
-            // Better-auth admin plugin should have stopImpersonating method
-            const response = await authClient.admin.stopImpersonating();
-
-            if (!response.data) {
-                throw new Error("Failed to stop impersonating");
-            }
-
-            return response.data;
-        },
-        onSuccess: () => {
-            router.push(PAGES.ADMIN_USERS);
-            router.refresh();
-        },
-        onError: () => {
-            // If stopImpersonating doesn't exist, try signing out and back in
-            // This is a fallback - better-auth should have stopImpersonating
-            console.error("Failed to stop impersonating");
-        },
-    });
-
-    const handleStopImpersonating = () => {
-        stopImpersonatingMutation.mutate();
+    const handleStopImpersonation = () => {
+        stopImpersonating(queryClient, router);
     };
 
     return (
@@ -50,8 +28,7 @@ export function ImpersonationBanner({ userName }: ImpersonationBannerProps) {
             </div>
             <button
                 className="flex cursor-pointer items-center gap-1 p-1 underline underline-offset-2"
-                disabled={stopImpersonatingMutation.isPending}
-                onClick={handleStopImpersonating}
+                onClick={handleStopImpersonation}
                 type="button"
             >
                 Return to admin view
