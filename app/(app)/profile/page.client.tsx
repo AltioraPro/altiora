@@ -16,7 +16,7 @@ import { DeepworkStats } from "./_components/deepwork-stats";
 
 export function ProfilePageClient() {
     const { data: user, error } = useSuspenseQuery(
-        orpc.auth.getCurrentUser.queryOptions({})
+        orpc.auth.getCurrentUser.queryOptions()
     );
 
     if (isDefinedError(error) && error.code === "UNAUTHORIZED") {
