@@ -310,7 +310,8 @@ export async function POST(request: NextRequest) {
 
                     await GoalRemindersService.updateNextReminderDate(
                         goal.goalId,
-                        goal.reminderFrequency as "daily" | "weekly" | "monthly"
+                        goal.reminderFrequency as "daily" | "weekly" | "monthly",
+                        goal.userId
                     );
 
                     await GoalRemindersService.recordReminderSent(

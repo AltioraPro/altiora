@@ -18,6 +18,8 @@ import {
     updateProfileHandler,
     updateRankBase,
     updateRankHandler,
+    updateTimezoneBase,
+    updateTimezoneHandler,
     verifyEmailBase,
     verifyEmailHandler,
 } from "./mutations";
@@ -150,5 +152,12 @@ export const authRouter = base.router({
         .handler(
             async ({ context }) =>
                 await call(deleteAccountHandler, undefined, { context })
+        ),
+
+    updateTimezone: updateTimezoneBase
+        .route({ method: "POST" })
+        .handler(
+            async ({ context, input }) =>
+                await call(updateTimezoneHandler, input, { context })
         ),
 });

@@ -1,8 +1,66 @@
-import { addDays, addMonths, addWeeks } from "date-fns";
 import { and, eq, isNull } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { db } from "@/server/db";
-import { goals } from "@/server/db/schema";
+import { goals, user } from "@/server/db/schema";
+
+/**
+ * Calcule la prochaine date de rappel à 9h00 dans le timezone de l'utilisateur
+ */
+function calculateNextReminderInTimezone(
+    frequency: "daily" | "weekly" | "monthly",
+    userTimezone: string = "UTC"
+): Date {
+    const now = new Date();
+    const nextDate = new Date(now);
+
+    switch (frequency) {
+        case "daily":
+            nextDate.setDate(nextDate.getDate() + 1);
+            break;
+        case "weekly":
+            nextDate.setDate(nextDate.getDate() + 7);
+            break;
+        case "monthly":
+            nextDate.setMonth(nextDate.getMonth() + 1);
+            break;
+        default:
+            nextDate.setDate(nextDate.getDate() + 1);
+            break;
+    }
+
+    // Obtenir l'heure 9h00 dans le timezone de l'utilisateur
+    const formatter = new Intl.DateTimeFormat("en-US", {
+        timeZone: userTimezone,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+    });
+
+    const parts = formatter.formatToParts(nextDate);
+    const year = Number.parseInt(
+        parts.find((p) => p.type === "year")?.value || "2024",
+        10
+    );
+    const month = Number.parseInt(
+        parts.find((p) => p.type === "month")?.value || "1",
+        10
+    );
+    const day = Number.parseInt(
+        parts.find((p) => p.type === "day")?.value || "1",
+        10
+    );
+
+    // Créer une date à 9h00 UTC puis ajuster pour le timezone
+    const targetDate = new Date(Date.UTC(year, month - 1, day, 9, 0, 0, 0));
+
+    // Calculer le décalage horaire du timezone de l'utilisateur
+    const utcDate = new Date(targetDate.toLocaleString("en-US", { timeZone: "UTC" }));
+    const tzDate = new Date(targetDate.toLocaleString("en-US", { timeZone: userTimezone }));
+    const tzOffset = tzDate.getTime() - utcDate.getTime();
+    targetDate.setTime(targetDate.getTime() - tzOffset);
+
+    return targetDate;
+}
 
 export async function POST() {
     try {
@@ -36,21 +94,18 @@ export async function POST() {
                 continue;
             }
 
-            let nextReminderDate: Date;
+            // Récupérer le timezone de l'utilisateur
+            const [userData] = await db
+                .select({ timezone: user.timezone })
+                .from(user)
+                .where(eq(user.id, goal.userId))
+                .limit(1);
+            const userTimezone = userData?.timezone || "UTC";
 
-            switch (goal.reminderFrequency) {
-                case "daily":
-                    nextReminderDate = addDays(now, 1);
-                    break;
-                case "weekly":
-                    nextReminderDate = addWeeks(now, 1);
-                    break;
-                case "monthly":
-                    nextReminderDate = addMonths(now, 1);
-                    break;
-                default:
-                    continue;
-            }
+            const nextReminderDate = calculateNextReminderInTimezone(
+                goal.reminderFrequency as "daily" | "weekly" | "monthly",
+                userTimezone
+            );
 
             await db
                 .update(goals)
@@ -68,7 +123,7 @@ export async function POST() {
             });
 
             console.info(
-                `Corrigé: ${goal.title} -> ${nextReminderDate.toISOString()}`
+                `Corrigé: ${goal.title} -> ${nextReminderDate.toISOString()} (timezone: ${userTimezone})`
             );
         }
 

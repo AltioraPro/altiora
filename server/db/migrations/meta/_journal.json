@@ -246,6 +246,13 @@
       "when": 1763849078333,
       "tag": "0034_windy_selene",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1764067242697,
+      "tag": "0035_zippy_smasher",
+      "breakpoints": true
     }
   ]
 }

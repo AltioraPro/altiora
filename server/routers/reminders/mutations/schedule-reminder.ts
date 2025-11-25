@@ -6,10 +6,11 @@ export const scheduleReminderBase =
     protectedProcedure.input(scheduleReminderSchema);
 
 export const scheduleReminderHandler = scheduleReminderBase.handler(
-    async ({ input }) => {
+    async ({ input, context }) => {
         const { goalId, frequency } = input;
+        const { session } = context;
 
-        await GoalRemindersService.scheduleReminder(goalId, frequency);
+        await GoalRemindersService.scheduleReminder(goalId, frequency, session.user.id);
 
         return {
             success: true,
