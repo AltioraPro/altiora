@@ -270,23 +270,8 @@ export function JournalPerformanceCard({
                                             return "0.00";
                                         }
 
-                                        const totalPnL =
-                                            typeof stats.totalPnL === "string"
-                                                ? Number.parseFloat(
-                                                      stats.totalPnL
-                                                  ) || 0
-                                                : stats.totalPnL;
-                                        const avgWin =
-                                            stats.winningTrades > 0
-                                                ? totalPnL / stats.winningTrades
-                                                : 0;
-                                        const avgLoss =
-                                            stats.losingTrades > 0
-                                                ? Math.abs(totalPnL) /
-                                                  stats.losingTrades
-                                                : 0;
-                                        const profitFactor =
-                                            avgLoss > 0 ? avgWin / avgLoss : 0;
+                                        // Use profitFactor calculated on the server (Gains totaux / Pertes totales)
+                                        const profitFactor = stats.profitFactor ?? 0;
 
                                         return profitFactor.toFixed(2);
                                     })()}
