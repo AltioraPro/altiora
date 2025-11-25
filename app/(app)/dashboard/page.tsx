@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { orpc } from "@/orpc/client";
 import { getQueryClient, HydrateClient } from "@/orpc/query/hydration";
+import { DashboardLoading } from "./_components/dashboard-loading";
 import { DashboardPageClient } from "./page.client";
 
 export default async function GlobalDashboardPage() {
@@ -24,7 +25,7 @@ export default async function GlobalDashboardPage() {
 
     return (
         <HydrateClient client={queryClient}>
-            <Suspense>
+            <Suspense fallback={<DashboardLoading />}>
                 <DashboardPageClient />
             </Suspense>
         </HydrateClient>
