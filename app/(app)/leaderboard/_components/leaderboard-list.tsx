@@ -2,7 +2,7 @@
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { orpc } from "@/orpc/client";
 import { leaderboardSearchParams } from "../search-params";
 import { LeaderboardEmptyState } from "./leaderboard-empty-state";
@@ -14,7 +14,10 @@ const itemsPerPage = 50;
 
 export function LeaderboardList() {
     const [period] = useQueryState("period", leaderboardSearchParams.period);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useQueryState(
+        "page",
+        leaderboardSearchParams.page
+    );
 
     const { data: leaderboard, isLoading } = useSuspenseQuery(
         orpc.leaderboard.getLeaderboard.queryOptions({ input: { period } })
