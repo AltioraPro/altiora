@@ -75,15 +75,20 @@ export const getLeaderboardHandler = getLeaderboardBase.handler(
             )
             .limit(100);
 
-        return leaderboardData.map((entry, index) => ({
+        const returnData = leaderboardData.map((entry, index) => ({
             rank: index + 1,
             userId: entry.userId,
             name: entry.discordUsername || entry.name,
             userRank: entry.rank,
-            image: entry.discordAvatar || entry.image,
+            image:
+                (entry.discordAvatar &&
+                    `https://cdn.discordapp.com/avatars/${entry.discordId}/${entry.discordAvatar}.png`) ||
+                entry.image,
             discordId: entry.discordId,
             totalWorkHours: Math.floor(Number(entry.totalWorkTime) / 60),
             totalWorkMinutes: Number(entry.totalWorkTime) % 60,
         }));
+
+        return returnData;
     }
 );
