@@ -1,8 +1,19 @@
 "use client";
 
-import { RiArrowDownSLine } from "@remixicon/react";
-import { useEffect, useRef, useState } from "react";
-import { Checkbox } from "@/components/ui/checkbox";
+import {
+    RiArrowDownSLine,
+    RiCheckLine,
+    RiFilterOffLine,
+} from "@remixicon/react";
+import { useQueryState } from "nuqs";
+import { useMemo } from "react";
+import { Button } from "@/components/ui/button";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import { dashboardSearchParams } from "../search-params";
 
 interface Journal {
     id: string;
@@ -14,143 +25,102 @@ interface JournalFilterProps {
 }
 
 export function JournalFilter({ journals }: JournalFilterProps) {
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const dropdownRef = useRef<HTMLDivElement>(null);
-    const [selectedJournalIds, setSelectedJournalIds] = useState<string[]>([]);
+    const [journalIds, setJournalIds] = useQueryState(
+        "journalIds",
+        dashboardSearchParams.journalIds
+    );
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (
-                dropdownRef.current &&
-                !dropdownRef.current.contains(event.target as Node)
-            ) {
-                setIsDropdownOpen(false);
-            }
-        };
-
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, []);
+    const hasSelection = journalIds && journalIds.length > 0;
 
     const handleJournalToggle = (journalId: string) => {
-        if (selectedJournalIds.includes(journalId)) {
-            setSelectedJournalIds(
-                selectedJournalIds.filter((id) => id !== journalId)
-            );
+        if (!journalIds) {
+            // Si aucun journal n'est sélectionné (état par défaut), on sélectionne ce journal
+            setJournalIds([journalId]);
+        } else if (journalIds.includes(journalId)) {
+            // Désélectionner le journal
+            const newIds = journalIds.filter((id) => id !== journalId);
+            // Si on désélectionne le dernier, on revient à l'état par défaut (null)
+            setJournalIds(newIds.length > 0 ? newIds : null);
         } else {
-            setSelectedJournalIds([...selectedJournalIds, journalId]);
+            // Ajouter le journal à la sélection
+            setJournalIds([...journalIds, journalId]);
         }
     };
 
-    const handleSelectAll = () => {
-        if (selectedJournalIds.length === 0) {
-            setSelectedJournalIds(journals.map((j) => j.id));
-        } else {
-            setSelectedJournalIds([]);
-        }
+    const handleClearFilter = () => {
+        setJournalIds(null);
     };
+
+    const displayText = useMemo(() => {
+        if (!hasSelection) {
+            return "All journals";
+        }
+        if (journalIds && journalIds.length === 1) {
+            const journal = journals.find((j) => j.id === journalIds[0]);
+            return journal?.name || "1 journal selected";
+        }
+        if (journalIds) {
+            return `${journalIds.length} journals selected`;
+        }
+        return "All journals";
+    }, [journalIds, journals, hasSelection]);
 
     return (
         <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-4">
-                <div className="relative" ref={dropdownRef}>
-                    <button
-                        className="flex min-w-[200px] items-center justify-between rounded-lg border border-white/15 bg-black/40 px-4 py-2 text-white/80 transition-all duration-200 hover:border-white/25 hover:bg-white/10 hover:text-white"
-                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                        type="button"
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button
+                            className="w-48 justify-between"
+                            variant="outline"
+                        >
+                            <span className="font-medium text-sm">
+                                {displayText}
+                            </span>
+                            <RiArrowDownSLine className="h-4 w-4" />
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                        align="start"
+                        className="w-64 rounded-none border-white/10 bg-background p-3"
                     >
-                        <span className="font-medium text-sm">
-                            {selectedJournalIds.length === 0 && "All journals"}
-                            {selectedJournalIds.length === 1 &&
-                                journals?.find(
-                                    (j) => j.id === selectedJournalIds[0]
-                                )?.name}
-                            {selectedJournalIds.length > 1 &&
-                                `${selectedJournalIds.length} journals selected`}
-                        </span>
-                        <RiArrowDownSLine
-                            className={`h-4 w-4 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`}
-                        />
-                    </button>
+                        <div className="space-y-2">
+                            {journals.map((journal) => {
+                                const isSelected =
+                                    journalIds?.includes(journal.id) ?? false;
 
-                    {isDropdownOpen && (
-                        <div className="absolute top-full right-0 left-0 z-50 mt-2 max-h-60 overflow-y-auto rounded-lg border border-white/10 bg-black/90 shadow-xl backdrop-blur-xs">
-                            <div className="space-y-1 p-3">
-                                {/* biome-ignore lint/a11y/useSemanticElements: oui */}
-                                <div
-                                    className="flex cursor-pointer items-center space-x-3 rounded-md p-2 transition-colors hover:bg-white/10"
-                                    onClick={handleSelectAll}
-                                    onKeyDown={(e) => {
-                                        if (
-                                            e.key === "Enter" ||
-                                            e.key === " "
-                                        ) {
-                                            e.preventDefault();
-                                            handleSelectAll();
-                                        }
-                                    }}
-                                    role="button"
-                                    tabIndex={0}
-                                    title="Select all journals"
-                                >
-                                    <Checkbox
-                                        checked={
-                                            selectedJournalIds.length ===
-                                            journals?.length
-                                        }
-                                        className="border-white/30 bg-black/50 data-[state=checked]:bg-white data-[state=checked]:text-black"
-                                    />
-                                    <span className="font-medium text-sm text-white">
-                                        All journals
-                                    </span>
-                                </div>
-
-                                {journals?.map((journal) => (
-                                    // biome-ignore lint/a11y/useSemanticElements: oui
-                                    <div
-                                        className="flex cursor-pointer items-center space-x-3 rounded-md p-2 transition-colors hover:bg-white/10"
+                                return (
+                                    <button
+                                        className="flex w-full cursor-pointer items-center p-2 text-left transition-colors hover:bg-white/10"
                                         key={journal.id}
                                         onClick={() =>
                                             handleJournalToggle(journal.id)
                                         }
-                                        onKeyDown={(e) => {
-                                            if (
-                                                e.key === "Enter" ||
-                                                e.key === " "
-                                            ) {
-                                                e.preventDefault();
-                                                handleJournalToggle(journal.id);
-                                            }
-                                        }}
-                                        role="button"
-                                        tabIndex={0}
-                                        title={journal.name}
+                                        type="button"
                                     >
-                                        <Checkbox
-                                            checked={selectedJournalIds.includes(
-                                                journal.id
-                                            )}
-                                            className="border-white/30 bg-black/50 data-[state=checked]:bg-white data-[state=checked]:text-black"
-                                        />
                                         <span className="text-sm text-white">
                                             {journal.name}
                                         </span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </div>
 
-                {selectedJournalIds.length > 0 && (
-                    <div className="rounded-lg border border-white/20 bg-white/10 px-3 py-1">
-                        <span className="font-medium text-sm text-white/80">
-                            {selectedJournalIds.length} journal
-                            {selectedJournalIds.length > 1 ? "s" : ""} selected
-                        </span>
-                    </div>
+                                        {isSelected && (
+                                            <RiCheckLine className="ml-auto size-4" />
+                                        )}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </PopoverContent>
+                </Popover>
+
+                {hasSelection && (
+                    <Button
+                        onClick={handleClearFilter}
+                        type="button"
+                        variant="ghost"
+                    >
+                        <RiFilterOffLine className="size-4" />
+                        Clear filter
+                    </Button>
                 )}
             </div>
         </div>
