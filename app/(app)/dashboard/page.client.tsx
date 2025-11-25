@@ -19,9 +19,7 @@ export function DashboardPageClient() {
     return (
         <div className="px-6 py-8">
             <JournalFilter journals={journals} />
-
             <DashboardContent />
-
             <DiscordWelcomeChecker />
         </div>
     );
