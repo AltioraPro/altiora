@@ -1,5 +1,5 @@
 import { and, desc, eq, gte, inArray, lte } from "drizzle-orm";
-import { advancedTrades, tradesConfirmations } from "@/server/db/schema";
+import { advancedTrades } from "@/server/db/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
 import { filterTradesSchema } from "../validators";
 
@@ -49,33 +49,22 @@ export const getAdvancedTradesHandler = getAdvancedTradesBase.handler(
             whereConditions.push(eq(advancedTrades.isClosed, input.isClosed));
         }
 
-        const trades = input.limit
-            ? await db
-                  .select()
-                  .from(advancedTrades)
-                  .innerJoin(
-                      tradesConfirmations,
-                      eq(advancedTrades.id, tradesConfirmations.advancedTradeId)
-                  )
-                  .where(and(...whereConditions))
-                  .orderBy(
-                      desc(advancedTrades.tradeDate),
-                      desc(advancedTrades.createdAt)
-                  )
-                  .limit(input.limit)
-                  .offset(input.offset || 0)
-            : await db
-                  .select()
-                  .from(advancedTrades)
-                  .innerJoin(
-                      tradesConfirmations,
-                      eq(advancedTrades.id, tradesConfirmations.advancedTradeId)
-                  )
-                  .where(and(...whereConditions))
-                  .orderBy(
-                      desc(advancedTrades.tradeDate),
-                      desc(advancedTrades.createdAt)
-                  );
+        const trades = await db.query.advancedTrades.findMany({
+            with: {
+                tradesConfirmations: {
+                    with: {
+                        confirmations: true,
+                    },
+                },
+            },
+            where: and(...whereConditions),
+            orderBy: [
+                desc(advancedTrades.tradeDate),
+                desc(advancedTrades.createdAt),
+            ],
+            limit: input.limit,
+            offset: input.offset || 0,
+        });
 
         return trades;
     }

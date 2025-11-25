@@ -1,11 +1,11 @@
 "use client";
 
 import { Suspense } from "react";
+import { TradesTable } from "@/app/(app)/trading/_components/trades-table/trades-table";
 import { AssetsManager } from "@/components/trading/AssetsManager";
 import { ConfirmationsManager } from "@/components/trading/confirmations-manager";
 import type { DateFilterState } from "@/components/trading/DateFilter";
 import { SessionsManager } from "@/components/trading/SessionsManager";
-import { TradesTable } from "@/components/trading/TradesTable";
 import { TradingCharts } from "@/components/trading/TradingCharts";
 import {
     Card,

@@ -130,17 +130,13 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
         >();
 
         for (const trade of trades) {
-            if (trade.advanced_trade.sessionId) {
-                const session = sessions.find(
-                    (s) => s.id === trade.advanced_trade.sessionId
-                );
+            if (trade.sessionId) {
+                const session = sessions.find((s) => s.id === trade.sessionId);
                 if (session) {
-                    const pnl = Number(
-                        trade.advanced_trade.profitLossPercentage
-                    );
+                    const pnl = Number(trade.profitLossPercentage);
                     updateSessionStats(
                         sessionStats,
-                        trade.advanced_trade.sessionId,
+                        trade.sessionId,
                         session.name,
                         pnl
                     );
@@ -155,23 +151,21 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
         trades
             ?.sort(
                 (a, b) =>
-                    new Date(a.advanced_trade.tradeDate).getTime() -
-                    new Date(b.advanced_trade.tradeDate).getTime()
+                    new Date(a.tradeDate).getTime() -
+                    new Date(b.tradeDate).getTime()
             )
             .reduce(
                 (acc, trade, index) => {
-                    const pnl = Number(
-                        trade.advanced_trade.profitLossPercentage
-                    );
+                    const pnl = Number(trade.profitLossPercentage);
                     const previousCumulative =
                         acc.length > 0 ? (acc.at(-1)?.cumulative ?? 0) : 0;
 
                     const cumulative = previousCumulative + pnl;
 
                     acc.push({
-                        date: new Date(
-                            trade.advanced_trade.tradeDate
-                        ).toLocaleDateString("en-US"),
+                        date: new Date(trade.tradeDate).toLocaleDateString(
+                            "en-US"
+                        ),
                         pnl,
                         cumulative,
                         tradeNumber: index + 1,

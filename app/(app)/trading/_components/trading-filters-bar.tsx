@@ -56,7 +56,7 @@ export function TradingFiltersBar({
                     size="sm"
                     variant="outline"
                 >
-                    <RiUploadLine className="mr-2 size-4" />
+                    <RiUploadLine className="size-4" />
                     Import Excel
                 </Button>
                 <Button
@@ -64,7 +64,7 @@ export function TradingFiltersBar({
                     onClick={onCreateTradeClick}
                     size="sm"
                 >
-                    <RiAddLine className="mr-2 size-4" />
+                    <RiAddLine className="size-4" />
                     New Trade
                 </Button>
             </div>

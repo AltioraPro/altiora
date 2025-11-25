@@ -6,25 +6,24 @@ import {
     RiLogoutBoxLine,
     RiUserLine,
 } from "@remixicon/react";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { useState } from "react";
 import { EditProfileModal } from "@/app/(app)/settings/_components/edit-profile-modal";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { orpc } from "@/orpc/client";
+import type { RouterOutput } from "@/orpc/client";
 import { signOut } from "@/server/actions/sign-out";
 import { SettingsContentLayout } from "./settings-content-layout";
 
+type GetCurrentUserResponse = RouterOutput["auth"]["getCurrentUser"];
+
 export function AccountBillingSection({
     currentPage,
+    user,
 }: {
     currentPage: string | null;
+    user: GetCurrentUserResponse;
 }) {
-    const { data: user } = useSuspenseQuery(
-        orpc.auth.getCurrentUser.queryOptions({})
-    );
-
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     return (

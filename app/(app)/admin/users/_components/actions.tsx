@@ -44,7 +44,6 @@ export default function RowActions({ row }: { row: Row<Item> }) {
         isBanning,
         isUnbanning,
         isChangingRole,
-        isImpersonating,
     } = useUserTableActions(user);
 
     const [showBanDialog, setShowBanDialog] = useState(false);
@@ -60,8 +59,7 @@ export default function RowActions({ row }: { row: Row<Item> }) {
         setShowUnbanDialog(false);
     };
 
-    const isLoading =
-        isBanning || isUnbanning || isChangingRole || isImpersonating;
+    const isLoading = isBanning || isUnbanning || isChangingRole;
 
     return (
         <>

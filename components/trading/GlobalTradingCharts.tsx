@@ -42,12 +42,12 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
             }
         >();
         for (const trade of trades) {
-            const date = trade.advanced_trade.tradeDate;
+            const date = trade.tradeDate;
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, "0");
             const key = `${year}-${month}`;
             const label = `${date.toLocaleString("en-US", { month: "short" })}. ${String(year).slice(-2)}`;
-            const pnl = Number(trade.advanced_trade.profitLossPercentage);
+            const pnl = Number(trade.profitLossPercentage);
             const existing = monthStats.get(key);
 
             if (existing) {
@@ -83,23 +83,21 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
         trades
             ?.sort(
                 (a, b) =>
-                    new Date(a.advanced_trade.tradeDate).getTime() -
-                    new Date(b.advanced_trade.tradeDate).getTime()
+                    new Date(a.tradeDate).getTime() -
+                    new Date(b.tradeDate).getTime()
             )
             .reduce(
                 (acc, trade, index) => {
-                    const pnl = Number(
-                        trade.advanced_trade.profitLossPercentage
-                    );
+                    const pnl = Number(trade.profitLossPercentage);
                     const previousCumulative =
                         acc.length > 0 ? (acc.at(-1)?.cumulative ?? 0) : 0;
 
                     const cumulative = previousCumulative + pnl;
 
                     acc.push({
-                        date: new Date(
-                            trade.advanced_trade.tradeDate
-                        ).toLocaleDateString("en-US"),
+                        date: new Date(trade.tradeDate).toLocaleDateString(
+                            "en-US"
+                        ),
                         pnl,
                         cumulative,
                         tradeNumber: index + 1,

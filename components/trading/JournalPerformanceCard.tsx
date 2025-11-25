@@ -67,14 +67,12 @@ export function JournalPerformanceCard({
             .slice()
             .sort(
                 (a, b) =>
-                    new Date(a.advanced_trade.tradeDate).getTime() -
-                    new Date(b.advanced_trade.tradeDate).getTime()
+                    new Date(a.tradeDate).getTime() -
+                    new Date(b.tradeDate).getTime()
             )
             .reduce(
                 (acc, trade, index) => {
-                    const pnl = Number(
-                        trade.advanced_trade.profitLossPercentage
-                    );
+                    const pnl = Number(trade.profitLossPercentage);
 
                     const previous =
                         acc.length > 0 ? (acc.at(-1)?.cumulative ?? 0) : 0;
@@ -103,14 +101,10 @@ export function JournalPerformanceCard({
     const bestTrade =
         tradesData && tradesData.length > 0
             ? tradesData.reduce((best, current) => {
-                const currentPnl = Number(
-                    current.advanced_trade.profitLossPercentage || 0
-                );
-                const bestPnl = Number(
-                    best.advanced_trade.profitLossPercentage || 0
-                );
-                return currentPnl > bestPnl ? current : best;
-            })
+                  const currentPnl = Number(current.profitLossPercentage || 0);
+                  const bestPnl = Number(best.profitLossPercentage || 0);
+                  return currentPnl > bestPnl ? current : best;
+              })
             : null;
 
     const finalCumulative =
@@ -626,62 +620,53 @@ export function JournalPerformanceCard({
 
                     {bestTrade && (
                         <div
-                            className={`mb-4 rounded-lg border p-3 ${Number(
-                                bestTrade.advanced_trade
-                                    .profitLossPercentage || 0
-                            ) >= 0
-                                ? "border-green-500/20 bg-green-500/10"
-                                : "border-red-500/20 bg-red-500/10"
-                                }`}
+                            className={`mb-4 rounded-lg border p-3 ${
+                                Number(bestTrade.profitLossPercentage) >= 0
+                                    ? "border-green-500/20 bg-green-500/10"
+                                    : "border-red-500/20 bg-red-500/10"
+                            }`}
                         >
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
                                     <RiStockLine
-                                        className={`h-4 w-4 ${Number(
-                                            bestTrade.advanced_trade
-                                                .profitLossPercentage || 0
-                                        ) >= 0
-                                            ? "text-green-400"
-                                            : "text-red-400"
-                                            }`}
+                                        className={`h-4 w-4 ${
+                                            Number(
+                                                bestTrade.profitLossPercentage
+                                            ) >= 0
+                                                ? "text-green-400"
+                                                : "text-red-400"
+                                        }`}
                                     />
                                     <span
-                                        className={`text-sm ${Number(
-                                            bestTrade.advanced_trade
-                                                .profitLossPercentage || 0
-                                        ) >= 0
-                                            ? "text-green-400"
-                                            : "text-red-400"
-                                            }`}
+                                        className={`text-sm ${
+                                            Number(
+                                                bestTrade.profitLossPercentage
+                                            ) >= 0
+                                                ? "text-green-400"
+                                                : "text-red-400"
+                                        }`}
                                     >
                                         Best trade
                                     </span>
                                 </div>
                                 <Badge
-                                    className={`${Number(
-                                        bestTrade.advanced_trade
-                                            .profitLossPercentage || 0
-                                    ) >= 0
-                                        ? "border-green-500/30 bg-green-500/20 text-green-400"
-                                        : "border-red-500/30 bg-red-500/20 text-red-400"
-                                        }`}
+                                    className={`${
+                                        Number(
+                                            bestTrade.profitLossPercentage
+                                        ) >= 0
+                                            ? "border-green-500/30 bg-green-500/20 text-green-400"
+                                            : "border-red-500/30 bg-red-500/20 text-red-400"
+                                    }`}
                                 >
-                                    {Number(
-                                        bestTrade.advanced_trade
-                                            .profitLossPercentage || 0
-                                    ) >= 0
+                                    {Number(bestTrade.profitLossPercentage) >= 0
                                         ? "+"
                                         : ""}
-                                    {
-                                        bestTrade.advanced_trade
-                                            .profitLossPercentage
-                                    }
-                                    %
+                                    {bestTrade.profitLossPercentage}%
                                 </Badge>
                             </div>
                             <div className="mt-1 text-sm text-white/80">
                                 {new Date(
-                                    bestTrade.advanced_trade.tradeDate
+                                    bestTrade.tradeDate
                                 ).toLocaleDateString("en-US")}
                             </div>
                         </div>

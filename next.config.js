@@ -5,6 +5,11 @@ export async function redirects() {
             destination: "/admin/users",
             permanent: true,
         },
+        {
+            source: "/trading",
+            destination: "/trading/journals",
+            permanent: true,
+        },
     ];
 }
 

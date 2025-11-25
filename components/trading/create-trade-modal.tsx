@@ -232,7 +232,7 @@ export function CreateTradeModal({
                             <FormCombobox
                                 control={form.control}
                                 disabled={isCreatingTrade}
-                                emptyText="No asset found."
+                                emptyText="No asset found. Type to create a new one."
                                 isCreating={isCreatingAsset}
                                 label="Asset"
                                 name="assetId"
@@ -246,7 +246,7 @@ export function CreateTradeModal({
                             <FormCombobox
                                 control={form.control}
                                 disabled={isCreatingTrade}
-                                emptyText="No session found."
+                                emptyText="No session found. Type to create a new one."
                                 isCreating={isCreatingSession}
                                 label="Session"
                                 name="sessionId"
