@@ -61,6 +61,7 @@ export function CreateGoalModal({
         description: string;
         type: "annual" | "quarterly" | "monthly";
         deadline?: Date;
+        remindersEnabled: boolean;
         reminderFrequency?: "daily" | "weekly" | "monthly";
     }) => {
         createGoal(data, {
@@ -116,6 +117,7 @@ export function CreateGoalModal({
             description: formData.description,
             type: formData.type,
             deadline,
+            remindersEnabled: formData.remindersEnabled,
             reminderFrequency: formData.remindersEnabled
                 ? formData.reminderFrequency
                 : undefined,
