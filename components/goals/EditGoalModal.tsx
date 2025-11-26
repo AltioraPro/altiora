@@ -245,56 +245,75 @@ export function EditGoalModal({
                             </div>
 
                             {formData.remindersEnabled && (
-                                <div>
-                                    <label
-                                        className="mb-2 block font-medium text-sm text-white"
-                                        htmlFor="edit-reminderFrequency"
-                                    >
-                                        Reminder Frequency
-                                    </label>
-                                    <select
-                                        className="w-full appearance-none rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white focus:border-transparent focus:outline-hidden focus:ring-2 focus:ring-white/20"
-                                        id="edit-reminderFrequency"
-                                        onChange={(e) =>
-                                            setFormData({
-                                                ...formData,
-                                                reminderFrequency: e.target
-                                                    .value as
-                                                    | "daily"
-                                                    | "weekly"
-                                                    | "monthly",
-                                            })
-                                        }
-                                        style={{
-                                            backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
-                                            backgroundPosition:
-                                                "right 0.5rem center",
-                                            backgroundRepeat: "no-repeat",
-                                            backgroundSize: "1.5em 1.5em",
-                                            paddingRight: "2.5rem",
-                                        }}
-                                        value={formData.reminderFrequency}
-                                    >
-                                        <option
-                                            className="bg-neutral-900 text-white"
-                                            value="daily"
+                                <>
+                                    <div>
+                                        <label
+                                            className="mb-2 block font-medium text-sm text-white"
+                                            htmlFor="edit-reminderFrequency"
                                         >
-                                            Daily
-                                        </option>
-                                        <option
-                                            className="bg-neutral-900 text-white"
-                                            value="weekly"
+                                            Reminder Frequency
+                                        </label>
+                                        <select
+                                            className="w-full appearance-none rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white focus:border-transparent focus:outline-hidden focus:ring-2 focus:ring-white/20"
+                                            id="edit-reminderFrequency"
+                                            onChange={(e) =>
+                                                setFormData({
+                                                    ...formData,
+                                                    reminderFrequency: e.target
+                                                        .value as
+                                                        | "daily"
+                                                        | "weekly"
+                                                        | "monthly",
+                                                })
+                                            }
+                                            style={{
+                                                backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
+                                                backgroundPosition:
+                                                    "right 0.5rem center",
+                                                backgroundRepeat: "no-repeat",
+                                                backgroundSize: "1.5em 1.5em",
+                                                paddingRight: "2.5rem",
+                                            }}
+                                            value={formData.reminderFrequency}
                                         >
-                                            Weekly
-                                        </option>
-                                        <option
-                                            className="bg-neutral-900 text-white"
-                                            value="monthly"
-                                        >
-                                            Monthly
-                                        </option>
-                                    </select>
-                                </div>
+                                            <option
+                                                className="bg-neutral-900 text-white"
+                                                value="daily"
+                                            >
+                                                Daily
+                                            </option>
+                                            <option
+                                                className="bg-neutral-900 text-white"
+                                                value="weekly"
+                                            >
+                                                Weekly
+                                            </option>
+                                            <option
+                                                className="bg-neutral-900 text-white"
+                                                value="monthly"
+                                            >
+                                                Monthly
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    {/* Next reminder display */}
+                                    {goal.nextReminderDate && (
+                                        <div className="text-xs text-white/60">
+                                            Next reminder:{" "}
+                                            <span className="text-white/80">
+                                                {new Date(
+                                                    goal.nextReminderDate
+                                                ).toLocaleDateString("en-US", {
+                                                    month: "short",
+                                                    day: "numeric",
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                })}
+                                            </span>
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </div>
 

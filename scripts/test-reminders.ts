@@ -216,10 +216,18 @@ async function main() {
       and(
         eq(schema.goals.isActive, true),
         eq(schema.goals.isCompleted, false),
-        eq(schema.goals.remindersEnabled, true),
-        forceMode ? undefined : lte(schema.goals.nextReminderDate, now),
+        // En mode force, on accepte aussi les objectifs avec reminderFrequency même si remindersEnabled est false
+        // (pour corriger les incohérences)
+        forceMode
+          ? isNotNull(schema.goals.reminderFrequency)
+          : eq(schema.goals.remindersEnabled, true),
         isNotNull(schema.goals.reminderFrequency),
-        isNotNull(schema.goals.nextReminderDate),
+        forceMode
+          ? undefined
+          : and(
+              isNotNull(schema.goals.nextReminderDate),
+              lte(schema.goals.nextReminderDate, now)
+            ),
         specificUserId ? eq(schema.goals.userId, specificUserId) : undefined
       )
     );
@@ -320,11 +328,11 @@ async function main() {
     for (const goal of overdueGoals) {
       log.subheader(`Traitement: ${goal.title}`);
 
-      // Récupérer les infos Discord de l'utilisateur
       const [userData] = await db
         .select({
           discordId: schema.discordProfile.discordId,
           discordConnected: schema.discordProfile.discordConnected,
+          timezone: schema.user.timezone,
         })
         .from(schema.user)
         .leftJoin(
@@ -337,6 +345,22 @@ async function main() {
       if (!userData?.discordId || !userData.discordConnected) {
         log.warning(`Utilisateur ${goal.userId} sans Discord connecté - skip`);
         continue;
+      }
+
+      const userTimezone = userData.timezone || "UTC";
+
+      // Si remindersEnabled est false mais qu'on a une reminderFrequency, activer les rappels
+      if (!goal.remindersEnabled && goal.reminderFrequency) {
+        log.warning(
+          `Objectif "${goal.title}" a une fréquence mais remindersEnabled=false. Activation automatique...`
+        );
+        await db
+          .update(schema.goals)
+          .set({
+            remindersEnabled: true,
+            updatedAt: new Date(),
+          })
+          .where(eq(schema.goals.id, goal.id));
       }
 
       // Envoyer le DM Discord
@@ -432,8 +456,10 @@ async function main() {
           status: "sent",
         });
 
-        // Mettre à jour la prochaine date
-        const nextDate = new Date();
+        // Mettre à jour la prochaine date en utilisant le timezone de l'utilisateur
+        const now = new Date();
+        const nextDate = new Date(now);
+
         switch (goal.reminderFrequency) {
           case "daily":
             nextDate.setDate(nextDate.getDate() + 1);
@@ -445,19 +471,55 @@ async function main() {
             nextDate.setMonth(nextDate.getMonth() + 1);
             break;
         }
-        nextDate.setHours(9, 0, 0, 0);
+
+        // Calculer 9h00 dans le timezone de l'utilisateur
+        const formatter = new Intl.DateTimeFormat("en-US", {
+          timeZone: userTimezone,
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        });
+
+        const parts = formatter.formatToParts(nextDate);
+        const year = Number.parseInt(
+          parts.find((p) => p.type === "year")?.value || "2024",
+          10
+        );
+        const month = Number.parseInt(
+          parts.find((p) => p.type === "month")?.value || "1",
+          10
+        );
+        const day = Number.parseInt(
+          parts.find((p) => p.type === "day")?.value || "1",
+          10
+        );
+
+        // Créer une date à 9h00 UTC puis ajuster pour le timezone
+        const targetDate = new Date(Date.UTC(year, month - 1, day, 9, 0, 0, 0));
+
+        // Calculer le décalage horaire du timezone de l'utilisateur
+        const utcDate = new Date(
+          targetDate.toLocaleString("en-US", { timeZone: "UTC" })
+        );
+        const tzDate = new Date(
+          targetDate.toLocaleString("en-US", { timeZone: userTimezone })
+        );
+        const tzOffset = tzDate.getTime() - utcDate.getTime();
+        targetDate.setTime(targetDate.getTime() - tzOffset);
+
+        const finalNextDate = targetDate;
 
         await db
           .update(schema.goals)
           .set({
-            nextReminderDate: nextDate,
+            nextReminderDate: finalNextDate,
             lastReminderSent: new Date(),
             updatedAt: new Date(),
           })
           .where(eq(schema.goals.id, goal.id));
 
         log.success(
-          `Prochain reminder programmé: ${nextDate.toLocaleString("fr-FR")}`
+          `Prochain reminder programmé: ${finalNextDate.toLocaleString("fr-FR")} (timezone: ${userTimezone})`
         );
       } catch (error) {
         log.error(`Échec de l'envoi: ${error}`);
