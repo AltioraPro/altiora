@@ -20,6 +20,7 @@ export const user = pgTable("user", {
     banExpires: timestamp("ban_expires"),
     rank: text("rank").notNull(),
     isLeaderboardPublic: boolean("is_leaderboard_public").notNull(),
+    timezone: text("timezone").default("UTC"),
 });
 
 export const session = pgTable("session", {

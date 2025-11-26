@@ -77,6 +77,13 @@ export const updateLeaderboardVisibilitySchema = z.object({
     isPublic: z.boolean(),
 });
 
+export const updateTimezoneSchema = z.object({
+    timezone: z
+        .string()
+        .min(1, "Le fuseau horaire est requis")
+        .max(100, "Le fuseau horaire est trop long"),
+});
+
 export const waitlistSchema = z.object({
     email: z.email(),
 });
@@ -92,5 +99,6 @@ export type UpdateRankInput = z.infer<typeof updateRankSchema>;
 export type UpdateLeaderboardVisibilityInput = z.infer<
     typeof updateLeaderboardVisibilitySchema
 >;
+export type UpdateTimezoneInput = z.infer<typeof updateTimezoneSchema>;
 
 export type WaitlistInput = z.infer<typeof waitlistSchema>;

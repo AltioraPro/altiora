@@ -18,6 +18,7 @@ export const getMeHandler = getMeBase.handler(async ({ context }) => {
             emailVerified: true,
             rank: true,
             isLeaderboardPublic: true,
+            timezone: true,
             createdAt: true,
             updatedAt: true,
         },
