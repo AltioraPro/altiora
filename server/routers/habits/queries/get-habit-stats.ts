@@ -7,32 +7,12 @@ import type { DailyHabitStats, HabitStatsOverview } from "../types";
 import { getHabitStatsSchema } from "../validators";
 import { getDailyStatsHandler } from "./get-daily-stats";
 
-function calculateStreaks(dailyStats: DailyHabitStats[]): {
-    currentStreak: number;
-    longestStreak: number;
+function calculateStreaksFromWeeklyStats(dailyStats: DailyHabitStats[]): {
     worstDay: { date: string; percentage: number };
 } {
-    let currentStreak = 0;
-    let longestStreak = 0;
-    let tempStreak = 0;
     let worstDay = { date: "", percentage: 100 };
 
-    for (let i = dailyStats.length - 1; i >= 0; i--) {
-        if (dailyStats[i]?.completionPercentage > 0) {
-            currentStreak++;
-        } else {
-            break;
-        }
-    }
-
     for (const day of dailyStats) {
-        if (day.completionPercentage > 0) {
-            tempStreak++;
-            longestStreak = Math.max(longestStreak, tempStreak);
-        } else {
-            tempStreak = 0;
-        }
-
         if (day.completionPercentage < worstDay.percentage) {
             worstDay = {
                 date: day.date,
@@ -41,7 +21,51 @@ function calculateStreaks(dailyStats: DailyHabitStats[]): {
         }
     }
 
-    return { currentStreak, longestStreak, worstDay };
+    return { worstDay };
+}
+
+/**
+ * Calcule le streak actuel et le plus long en utilisant les dates avec complétion
+ * @param completedDates - Set de dates (format YYYY-MM-DD) où au moins une habitude a été complétée
+ * @param today - Date du jour
+ * @returns currentStreak et longestStreak
+ */
+function calculateStreaksFromDates(
+    completedDates: Set<string>,
+    today: Date
+): { currentStreak: number; longestStreak: number } {
+    let currentStreak = 0;
+    let longestStreak = 0;
+    let tempStreak = 0;
+
+    // Calculer le streak actuel (depuis aujourd'hui en arrière)
+    for (let i = 0; i < 365; i++) {
+        const checkDate = new Date(today);
+        checkDate.setDate(today.getDate() - i);
+        const dateStr = checkDate.toISOString().split("T")[0] ?? "";
+
+        if (completedDates.has(dateStr)) {
+            currentStreak++;
+        } else {
+            break;
+        }
+    }
+
+    // Calculer le plus long streak sur l'année
+    for (let i = 364; i >= 0; i--) {
+        const checkDate = new Date(today);
+        checkDate.setDate(today.getDate() - i);
+        const dateStr = checkDate.toISOString().split("T")[0] ?? "";
+
+        if (completedDates.has(dateStr)) {
+            tempStreak++;
+            longestStreak = Math.max(longestStreak, tempStreak);
+        } else {
+            tempStreak = 0;
+        }
+    }
+
+    return { currentStreak, longestStreak };
 }
 
 export const getHabitStatsBase = protectedProcedure.input(getHabitStatsSchema);
@@ -143,8 +167,34 @@ export const getHabitStatsHandler = getHabitStatsBase.handler(
             const weeklyStatsResults = await Promise.all(weeklyStatsPromises);
             weeklyStats.push(...weeklyStatsResults);
 
-            const { currentStreak, longestStreak, worstDay } =
-                calculateStreaks(weeklyStats);
+            // Récupérer les dates avec complétion sur les 365 derniers jours
+            // pour calculer le streak de manière efficace (une seule requête SQL)
+            const yearStartDate = new Date(today);
+            yearStartDate.setDate(today.getDate() - 365);
+            const yearStartDateStr = yearStartDate.toISOString().split("T")[0];
+
+            const completedDatesResult = await db
+                .select({
+                    completionDate: habitCompletions.completionDate,
+                })
+                .from(habitCompletions)
+                .where(
+                    and(
+                        eq(habitCompletions.userId, userId),
+                        eq(habitCompletions.isCompleted, true),
+                        gte(habitCompletions.completionDate, yearStartDateStr ?? "")
+                    )
+                );
+
+            const completedDates = new Set(
+                completedDatesResult.map((c) => c.completionDate)
+            );
+
+            const { currentStreak, longestStreak } = calculateStreaksFromDates(
+                completedDates,
+                today
+            );
+            const { worstDay } = calculateStreaksFromWeeklyStats(weeklyStats);
 
             const monthlyProgressPromises: Promise<
                 {
