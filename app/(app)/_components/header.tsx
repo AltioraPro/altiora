@@ -1,6 +1,6 @@
 import { DropdownUser } from "@/components/dropdown-user";
-import { getServerSession } from "@/lib/auth/utils";
 import { cn } from "@/lib/utils";
+import { api } from "@/orpc/server";
 import { MobileMenu } from "./mobile-menu";
 import { OpenSearchButton } from "./search/open-search-button";
 
@@ -27,10 +27,7 @@ export const Header = ({
 );
 
 async function HeaderLoggedIn() {
-    const session = await getServerSession();
+    const user = await api.auth.getCurrentUser();
 
-    if (!session?.user) {
-        return null;
-    }
-    return <DropdownUser user={session.user} />;
+    return <DropdownUser user={user} />;
 }

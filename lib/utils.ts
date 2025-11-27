@@ -16,3 +16,10 @@ export function getNameFromEmail(email: string): string {
     const firstName = emailLocalPart.split(".")[0];
     return firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
 }
+
+export function getDiscordAvatarUrl(
+    discordId: string,
+    discordAvatar: string
+): string {
+    return `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png`;
+}
