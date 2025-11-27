@@ -19,7 +19,12 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <html className="dark" lang="fr" style={{ colorScheme: "dark" }}>
+        <html
+            className="dark"
+            lang="fr"
+            style={{ colorScheme: "dark" }}
+            suppressHydrationWarning
+        >
             <body className="bg-background">
                 <Providers>
                     <div>{children}</div>

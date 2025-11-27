@@ -22,6 +22,7 @@ import { authClient, signIn } from "@/lib/auth-client";
 import { withQuery } from "@/lib/utils/routes";
 import sendVerificationOtp from "../../_lib/send-verification-otp";
 import { messageParsers } from "../search-params";
+import { LastUsedBadge } from "./last-used-badge";
 
 const GoogleIcon = () => (
     <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -57,6 +58,7 @@ export function LoginForm() {
     const router = useRouter();
     const [{ message, error: errorQuery }] = useQueryStates(messageParsers);
     const [showPassword, setShowPassword] = useState(false);
+    const lastMethod = authClient.getLastUsedLoginMethod();
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(errorQuery);
@@ -367,7 +369,7 @@ export function LoginForm() {
 
                         {/* Google Sign In */}
                         <button
-                            className="group relative w-full overflow-hidden rounded-lg border border-white/20 bg-transparent py-3 transition-all duration-300 hover:border-white/40 hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="group relative w-full rounded-lg border border-white/20 bg-transparent py-3 transition-all duration-300 hover:border-white/40 hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-50"
                             disabled={isLoading}
                             onClick={handleGoogleSignIn}
                             type="button"
@@ -378,6 +380,7 @@ export function LoginForm() {
                                     Continue with Google
                                 </span>
                             </div>
+                            {lastMethod === "google" && <LastUsedBadge />}
                         </button>
 
                         {/* Registration link */}
