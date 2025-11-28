@@ -1,19 +1,19 @@
 import type { ClosedTradeData, JournalData } from "../types";
 
 export function getTradeStartingCapital(
-    trade: ClosedTradeData,
-    journalsMap: Map<string, JournalData>,
-    singleJournalId: string | null,
-    singleJournalStartingCapital: number | null
+  trade: ClosedTradeData,
+  journalsMap: Map<string, JournalData>,
+  singleJournalId: string | null,
+  singleJournalStartingCapital: number | null
 ): number | null {
-    if (singleJournalId && singleJournalStartingCapital) {
-        return singleJournalStartingCapital;
+  if (singleJournalId && singleJournalStartingCapital) {
+    return singleJournalStartingCapital;
+  }
+  if (trade.journalId) {
+    const tradeJournal = journalsMap.get(trade.journalId);
+    if (tradeJournal) {
+      return tradeJournal.startingCapital;
     }
-    if (trade.journalId) {
-        const tradeJournal = journalsMap.get(trade.journalId);
-        if (tradeJournal?.usePercentageCalculation) {
-            return tradeJournal.startingCapital;
-        }
-    }
-    return null;
+  }
+  return null;
 }

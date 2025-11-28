@@ -107,7 +107,9 @@ export function TradingStats({
                     </CardHeader>
                     <CardContent className="space-y-2 px-0 pb-0">
                         <div className="font-bold text-3xl text-white">
-                            {profitFactor.toFixed(2)}
+                            {!Number.isFinite(profitFactor)
+                                ? "∞"
+                                : profitFactor.toFixed(2)}
                         </div>
                         <p className="text-sm text-white/60">Win/loss ratio</p>
                     </CardContent>
