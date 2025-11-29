@@ -1,25 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "@/orpc/client";
-
-export function useHabitsDashboard(viewMode: "today" | "week" | "month") {
-    const { data, isLoading, error, refetch } = useQuery(
-        orpc.habits.getDashboard.queryOptions({
-            input: {
-                viewMode,
-            },
-        })
-    );
-
-    return {
-        data,
-        isLoading,
-        error,
-        refetch,
-        isTodayComplete: data?.todayStats.completionPercentage === 100,
-        hasHabits:
-            data?.todayStats.habits.length && data.todayStats.habits.length > 0,
-    };
-}
 
 export function useHabitsMutations() {
     const queryClient = useQueryClient();

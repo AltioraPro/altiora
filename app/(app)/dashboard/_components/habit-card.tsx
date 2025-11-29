@@ -1,7 +1,7 @@
 "use client";
 
 import { RiSparklingLine, RiSquareFill, RiSquareLine } from "@remixicon/react";
-import { useHabits } from "@/components/habits/HabitsProvider";
+import { useHabits } from "@/app/(app)/habits/_components/habits-provider";
 import SpotlightCard from "@/components/SpotlightCard";
 import { Button } from "@/components/ui/button";
 

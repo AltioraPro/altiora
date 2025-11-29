@@ -8,7 +8,7 @@ export const createHabitSchema = z.object({
         .string()
         .regex(/^#[0-9A-F]{6}$/i, "Invalid color format")
         .optional(),
-    targetFrequency: z.enum(["daily", "weekly", "monthly"]).default("daily"),
+    targetFrequency: z.enum(["daily", "weekly", "monthly"]),
     sortOrder: z.number().int().min(0).optional(),
 });
 
@@ -70,14 +70,9 @@ export const getDashboardSchema = z
 export const getDailyStatsSchema = z.object({
     date: z
         .string()
-        .regex(
-            /^\d{4}-\d{2}-\d{2}$/,
-            "Invalid date format (YYYY-MM-DD)"
-        ),
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)"),
 });
 
 export const reorderHabitsSchema = z.object({
-    habitIds: z
-        .array(z.string())
-        .min(1, "At least one habit required"),
+    habitIds: z.array(z.string()).min(1, "At least one habit required"),
 });

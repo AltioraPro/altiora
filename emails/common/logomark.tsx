@@ -1,5 +1,4 @@
 import type React from "react";
-import { Logo } from "@/components/logo";
 import { PROJECT } from "@/constants/project";
 import { cn } from "@/lib/utils";
 
@@ -20,7 +19,7 @@ function Logomark({
             className={cn("mt-4 flex items-center gap-4", className)}
             {...props}
         >
-            <Logo className={cn("h-8 w-fit", logoClassName)} />
+            <EmailLogo className={cn("h-8 w-fit", logoClassName)} />
             <span
                 className={cn(
                     "m-0 font-medium text-lg text-white tracking-tight",
@@ -30,6 +29,41 @@ function Logomark({
                 {PROJECT.NAME}
             </span>
         </div>
+    );
+}
+
+// Server-compatible Logo SVG for email templates
+// Uses static gradient ID since emails don't support React hooks
+function EmailLogo({ className }: { className?: string }) {
+    return (
+        <svg
+            className={className}
+            fill="none"
+            height="376"
+            viewBox="0 0 611 376"
+            width="611"
+            xmlns="http://www.w3.org/2000/svg"
+        >
+            <title>Altiora Logo</title>
+            <defs>
+                <linearGradient
+                    gradientUnits="userSpaceOnUse"
+                    id="email-logo-gradient"
+                    x1="328.695"
+                    x2="305.254"
+                    y1="1.38699"
+                    y2="374.832"
+                >
+                    <stop stopColor="#E3E5E7" />
+                    <stop offset="1" stopColor="#343739" />
+                </linearGradient>
+            </defs>
+            <path
+                d="M610.318 290.011L424.403 0.836182L287.442 161.122H248.939C156.403 245.168 101.06 291.599 0.318359 374.836L43.7719 353.355C92.2093 324.402 158.181 272.936 162.032 270.182L252.239 189.764H286.892L418.903 41.0453L393.601 162.774L246.739 312.044L218.136 329.119L232.437 303.782L147.73 356.109L247.839 329.67L411.752 214.55L378.199 282.851L444.205 222.813L451.355 155.063L511.31 244.845L491.509 192.518L610.318 290.011Z"
+                fill="url(#email-logo-gradient)"
+                stroke="#DDDDDD"
+            />
+        </svg>
     );
 }
 

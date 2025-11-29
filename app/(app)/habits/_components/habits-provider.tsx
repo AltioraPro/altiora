@@ -24,9 +24,6 @@ interface HabitsContextValue {
     selectedDate: string;
     setSelectedDate: (date: string) => void;
 
-    viewMode: "today" | "week" | "month";
-    setViewMode: (mode: "today" | "week" | "month") => void;
-
     optimisticUpdates: Record<string, boolean>;
     setOptimisticUpdate: (habitId: string, isCompleted: boolean) => void;
     clearOptimisticUpdates: () => void;
@@ -66,9 +63,7 @@ export function HabitsProvider({ children }: HabitsProviderProps) {
     const [selectedDate, setSelectedDate] = useState(
         () => new Date().toISOString().split("T")[0]
     );
-    const [viewMode, setViewMode] = useState<"today" | "week" | "month">(
-        "today"
-    );
+
     const [optimisticUpdates, setOptimisticUpdates] = useState<
         Record<string, boolean>
     >({});
@@ -287,8 +282,6 @@ export function HabitsProvider({ children }: HabitsProviderProps) {
         closeEditModal,
         selectedDate,
         setSelectedDate,
-        viewMode,
-        setViewMode,
         optimisticUpdates,
         setOptimisticUpdate,
         clearOptimisticUpdates,

@@ -2,11 +2,13 @@
 
 import { RiCheckLine, RiCircleLine } from "@remixicon/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { memo, useCallback, useMemo, useRef } from "react";
+import { memo, useCallback, useMemo } from "react";
 import { useToast } from "@/components/ui/toast";
+import { cn } from "@/lib/utils";
 import { orpc } from "@/orpc/client";
 import type { DailyHabitStats } from "@/server/routers/habits/types";
-import { useHabits } from "./HabitsProvider";
+import { useHabits } from "./habits-provider";
+import { ProgressCircle } from "./progress-circle";
 
 interface TodayHabitsCardProps {
     data?: DailyHabitStats;
@@ -35,18 +37,21 @@ const HabitItem = memo<HabitItemProps>(({ habit, isOptimistic, onToggle }) => {
 
     return (
         <div
-            className={`flex items-center space-x-4 rounded-xl border p-4 transition-all duration-200 ${
+            className={cn(
+                "flex items-center space-x-4 border p-4 transition-all duration-200",
                 habit.isCompleted
                     ? "border-green-500/30 bg-green-500/10"
-                    : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
-            } ${isOptimistic ? "opacity-80" : ""}`}
+                    : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10",
+                isOptimistic && "opacity-80"
+            )}
         >
             {/* Emoji */}
             <div className="relative">
                 <div
-                    className={`select-none text-2xl transition-all duration-200 ${
+                    className={cn(
+                        "select-none text-2xl transition-all duration-200",
                         habit.isCompleted ? "scale-110" : ""
-                    }`}
+                    )}
                 >
                     {habit.emoji}
                 </div>
@@ -60,11 +65,12 @@ const HabitItem = memo<HabitItemProps>(({ habit, isOptimistic, onToggle }) => {
             {/* Habit Info */}
             <div className="flex-1">
                 <h4
-                    className={`font-medium transition-all duration-200 ${
+                    className={cn(
+                        "font-medium transition-all duration-200",
                         habit.isCompleted
                             ? "text-green-300 line-through"
                             : "text-white"
-                    }`}
+                    )}
                 >
                     {habit.title}
                 </h4>
@@ -75,13 +81,16 @@ const HabitItem = memo<HabitItemProps>(({ habit, isOptimistic, onToggle }) => {
 
             {/* Toggle Button */}
             <button
-                className={`flex h-8 w-8 items-center justify-center rounded-full border-2 transition-all duration-200 hover:scale-110 disabled:opacity-50 ${
-                    isTempHabit
-                        ? "cursor-not-allowed border-white/20 bg-white/5"
-                        : habit.isCompleted
-                          ? "border-green-500 bg-green-500 text-white"
-                          : "border-white/30 hover:border-white/60"
-                }`}
+                className={cn(
+                    "flex h-8 w-8 items-center justify-center rounded-full border-2 transition-all duration-200 hover:scale-110 disabled:opacity-50",
+                    isTempHabit &&
+                        "cursor-not-allowed border-white/20 bg-white/5",
+                    habit.isCompleted &&
+                        !isTempHabit &&
+                        "border-green-500 bg-green-500 text-white",
+                    !(isTempHabit || habit.isCompleted) &&
+                        "border-white/30 hover:border-white/60"
+                )}
                 disabled={isTempHabit}
                 onClick={handleClick}
                 type="button"
@@ -110,8 +119,6 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
     const { addToast } = useToast();
 
     const queryClient = useQueryClient();
-
-    const lastClickTimes = useRef<Map<string, number>>(new Map());
 
     const optimisticData = useMemo(
         () => getOptimisticTodayStats(data),
@@ -191,15 +198,6 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
                 return;
             }
 
-            const now = Date.now();
-            const lastClick = lastClickTimes.current.get(habitId) || 0;
-
-            if (now - lastClick < 300) {
-                return;
-            }
-
-            lastClickTimes.current.set(habitId, now);
-
             const today = new Date().toISOString().split("T")[0];
 
             toggleCompletion.mutate({
@@ -230,9 +228,7 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
         optimisticData;
 
     return (
-        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xs">
-            <div className="absolute top-0 left-0 h-px w-full bg-linear-to-r from-transparent via-white/20 to-transparent" />
-
+        <div className="relative overflow-hidden border border-neutral-800 bg-neutral-900">
             <div className="p-6">
                 <div className="mb-6 flex items-center justify-between">
                     <div>
@@ -252,13 +248,13 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
                         <div className="text-right">
                             <div className="font-bold text-2xl">
                                 <span
-                                    className={`${
-                                        completionPercentage === 100
-                                            ? "text-green-400"
-                                            : completionPercentage >= 50
-                                              ? "text-white"
-                                              : "text-white/70"
-                                    }`}
+                                    className={cn(
+                                        "text-white/70",
+                                        completionPercentage === 100 &&
+                                            "text-green-400",
+                                        completionPercentage >= 50 &&
+                                            "text-white"
+                                    )}
                                 >
                                     {completionPercentage}%
                                 </span>
@@ -269,37 +265,9 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
                         </div>
 
                         <div className="relative h-16 w-16">
-                            <svg
-                                className="-rotate-90 h-16 w-16 transform"
-                                viewBox="0 0 64 64"
-                            >
-                                <title>Habit Completion Progress</title>
-                                <circle
-                                    cx="32"
-                                    cy="32"
-                                    fill="none"
-                                    r="28"
-                                    stroke="white"
-                                    strokeOpacity="0.1"
-                                    strokeWidth="4"
-                                />
-                                <circle
-                                    className="transition-all duration-300 ease-out"
-                                    cx="32"
-                                    cy="32"
-                                    fill="none"
-                                    r="28"
-                                    stroke={
-                                        completionPercentage === 100
-                                            ? "#4ade80"
-                                            : "white"
-                                    }
-                                    strokeDasharray={`${2 * Math.PI * 28}`}
-                                    strokeDashoffset={`${2 * Math.PI * 28 * (1 - completionPercentage / 100)}`}
-                                    strokeLinecap="round"
-                                    strokeWidth="4"
-                                />
-                            </svg>
+                            <ProgressCircle
+                                completionPercentage={completionPercentage}
+                            />
 
                             <div className="absolute inset-0 flex items-center justify-center">
                                 {completionPercentage === 100 ? (
@@ -342,7 +310,7 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
 
                 {habitsList.length > 0 && (
                     <div className="mt-6 flex items-center justify-between border-white/10 border-t pt-6 text-sm text-white/60">
-                        <span className="">
+                        <span>
                             {completionPercentage === 100
                                 ? "🎉 Perfect! All habits completed"
                                 : completedHabits > 0
