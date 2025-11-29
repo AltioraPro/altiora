@@ -36,39 +36,14 @@ export const getMeHandler = getMeBase.handler(async ({ context }) => {
             discordId: true,
             discordUsername: true,
             discordDiscriminator: true,
-            discordAvatar: true,
             discordConnected: true,
             discordRoleSynced: true,
         },
     });
 
-    const getDiscordAvatarUrl = (
-        discordId: string | undefined,
-        avatarHash: string | undefined
-    ) => {
-        if (!(discordId && avatarHash)) {
-            return null;
-        }
-        return `https://cdn.discordapp.com/avatars/${discordId}/${avatarHash}.png`;
-    };
-
     const userData = {
         ...currentUser,
-        image:
-            discordProfileData?.discordConnected &&
-            discordProfileData?.discordAvatar
-                ? getDiscordAvatarUrl(
-                      discordProfileData.discordId,
-                      discordProfileData.discordAvatar
-                  )
-                : currentUser.image,
-        discordProfile: {
-            discordId: discordProfileData?.discordId,
-            discordUsername: discordProfileData?.discordUsername,
-            discordDiscriminator: discordProfileData?.discordDiscriminator,
-            discordConnected: discordProfileData?.discordConnected,
-            discordRoleSynced: discordProfileData?.discordRoleSynced,
-        },
+        discordProfile: discordProfileData,
     };
 
     return userData;

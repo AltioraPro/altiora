@@ -32,5 +32,6 @@ async function HeaderLoggedIn() {
     if (!session?.user) {
         return null;
     }
+
     return <DropdownUser user={session.user} />;
 }
