@@ -3,7 +3,7 @@ import { render } from "@react-email/components";
 import { autumn } from "autumn-js/better-auth";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { admin, emailOTP } from "better-auth/plugins";
+import { admin, emailOTP, lastLoginMethod } from "better-auth/plugins";
 import { PAGES } from "@/constants/pages";
 import { PROJECT } from "@/constants/project";
 import ResetPasswordTemplate from "@/emails/reset-password";
@@ -115,6 +115,7 @@ export const auth = betterAuth({
 
     plugins: [
         autumn(),
+        lastLoginMethod(),
         passkey({
             origin: getBaseUrl(),
             rpName: PROJECT.NAME,

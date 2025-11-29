@@ -20,8 +20,18 @@ import {
     getConnectionStatusBase,
     getConnectionStatusHandler,
 } from "./queries/get-connection-status";
+import {
+    getDiscordProfileBase,
+    getDiscordProfileHandler,
+} from "./queries/get-discord-profile";
 
 export const discordRouter = base.router({
+    getDiscordProfile: getDiscordProfileBase
+        .route({ method: "GET" })
+        .handler(
+            async ({ context }) =>
+                await call(getDiscordProfileHandler, undefined, { context })
+        ),
     // Queries
     getConnectionStatus: getConnectionStatusBase
         .route({ method: "GET" })
@@ -59,14 +69,12 @@ export const discordRouter = base.router({
                 await call(autoSyncRankHandler, undefined, { context })
         ),
 
-    finalizeLink: finalizeDiscordLinkBase
-        .route({ method: "POST" })
-        .handler(
-            async ({ context }) =>
-                await call(finalizeDiscordLinkHandler, undefined, {
-                    context,
-                })
-        ),
+    finalizeLink: finalizeDiscordLinkBase.route({ method: "POST" }).handler(
+        async ({ context }) =>
+            await call(finalizeDiscordLinkHandler, undefined, {
+                context,
+            })
+    ),
 
     syncAllUsers: syncAllUsersBase
         .route({ method: "POST" })
