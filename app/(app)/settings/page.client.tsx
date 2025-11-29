@@ -29,7 +29,9 @@ export function SettingsPageClient() {
             {page === "account-billing" && (
                 <AccountBillingSection currentPage={page} user={user} />
             )}
-            {page === "security" && <SecuritySection />}
+            {page === "security" && (
+                <SecuritySection hasPasswordAccount={user.hasPasswordAccount} />
+            )}
             {page === "contact" && <ContactSection />}
             {page === "privacy" && (
                 <PrivacySection initialIsPublic={user.isLeaderboardPublic} />

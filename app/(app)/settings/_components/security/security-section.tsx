@@ -4,10 +4,14 @@ import { ActiveSessionsSection } from "./active-sessions-section";
 import { DeleteAccountSection } from "./delete-account-section";
 import { ResetPasswordSection } from "./reset-password-section";
 
-export function SecuritySection() {
+interface SecuritySectionProps {
+    hasPasswordAccount: boolean;
+}
+
+export function SecuritySection({ hasPasswordAccount }: SecuritySectionProps) {
     return (
         <SettingsContentLayout title="Security">
-            <ResetPasswordSection />
+            {hasPasswordAccount && <ResetPasswordSection />}
             <ActiveSessionsSection />
             <PasskeysSection />
             <DeleteAccountSection />
