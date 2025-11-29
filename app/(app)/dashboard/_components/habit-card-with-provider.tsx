@@ -3,8 +3,8 @@
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { CreateHabitModal } from "@/components/habits/CreateHabitModal";
-import { HabitsProvider } from "@/components/habits/HabitsProvider";
+import { CreateHabitModal } from "@/app/(app)/habits/_components/create-habit-modal";
+import { HabitsProvider } from "@/app/(app)/habits/_components/habits-provider";
 import { PAGES } from "@/constants/pages";
 import { orpc } from "@/orpc/client";
 import { HabitCard } from "./habit-card";

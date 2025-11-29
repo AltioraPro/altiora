@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { orpc } from "@/orpc/client";
-import { useHabits } from "./HabitsProvider";
+import { useHabits } from "./habits-provider";
 
 export function QuickStats() {
     const { getOptimisticTodayStats, getOptimisticStats } = useHabits();

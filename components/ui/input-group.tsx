@@ -11,8 +11,8 @@ function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
     return (
         <div
             className={cn(
-                "group/input-group relative flex w-full items-center border border-input shadow-xs outline-none transition-[color,box-shadow]",
-                "h-10 has-[>textarea]:h-auto",
+                "group/input-group relative flex w-full items-center rounded-md border border-input shadow-xs outline-none transition-[color,box-shadow] dark:bg-input/30",
+                "h-9 has-[>textarea]:h-auto",
 
                 // Variants based on alignment.
                 "has-[>[data-align=inline-start]]:[&>input]:pl-2",
@@ -36,7 +36,7 @@ function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
 }
 
 const inputGroupAddonVariants = cva(
-    "flex h-auto cursor-text select-none items-center justify-center gap-2 py-1.5 font-medium text-muted-foreground text-sm group-data-[disabled=true]/input-group:opacity-50 [&>svg:not([class*='size-'])]:size-4",
+    "flex h-auto cursor-text select-none items-center justify-center gap-2 py-1.5 font-medium text-muted-foreground text-sm group-data-[disabled=true]/input-group:opacity-50 [&>kbd]:rounded-[calc(var(--radius)-5px)] [&>svg:not([class*='size-'])]:size-4",
     {
         variants: {
             align: {
@@ -62,8 +62,6 @@ function InputGroupAddon({
     ...props
 }: React.ComponentProps<"div"> & VariantProps<typeof inputGroupAddonVariants>) {
     return (
-        // biome-ignore lint/a11y/useKeyWithClickEvents: shadcn
-        // biome-ignore lint/a11y/noNoninteractiveElementInteractions: shadcn
         <div
             className={cn(inputGroupAddonVariants({ align }), className)}
             data-align={align}
