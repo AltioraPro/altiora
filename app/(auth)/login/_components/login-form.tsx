@@ -18,7 +18,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { AUTH_ERRORS } from "@/constants/auth-errors";
 import { PAGES } from "@/constants/pages";
-import { authClient, signIn } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth-client";
 import { withQuery } from "@/lib/utils/routes";
 import sendVerificationOtp from "../../_lib/send-verification-otp";
 import { messageParsers } from "../search-params";
@@ -110,40 +110,45 @@ export function LoginForm() {
         );
     };
 
-    const handleGoogleSignIn = async () => {
+    const handleGoogleSignIn = () => {
         setIsLoading(true);
         setError(null);
 
-        const { error } = await signIn.social({
-            provider: "google",
-            callbackURL: PAGES.DASHBOARD,
-        });
-
-        if (error) {
-            if (error.message?.includes("unable_to_link_account")) {
-                router.push(
-                    withQuery(PAGES.ERROR, {
-                        error: "unable_to_link_account",
-                    })
-                );
-                return;
+        authClient.signIn.social(
+            {
+                provider: "google",
+                callbackURL: PAGES.DASHBOARD,
+            },
+            {
+                onError: (ctx) => {
+                    switch (ctx.error.message) {
+                        case "unable_to_link_account":
+                            router.push(
+                                withQuery(PAGES.ERROR, {
+                                    error: "unable_to_link_account",
+                                })
+                            );
+                            break;
+                        case "access_denied":
+                            router.push(
+                                withQuery(PAGES.ERROR, {
+                                    error: "access_denied",
+                                })
+                            );
+                            break;
+                        case "oauth_callback_error":
+                            router.push(
+                                withQuery(PAGES.ERROR, {
+                                    error: "oauth_callback_error",
+                                })
+                            );
+                            break;
+                        default:
+                            setError(ctx.error.message);
+                    }
+                },
             }
-            if (error.message?.includes("access_denied")) {
-                router.push(withQuery(PAGES.ERROR, { error: "access_denied" }));
-                return;
-            }
-            if (error.message?.includes("oauth_callback_error")) {
-                router.push(
-                    withQuery(PAGES.ERROR, {
-                        error: "oauth_callback_error",
-                    })
-                );
-                return;
-            }
-            setError(
-                error.message || "Google sign-in failed. Please try again."
-            );
-        }
+        );
 
         setIsLoading(false);
     };
