@@ -34,18 +34,21 @@ export function HabitCardWithProvider() {
                     description:
                         "Review markets, check news, and plan trading day",
                     color: "#3b82f6",
+                    targetFrequency: "daily" as const,
                 },
                 {
                     title: "Journal Review",
                     emoji: "📝",
                     description: "Review and analyze today's trades",
                     color: "#8b5cf6",
+                    targetFrequency: "daily" as const,
                 },
                 {
                     title: "Exercise 30min",
                     emoji: "💪",
                     description: "Stay physically active for mental clarity",
                     color: "#22c55e",
+                    targetFrequency: "daily" as const,
                 },
             ];
 
