@@ -22,6 +22,14 @@ export const getMeHandler = getMeBase.handler(async ({ context }) => {
             createdAt: true,
             updatedAt: true,
         },
+        with: {
+            accounts: {
+                columns: {
+                    id: true,
+                    providerId: true,
+                },
+            },
+        },
     });
 
     if (!currentUser) {
@@ -41,9 +49,14 @@ export const getMeHandler = getMeBase.handler(async ({ context }) => {
         },
     });
 
+    const hasPasswordAccount = currentUser.accounts.some(
+        (account) => account.providerId === "credential"
+    );
+
     const userData = {
         ...currentUser,
         discordProfile: discordProfileData,
+        hasPasswordAccount,
     };
 
     return userData;
