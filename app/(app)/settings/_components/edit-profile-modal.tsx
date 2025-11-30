@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { useMutation } from "@tanstack/react-query";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ulid } from "ulid";
 import { z } from "zod";
@@ -67,6 +67,13 @@ export function EditProfileModal({
         resolver: zodResolver(editProfileFormSchema),
         defaultValues: initialValues,
     });
+
+    // Reset form when modal opens or when user data changes
+    useEffect(() => {
+        if (isOpen) {
+            reset(initialValues);
+        }
+    }, [isOpen, initialValues, reset]);
 
     const { mutateAsync: updateProfile, isPending: isUpdating } = useMutation(
         orpc.auth.updateProfile.mutationOptions({
