@@ -54,16 +54,31 @@ function getTrustedOrigins(): string[] {
 
 const userAdditionalFields = {
     rank: {
-        type: "string",
+        type: [
+            "NEW",
+            "BEGINNER",
+            "RISING",
+            "CHAMPION",
+            "EXPERT",
+            "LEGEND",
+            "MASTER",
+            "GRANDMASTER",
+            "IMMORTAL",
+        ],
         required: true,
         defaultValue: "NEW",
     },
     isLeaderboardPublic: {
-        type: "boolean",
+        type: "boolean" as const,
         required: true,
         defaultValue: false,
     },
-} as const;
+    timezone: {
+        type: "string" as const,
+        required: true,
+        defaultValue: "UTC",
+    },
+};
 
 export const auth = betterAuth({
     baseURL: getBaseUrl(),
