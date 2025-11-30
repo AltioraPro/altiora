@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { TradesTable } from "@/app/(app)/trading/_components/trades-table/trades-table";
 import { AssetsManager } from "@/components/trading/AssetsManager";
 import { ConfirmationsManager } from "@/components/trading/confirmations-manager";
-import type { DateFilterState } from "@/components/trading/DateFilter";
+import type { DateRangeFilterState } from "@/components/trading/DateRangeFilter";
 import { SessionsManager } from "@/components/trading/SessionsManager";
 import { TradingCharts } from "@/components/trading/TradingCharts";
 import {
@@ -23,7 +23,7 @@ interface TradingContentProps {
     stats: RouterOutput["trading"]["getStats"];
     sessions: Array<{ id: string; name: string }> | undefined;
     confirmations: Array<{ id: string; name: string }> | undefined;
-    dateFilter: DateFilterState;
+    dateRange: DateRangeFilterState;
 }
 
 export function TradingContent({
@@ -33,8 +33,10 @@ export function TradingContent({
     stats,
     sessions,
     confirmations,
-    dateFilter,
+    dateRange,
 }: TradingContentProps) {
+    const hasDateFilter = dateRange.from || dateRange.to;
+
     return (
         <>
             {stats &&
@@ -50,7 +52,7 @@ export function TradingContent({
                                 </CardTitle>
                                 <CardDescription className="text-white/60">
                                     Visual analysis of your trading performance
-                                    {dateFilter.view !== "all" &&
+                                    {hasDateFilter &&
                                         filteredTrades &&
                                         ` (${filteredTrades.length} trades)`}
                                 </CardDescription>

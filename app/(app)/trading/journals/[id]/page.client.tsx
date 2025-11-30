@@ -2,9 +2,9 @@
 
 import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { CreateTradeModal } from "@/components/trading/create-trade-modal";
-import type { DateFilterState } from "@/components/trading/DateFilter";
+import type { DateRangeFilterState } from "@/components/trading/DateRangeFilter";
 import { ImportTradesModal } from "@/components/trading/ImportTradesModal";
 import { TradingStats } from "@/components/trading/TradingStats";
 import { orpc, type RouterOutput } from "@/orpc/client";
@@ -15,131 +15,120 @@ import { TradingPageHeader } from "../../_components/trading-page-header";
 import { TradingTabs } from "../../_components/trading-tabs";
 import { tradingJournalSearchParams } from "./search-params";
 
-function useDateRange(dateFilter: DateFilterState) {
+function useAdvancedFiltersState() {
+    const [sessions] = useQueryState(
+        "sessions",
+        tradingJournalSearchParams.sessions
+    );
+    const [confirmations] = useQueryState(
+        "confirmations",
+        tradingJournalSearchParams.confirmations
+    );
+    const [assets] = useQueryState("assets", tradingJournalSearchParams.assets);
+
+    return useMemo(
+        () => ({
+            sessions: sessions ?? [],
+            confirmations: confirmations ?? [],
+            assets: assets ?? [],
+        }),
+        [sessions, confirmations, assets]
+    );
+}
+
+interface SerializedDateRange {
+    from: string | null | undefined;
+    to: string | null | undefined;
+}
+
+function useDateRangeState() {
+    const [serializedRange, setSerializedRange] = useQueryState(
+        "dateRange",
+        tradingJournalSearchParams.dateRange
+    );
+
+    // Convert serialized strings to Date objects
+    const dateRange: DateRangeFilterState = useMemo(
+        () => ({
+            from: serializedRange?.from
+                ? new Date(serializedRange.from)
+                : undefined,
+            to: serializedRange?.to ? new Date(serializedRange.to) : undefined,
+        }),
+        [serializedRange]
+    );
+
+    // Convert Date objects to serialized strings
+    const setDateRange = useCallback(
+        (range: DateRangeFilterState) => {
+            const serialized: SerializedDateRange = {
+                from: range.from?.toISOString() ?? null,
+                to: range.to?.toISOString() ?? null,
+            };
+            setSerializedRange(serialized);
+        },
+        [setSerializedRange]
+    );
+
+    return [dateRange, setDateRange] as const;
+}
+
+function useDateRangeStrings(dateRange: DateRangeFilterState) {
     return useMemo(() => {
-        if (dateFilter.view === "all") {
+        const hasDateFilter =
+            dateRange.from !== undefined || dateRange.to !== undefined;
+
+        if (!hasDateFilter) {
             return { startDate: undefined, endDate: undefined };
         }
 
-        if (
-            dateFilter.view === "monthly" &&
-            dateFilter.month &&
-            dateFilter.year
-        ) {
-            const monthNames = [
-                "January",
-                "February",
-                "March",
-                "April",
-                "May",
-                "June",
-                "July",
-                "August",
-                "September",
-                "October",
-                "November",
-                "December",
-            ];
-            const monthIndex = monthNames.indexOf(dateFilter.month);
-            const year = Number.parseInt(dateFilter.year, 10);
-
-            const startDate = new Date(year, monthIndex, 1);
-            const endDate = new Date(year, monthIndex + 1, 0);
-
-            return {
-                startDate: startDate.toISOString().split("T")[0],
-                endDate: endDate.toISOString().split("T")[0],
-            };
-        }
-
-        if (dateFilter.view === "yearly" && dateFilter.year) {
-            const year = Number.parseInt(dateFilter.year, 10);
-            const startDate = new Date(year, 0, 1);
-            const endDate = new Date(year, 11, 31);
-
-            return {
-                startDate: startDate.toISOString().split("T")[0],
-                endDate: endDate.toISOString().split("T")[0],
-            };
-        }
-
-        return { startDate: undefined, endDate: undefined };
-    }, [dateFilter]);
+        return {
+            startDate: dateRange.from?.toISOString().split("T")[0],
+            endDate: dateRange.to?.toISOString().split("T")[0],
+        };
+    }, [dateRange]);
 }
 
-function filterTradesByDate(
+function filterTradesByDateRange(
     trades: RouterOutput["trading"]["getTrades"] | undefined,
-    dateFilter: DateFilterState
+    dateRange: DateRangeFilterState
 ) {
-    if (!trades || dateFilter.view === "all") {
+    if (!trades) {
+        return trades;
+    }
+
+    const hasDateFilter =
+        dateRange.from !== undefined || dateRange.to !== undefined;
+    if (!hasDateFilter) {
         return trades;
     }
 
     return trades.filter((trade) => {
         const tradeDate = new Date(trade.tradeDate);
+        tradeDate.setHours(0, 0, 0, 0);
 
-        switch (dateFilter.view) {
-            case "monthly": {
-                if (!(dateFilter.month && dateFilter.year)) {
-                    return true;
-                }
-                const monthNames = [
-                    "January",
-                    "February",
-                    "March",
-                    "April",
-                    "May",
-                    "June",
-                    "July",
-                    "August",
-                    "September",
-                    "October",
-                    "November",
-                    "December",
-                ];
-                const monthIndex = monthNames.indexOf(dateFilter.month);
-                return (
-                    tradeDate.getFullYear() ===
-                        Number.parseInt(dateFilter.year, 10) &&
-                    tradeDate.getMonth() === monthIndex
-                );
-            }
-
-            case "yearly":
-                if (!dateFilter.year) {
-                    return true;
-                }
-                return (
-                    tradeDate.getFullYear() ===
-                    Number.parseInt(dateFilter.year, 10)
-                );
-
-            default:
-                return true;
+        if (dateRange.from && dateRange.to) {
+            const from = new Date(dateRange.from);
+            from.setHours(0, 0, 0, 0);
+            const to = new Date(dateRange.to);
+            to.setHours(23, 59, 59, 999);
+            return tradeDate >= from && tradeDate <= to;
         }
-    });
-}
 
-function calculateCumulativePerformance(
-    trades: RouterOutput["trading"]["getTrades"]
-) {
-    return trades
-        .sort(
-            (a, b) =>
-                new Date(a.tradeDate).getTime() -
-                new Date(b.tradeDate).getTime()
-        )
-        .reduce(
-            (acc, trade) => {
-                const pnl = Number(trade.profitLossPercentage);
-                const previousCumulative =
-                    acc.length > 0 ? acc.at(-1)?.cumulative || 0 : 0;
-                const cumulative = previousCumulative + pnl;
-                acc.push({ cumulative });
-                return acc;
-            },
-            [] as Array<{ cumulative: number }>
-        );
+        if (dateRange.from) {
+            const from = new Date(dateRange.from);
+            from.setHours(0, 0, 0, 0);
+            return tradeDate >= from;
+        }
+
+        if (dateRange.to) {
+            const to = new Date(dateRange.to);
+            to.setHours(23, 59, 59, 999);
+            return tradeDate <= to;
+        }
+
+        return true;
+    });
 }
 
 interface JournalPageClientProps {
@@ -155,22 +144,16 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
         tradingJournalSearchParams.tab
     );
 
-    const [dateFilter, setDateFilter] = useQueryState(
-        "dateFilter",
-        tradingJournalSearchParams.dateFilter
-    );
+    const [dateRange, setDateRange] = useDateRangeState();
 
-    const [advancedFilters, setAdvancedFilters] = useState<{
-        sessions: string[];
-        confirmations: string[];
-        assets: string[];
-    }>({ sessions: [], confirmations: [], assets: [] });
+    // Read advanced filters from URL state
+    const advancedFilters = useAdvancedFiltersState();
 
     const { data: journal } = useSuspenseQuery(
         orpc.trading.getJournalById.queryOptions({ input: { id: journalId } })
     );
 
-    const dateRange = useDateRange(dateFilter);
+    const dateRangeStrings = useDateRangeStrings(dateRange);
 
     const { data: allTrades } = useSuspenseQuery(
         orpc.trading.getTrades.queryOptions({
@@ -179,15 +162,15 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
                 sessionIds: advancedFilters.sessions,
                 confirmationIds: advancedFilters.confirmations,
                 assetIds: advancedFilters.assets,
-                startDate: dateRange.startDate,
-                endDate: dateRange.endDate,
+                startDate: dateRangeStrings.startDate,
+                endDate: dateRangeStrings.endDate,
             },
         })
     );
 
     const filteredTrades = useMemo(
-        () => filterTradesByDate(allTrades, dateFilter),
-        [allTrades, dateFilter]
+        () => filterTradesByDateRange(allTrades, dateRange),
+        [allTrades, dateRange]
     );
 
     const { data: backendStats } = useSuspenseQuery(
@@ -197,8 +180,8 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
                 sessionIds: advancedFilters.sessions,
                 confirmationIds: advancedFilters.confirmations,
                 assetIds: advancedFilters.assets,
-                startDate: dateRange.startDate,
-                endDate: dateRange.endDate,
+                startDate: dateRangeStrings.startDate,
+                endDate: dateRangeStrings.endDate,
             },
         })
     );
@@ -215,7 +198,7 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
         })
     );
 
-    // Utiliser directement backendStats car les filtres sont déjà appliqués côté serveur
+    // Use backendStats directly since filters are already applied server-side
     const stats = backendStats;
 
     const createJournalMutation = useMutation(
@@ -229,6 +212,22 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
             usePercentageCalculation: false,
         });
     };
+
+    const handleOpenCreateModal = useCallback(() => {
+        setIsCreateModalOpen(true);
+    }, []);
+
+    const handleCloseCreateModal = useCallback(() => {
+        setIsCreateModalOpen(false);
+    }, []);
+
+    const handleOpenImportModal = useCallback(() => {
+        setIsImportModalOpen(true);
+    }, []);
+
+    const handleCloseImportModal = useCallback(() => {
+        setIsImportModalOpen(false);
+    }, []);
 
     if (!journal) {
         return (
@@ -247,13 +246,11 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
             />
 
             <TradingFiltersBar
-                advancedFilters={advancedFilters}
-                dateFilter={dateFilter}
+                dateRange={dateRange}
                 journalId={journalId}
-                onAdvancedFiltersChange={setAdvancedFilters}
-                onCreateTradeClick={() => setIsCreateModalOpen(true)}
-                onDateFilterChange={setDateFilter}
-                onImportClick={() => setIsImportModalOpen(true)}
+                onCreateTradeClick={handleOpenCreateModal}
+                onDateRangeChange={setDateRange}
+                onImportClick={handleOpenImportModal}
             />
 
             {stats && <TradingStats className="mb-8" stats={stats} />}
@@ -263,7 +260,7 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
             <TradingContent
                 activeTab={activeTab}
                 confirmations={confirmations}
-                dateFilter={dateFilter}
+                dateRange={dateRange}
                 filteredTrades={filteredTrades}
                 journalId={journalId}
                 sessions={sessions}
@@ -273,13 +270,13 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
             <CreateTradeModal
                 isOpen={isCreateModalOpen}
                 journalId={journalId}
-                onClose={() => setIsCreateModalOpen(false)}
+                onClose={handleCloseCreateModal}
             />
 
             <ImportTradesModal
                 isOpen={isImportModalOpen}
                 journalId={journalId}
-                onClose={() => setIsImportModalOpen(false)}
+                onClose={handleCloseImportModal}
             />
         </div>
     );

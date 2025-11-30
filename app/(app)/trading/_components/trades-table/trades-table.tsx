@@ -7,7 +7,7 @@ import {
     getCoreRowModel,
     useReactTable,
 } from "@tanstack/react-table";
-import { useQueryStates } from "nuqs";
+import { useQueryState, useQueryStates } from "nuqs";
 import { useMemo, useState } from "react";
 import { EditTradeModal } from "@/components/trading/EditTradeModal";
 import { Button } from "@/components/ui/button";
@@ -33,9 +33,13 @@ import {
     queryParamsToSortingState,
 } from "@/lib/table/sorting-state";
 import { orpc } from "@/orpc/client";
+import { tradingJournalSearchParams } from "../../journals/[id]/search-params";
 import { createColumns, type TradeItem } from "./columns";
 import TablePagination from "./pagination";
 import { type SortableColumn, tradesTableParsers } from "./search-params";
+
+// Regex for YYYY-MM-DD date format validation
+const DATE_FORMAT_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 
 interface TradesTableProps {
     journalId: string;
@@ -67,23 +71,75 @@ export function TradesTable({ journalId }: TradesTableProps) {
         setQueryStates({ limit: value });
     };
 
+    const [dateRange] = useQueryState(
+        "dateRange",
+        tradingJournalSearchParams.dateRange
+    );
+
     const offset = (page - 1) * limit;
+
+    // Format date strings to YYYY-MM-DD format required by Zod schema
+    const formattedDates = useMemo(() => {
+        const formatDateString = (
+            dateStr: string | null | undefined
+        ): string | undefined => {
+            if (!dateStr) {
+                return;
+            }
+            try {
+                // Parse ISO date string and extract YYYY-MM-DD part
+                const date = new Date(dateStr);
+                return date.toISOString().split("T")[0];
+            } catch {
+                // If already in YYYY-MM-DD format, return as is
+                if (DATE_FORMAT_REGEX.test(dateStr)) {
+                    return dateStr;
+                }
+                return;
+            }
+        };
+
+        return {
+            startDate: formatDateString(dateRange?.from),
+            endDate: formatDateString(dateRange?.to),
+        };
+    }, [dateRange]);
 
     const { data: trades, isLoading } = useQuery(
         orpc.trading.getTrades.queryOptions({
-            input: { journalId, limit, offset },
+            input: {
+                journalId,
+                limit,
+                offset,
+                startDate: formattedDates.startDate,
+                endDate: formattedDates.endDate,
+            },
             placeholderData: keepPreviousData,
         })
     );
 
     const { data: stats } = useQuery(
-        orpc.trading.getStats.queryOptions({ input: { journalId } })
+        orpc.trading.getStats.queryOptions({
+            input: {
+                journalId,
+                startDate: formattedDates.startDate,
+                endDate: formattedDates.endDate,
+            },
+        })
     );
     const { data: assets } = useQuery(
-        orpc.trading.getAssets.queryOptions({ input: { journalId } })
+        orpc.trading.getAssets.queryOptions({
+            input: {
+                journalId,
+            },
+        })
     );
     const { data: sessions } = useQuery(
-        orpc.trading.getSessions.queryOptions({ input: { journalId } })
+        orpc.trading.getSessions.queryOptions({
+            input: {
+                journalId,
+            },
+        })
     );
 
     const { mutateAsync: deleteMultipleTrades, isPending: isDeleting } =
