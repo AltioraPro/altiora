@@ -5,11 +5,12 @@ import {
 } from "nuqs/server";
 import { z } from "zod";
 
-const dateFilterSchema = z.object({
-    view: z.enum(["monthly", "yearly", "all"]),
-    month: z.string().optional(),
-    year: z.string().optional(),
+const dateRangeSchema = z.object({
+    from: z.string().nullable().optional(),
+    to: z.string().nullable().optional(),
 });
+
+const stringArraySchema = z.array(z.string()).optional();
 
 export const tradingJournalSearchParams = {
     tab: parseAsStringEnum([
@@ -18,7 +19,13 @@ export const tradingJournalSearchParams = {
         "sessions",
         "confirmations",
     ]).withDefault("trades"),
-    dateFilter: parseAsJson(dateFilterSchema).withDefault({ view: "all" }),
+    dateRange: parseAsJson(dateRangeSchema).withDefault({
+        from: null,
+        to: null,
+    }),
+    sessions: parseAsJson(stringArraySchema),
+    confirmations: parseAsJson(stringArraySchema),
+    assets: parseAsJson(stringArraySchema),
 };
 
 export const searchParamsCache = createSearchParamsCache(

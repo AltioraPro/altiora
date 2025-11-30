@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/command";
 import { PAGES } from "@/constants/pages";
 import { USER_ROLES } from "@/constants/roles";
-import { useSession } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth-client";
 import { useSearchStore } from "@/store/search";
 
 const navigationItems = [
@@ -112,7 +112,7 @@ const navigationItems = [
 
 export function Search() {
     const router = useRouter();
-    const { data: session } = useSession();
+    const { data: session } = authClient.useSession();
     const { setOpen } = useSearchStore();
 
     const handleSelect = (path: Route) => {
