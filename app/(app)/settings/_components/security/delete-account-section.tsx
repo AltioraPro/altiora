@@ -13,8 +13,8 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { signOut } from "@/lib/auth-client";
 import { orpc } from "@/orpc/client";
+import { signOut } from "@/server/actions/sign-out";
 
 export function DeleteAccountSection() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);

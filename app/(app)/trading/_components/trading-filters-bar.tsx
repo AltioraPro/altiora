@@ -3,33 +3,23 @@
 import { RiAddLine, RiUploadLine } from "@remixicon/react";
 import { AdvancedFilters } from "@/components/trading/AdvancedFilters";
 import {
-    DateFilter,
-    type DateFilterState,
-} from "@/components/trading/DateFilter";
+    DateRangeFilter,
+    type DateRangeFilterState,
+} from "@/components/trading/DateRangeFilter";
 import { Button } from "@/components/ui/button";
 
 interface TradingFiltersBarProps {
     journalId: string | null;
-    dateFilter: DateFilterState;
-    advancedFilters: {
-        sessions: string[];
-        confirmations: string[];
-        assets: string[];
-    };
-    onDateFilterChange: (filter: DateFilterState) => void;
-    onAdvancedFiltersChange: (filters: {
-        sessions: string[];
-        confirmations: string[];
-        assets: string[];
-    }) => void;
+    dateRange: DateRangeFilterState;
+    onDateRangeChange: (range: DateRangeFilterState) => void;
     onImportClick: () => void;
     onCreateTradeClick: () => void;
 }
 
 export function TradingFiltersBar({
     journalId,
-    onDateFilterChange,
-    onAdvancedFiltersChange,
+    dateRange,
+    onDateRangeChange,
     onImportClick,
     onCreateTradeClick,
 }: TradingFiltersBarProps) {
@@ -38,32 +28,21 @@ export function TradingFiltersBar({
             {/* Filters Section */}
             <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
                 <div className="flex items-center gap-4">
-                    <DateFilter onFilterChange={onDateFilterChange} />
-                    {journalId && (
-                        <AdvancedFilters
-                            journalId={journalId}
-                            onFiltersChange={onAdvancedFiltersChange}
-                        />
-                    )}
+                    <DateRangeFilter
+                        onChange={onDateRangeChange}
+                        value={dateRange}
+                    />
+                    {journalId && <AdvancedFilters journalId={journalId} />}
                 </div>
             </div>
 
             {/* Actions Section */}
             <div className="flex items-center gap-3">
-                <Button
-                    className="border-white/20 bg-transparent text-white/80 hover:border-white/30 hover:bg-white/10 hover:text-white"
-                    onClick={onImportClick}
-                    size="sm"
-                    variant="outline"
-                >
+                <Button onClick={onImportClick} variant="outline">
                     <RiUploadLine className="size-4" />
                     Import Excel
                 </Button>
-                <Button
-                    className="bg-white font-medium text-black shadow-lg hover:bg-gray-100"
-                    onClick={onCreateTradeClick}
-                    size="sm"
-                >
+                <Button onClick={onCreateTradeClick}>
                     <RiAddLine className="size-4" />
                     New Trade
                 </Button>
