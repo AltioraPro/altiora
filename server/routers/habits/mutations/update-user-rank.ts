@@ -1,5 +1,6 @@
 import { ORPCError } from "@orpc/client";
 import { and, eq } from "drizzle-orm";
+import type { Rank } from "@/lib/auth/types";
 import { discordProfile, habitCompletions, user } from "@/server/db/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
 import { DiscordService } from "@/server/services/discord";
@@ -58,7 +59,7 @@ export const updateUserRankHandler = updateUserRankBase.handler(
             }
         }
 
-        let newRank: string;
+        let newRank: Rank;
         if (currentStreak >= 365) {
             newRank = "IMMORTAL";
         } else if (currentStreak >= 180) {

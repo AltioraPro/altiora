@@ -8,7 +8,7 @@ import { goals, user } from "@/server/db/schema";
  */
 function calculateNextReminderInTimezone(
     frequency: "daily" | "weekly" | "monthly",
-    userTimezone: string = "UTC"
+    userTimezone: string
 ): Date {
     const now = new Date();
     const nextDate = new Date(now);
@@ -54,8 +54,12 @@ function calculateNextReminderInTimezone(
     const targetDate = new Date(Date.UTC(year, month - 1, day, 9, 0, 0, 0));
 
     // Calculer le décalage horaire du timezone de l'utilisateur
-    const utcDate = new Date(targetDate.toLocaleString("en-US", { timeZone: "UTC" }));
-    const tzDate = new Date(targetDate.toLocaleString("en-US", { timeZone: userTimezone }));
+    const utcDate = new Date(
+        targetDate.toLocaleString("en-US", { timeZone: "UTC" })
+    );
+    const tzDate = new Date(
+        targetDate.toLocaleString("en-US", { timeZone: userTimezone })
+    );
     const tzOffset = tzDate.getTime() - utcDate.getTime();
     targetDate.setTime(targetDate.getTime() - tzOffset);
 
