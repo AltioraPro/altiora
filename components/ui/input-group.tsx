@@ -11,8 +11,8 @@ function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
     return (
         <div
             className={cn(
-                "group/input-group relative flex w-full items-center border border-input shadow-xs outline-none transition-[color,box-shadow]",
-                "h-10 has-[>textarea]:h-auto",
+                "group/input-group relative flex w-full items-center border border-input shadow-xs outline-none transition-[color,box-shadow] dark:bg-input/30",
+                "h-9 has-[>textarea]:h-auto",
 
                 // Variants based on alignment.
                 "has-[>[data-align=inline-start]]:[&>input]:pl-2",
@@ -62,8 +62,6 @@ function InputGroupAddon({
     ...props
 }: React.ComponentProps<"div"> & VariantProps<typeof inputGroupAddonVariants>) {
     return (
-        // biome-ignore lint/a11y/useKeyWithClickEvents: shadcn
-        // biome-ignore lint/a11y/noNoninteractiveElementInteractions: shadcn
         <div
             className={cn(inputGroupAddonVariants({ align }), className)}
             data-align={align}
@@ -85,10 +83,9 @@ const inputGroupButtonVariants = cva(
     {
         variants: {
             size: {
-                xs: "h-6 gap-1 rounded-[calc(var(--radius)-5px)] px-2 has-[>svg]:px-2 [&>svg:not([class*='size-'])]:size-3.5",
-                sm: "h-8 gap-1.5 rounded-md px-2.5 has-[>svg]:px-2.5",
-                "icon-xs":
-                    "size-6 rounded-[calc(var(--radius)-5px)] p-0 has-[>svg]:p-0",
+                xs: "h-6 gap-1 px-2 has-[>svg]:px-2 [&>svg:not([class*='size-'])]:size-3.5",
+                sm: "h-8 gap-1.5 px-2.5 has-[>svg]:px-2.5",
+                "icon-xs": "size-6 p-0 has-[>svg]:p-0",
                 "icon-sm": "size-8 p-0 has-[>svg]:p-0",
             },
         },

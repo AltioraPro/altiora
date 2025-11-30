@@ -6,7 +6,7 @@ import {
     habits,
 } from "@/server/db/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
-import type { HabitWithCompletions, PaginatedResponse } from "../types";
+import type { HabitWithCompletions } from "../types";
 import { getHabitsPaginatedSchema } from "../validators";
 
 export const getHabitsPaginatedBase = protectedProcedure.input(
@@ -14,10 +14,7 @@ export const getHabitsPaginatedBase = protectedProcedure.input(
 );
 
 export const getHabitsPaginatedHandler = getHabitsPaginatedBase.handler(
-    async ({
-        context,
-        input,
-    }): Promise<PaginatedResponse<HabitWithCompletions>> => {
+    async ({ context, input }) => {
         try {
             const { db, session } = context;
             const userId = session.user.id;

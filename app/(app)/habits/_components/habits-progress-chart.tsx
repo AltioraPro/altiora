@@ -6,7 +6,7 @@ import {
     RiSubtractLine,
 } from "@remixicon/react";
 import { useMemo } from "react";
-import { useHabits } from "./HabitsProvider";
+import { useHabits } from "./habits-provider";
 
 interface ProgressData {
     date: string;
@@ -184,9 +184,7 @@ export function HabitsProgressChart({
     const chartHeight = maxHeight - 40;
 
     return (
-        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xs">
-            <div className="absolute top-0 left-0 h-px w-full bg-linear-to-r from-transparent via-white/20 to-transparent" />
-
+        <div className="relative overflow-hidden border border-neutral-800 bg-neutral-900">
             <div className="p-6">
                 <div className="mb-6 flex items-center justify-between">
                     <div>
@@ -365,26 +363,26 @@ export function HabitsProgressChart({
 
 function HabitsProgressChartSkeleton() {
     return (
-        <div className="animate-pulse rounded-2xl border border-white/10 bg-white/5 p-6">
+        <div className="animate-pulse border border-white/10 bg-white/5 p-6">
             <div className="mb-6 flex items-center justify-between">
                 <div>
-                    <div className="mb-2 h-6 w-64 rounded bg-white/10" />
-                    <div className="h-4 w-48 rounded bg-white/5" />
+                    <div className="mb-2 h-6 w-64 bg-white/10" />
+                    <div className="h-4 w-48 bg-white/5" />
                 </div>
                 <div className="flex items-center space-x-6">
-                    <div className="h-8 w-12 rounded bg-white/10" />
-                    <div className="h-8 w-12 rounded bg-white/10" />
+                    <div className="h-8 w-12 bg-white/10" />
+                    <div className="h-8 w-12 bg-white/10" />
                 </div>
             </div>
 
-            <div className="h-64 rounded-xl bg-white/10" />
+            <div className="h-64 bg-white/10" />
 
             <div className="mt-6 flex justify-between border-white/10 border-t pt-6">
                 <div className="flex space-x-6">
-                    <div className="h-4 w-20 rounded bg-white/10" />
-                    <div className="h-4 w-20 rounded bg-white/10" />
+                    <div className="h-4 w-20 bg-white/10" />
+                    <div className="h-4 w-20 bg-white/10" />
                 </div>
-                <div className="h-4 w-32 rounded bg-white/10" />
+                <div className="h-4 w-32 bg-white/10" />
             </div>
         </div>
     );

@@ -4,7 +4,7 @@ export const AUTH_PAGES = {
     SIGN_IN: route("/login"),
     SIGN_UP: route("/register"),
     FORGOT_PASSWORD: route("/forgot-password"),
-    VERIFICATION: route("/check-email"),
+    VERIFICATION: route("/verification"),
     RESET_PASSWORD: route("/reset-password"),
     CONFIRM_ACCESS: route("/confirm-2fa"),
     WAITLIST: route("/waitlist"),
