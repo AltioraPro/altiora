@@ -1,3 +1,4 @@
+import { del } from "@vercel/blob";
 import { type HandleUploadBody, handleUpload } from "@vercel/blob/client";
 import { type NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "@/lib/auth/utils";
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
                 };
             },
             onUploadCompleted: async () => {
-                // Cleanup old avatar
+                // Cleanup old avatar is handled by the client
             },
         });
 
@@ -42,6 +43,49 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         return NextResponse.json(
             { error: (error as Error).message },
             { status: 400 }
+        );
+    }
+}
+
+/**
+ * API route for deleting blobs from Vercel Blob storage
+ * Requires authentication to prevent unauthorized deletions
+ */
+export async function DELETE(request: NextRequest): Promise<NextResponse> {
+    try {
+        const session = await getServerSession();
+
+        if (!session) {
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const { url } = (await request.json()) as { url: string };
+
+        if (!url) {
+            return NextResponse.json(
+                { error: "URL is required" },
+                { status: 400 }
+            );
+        }
+
+        // Only allow deletion of user-avatar files to prevent abuse
+        if (!url.includes("user-avatar/")) {
+            return NextResponse.json(
+                { error: "Invalid blob URL" },
+                { status: 400 }
+            );
+        }
+
+        await del(url);
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        return NextResponse.json(
+            { error: (error as Error).message },
+            { status: 500 }
         );
     }
 }

@@ -1,7 +1,12 @@
 "use client";
 
-import { RiCloseLine, RiImage2Fill, RiUpload2Fill } from "@remixicon/react";
-import { useEffect, useId, useRef } from "react";
+import {
+    RiCloseLine,
+    RiImage2Fill,
+    RiLoader4Line,
+    RiUpload2Fill,
+} from "@remixicon/react";
+import { useCallback, useId, useRef } from "react";
 import {
     Controller,
     type ControllerProps,
@@ -16,7 +21,7 @@ import {
     FieldError,
     FieldLabel,
 } from "@/components/ui/field";
-import { useFileUpload } from "@/hooks/use-file-upload";
+import { useFileUpload, type FileWithPreview } from "@/hooks/use-file-upload";
 
 interface ImageDropzoneProps<
     TFieldValues extends FieldValues = FieldValues,
@@ -26,13 +31,15 @@ interface ImageDropzoneProps<
     description?: string;
     maxSizeMB?: number;
     disabled?: boolean;
+    /** Called when a file is added to the dropzone for immediate upload */
+    onFileAdded?: (file: File) => Promise<string>;
+    /** Called when the image is removed from the dropzone */
+    onFileRemoved?: () => void;
+    /** Whether an upload is currently in progress */
+    isUploading?: boolean;
 }
 
 const DEFAULT_MAX_SIZE_MB = 2;
-
-function isFile(value: unknown): value is File {
-    return value instanceof File;
-}
 
 function getPreviewUrl(
     filePreview: string | undefined,
@@ -41,23 +48,10 @@ function getPreviewUrl(
     if (filePreview) {
         return filePreview;
     }
-    if (isFile(fieldValue)) {
-        return URL.createObjectURL(fieldValue);
-    }
     if (typeof fieldValue === "string" && fieldValue.length > 0) {
         return fieldValue;
     }
     return null;
-}
-
-function getAltText(fileName: string | undefined, fieldValue: unknown): string {
-    if (fileName) {
-        return fileName;
-    }
-    if (isFile(fieldValue)) {
-        return fieldValue.name;
-    }
-    return "Uploaded image";
 }
 
 export function ImageDropzone<
@@ -70,14 +64,34 @@ export function ImageDropzone<
     description,
     maxSizeMB = DEFAULT_MAX_SIZE_MB,
     disabled,
+    onFileAdded,
+    onFileRemoved,
+    isUploading = false,
     ...controllerProps
 }: ImageDropzoneProps<TFieldValues, TName>) {
     const uniqueId = useId();
     const maxSize = maxSizeMB * 1024 * 1024;
-    const fieldOnChangeRef = useRef<((value: File | null) => void) | null>(
+    // Ref to store the field onChange callback for use in the onFilesAdded callback
+    const fieldOnChangeRef = useRef<((value: string | null) => void) | null>(
         null
     );
-    const fieldValueRef = useRef<unknown>(null);
+
+    const handleFilesAdded = useCallback(
+        async (addedFiles: FileWithPreview[]) => {
+            const file = addedFiles[0]?.file;
+            if (!(file instanceof File) || !onFileAdded) {
+                return;
+            }
+
+            try {
+                const uploadedUrl = await onFileAdded(file);
+                fieldOnChangeRef.current?.(uploadedUrl);
+            } catch (error) {
+                console.error("Upload failed:", error);
+            }
+        },
+        [onFileAdded]
+    );
 
     const [
         { files, isDragging, errors: uploadErrors },
@@ -89,31 +103,14 @@ export function ImageDropzone<
             openFileDialog,
             removeFile,
             getInputProps,
-            addFiles,
+            clearFiles,
         },
     ] = useFileUpload({
         accept: "image/svg+xml,image/png,image/jpeg,image/jpg,image/gif",
         maxSize,
         multiple: false,
+        onFilesAdded: handleFilesAdded,
     });
-
-    // Sync files to form field at top level
-    useEffect(() => {
-        if (!fieldOnChangeRef.current) {
-            return;
-        }
-
-        if (files.length > 0 && files[0]?.file instanceof File) {
-            const currentFile = files[0].file;
-            if (fieldValueRef.current !== currentFile) {
-                fieldOnChangeRef.current(currentFile);
-                fieldValueRef.current = currentFile;
-            }
-        } else if (files.length === 0 && isFile(fieldValueRef.current)) {
-            fieldOnChangeRef.current(null);
-            fieldValueRef.current = null;
-        }
-    }, [files]);
 
     return (
         <Controller
@@ -121,21 +118,29 @@ export function ImageDropzone<
             name={name}
             {...controllerProps}
             render={({ field, fieldState }) => {
-                // Store field.onChange and field.value in refs for useEffect
+                // Store field.onChange in ref for the onFilesAdded callback
                 fieldOnChangeRef.current = field.onChange;
-                fieldValueRef.current = field.value;
 
                 const previewUrl = getPreviewUrl(
                     files[0]?.preview,
                     field.value
                 );
-                const altText = getAltText(files[0]?.file?.name, field.value);
                 const hasError = !!fieldState.error || uploadErrors.length > 0;
                 const errorMessage =
                     fieldState.error?.message || uploadErrors[0] || null;
+                const isDisabled = disabled || isUploading;
+
+                const handleRemove = () => {
+                    if (files[0]?.id) {
+                        removeFile(files[0].id);
+                    }
+                    clearFiles();
+                    field.onChange(null);
+                    onFileRemoved?.();
+                };
 
                 return (
-                    <Field data-disabled={disabled} data-invalid={hasError}>
+                    <Field data-disabled={isDisabled} data-invalid={hasError}>
                         {label && (
                             <FieldLabel htmlFor={uniqueId}>{label}</FieldLabel>
                         )}
@@ -153,25 +158,27 @@ export function ImageDropzone<
                                     onDragEnter={handleDragEnter}
                                     onDragLeave={handleDragLeave}
                                     onDragOver={handleDragOver}
-                                    onDrop={(e) => {
-                                        handleDrop(e);
-                                        if (e.dataTransfer.files.length > 0) {
-                                            addFiles([e.dataTransfer.files[0]]);
-                                        }
-                                    }}
+                                    onDrop={handleDrop}
                                 >
                                     <input
                                         {...getInputProps({
                                             id: uniqueId,
-                                            disabled,
+                                            disabled: isDisabled,
                                             "aria-label": "Upload image file",
                                             className: "sr-only",
                                         })}
                                     />
-                                    {previewUrl ? (
+                                    {isUploading ? (
+                                        <div className="flex flex-col items-center justify-center px-4 py-3 text-center">
+                                            <RiLoader4Line className="size-8 animate-spin text-muted-foreground" />
+                                            <p className="mt-2 font-medium text-muted-foreground text-sm">
+                                                Uploading...
+                                            </p>
+                                        </div>
+                                    ) : previewUrl ? (
                                         <div className="absolute inset-0 flex items-center justify-center p-4">
                                             <img
-                                                alt={altText}
+                                                alt="Uploaded image"
                                                 className="mx-auto max-h-full rounded object-contain"
                                                 height={200}
                                                 src={previewUrl}
@@ -195,7 +202,7 @@ export function ImageDropzone<
                                             </p>
                                             <Button
                                                 className="mt-4"
-                                                disabled={disabled}
+                                                disabled={isDisabled}
                                                 onClick={openFileDialog}
                                                 type="button"
                                                 variant="outline"
@@ -210,18 +217,13 @@ export function ImageDropzone<
                                     )}
                                 </div>
 
-                                {previewUrl && (
+                                {previewUrl && !isUploading && (
                                     <div className="absolute top-4 right-4">
                                         <button
                                             aria-label="Remove image"
                                             className="z-50 flex size-8 cursor-pointer items-center justify-center rounded-full bg-black/60 text-white outline-none transition-[color,box-shadow] hover:bg-black/80 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-                                            disabled={disabled}
-                                            onClick={() => {
-                                                if (files[0]?.id) {
-                                                    removeFile(files[0].id);
-                                                }
-                                                field.onChange(null);
-                                            }}
+                                            disabled={isDisabled}
+                                            onClick={handleRemove}
                                             type="button"
                                         >
                                             <RiCloseLine
