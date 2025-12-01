@@ -2,12 +2,16 @@ import { RiTimerLine, RiUserLine } from "@remixicon/react";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import type { RouterOutput } from "@/orpc/client";
+import { getRankByName } from "@/app/(app)/habits/_components/stats/rank-system";
+import { cn } from "@/lib/utils";
 
 interface LeaderboardEntryProps {
     entry: RouterOutput["leaderboard"]["getLeaderboard"][number];
 }
 
 export function LeaderboardEntry({ entry }: LeaderboardEntryProps) {
+    const rankInfo = getRankByName(entry.userRank);
+
     return (
         <Card className="border border-white/10 bg-black/20 transition-all duration-300 hover:border-white/20">
             <CardContent className="p-5">
@@ -52,7 +56,14 @@ export function LeaderboardEntry({ entry }: LeaderboardEntryProps) {
                             <h3 className="font-argesta text-lg text-white">
                                 {entry.name}
                             </h3>
-                            <span className="rounded border border-white/10 bg-white/5 px-2 py-0.5 font-medium text-white/60 text-xs uppercase tracking-wider">
+                            <span
+                                className={cn(
+                                    "rounded border px-2 py-0.5 font-medium text-xs uppercase tracking-wider",
+                                    rankInfo.bgColor,
+                                    rankInfo.borderColor,
+                                    rankInfo.color
+                                )}
+                            >
                                 {entry.userRank}
                             </span>
                         </div>
