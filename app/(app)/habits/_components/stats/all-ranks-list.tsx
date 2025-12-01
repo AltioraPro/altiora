@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { cn } from "@/lib/utils";
 import { RANK_SYSTEM_DISPLAY, type RankInfo } from "./rank-system";
 
@@ -8,59 +9,69 @@ interface AllRanksListProps {
     currentStreak: number;
 }
 
-export function AllRanksList({
+export const AllRanksList = memo(function AllRanksList({
     currentRank,
     currentStreak,
 }: AllRanksListProps) {
     return (
-        <div>
-            <h3 className="mb-4 font-bold text-lg">ALL RANKS</h3>
-            <div className="space-y-2.5">
+        <div className="h-full flex flex-col">
+            <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-xs uppercase tracking-widest text-white/40">Progression Path</h3>
+                <div className="text-[10px] text-white/30">Scroll for more</div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto pr-2 space-y-2 custom-scrollbar">
                 {RANK_SYSTEM_DISPLAY.map((rank) => {
                     const RankIcon = rank.icon;
                     const isCurrentRank = rank.name === currentRank.name;
                     const isUnlocked = currentStreak >= rank.minStreak;
+                    const isLocked = !isUnlocked;
 
                     return (
                         <div
                             className={cn(
-                                "border p-4 transition-all duration-200",
-                                isCurrentRank &&
-                                    `${rank.bgColor} ${rank.borderColor}`,
-                                isUnlocked &&
-                                    !isCurrentRank &&
-                                    "border-white/20 bg-white/5",
-                                !isUnlocked &&
-                                    "border-white/10 bg-white/5 opacity-50"
+                                "group relative overflow-hidden border p-3 transition-all duration-300",
+                                isCurrentRank
+                                    ? "bg-white/5 border-white/20"
+                                    : "bg-transparent border-transparent hover:bg-white/[0.02]",
+                                isLocked && "opacity-40 grayscale"
                             )}
                             key={rank.name}
                         >
-                            <div className="mb-2 flex items-center justify-between">
-                                <div className="flex items-center space-x-3">
-                                    <RankIcon
-                                        className={`h-5 w-5 ${rank.color}`}
-                                    />
-                                    <span
-                                        className={`font-medium ${rank.color}`}
-                                    >
-                                        {rank.name}
-                                    </span>
-                                    {isCurrentRank && (
-                                        <span className="rounded bg-white/20 px-2 py-1 text-white text-xs">
-                                            CURRENT
-                                        </span>
-                                    )}
+                            <div className="flex items-center gap-4">
+                                {/* Left: Status Indicator */}
+                                <div className={cn(
+                                    "w-1 h-8",
+                                    isCurrentRank ? "bg-white" : isUnlocked ? "bg-white/20" : "bg-white/5"
+                                )} />
+
+                                {/* Icon */}
+                                <div className={cn(
+                                    "flex h-8 w-8 shrink-0 items-center justify-center border",
+                                    isCurrentRank
+                                        ? "border-white/10 bg-black"
+                                        : "border-white/5 bg-white/[0.02]"
+                                )}>
+                                    <RankIcon className={cn("h-4 w-4", isCurrentRank ? rank.color : "text-white/40")} />
                                 </div>
-                                <span className="text-sm text-white/60">
-                                    {rank.minStreak} day
-                                    {rank.minStreak !== 1 ? "s" : ""}
-                                </span>
-                            </div>
-                            <p className="mb-2 text-sm text-white/80">
-                                {rank.description}
-                            </p>
-                            <div className="text-white/60 text-xs">
-                                Discord Role: {rank.discordRole}
+
+                                {/* Info */}
+                                <div className="min-w-0 flex-1">
+                                    <div className="flex items-center justify-between">
+                                        <span className={cn(
+                                            "text-sm font-bold tracking-tight",
+                                            isCurrentRank ? "text-white" : "text-white/60"
+                                        )}>
+                                            {rank.name}
+                                        </span>
+                                        <span className="text-xs font-mono text-white/30">
+                                            {rank.minStreak}d
+                                        </span>
+                                    </div>
+                                    <p className="text-[11px] text-white/40 truncate mt-0.5">
+                                        {rank.description}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     );
@@ -68,4 +79,4 @@ export function AllRanksList({
             </div>
         </div>
     );
-}
+});

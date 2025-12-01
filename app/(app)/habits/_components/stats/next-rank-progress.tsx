@@ -1,5 +1,7 @@
 "use client";
 
+import { memo, useMemo } from "react";
+import { cn } from "@/lib/utils";
 import type { RankInfo } from "./rank-system";
 
 interface NextRankProgressProps {
@@ -8,42 +10,75 @@ interface NextRankProgressProps {
     daysToNextRank: number;
 }
 
-export function NextRankProgress({
+export const NextRankProgress = memo(function NextRankProgress({
     nextRank,
     currentStreak,
     daysToNextRank,
 }: NextRankProgressProps) {
-    const progressPercentage = Math.min(
-        (currentStreak / nextRank.minStreak) * 100,
-        100
+    const progressPercentage = useMemo(
+        () => Math.min((currentStreak / nextRank.minStreak) * 100, 100),
+        [currentStreak, nextRank.minStreak]
     );
+    const NextRankIcon = nextRank.icon;
 
     return (
-        <div className="mb-4 bg-neutral-800/50 p-4">
-            <h3 className="mb-3 font-bold text-lg">
-                NEXT RANK: {nextRank.name}
-            </h3>
-            <div className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                    <span className="text-white/60">Progress:</span>
-                    <span className="text-white">
-                        {currentStreak} / {nextRank.minStreak} days
-                    </span>
+        <div className="relative overflow-hidden border border-white/10 bg-black/40 p-5">
+            {/* Subtle gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none" />
+
+            <div className="relative space-y-4">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                    <div>
+                        <div className="mb-1 text-[10px] font-bold uppercase tracking-widest text-white/40">
+                            Next Target
+                        </div>
+                        <h3 className="font-bold text-lg text-white flex items-center gap-2">
+                            {nextRank.name}
+                            <NextRankIcon className={cn("h-4 w-4 opacity-70", nextRank.color)} />
+                        </h3>
+                    </div>
+                    <div className="text-right">
+                        <div className="text-[10px] font-bold uppercase tracking-widest text-white/40">
+                            Progress
+                        </div>
+                        <div className="text-sm font-mono text-white/80">
+                            {currentStreak}<span className="text-white/30">/</span>{nextRank.minStreak}
+                        </div>
+                    </div>
                 </div>
-                <div className="h-2 w-full rounded-full bg-white/10">
-                    <div
-                        className={`h-2 rounded-full transition-all duration-500 ${nextRank.color.replace("text-", "bg-")}`}
-                        style={{ width: `${progressPercentage}%` }}
-                    />
-                </div>
-                <div className="text-center">
-                    <span className="text-sm text-white/60">
-                        {daysToNextRank === 1
-                            ? `Only 1 more consecutive day to become ${nextRank.name}`
-                            : `Only ${daysToNextRank} more consecutive days to become ${nextRank.name}`}
-                    </span>
+
+                {/* Progress Bar */}
+                <div className="space-y-4">
+                    {/* Progress bar container */}
+                    <div className="relative h-1.5 w-full overflow-hidden bg-white/5">
+                        {/* Animated progress fill */}
+                        <div
+                            className={cn(
+                                "h-full transition-all duration-700 ease-out",
+                                "bg-white",
+                                "shadow-[0_0_10px_rgba(255,255,255,0.3)]"
+                            )}
+                            style={{
+                                width: `${progressPercentage}%`,
+                            }}
+                        />
+                    </div>
+
+                    {/* Days remaining message */}
+                    <p className="text-xs font-medium text-center text-white/50">
+                        {daysToNextRank === 1 ? (
+                            <>
+                                <span className="text-white">1 day</span> left
+                            </>
+                        ) : (
+                            <>
+                                <span className="text-white">{daysToNextRank} days</span> left
+                            </>
+                        )}
+                    </p>
                 </div>
             </div>
         </div>
     );
-}
+});
