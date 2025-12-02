@@ -1,7 +1,13 @@
 "use client";
 
-import { memo, useCallback, useEffect, useMemo } from "react";
+import { memo, useMemo } from "react";
 import { RiCloseLine } from "@remixicon/react";
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import { AllRanksList } from "./all-ranks-list";
 import { CurrentRankCard } from "./current-rank-card";
 import { NextRankProgress } from "./next-rank-progress";
@@ -27,69 +33,25 @@ function RankSystemModalComponent({
         [currentStreak, nextRank]
     );
 
-    const handleBackdropClick = useCallback(
-        (e: React.MouseEvent<HTMLDivElement>) => {
-            if (e.target === e.currentTarget) {
-                onClose();
-            }
-        },
-        [onClose]
-    );
-
-    // Escape key handler at document level for reliability
-    useEffect(() => {
-        if (!isOpen) return;
-
-        const handleEscape = (e: KeyboardEvent) => {
-            if (e.key === "Escape") {
-                onClose();
-            }
-        };
-
-        document.addEventListener("keydown", handleEscape);
-        // Prevent body scroll when modal is open
-        document.body.style.overflow = "hidden";
-
-        return () => {
-            document.removeEventListener("keydown", handleEscape);
-            document.body.style.overflow = "";
-        };
-    }, [isOpen, onClose]);
-
-    if (!isOpen) return null;
-
     return (
-        <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            onClick={handleBackdropClick}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="rank-system-title"
-        >
-            {/* Overlay avec backdrop blur */}
-            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm animate-in fade-in-0 duration-200" />
-
-            {/* Modal Content */}
-            <div className="relative z-10 w-full max-w-5xl overflow-hidden border border-white/10 bg-[#0A0A0A] shadow-2xl animate-in fade-in-0 zoom-in-95 duration-300">
+        <Dialog onOpenChange={(open) => !open && onClose()} open={isOpen}>
+            <DialogContent
+                className="top-[50%] left-[50%] w-full max-w-5xl translate-x-[-50%] translate-y-[-50%] overflow-hidden border border-white/10 bg-[#0A0A0A] p-0 shadow-2xl"
+                overlayClassName="bg-black/50 backdrop-blur-sm"
+                showCloseButton={false}
+            >
                 {/* Gradient accent line */}
                 <div className="absolute top-0 left-0 h-px w-full bg-linear-to-r from-transparent via-white/20 to-transparent" />
 
                 {/* Header */}
                 <div className="flex items-center justify-between border-b border-white/5 bg-[#0A0A0A] px-6 py-4">
-                    <h2
-                        id="rank-system-title"
-                        className="font-bold text-lg tracking-tight text-white"
-                    >
+                    <DialogTitle className="font-bold text-lg tracking-tight text-white">
                         RANK SYSTEM
-                    </h2>
-                    <button
-                        className="group flex h-8 w-8 items-center justify-center border border-white/10 bg-transparent transition-all duration-200 hover:border-white/30 hover:bg-white/5"
-                        onClick={onClose}
-                        type="button"
-                        aria-label="Fermer la modal"
-                    >
+                    </DialogTitle>
+                    <DialogClose className="group flex h-8 w-8 items-center justify-center border border-white/10 bg-transparent transition-all duration-200 hover:border-white/30 hover:bg-white/5">
                         <RiCloseLine className="size-4 text-white/40 transition-colors group-hover:text-white" />
-                    </button>
+                        <span className="sr-only">Fermer</span>
+                    </DialogClose>
                 </div>
 
                 {/* Content Grid */}
@@ -119,8 +81,8 @@ function RankSystemModalComponent({
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </DialogContent>
+        </Dialog>
     );
 }
 
