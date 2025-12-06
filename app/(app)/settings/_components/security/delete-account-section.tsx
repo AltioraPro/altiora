@@ -40,11 +40,11 @@ export function DeleteAccountSection() {
 
     return (
         <div>
-            <div className="mb-2 flex items-center gap-2 text-red-500">
+            <div className="mb-2 flex items-center gap-2 text-destructive">
                 <RiErrorWarningLine size={16} />
                 <p>Danger Zone</p>
             </div>
-            <div className="border border-red-500/20 bg-red-950/50 p-6">
+            <div className="border border-red-500/20 bg-red-950/30 p-6">
                 <h3 className="mb-2 font-semibold text-white">
                     Delete Account
                 </h3>

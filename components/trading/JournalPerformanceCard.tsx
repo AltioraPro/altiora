@@ -101,10 +101,10 @@ export function JournalPerformanceCard({
     const bestTrade =
         tradesData && tradesData.length > 0
             ? tradesData.reduce((best, current) => {
-                const currentPnl = Number(current.profitLossPercentage || 0);
-                const bestPnl = Number(best.profitLossPercentage || 0);
-                return currentPnl > bestPnl ? current : best;
-            })
+                  const currentPnl = Number(current.profitLossPercentage || 0);
+                  const bestPnl = Number(best.profitLossPercentage || 0);
+                  return currentPnl > bestPnl ? current : best;
+              })
             : null;
 
     const finalCumulative =
@@ -271,7 +271,8 @@ export function JournalPerformanceCard({
                                         }
 
                                         // Use profitFactor calculated on the server (Gains totaux / Pertes totales)
-                                        const profitFactor = stats.profitFactor ?? 0;
+                                        const profitFactor =
+                                            stats.profitFactor ?? 0;
 
                                         if (!Number.isFinite(profitFactor)) {
                                             return "∞";
@@ -623,39 +624,43 @@ export function JournalPerformanceCard({
 
                     {bestTrade && (
                         <div
-                            className={`mb-4 rounded-lg border p-3 ${Number(bestTrade.profitLossPercentage) >= 0
+                            className={`mb-4 rounded-lg border p-3 ${
+                                Number(bestTrade.profitLossPercentage) >= 0
                                     ? "border-green-500/20 bg-green-500/10"
                                     : "border-red-500/20 bg-red-500/10"
-                                }`}
+                            }`}
                         >
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
                                     <RiStockLine
-                                        className={`h-4 w-4 ${Number(
-                                            bestTrade.profitLossPercentage
-                                        ) >= 0
+                                        className={`h-4 w-4 ${
+                                            Number(
+                                                bestTrade.profitLossPercentage
+                                            ) >= 0
                                                 ? "text-green-400"
                                                 : "text-red-400"
-                                            }`}
+                                        }`}
                                     />
                                     <span
-                                        className={`text-sm ${Number(
-                                            bestTrade.profitLossPercentage
-                                        ) >= 0
+                                        className={`text-sm ${
+                                            Number(
+                                                bestTrade.profitLossPercentage
+                                            ) >= 0
                                                 ? "text-green-400"
                                                 : "text-red-400"
-                                            }`}
+                                        }`}
                                     >
                                         Best trade
                                     </span>
                                 </div>
                                 <Badge
-                                    className={`${Number(
-                                        bestTrade.profitLossPercentage
-                                    ) >= 0
+                                    className={`${
+                                        Number(
+                                            bestTrade.profitLossPercentage
+                                        ) >= 0
                                             ? "border-green-500/30 bg-green-500/20 text-green-400"
                                             : "border-red-500/30 bg-red-500/20 text-red-400"
-                                        }`}
+                                    }`}
                                 >
                                     {Number(bestTrade.profitLossPercentage) >= 0
                                         ? "+"

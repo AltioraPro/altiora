@@ -6,13 +6,6 @@ import { useMemo } from "react";
 import { DiscordWelcomeChecker } from "@/components/auth/DiscordWelcomeChecker";
 import { GlobalTradingCharts } from "@/components/trading/GlobalTradingCharts";
 import { GlobalTradingStats } from "@/components/trading/GlobalTradingStats";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
 import { orpc } from "@/orpc/client";
 import { dashboardSearchParams } from "../search-params";
 
@@ -51,22 +44,20 @@ export function DashboardContent() {
             {/* Charts */}
             {stats && sessions && trades && (
                 <div className="mb-8">
-                    <Card className="border border-white/10 bg-black/20">
-                        <CardHeader>
-                            <CardTitle className="text-white">
+                    <div>
+                        <div className="mb-4 flex flex-col items-start justify-between">
+                            <h2 className="font-bold text-2xl text-white">
                                 Performance Charts
-                            </CardTitle>
-                            <CardDescription className="text-white/60">
-                                Visual analysis of your overall performance
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <GlobalTradingCharts
-                                sessions={sessions}
-                                trades={trades}
-                            />
-                        </CardContent>
-                    </Card>
+                            </h2>
+                            <p className="text-sm text-white/60">
+                                Visual analysis of your overall performance.
+                            </p>
+                        </div>
+                        <GlobalTradingCharts
+                            sessions={sessions}
+                            trades={trades}
+                        />
+                    </div>
                 </div>
             )}
 

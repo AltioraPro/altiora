@@ -121,14 +121,10 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
         <div className="space-y-6">
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 {/* Cumulative Performance */}
-                <Card className="border border-white/10 bg-black/20">
+                <Card>
                     <CardHeader className="pb-3">
-                        <CardTitle className="text-lg text-white">
-                            Cumulative Performance (%)
-                        </CardTitle>
-                        <CardDescription className="text-white/60">
-                            Performance evolution
-                        </CardDescription>
+                        <CardTitle>Cumulative Performance (%)</CardTitle>
+                        <CardDescription>Performance evolution</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="h-64">
@@ -214,14 +210,10 @@ export function GlobalTradingCharts({ trades }: GlobalTradingChartsProps) {
                 </Card>
 
                 {/* Monthly Performance */}
-                <Card className="border border-white/20 bg-linear-to-br from-black/40 to-black/60 backdrop-blur-sm">
-                    <CardHeader className="pb-3">
-                        <CardTitle className="text-lg text-white tracking-wide">
-                            MONTHLY PERFORMANCE
-                        </CardTitle>
-                        <CardDescription className="text-white/70">
-                            Performance by month
-                        </CardDescription>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Monthly Performance</CardTitle>
+                        <CardDescription>Performance by month</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="h-[250px] w-full pr-4">
