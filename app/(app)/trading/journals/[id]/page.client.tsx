@@ -1,6 +1,11 @@
 "use client";
 
-import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import {
+    keepPreviousData,
+    useMutation,
+    useQuery,
+    useSuspenseQuery,
+} from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
 import { useCallback, useMemo, useState } from "react";
 import { CreateTradeModal } from "@/components/trading/create-trade-modal";
@@ -12,6 +17,7 @@ import { EmptyTradingState } from "../../_components/empty-trading-state";
 import { TradingContent } from "../../_components/trading-content";
 import { TradingFiltersBar } from "../../_components/trading-filters-bar";
 import { TradingPageHeader } from "../../_components/trading-page-header";
+import { TradingStatsSkeleton } from "../../_components/trading-stats-skeleton";
 import { TradingTabs } from "../../_components/trading-tabs";
 import { tradingJournalSearchParams } from "./search-params";
 
@@ -155,8 +161,8 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
 
     const dateRangeStrings = useDateRangeStrings(dateRange);
 
-    const { data: allTrades } = useSuspenseQuery(
-        orpc.trading.getTrades.queryOptions({
+    const { data: allTrades, isLoading: isLoadingTrades } = useQuery({
+        ...orpc.trading.getTrades.queryOptions({
             input: {
                 journalId,
                 sessionIds: advancedFilters.sessions,
@@ -165,16 +171,17 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
                 startDate: dateRangeStrings.startDate,
                 endDate: dateRangeStrings.endDate,
             },
-        })
-    );
+        }),
+        placeholderData: keepPreviousData,
+    });
 
     const filteredTrades = useMemo(
         () => filterTradesByDateRange(allTrades, dateRange),
         [allTrades, dateRange]
     );
 
-    const { data: backendStats } = useSuspenseQuery(
-        orpc.trading.getStats.queryOptions({
+    const { data: backendStats, isLoading: isLoadingStats } = useQuery({
+        ...orpc.trading.getStats.queryOptions({
             input: {
                 journalId,
                 sessionIds: advancedFilters.sessions,
@@ -183,8 +190,9 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
                 startDate: dateRangeStrings.startDate,
                 endDate: dateRangeStrings.endDate,
             },
-        })
-    );
+        }),
+        placeholderData: keepPreviousData,
+    });
 
     const { data: sessions } = useQuery(
         orpc.trading.getSessions.queryOptions({
@@ -253,7 +261,11 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
                 onImportClick={handleOpenImportModal}
             />
 
-            {stats && <TradingStats className="mb-8" stats={stats} />}
+            {isLoadingStats && !stats ? (
+                <TradingStatsSkeleton />
+            ) : (
+                stats && <TradingStats className="mb-8" stats={stats} />
+            )}
 
             <TradingTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
@@ -262,6 +274,8 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
                 confirmations={confirmations}
                 dateRange={dateRange}
                 filteredTrades={filteredTrades}
+                isLoadingStats={isLoadingStats && !stats}
+                isLoadingTrades={isLoadingTrades && !allTrades}
                 journalId={journalId}
                 sessions={sessions}
                 stats={stats}

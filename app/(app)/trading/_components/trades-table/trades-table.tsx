@@ -12,14 +12,8 @@ import { useMemo, useState } from "react";
 import { EditTradeModal } from "@/components/trading/EditTradeModal";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup, ButtonGroupText } from "@/components/ui/button-group";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
     Table,
     TableBody,
@@ -221,19 +215,51 @@ export function TradesTable({ journalId }: TradesTableProps) {
 
     if (isLoading) {
         return (
-            <Card className="border border-white/10 bg-black/20">
-                <CardHeader>
-                    <CardTitle className="text-white">Trades</CardTitle>
-                    <CardDescription className="text-white/60">
-                        Loading trades...
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="flex items-center justify-center py-8">
-                        <div className="h-8 w-8 animate-spin rounded-full border-white border-b-2" />
+            <div>
+                <div className="mb-4 flex items-center justify-between">
+                    <div className="flex flex-col items-start justify-between">
+                        <Skeleton className="mb-2 h-8 w-32 rounded bg-white/10" />
+                        <Skeleton className="h-4 w-48 rounded bg-white/10" />
                     </div>
-                </CardContent>
-            </Card>
+                </div>
+                <div>
+                    <div className="space-y-4">
+                        <Table className="table-fixed border border-neutral-800">
+                            <TableHeader>
+                                <TableRow className="border-white/10 hover:bg-transparent">
+                                    {Array.from({ length: 8 }).map((_, i) => (
+                                        <TableHead
+                                            className="h-11 text-white/60"
+                                            key={i}
+                                        >
+                                            <Skeleton className="h-4 w-20 rounded bg-white/10" />
+                                        </TableHead>
+                                    ))}
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {Array.from({ length: 5 }).map((_, i) => (
+                                    <TableRow
+                                        className="border-white/5"
+                                        key={i}
+                                    >
+                                        {Array.from({ length: 8 }).map(
+                                            (_, j) => (
+                                                <TableCell
+                                                    className="text-white"
+                                                    key={j}
+                                                >
+                                                    <Skeleton className="h-4 w-full rounded bg-white/10" />
+                                                </TableCell>
+                                            )
+                                        )}
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
+                </div>
+            </div>
         );
     }
 
