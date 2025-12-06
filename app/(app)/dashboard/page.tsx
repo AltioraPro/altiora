@@ -21,6 +21,15 @@ export default async function GlobalDashboardPage() {
         queryClient.prefetchQuery(
             orpc.trading.getStats.queryOptions({ input: {} })
         ),
+        queryClient.prefetchQuery(
+            orpc.habits.getDashboard.queryOptions({ input: { viewMode: "week" } })
+        ),
+        queryClient.prefetchQuery(
+            orpc.goals.getAll.queryOptions({ input: undefined })
+        ),
+        queryClient.prefetchQuery(
+            orpc.profile.getUserStats.queryOptions({ input: undefined })
+        ),
     ]);
 
     return (

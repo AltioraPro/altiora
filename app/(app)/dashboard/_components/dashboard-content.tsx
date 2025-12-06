@@ -4,17 +4,9 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
 import { useMemo } from "react";
 import { DiscordWelcomeChecker } from "@/components/auth/DiscordWelcomeChecker";
-import { GlobalTradingCharts } from "@/components/trading/GlobalTradingCharts";
-import { GlobalTradingStats } from "@/components/trading/GlobalTradingStats";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
 import { orpc } from "@/orpc/client";
 import { dashboardSearchParams } from "../search-params";
+import { DashboardGrid } from "./dashboard-grid";
 
 export function DashboardContent() {
     const [journalIds] = useQueryState(
@@ -32,45 +24,42 @@ export function DashboardContent() {
         return { journalIds };
     }, [journalIds]);
 
+    // Trading Data
     const { data: stats } = useSuspenseQuery(
         orpc.trading.getStats.queryOptions({ input: queryInput })
-    );
-
-    const { data: sessions } = useSuspenseQuery(
-        orpc.trading.getSessions.queryOptions({ input: queryInput })
     );
 
     const { data: trades } = useSuspenseQuery(
         orpc.trading.getTrades.queryOptions({ input: queryInput })
     );
 
+    // Habits Data (Global - week view for better stats)
+    const { data: habitsDashboard } = useSuspenseQuery(
+        orpc.habits.getDashboard.queryOptions({ input: { viewMode: "week" } })
+    );
+
+    // Goals Data (Global)
+    const { data: goals } = useSuspenseQuery(
+        orpc.goals.getAll.queryOptions({ input: undefined })
+    );
+
+    // Profile Stats (Deepwork, Pomodoro, User stats)
+    const { data: profileStats } = useSuspenseQuery(
+        orpc.profile.getUserStats.queryOptions({ input: undefined })
+    );
+
     return (
-        <>
-            {stats && <GlobalTradingStats className="mb-8" stats={stats} />}
-
-            {/* Charts */}
-            {stats && sessions && trades && (
-                <div className="mb-8">
-                    <Card className="border border-white/10 bg-black/20">
-                        <CardHeader>
-                            <CardTitle className="text-white">
-                                Performance Charts
-                            </CardTitle>
-                            <CardDescription className="text-white/60">
-                                Visual analysis of your overall performance
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <GlobalTradingCharts
-                                sessions={sessions}
-                                trades={trades}
-                            />
-                        </CardContent>
-                    </Card>
-                </div>
-            )}
-
-            <DiscordWelcomeChecker />
-        </>
+        <div className="w-full max-w-[1600px] mx-auto">
+            <DashboardGrid
+                stats={stats}
+                trades={trades}
+                habitsDashboard={habitsDashboard}
+                goals={goals}
+                profileStats={profileStats}
+            />
+            <div className="mt-8">
+                <DiscordWelcomeChecker />
+            </div>
+        </div>
     );
 }

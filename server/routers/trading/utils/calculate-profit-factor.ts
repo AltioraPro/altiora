@@ -33,7 +33,6 @@ export function calculateProfitFactor(params: ProfitFactorParams): number {
         totalLosses += Math.abs(amount);
       }
     } else if (trade.profitLossPercentage) {
-      // Fallback : utiliser les pourcentages si les montants ne sont pas disponibles
       const pnlPercentage = Number.parseFloat(trade.profitLossPercentage) || 0;
       if (pnlPercentage > 0) {
         totalGainPercentages += pnlPercentage;
