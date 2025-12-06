@@ -2,7 +2,7 @@
 
 import type { InferRouterOutputs } from "@orpc/server";
 import type { ComponentProps } from "react";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import type { appRouter } from "@/server/routers/_app";
 
@@ -29,47 +29,53 @@ export function GlobalTradingStats({
         <div className={cn("space-y-6", className)} {...props}>
             {/* Main Metrics */}
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-                <Card className="border border-white/10 bg-black/20 p-5 transition-colors hover:bg-black/30">
-                    <div className="space-y-2">
-                        <div className="text-sm text-white/70">Performance</div>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Performance</CardTitle>
+                    </CardHeader>
+                    <CardContent>
                         <div
                             className={`font-bold text-2xl ${totalPnL >= 0 ? "text-green-400" : "text-red-400"}`}
                         >
                             {totalPnL >= 0 ? "+" : ""}
                             {totalPnL.toFixed(1)}%
                         </div>
-                    </div>
+                    </CardContent>
                 </Card>
 
-                <Card className="border border-white/10 bg-black/20 p-5 transition-colors hover:bg-black/30">
-                    <div className="space-y-2">
-                        <div className="text-sm text-white/70">Win Rate</div>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Win Rate</CardTitle>
+                    </CardHeader>
+                    <CardContent>
                         <div className="font-bold text-2xl text-white">
                             {stats.winRate.toFixed(1)}%
                         </div>
-                    </div>
+                    </CardContent>
                 </Card>
 
-                <Card className="border border-white/10 bg-black/20 p-5 transition-colors hover:bg-black/30">
-                    <div className="space-y-2">
-                        <div className="text-sm text-white/70">Trades</div>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Trades</CardTitle>
+                    </CardHeader>
+                    <CardContent>
                         <div className="font-bold text-2xl text-white">
                             {stats.totalTrades}
                         </div>
-                    </div>
+                    </CardContent>
                 </Card>
 
-                <Card className="border border-white/10 bg-black/20 p-5 transition-colors hover:bg-black/30">
-                    <div className="space-y-2">
-                        <div className="text-sm text-white/70">
-                            Profit Factor
-                        </div>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Profit Factor</CardTitle>
+                    </CardHeader>
+                    <CardContent>
                         <div className="font-bold text-2xl text-white">
                             {Number.isFinite(profitFactor)
                                 ? profitFactor.toFixed(2)
-                                : "∞"}
+                                : "N/A"}
                         </div>
-                    </div>
+                    </CardContent>
                 </Card>
             </div>
 
