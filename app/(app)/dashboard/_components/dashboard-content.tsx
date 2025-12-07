@@ -4,6 +4,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
 import { useMemo } from "react";
 import { DiscordWelcomeChecker } from "@/components/auth/DiscordWelcomeChecker";
+
 import { orpc } from "@/orpc/client";
 import { dashboardSearchParams } from "../search-params";
 import { DashboardGrid } from "./dashboard-grid";
