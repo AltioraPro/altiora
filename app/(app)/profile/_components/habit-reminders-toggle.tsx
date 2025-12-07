@@ -1,6 +1,6 @@
 "use client";
 
-import { RiBellFill, RiBellOffLine } from "@remixicon/react";
+import { RiBellFill, RiBellLine } from "@remixicon/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { orpc } from "@/orpc/client";
@@ -40,7 +40,7 @@ export function HabitRemindersToggle() {
       {isEnabled ? (
         <RiBellFill className="mt-0.5 size-5 text-green-400" />
       ) : (
-        <RiBellOffLine className="mt-0.5 size-5 text-neutral-400" />
+        <RiBellLine className="mt-0.5 size-5 text-neutral-400" />
       )}
       <div className="flex-1 space-y-1">
         <p className="font-medium text-neutral-50">

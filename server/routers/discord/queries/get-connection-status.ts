@@ -18,6 +18,7 @@ export const getConnectionStatusHandler = getConnectionStatusBase.handler(
         discordAvatar: discordProfile.discordAvatar,
         lastDiscordSync: discordProfile.lastDiscordSync,
         habitRemindersEnabled: discordProfile.habitRemindersEnabled,
+        lastHabitReminderSent: discordProfile.lastHabitReminderSent,
         rank: user.rank,
         timezone: user.timezone,
       })
@@ -41,6 +42,7 @@ export const getConnectionStatusHandler = getConnectionStatusBase.handler(
       lastSync: userData.lastDiscordSync,
       currentRank: userData.rank,
       habitRemindersEnabled: userData.habitRemindersEnabled ?? false,
+      lastHabitReminderSent: userData.lastHabitReminderSent,
       timezone: userData.timezone ?? "UTC",
     };
   }
