@@ -39,4 +39,3 @@ export const adminWaitlistParsers = {
 
 export const adminWaitlistParsersCache =
     createSearchParamsCache(adminWaitlistParsers);
-

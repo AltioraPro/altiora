@@ -28,9 +28,7 @@ export const checkBotStatusHandler = checkBotStatusBase.handler(async () => {
         return {
             online: false,
             error: error instanceof Error ? error.message : "Unknown error",
-            url:
-                process.env.DISCORD_BOT_WEBHOOK_URL ||
-                "http://localhost:3001",
+            url: process.env.DISCORD_BOT_WEBHOOK_URL || "http://localhost:3001",
         };
     }
 });

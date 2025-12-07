@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
             updatedAt: new Date(),
         };
 
-        let result;
+        let result: typeof discordPomodoroSessions.$inferSelect | undefined;
 
         // Si on a un sessionId, on met à jour la session existante
         if (sessionId) {

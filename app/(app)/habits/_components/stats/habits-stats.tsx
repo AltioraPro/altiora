@@ -77,12 +77,15 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                 label: "CURRENT SERIES",
                 value: currentStreak,
                 suffix: "d",
-                color:
-                    currentStreak >= 7
-                        ? "text-green-400"
-                        : currentStreak >= 3
-                          ? "text-white"
-                          : "text-white/70",
+                color: (() => {
+                    if (currentStreak >= 7) {
+                        return "text-green-400";
+                    }
+                    if (currentStreak >= 3) {
+                        return "text-white";
+                    }
+                    return "text-white/70";
+                })(),
                 showPulse: todayStats.willContinue && currentStreak > 0,
             },
             {
@@ -90,24 +93,30 @@ export function HabitsStats({ data, todayHabits }: HabitsStatsProps) {
                 label: "BEST SERIES",
                 value: longestStreak,
                 suffix: "d",
-                color:
-                    longestStreak >= 14
-                        ? "text-yellow-400"
-                        : longestStreak >= 7
-                          ? "text-green-400"
-                          : "text-white",
+                color: (() => {
+                    if (longestStreak >= 14) {
+                        return "text-yellow-400";
+                    }
+                    if (longestStreak >= 7) {
+                        return "text-green-400";
+                    }
+                    return "text-white";
+                })(),
             },
             {
                 icon: RiCalendarLine,
                 label: "AVERAGE RATE",
                 value: averageCompletionRate,
                 suffix: "%",
-                color:
-                    averageCompletionRate >= 80
-                        ? "text-green-400"
-                        : averageCompletionRate >= 60
-                          ? "text-white"
-                          : "text-white/70",
+                color: (() => {
+                    if (averageCompletionRate >= 80) {
+                        return "text-green-400";
+                    }
+                    if (averageCompletionRate >= 60) {
+                        return "text-white";
+                    }
+                    return "text-white/70";
+                })(),
             },
         ],
         [

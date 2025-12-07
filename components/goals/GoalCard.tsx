@@ -132,11 +132,10 @@ export function GoalCard({
                                 <Badge
                                     className={`text-xs ${getStatusColor()}`}
                                 >
-                                    {goal.isCompleted
-                                        ? "Completed"
-                                        : isOverdue
-                                          ? "Overdue"
-                                          : "Active"}
+                                    {(goal.isCompleted && "Completed") ||
+                                    isOverdue
+                                        ? "Overdue"
+                                        : "Active"}
                                 </Badge>
                             </div>
 
@@ -200,11 +199,9 @@ export function GoalCard({
                         </div>
                         <div className="flex gap-2">
                             <Badge className={`text-xs ${getStatusColor()}`}>
-                                {goal.isCompleted
-                                    ? "Done"
-                                    : isOverdue
-                                      ? "Late"
-                                      : "Active"}
+                                {(goal.isCompleted && "Done") || isOverdue
+                                    ? "Late"
+                                    : "Active"}
                             </Badge>
                         </div>
                     </div>

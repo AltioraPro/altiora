@@ -311,11 +311,15 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
                 {habitsList.length > 0 && (
                     <div className="mt-6 flex items-center justify-between border-white/10 border-t pt-6 text-sm text-white/60">
                         <span>
-                            {completionPercentage === 100
-                                ? "🎉 Perfect! All habits completed"
-                                : completedHabits > 0
-                                  ? `✅ ${completedHabits} validated - Your streak continues!`
-                                  : `${totalHabits} habits - Validate at least one to maintain your streak`}
+                            {(() => {
+                                if (completionPercentage === 100) {
+                                    return "🎉 Perfect! All habits completed";
+                                }
+                                if (completedHabits > 0) {
+                                    return `✅ ${completedHabits} validated - Your streak continues!`;
+                                }
+                                return `${totalHabits} habits - Validate at least one to maintain your streak`;
+                            })()}
                         </span>
 
                         {completionPercentage === 100 && (

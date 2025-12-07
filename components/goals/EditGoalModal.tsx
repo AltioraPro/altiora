@@ -299,7 +299,7 @@ export function EditGoalModal({
 
                                     {/* Next reminder display */}
                                     {goal.nextReminderDate && (
-                                        <div className="text-xs text-white/60">
+                                        <div className="text-white/60 text-xs">
                                             Next reminder:{" "}
                                             <span className="text-white/80">
                                                 {new Date(

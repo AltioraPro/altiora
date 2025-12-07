@@ -1,7 +1,7 @@
 // Client HTTP pour Redis API (compatible serverless)
 class RedisHTTPClient {
-    private baseUrl: string;
-    private apiKey: string;
+    private readonly baseUrl: string;
+    private readonly apiKey: string;
 
     constructor(baseUrl: string, apiKey: string) {
         this.baseUrl = baseUrl;
@@ -59,7 +59,7 @@ class RedisHTTPClient {
                     `HTTP ${response.status}: ${response.statusText}`
                 );
             }
-        } catch (error) {
+        } catch (_error) {
             // Silencieux - le cache n'est pas critique
         }
     }
@@ -90,7 +90,7 @@ class RedisHTTPClient {
 
             const result = await response.json();
             return result.count || 0;
-        } catch (error) {
+        } catch (_error) {
             return 0;
         }
     }

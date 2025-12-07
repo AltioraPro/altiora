@@ -1,11 +1,16 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import type { RouterOutput } from "@/orpc/client";
-import { cn } from "@/lib/utils";
 import { InfoIcon, TrendingUp } from "lucide-react";
-import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import type { RouterOutput } from "@/orpc/client";
 
 interface DashboardKpiGridProps {
     stats: RouterOutput["trading"]["getStats"];
@@ -16,7 +21,7 @@ function InfoTooltip({ content }: { content: string }) {
     return (
         <Tooltip>
             <TooltipTrigger asChild>
-                <InfoIcon className="w-3 h-3 opacity-50 cursor-help hover:opacity-100 transition-opacity" />
+                <InfoIcon className="h-3 w-3 cursor-help opacity-50 transition-opacity hover:opacity-100" />
             </TooltipTrigger>
             <TooltipContent className="max-w-[250px] text-xs leading-relaxed">
                 {content}
@@ -63,7 +68,7 @@ export function DashboardKpiGrid({ stats, trades }: DashboardKpiGridProps) {
             const pnl = Number(trade.profitLossPercentage) || 0;
             const pnlAmount = Number(trade.profitLossAmount) || 0;
             const tradeDate = new Date(trade.tradeDate);
-            const dateKey = tradeDate.toISOString().split('T')[0];
+            const dateKey = tradeDate.toISOString().split("T")[0];
 
             // Aggregate daily P&L
             dailyPnL.set(dateKey, (dailyPnL.get(dateKey) || 0) + pnl);
@@ -86,8 +91,11 @@ export function DashboardKpiGrid({ stats, trades }: DashboardKpiGridProps) {
                 tradeDate.getFullYear() === today.getFullYear()
             ) {
                 todayTotal++;
-                if (pnl > 0) todayWins++;
-                else if (pnl < 0) todayLosses++;
+                if (pnl > 0) {
+                    todayWins++;
+                } else if (pnl < 0) {
+                    todayLosses++;
+                }
             }
         }
 
@@ -95,8 +103,11 @@ export function DashboardKpiGrid({ stats, trades }: DashboardKpiGridProps) {
         let winDays = 0;
         let lossDays = 0;
         for (const [, pnl] of dailyPnL) {
-            if (pnl > 0) winDays++;
-            else if (pnl < 0) lossDays++;
+            if (pnl > 0) {
+                winDays++;
+            } else if (pnl < 0) {
+                lossDays++;
+            }
         }
 
         return {
@@ -121,96 +132,131 @@ export function DashboardKpiGrid({ stats, trades }: DashboardKpiGridProps) {
 
     const profitFactor = stats.profitFactor ?? 0;
 
-
     // Calculate avg win/loss ratio for the bar
-    const avgWinLossRatio = tradeMetrics.avgLoss > 0
-        ? tradeMetrics.avgWin / tradeMetrics.avgLoss
-        : tradeMetrics.avgWin > 0 ? Infinity : 0;
+    let avgWinLossRatio = 0;
+    if (tradeMetrics.avgLoss > 0) {
+        avgWinLossRatio = tradeMetrics.avgWin / tradeMetrics.avgLoss;
+    } else if (tradeMetrics.avgWin > 0) {
+        avgWinLossRatio = Number.POSITIVE_INFINITY;
+    }
 
     // Calculate bar widths
     const totalAvg = tradeMetrics.avgWin + tradeMetrics.avgLoss;
-    const winBarWidth = totalAvg > 0 ? (tradeMetrics.avgWin / totalAvg) * 100 : 50;
-    const lossBarWidth = totalAvg > 0 ? (tradeMetrics.avgLoss / totalAvg) * 100 : 50;
+    const winBarWidth =
+        totalAvg > 0 ? (tradeMetrics.avgWin / totalAvg) * 100 : 50;
+    const lossBarWidth =
+        totalAvg > 0 ? (tradeMetrics.avgLoss / totalAvg) * 100 : 50;
 
     return (
         <TooltipProvider delayDuration={100}>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
                 {/* KPI 1: Net P&L */}
-                <Card className="relative overflow-hidden border-none bg-white dark:bg-secondary/20 shadow-sm">
-                    <CardContent className="p-6 flex flex-col justify-between h-full">
-                        <div className="flex items-center gap-2 text-muted-foreground mb-2">
-                            <span className="text-xs font-medium uppercase tracking-wider">Net P&L</span>
+                <Card className="relative overflow-hidden border-none bg-white shadow-sm dark:bg-secondary/20">
+                    <CardContent className="flex h-full flex-col justify-between p-6">
+                        <div className="mb-2 flex items-center gap-2 text-muted-foreground">
+                            <span className="font-medium text-xs uppercase tracking-wider">
+                                Net P&L
+                            </span>
                             <InfoTooltip content="Total cumulative performance across all closed trades, expressed as a percentage of your account." />
                         </div>
                         <div className="flex flex-col gap-1">
-                            <span className={cn("text-2xl font-bold tracking-tight", totalPnL >= 0 ? "text-emerald-500" : "text-rose-500")}>
-                                {totalPnL > 0 ? '+' : ''}{totalPnL.toFixed(2)}%
+                            <span
+                                className={cn(
+                                    "font-bold text-2xl tracking-tight",
+                                    totalPnL >= 0
+                                        ? "text-emerald-500"
+                                        : "text-rose-500"
+                                )}
+                            >
+                                {totalPnL > 0 ? "+" : ""}
+                                {totalPnL.toFixed(2)}%
                             </span>
-                            <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-                                <span className="bg-secondary px-1.5 py-0.5 rounded text-[10px] font-semibold">
+                            <div className="mt-1 flex items-center gap-1 text-muted-foreground text-xs">
+                                <span className="rounded bg-secondary px-1.5 py-0.5 font-semibold text-[10px]">
                                     {stats.totalTrades} trades
                                 </span>
                             </div>
                         </div>
-                        <div className="absolute top-4 right-4 p-2 bg-secondary/50 rounded-lg">
-                            <TrendingUp className={cn("w-4 h-4", totalPnL >= 0 ? "text-emerald-500" : "text-rose-500")} />
+                        <div className="absolute top-4 right-4 rounded-lg bg-secondary/50 p-2">
+                            <TrendingUp
+                                className={cn(
+                                    "h-4 w-4",
+                                    totalPnL >= 0
+                                        ? "text-emerald-500"
+                                        : "text-rose-500"
+                                )}
+                            />
                         </div>
                     </CardContent>
                 </Card>
 
                 {/* KPI 2: Trade Win % */}
                 <KpiGaugeCard
-                    title="Trade win %"
-                    value={stats.winRate}
-                    subValues={{ win: stats.winningTrades, loss: stats.losingTrades }}
                     color={stats.winRate >= 50 ? "#10b981" : "#ef4444"}
+                    subValues={{
+                        win: stats.winningTrades,
+                        loss: stats.losingTrades,
+                    }}
+                    title="Trade win %"
                     tooltip="Percentage of winning trades out of all closed trades. Calculated as: (Winning Trades / Total Closed Trades) × 100"
+                    value={stats.winRate}
                 />
 
                 {/* KPI 3: Profit Factor */}
                 <KpiCircleCard
                     title="Profit factor"
-                    value={profitFactor}
                     tooltip="Ratio of gross profits to gross losses. A value above 1.5 is considered good, above 2.0 is excellent. Calculated as: Total Gains / Total Losses"
+                    value={profitFactor}
                 />
 
                 {/* KPI 4: Day Win % */}
                 <KpiGaugeCard
+                    color={
+                        tradeMetrics.dayWinRate >= 50 ? "#10b981" : "#ef4444"
+                    }
+                    subValues={{
+                        win: tradeMetrics.winDays,
+                        loss: tradeMetrics.lossDays,
+                    }}
                     title="Day win %"
-                    value={tradeMetrics.dayWinRate}
-                    subValues={{ win: tradeMetrics.winDays, loss: tradeMetrics.lossDays }}
-                    color={tradeMetrics.dayWinRate >= 50 ? "#10b981" : "#ef4444"}
                     tooltip="Percentage of profitable trading days. A day is considered winning if the sum of all trades that day is positive. Calculated as: (Green Days / Total Trading Days) × 100"
+                    value={tradeMetrics.dayWinRate}
                 />
 
                 {/* KPI 5: Avg win/loss trade */}
-                <Card className="border-none bg-white dark:bg-secondary/20 shadow-sm">
-                    <CardContent className="p-6 h-full flex flex-col justify-center">
-                        <div className="flex items-center gap-2 text-muted-foreground mb-3">
-                            <span className="text-xs font-medium uppercase tracking-wider">Avg win/loss</span>
+                <Card className="border-none bg-white shadow-sm dark:bg-secondary/20">
+                    <CardContent className="flex h-full flex-col justify-center p-6">
+                        <div className="mb-3 flex items-center gap-2 text-muted-foreground">
+                            <span className="font-medium text-xs uppercase tracking-wider">
+                                Avg win/loss
+                            </span>
                             <InfoTooltip content="Risk/Reward ratio based on actual trades. Shows average winning trade size divided by average losing trade size. A ratio above 1.5 means your winners are bigger than your losers." />
                         </div>
                         <div className="flex flex-col gap-1">
-                            <div className="flex justify-between items-baseline">
-                                <span className="text-2xl font-bold">
-                                    {Number.isFinite(avgWinLossRatio) ? avgWinLossRatio.toFixed(2) : "∞"}
+                            <div className="flex items-baseline justify-between">
+                                <span className="font-bold text-2xl">
+                                    {Number.isFinite(avgWinLossRatio)
+                                        ? avgWinLossRatio.toFixed(2)
+                                        : "∞"}
                                 </span>
-                                <span className="text-xs text-muted-foreground">R:R</span>
+                                <span className="text-muted-foreground text-xs">
+                                    R:R
+                                </span>
                             </div>
 
                             {/* Bar Visualization */}
-                            <div className="relative h-2 w-full bg-secondary rounded-full overflow-hidden mt-2 flex">
+                            <div className="relative mt-2 flex h-2 w-full overflow-hidden rounded-full bg-secondary">
                                 <div
-                                    className="h-full bg-emerald-500 rounded-l-full"
+                                    className="h-full rounded-l-full bg-emerald-500"
                                     style={{ width: `${winBarWidth}%` }}
-                                ></div>
+                                />
                                 <div
-                                    className="h-full bg-rose-500 rounded-r-full"
+                                    className="h-full rounded-r-full bg-rose-500"
                                     style={{ width: `${lossBarWidth}%` }}
-                                ></div>
+                                />
                             </div>
 
-                            <div className="flex justify-between text-xs mt-2 font-medium">
+                            <div className="mt-2 flex justify-between font-medium text-xs">
                                 <span className="text-emerald-500">
                                     +{tradeMetrics.avgWin.toFixed(1)}%
                                 </span>
@@ -230,7 +276,7 @@ function KpiGaugeCard({
     title,
     value,
     subValues,
-    tooltip
+    tooltip,
 }: {
     title: string;
     value: number;
@@ -251,45 +297,50 @@ function KpiGaugeCard({
     const lossArc = (lossPercentage / 100) * circumference;
 
     return (
-        <Card className="border-none bg-white dark:bg-secondary/20 shadow-sm">
-            <CardContent className="p-6 flex items-center justify-between h-full relative">
-                <div className="flex flex-col justify-center z-10">
-                    <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                        <span className="text-xs font-medium uppercase tracking-wider">{title}</span>
+        <Card className="border-none bg-white shadow-sm dark:bg-secondary/20">
+            <CardContent className="relative flex h-full items-center justify-between p-6">
+                <div className="z-10 flex flex-col justify-center">
+                    <div className="mb-1 flex items-center gap-2 text-muted-foreground">
+                        <span className="font-medium text-xs uppercase tracking-wider">
+                            {title}
+                        </span>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <InfoIcon className="w-3 h-3 opacity-50 cursor-help hover:opacity-100 transition-opacity" />
+                                <InfoIcon className="h-3 w-3 cursor-help opacity-50 transition-opacity hover:opacity-100" />
                             </TooltipTrigger>
                             <TooltipContent className="max-w-[250px] text-xs leading-relaxed">
                                 {tooltip}
                             </TooltipContent>
                         </Tooltip>
                     </div>
-                    <div className={cn(
-                        "text-2xl font-bold tracking-tight",
-                        value >= 50 ? "text-emerald-500" : "text-rose-500"
-                    )}>
+                    <div
+                        className={cn(
+                            "font-bold text-2xl tracking-tight",
+                            value >= 50 ? "text-emerald-500" : "text-rose-500"
+                        )}
+                    >
                         {value.toFixed(2)}%
                     </div>
-                    <div className="flex gap-2 mt-2">
-                        <span className="text-[10px] bg-emerald-500/10 text-emerald-500 px-1.5 py-0.5 rounded font-medium">
+                    <div className="mt-2 flex gap-2">
+                        <span className="rounded bg-emerald-500/10 px-1.5 py-0.5 font-medium text-[10px] text-emerald-500">
                             {subValues.win}
                         </span>
-                        <span className="text-[10px] bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded font-medium">
+                        <span className="rounded bg-rose-500/10 px-1.5 py-0.5 font-medium text-[10px] text-rose-500">
                             {subValues.loss}
                         </span>
                     </div>
                 </div>
-                <div className="h-[80px] w-[80px] absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center">
-                    <svg width="80" height="50" viewBox="0 0 80 50">
+                <div className="-translate-y-1/2 absolute top-1/2 right-4 flex h-[80px] w-[80px] items-center justify-center">
+                    <svg height="50" viewBox="0 0 80 50" width="80">
+                        <title>Win rate gauge</title>
                         {/* Background arc (gray) */}
                         <path
+                            className="text-secondary"
                             d="M 5 45 A 35 35 0 0 1 75 45"
                             fill="none"
                             stroke="currentColor"
-                            strokeWidth={strokeWidth}
-                            className="text-secondary"
                             strokeLinecap="round"
+                            strokeWidth={strokeWidth}
                         />
                         {/* Green arc (wins) - starts from left */}
                         {winPercentage > 0 && (
@@ -297,9 +348,9 @@ function KpiGaugeCard({
                                 d="M 5 45 A 35 35 0 0 1 75 45"
                                 fill="none"
                                 stroke="#10b981"
-                                strokeWidth={strokeWidth}
                                 strokeDasharray={`${winArc} ${circumference}`}
                                 strokeLinecap="round"
+                                strokeWidth={strokeWidth}
                             />
                         )}
                         {/* Red arc (losses) - starts from right */}
@@ -308,9 +359,9 @@ function KpiGaugeCard({
                                 d="M 75 45 A 35 35 0 0 0 5 45"
                                 fill="none"
                                 stroke="#ef4444"
-                                strokeWidth={strokeWidth}
                                 strokeDasharray={`${lossArc} ${circumference}`}
                                 strokeLinecap="round"
+                                strokeWidth={strokeWidth}
                             />
                         )}
                     </svg>
@@ -320,56 +371,78 @@ function KpiGaugeCard({
     );
 }
 
-function KpiCircleCard({ title, value, tooltip }: { title: string; value: number; tooltip: string }) {
+function KpiCircleCard({
+    title,
+    value,
+    tooltip,
+}: {
+    title: string;
+    value: number;
+    tooltip: string;
+}) {
     // Progress towards a "good" profit factor (3.0 = 100%)
-    const progress = Number.isFinite(value) ? Math.min((value / 3) * 100, 100) : 100;
+    const progress = Number.isFinite(value)
+        ? Math.min((value / 3) * 100, 100)
+        : 100;
     const data = [
-        { name: 'Value', value: progress },
-        { name: 'Rest', value: 100 - progress },
+        { name: "Value", value: progress },
+        { name: "Rest", value: 100 - progress },
     ];
 
     const getColor = () => {
-        if (!Number.isFinite(value)) return "#10b981";
-        if (value >= 2) return "#10b981";
-        if (value >= 1.5) return "#f59e0b";
+        if (!Number.isFinite(value)) {
+            return "#10b981";
+        }
+        if (value >= 2) {
+            return "#10b981";
+        }
+        if (value >= 1.5) {
+            return "#f59e0b";
+        }
         return "#ef4444";
     };
 
     return (
-        <Card className="border-none bg-white dark:bg-secondary/20 shadow-sm">
-            <CardContent className="p-6 flex items-center justify-between h-full relative">
-                <div className="flex flex-col justify-center z-10">
-                    <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                        <span className="text-xs font-medium uppercase tracking-wider">{title}</span>
+        <Card className="border-none bg-white shadow-sm dark:bg-secondary/20">
+            <CardContent className="relative flex h-full items-center justify-between p-6">
+                <div className="z-10 flex flex-col justify-center">
+                    <div className="mb-1 flex items-center gap-2 text-muted-foreground">
+                        <span className="font-medium text-xs uppercase tracking-wider">
+                            {title}
+                        </span>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <InfoIcon className="w-3 h-3 opacity-50 cursor-help hover:opacity-100 transition-opacity" />
+                                <InfoIcon className="h-3 w-3 cursor-help opacity-50 transition-opacity hover:opacity-100" />
                             </TooltipTrigger>
                             <TooltipContent className="max-w-[250px] text-xs leading-relaxed">
                                 {tooltip}
                             </TooltipContent>
                         </Tooltip>
                     </div>
-                    <div className="text-2xl font-bold tracking-tight">
-                        {!Number.isFinite(value) ? "∞" : value.toFixed(2)}
+                    <div className="font-bold text-2xl tracking-tight">
+                        {Number.isFinite(value) ? value.toFixed(2) : "∞"}
                     </div>
                 </div>
-                <div className="h-[60px] w-[60px] absolute right-4 top-1/2 -translate-y-1/2">
-                    <ResponsiveContainer width="100%" height="100%">
+                <div className="-translate-y-1/2 absolute top-1/2 right-4 h-[60px] w-[60px]">
+                    <ResponsiveContainer height="100%" width="100%">
                         <PieChart>
                             <Pie
-                                data={data}
                                 cx="50%"
                                 cy="50%"
+                                data={data}
+                                dataKey="value"
+                                endAngle={-270}
                                 innerRadius={22}
                                 outerRadius={28}
                                 startAngle={90}
-                                endAngle={-270}
-                                dataKey="value"
                                 stroke="none"
                             >
-                                <Cell key="cell-0" fill={getColor()} />
-                                <Cell key="cell-1" fill="currentColor" className="text-secondary" />
+                                <Cell fill={getColor()} key="cell-0" />
+                                <Cell
+                                    className="text-secondary"
+                                    fill="currentColor"
+                                    key="cell-1"
+                                />
                             </Pie>
                         </PieChart>
                     </ResponsiveContainer>

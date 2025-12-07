@@ -91,10 +91,10 @@ export default function AboutPage() {
                         </CardHeader>
                         <CardContent>
                             <p className="mb-4 text-white/80 leading-relaxed">
-                                Highly motivated developer who joined the project
-                                with exceptional skills and drive. Bringing fresh
-                                perspective and technical expertise to push
-                                Altiora forward.
+                                Highly motivated developer who joined the
+                                project with exceptional skills and drive.
+                                Bringing fresh perspective and technical
+                                expertise to push Altiora forward.
                             </p>
                             <div className="flex flex-wrap gap-2">
                                 <span className="rounded bg-white/10 px-2 py-1 text-white/70 text-xs">

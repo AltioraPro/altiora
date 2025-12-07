@@ -65,9 +65,9 @@ export function GlobalTradingStats({
                             Profit Factor
                         </div>
                         <div className="font-bold text-2xl text-white">
-                            {!Number.isFinite(profitFactor)
-                                ? "∞"
-                                : profitFactor.toFixed(2)}
+                            {Number.isFinite(profitFactor)
+                                ? profitFactor.toFixed(2)
+                                : "∞"}
                         </div>
                     </div>
                 </Card>

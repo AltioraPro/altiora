@@ -96,7 +96,13 @@ export default function TradingCalendarPage() {
         const startDate = new Date(firstDay);
         startDate.setDate(startDate.getDate() - firstDay.getDay());
 
-        const days = [];
+        const days: Array<{
+            date: Date;
+            dateStr: string;
+            dayPerformance?: DayPerformance;
+            isCurrentMonth: boolean;
+            isToday: boolean;
+        }> = [];
         const current = new Date(startDate);
 
         for (let i = 0; i < 42; i++) {
@@ -123,7 +129,16 @@ export default function TradingCalendarPage() {
     const generateMultipleCalendars = () => {
         if (viewMode === "year") {
             const year = currentDate.getFullYear();
-            const calendars = [];
+            const calendars: Array<{
+                month: Date;
+                days: Array<{
+                    date: Date;
+                    dateStr: string;
+                    dayPerformance?: DayPerformance;
+                    isCurrentMonth: boolean;
+                    isToday: boolean;
+                }>;
+            }> = [];
 
             for (let month = 0; month < 12; month++) {
                 const monthDate = new Date(year, month, 1);
@@ -138,7 +153,16 @@ export default function TradingCalendarPage() {
         if (viewMode === "quarter") {
             const year = currentDate.getFullYear();
             const quarterStart = Math.floor(currentDate.getMonth() / 3) * 3;
-            const calendars = [];
+            const calendars: Array<{
+                month: Date;
+                days: Array<{
+                    date: Date;
+                    dateStr: string;
+                    dayPerformance?: DayPerformance;
+                    isCurrentMonth: boolean;
+                    isToday: boolean;
+                }>;
+            }> = [];
 
             for (let month = quarterStart; month < quarterStart + 3; month++) {
                 const monthDate = new Date(year, month, 1);
@@ -312,6 +336,311 @@ export default function TradingCalendarPage() {
 
     const stats = getStats();
 
+    const renderCalendarContent = () => {
+        if (selectedJournalIds.length > 0 && viewMode === "single") {
+            return calendars.map((calendar, calendarIndex) => (
+                <Card
+                    className="mb-6 border border-white/10 bg-black/20"
+                    key={calendarIndex}
+                >
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <CardTitle className="text-white">
+                                    {getPeriodTitle()}
+                                </CardTitle>
+                                <CardDescription className="text-white/60">
+                                    {getPeriodDescription()}
+                                </CardDescription>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <Button
+                                    className="border-white/20 bg-transparent text-white hover:bg-white/10"
+                                    onClick={() => navigatePeriod("prev")}
+                                    size="sm"
+                                    variant="outline"
+                                >
+                                    <RiArrowLeftSLine className="size-4" />
+                                </Button>
+                                <Button
+                                    className="border-white/20 bg-transparent text-white hover:bg-white/10"
+                                    onClick={() => setCurrentDate(new Date())}
+                                    size="sm"
+                                    variant="outline"
+                                >
+                                    Today
+                                </Button>
+                                <Button
+                                    className="border-white/20 bg-transparent text-white hover:bg-white/10"
+                                    onClick={() => navigatePeriod("next")}
+                                    size="sm"
+                                    variant="outline"
+                                >
+                                    <RiArrowRightSLine className="size-4" />
+                                </Button>
+                            </div>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="mb-4 grid grid-cols-7 gap-2">
+                            {[
+                                "Sun",
+                                "Mon",
+                                "Tue",
+                                "Wed",
+                                "Thu",
+                                "Fri",
+                                "Sat",
+                            ].map((day) => (
+                                <div
+                                    className="py-2 text-center font-medium text-sm text-white/60"
+                                    key={day}
+                                >
+                                    {day}
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="grid grid-cols-7 gap-2">
+                            {calendar.days.map((day, index) => (
+                                <div
+                                    className={`${getDayClassName(day)} group`}
+                                    key={index}
+                                    title={
+                                        day.dayPerformance
+                                            ? `${day.date.toLocaleDateString("en-US", { day: "2-digit", month: "2-digit", year: "numeric" })} - PnL: ${day.dayPerformance.totalPnL.toFixed(2)}%, Trades: ${day.dayPerformance.tradeCount}`
+                                            : `${day.date.toLocaleDateString("en-US", { day: "2-digit", month: "2-digit", year: "numeric" })} - No trades`
+                                    }
+                                >
+                                    <div className="flex h-full flex-col items-center justify-center">
+                                        <span className="font-medium text-xs">
+                                            {day.date.getDate()}
+                                        </span>
+                                        {getDayContent(day)}
+                                    </div>
+
+                                    {day.dayPerformance && (
+                                        <div className="-translate-x-1/2 pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 transform whitespace-nowrap rounded-lg bg-black px-3 py-2 text-white text-xs opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
+                                            <div className="font-semibold">
+                                                {day.date.toLocaleDateString(
+                                                    "en-US",
+                                                    {
+                                                        weekday: "long",
+                                                        day: "2-digit",
+                                                        month: "long",
+                                                        year: "numeric",
+                                                    }
+                                                )}
+                                            </div>
+                                            <div className="text-green-400">
+                                                PnL:{" "}
+                                                {day.dayPerformance.totalPnL > 0
+                                                    ? "+"
+                                                    : ""}
+                                                {day.dayPerformance.totalPnL.toFixed(
+                                                    2
+                                                )}
+                                                %
+                                            </div>
+                                            <div className="text-gray-300">
+                                                Trades:{" "}
+                                                {day.dayPerformance.tradeCount}
+                                            </div>
+                                            <div className="-translate-x-1/2 absolute top-full left-1/2 h-0 w-0 transform border-transparent border-t-4 border-t-black border-r-4 border-l-4" />
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+            ));
+        }
+        if (selectedJournalIds.length > 0) {
+            return (
+                <Card className="border border-white/10 bg-black/20">
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <CardTitle className="text-white">
+                                    {getPeriodTitle()}
+                                </CardTitle>
+                                <CardDescription className="text-white/60">
+                                    {getPeriodDescription()}
+                                </CardDescription>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <Button
+                                    className="border-white/20 bg-transparent text-white hover:bg-white/10"
+                                    onClick={() => navigatePeriod("prev")}
+                                    size="sm"
+                                    variant="outline"
+                                >
+                                    <RiArrowLeftSLine className="size-4" />
+                                </Button>
+                                <Button
+                                    className="border-white/20 bg-transparent text-white hover:bg-white/10"
+                                    onClick={() => setCurrentDate(new Date())}
+                                    size="sm"
+                                    variant="outline"
+                                >
+                                    Today
+                                </Button>
+                                <Button
+                                    className="border-white/20 bg-transparent text-white hover:bg-white/10"
+                                    onClick={() => navigatePeriod("next")}
+                                    size="sm"
+                                    variant="outline"
+                                >
+                                    <RiArrowRightSLine className="size-4" />
+                                </Button>
+                            </div>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <div
+                            className={`grid gap-4 ${viewMode === "year" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"}`}
+                        >
+                            {calendars.map((calendar, calendarIndex) => (
+                                <div
+                                    className="rounded-lg bg-black/10 p-3"
+                                    key={calendarIndex}
+                                >
+                                    <div className="mb-3 text-center">
+                                        <h3 className="font-semibold text-sm text-white">
+                                            {
+                                                monthNames[
+                                                    calendar.month.getMonth()
+                                                ]
+                                            }
+                                        </h3>
+                                    </div>
+
+                                    <div className="mb-2 grid grid-cols-7 gap-1">
+                                        {[
+                                            "S",
+                                            "M",
+                                            "T",
+                                            "W",
+                                            "T",
+                                            "F",
+                                            "S",
+                                        ].map((day) => (
+                                            <div
+                                                className="py-1 text-center font-medium text-white/60 text-xs"
+                                                key={day}
+                                            >
+                                                {day}
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="grid grid-cols-7 gap-1">
+                                        {calendar.days.map((day, index) => (
+                                            <div
+                                                className={`group relative flex h-8 w-8 flex-col items-center justify-center rounded font-semibold text-xs transition-colors ${(() => {
+                                                    if (!day.isCurrentMonth) {
+                                                        return "text-white/30";
+                                                    }
+                                                    if (day.isToday) {
+                                                        return "bg-white font-bold text-black";
+                                                    }
+                                                    if (day.dayPerformance) {
+                                                        if (
+                                                            day.dayPerformance
+                                                                .isPositive
+                                                        ) {
+                                                            return "bg-green-600 text-white opacity-75";
+                                                        }
+                                                        if (
+                                                            day.dayPerformance
+                                                                .isNeutral
+                                                        ) {
+                                                            return "bg-gray-600 text-white";
+                                                        }
+                                                        return "bg-red-600 text-white opacity-75";
+                                                    }
+                                                    return "text-white hover:bg-white/10";
+                                                })()}`}
+                                                key={index}
+                                                title={
+                                                    day.dayPerformance
+                                                        ? `${day.date.toLocaleDateString("en-US", { day: "2-digit", month: "2-digit", year: "numeric" })} - PnL: ${day.dayPerformance.totalPnL.toFixed(2)}%, Trades: ${day.dayPerformance.tradeCount}`
+                                                        : `${day.date.toLocaleDateString("en-US", { day: "2-digit", month: "2-digit", year: "numeric" })} - No trades`
+                                                }
+                                            >
+                                                <span className="font-medium text-[9px]">
+                                                    {day.date.getDate()}
+                                                </span>
+                                                {day.dayPerformance && (
+                                                    <div className="font-bold text-[7px]">
+                                                        {day.dayPerformance
+                                                            .totalPnL > 0
+                                                            ? `+${day.dayPerformance.totalPnL.toFixed(0)}%`
+                                                            : `${day.dayPerformance.totalPnL.toFixed(0)}%`}
+                                                    </div>
+                                                )}
+
+                                                {day.dayPerformance && (
+                                                    <div className="-translate-x-1/2 pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 transform whitespace-nowrap rounded-lg bg-black px-3 py-2 text-white text-xs opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
+                                                        <div className="font-semibold">
+                                                            {day.date.toLocaleDateString(
+                                                                "en-US",
+                                                                {
+                                                                    weekday:
+                                                                        "long",
+                                                                    day: "2-digit",
+                                                                    month: "long",
+                                                                    year: "numeric",
+                                                                }
+                                                            )}
+                                                        </div>
+                                                        <div className="text-green-400">
+                                                            PnL:{" "}
+                                                            {day.dayPerformance
+                                                                .totalPnL > 0
+                                                                ? "+"
+                                                                : ""}
+                                                            {day.dayPerformance.totalPnL.toFixed(
+                                                                2
+                                                            )}
+                                                            %
+                                                        </div>
+                                                        <div className="text-gray-300">
+                                                            Trades:{" "}
+                                                            {
+                                                                day
+                                                                    .dayPerformance
+                                                                    .tradeCount
+                                                            }
+                                                        </div>
+                                                        <div className="-translate-x-1/2 absolute top-full left-1/2 h-0 w-0 transform border-transparent border-t-4 border-t-black border-r-4 border-l-4" />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+            );
+        }
+        return (
+            <div className="mb-6 py-8 text-center">
+                <div className="inline-flex items-center space-x-2 text-white/40">
+                    <RiCalendarLine className="size-5" />
+                    <span className="text-sm">No journals selected</span>
+                </div>
+                <p className="mt-2 text-white/30 text-xs">
+                    Use the filter above to select journals and view your
+                    performance
+                </p>
+            </div>
+        );
+    };
+
     if (isLoading) {
         return (
             <div className="container mx-auto px-4 py-8">
@@ -374,14 +703,26 @@ export default function TradingCalendarPage() {
                                     </div>
                                     <div className="max-h-48 space-y-2 overflow-y-auto">
                                         {journals.map((journal) => (
-                                            <div
-                                                className="flex cursor-pointer items-center space-x-2 rounded p-1 transition-colors hover:bg-white/5"
+                                            <button
+                                                className="flex w-full cursor-pointer items-center space-x-2 rounded p-1 text-left transition-colors hover:bg-white/5"
                                                 key={journal.id}
                                                 onClick={() =>
                                                     handleJournalToggle(
                                                         journal.id
                                                     )
                                                 }
+                                                onKeyDown={(e) => {
+                                                    if (
+                                                        e.key === "Enter" ||
+                                                        e.key === " "
+                                                    ) {
+                                                        e.preventDefault();
+                                                        handleJournalToggle(
+                                                            journal.id
+                                                        );
+                                                    }
+                                                }}
+                                                type="button"
                                             >
                                                 <Checkbox
                                                     checked={selectedJournalIds.includes(
@@ -397,7 +738,7 @@ export default function TradingCalendarPage() {
                                                 <span className="truncate font-medium text-white text-xs">
                                                     {journal.name}
                                                 </span>
-                                            </div>
+                                            </button>
                                         ))}
                                     </div>
                                     {selectedJournalIds.length > 0 && (
@@ -573,303 +914,7 @@ export default function TradingCalendarPage() {
                     </div>
                 </div>
             )}
-            {selectedJournalIds.length > 0 && viewMode === "single" ? (
-                calendars.map((calendar, calendarIndex) => (
-                    <Card
-                        className="mb-6 border border-white/10 bg-black/20"
-                        key={calendarIndex}
-                    >
-                        <CardHeader>
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <CardTitle className="text-white">
-                                        {getPeriodTitle()}
-                                    </CardTitle>
-                                    <CardDescription className="text-white/60">
-                                        {getPeriodDescription()}
-                                    </CardDescription>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Button
-                                        className="border-white/20 bg-transparent text-white hover:bg-white/10"
-                                        onClick={() => navigatePeriod("prev")}
-                                        size="sm"
-                                        variant="outline"
-                                    >
-                                        <RiArrowLeftSLine className="size-4" />
-                                    </Button>
-                                    <Button
-                                        className="border-white/20 bg-transparent text-white hover:bg-white/10"
-                                        onClick={() =>
-                                            setCurrentDate(new Date())
-                                        }
-                                        size="sm"
-                                        variant="outline"
-                                    >
-                                        Today
-                                    </Button>
-                                    <Button
-                                        className="border-white/20 bg-transparent text-white hover:bg-white/10"
-                                        onClick={() => navigatePeriod("next")}
-                                        size="sm"
-                                        variant="outline"
-                                    >
-                                        <RiArrowRightSLine className="size-4" />
-                                    </Button>
-                                </div>
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="mb-4 grid grid-cols-7 gap-2">
-                                {[
-                                    "Sun",
-                                    "Mon",
-                                    "Tue",
-                                    "Wed",
-                                    "Thu",
-                                    "Fri",
-                                    "Sat",
-                                ].map((day) => (
-                                    <div
-                                        className="py-2 text-center font-medium text-sm text-white/60"
-                                        key={day}
-                                    >
-                                        {day}
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className="grid grid-cols-7 gap-2">
-                                {calendar.days.map((day, index) => (
-                                    <div
-                                        className={`${getDayClassName(day)} group`}
-                                        key={index}
-                                        title={
-                                            day.dayPerformance
-                                                ? `${day.date.toLocaleDateString("en-US", { day: "2-digit", month: "2-digit", year: "numeric" })} - PnL: ${day.dayPerformance.totalPnL.toFixed(2)}%, Trades: ${day.dayPerformance.tradeCount}`
-                                                : `${day.date.toLocaleDateString("en-US", { day: "2-digit", month: "2-digit", year: "numeric" })} - No trades`
-                                        }
-                                    >
-                                        <div className="flex h-full flex-col items-center justify-center">
-                                            <span className="font-medium text-xs">
-                                                {day.date.getDate()}
-                                            </span>
-                                            {getDayContent(day)}
-                                        </div>
-
-                                        {day.dayPerformance && (
-                                            <div className="-translate-x-1/2 pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 transform whitespace-nowrap rounded-lg bg-black px-3 py-2 text-white text-xs opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
-                                                <div className="font-semibold">
-                                                    {day.date.toLocaleDateString(
-                                                        "en-US",
-                                                        {
-                                                            weekday: "long",
-                                                            day: "2-digit",
-                                                            month: "long",
-                                                            year: "numeric",
-                                                        }
-                                                    )}
-                                                </div>
-                                                <div className="text-green-400">
-                                                    PnL:{" "}
-                                                    {day.dayPerformance
-                                                        .totalPnL > 0
-                                                        ? "+"
-                                                        : ""}
-                                                    {day.dayPerformance.totalPnL.toFixed(
-                                                        2
-                                                    )}
-                                                    %
-                                                </div>
-                                                <div className="text-gray-300">
-                                                    Trades:{" "}
-                                                    {
-                                                        day.dayPerformance
-                                                            .tradeCount
-                                                    }
-                                                </div>
-                                                <div className="-translate-x-1/2 absolute top-full left-1/2 h-0 w-0 transform border-transparent border-t-4 border-t-black border-r-4 border-l-4" />
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))
-            ) : selectedJournalIds.length > 0 ? (
-                <Card className="border border-white/10 bg-black/20">
-                    <CardHeader>
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <CardTitle className="text-white">
-                                    {getPeriodTitle()}
-                                </CardTitle>
-                                <CardDescription className="text-white/60">
-                                    {getPeriodDescription()}
-                                </CardDescription>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <Button
-                                    className="border-white/20 bg-transparent text-white hover:bg-white/10"
-                                    onClick={() => navigatePeriod("prev")}
-                                    size="sm"
-                                    variant="outline"
-                                >
-                                    <RiArrowLeftSLine className="size-4" />
-                                </Button>
-                                <Button
-                                    className="border-white/20 bg-transparent text-white hover:bg-white/10"
-                                    onClick={() => setCurrentDate(new Date())}
-                                    size="sm"
-                                    variant="outline"
-                                >
-                                    Today
-                                </Button>
-                                <Button
-                                    className="border-white/20 bg-transparent text-white hover:bg-white/10"
-                                    onClick={() => navigatePeriod("next")}
-                                    size="sm"
-                                    variant="outline"
-                                >
-                                    <RiArrowRightSLine className="size-4" />
-                                </Button>
-                            </div>
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div
-                            className={`grid gap-4 ${viewMode === "year" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"}`}
-                        >
-                            {calendars.map((calendar, calendarIndex) => (
-                                <div
-                                    className="rounded-lg bg-black/10 p-3"
-                                    key={calendarIndex}
-                                >
-                                    <div className="mb-3 text-center">
-                                        <h3 className="font-semibold text-sm text-white">
-                                            {
-                                                monthNames[
-                                                    calendar.month.getMonth()
-                                                ]
-                                            }
-                                        </h3>
-                                    </div>
-
-                                    <div className="mb-2 grid grid-cols-7 gap-1">
-                                        {[
-                                            "S",
-                                            "M",
-                                            "T",
-                                            "W",
-                                            "T",
-                                            "F",
-                                            "S",
-                                        ].map((day) => (
-                                            <div
-                                                className="py-1 text-center font-medium text-white/60 text-xs"
-                                                key={day}
-                                            >
-                                                {day}
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    <div className="grid grid-cols-7 gap-1">
-                                        {calendar.days.map((day, index) => (
-                                            <div
-                                                className={`group relative flex h-8 w-8 flex-col items-center justify-center rounded font-semibold text-xs transition-colors ${
-                                                    day.isCurrentMonth
-                                                        ? day.isToday
-                                                            ? "bg-white font-bold text-black"
-                                                            : day.dayPerformance
-                                                              ? day
-                                                                    .dayPerformance
-                                                                    .isPositive
-                                                                  ? "bg-green-600 text-white opacity-75"
-                                                                  : day
-                                                                          .dayPerformance
-                                                                          .isNeutral
-                                                                    ? "bg-gray-600 text-white"
-                                                                    : "bg-red-600 text-white opacity-75"
-                                                              : "text-white hover:bg-white/10"
-                                                        : "text-white/30"
-                                                }`}
-                                                key={index}
-                                                title={
-                                                    day.dayPerformance
-                                                        ? `${day.date.toLocaleDateString("en-US", { day: "2-digit", month: "2-digit", year: "numeric" })} - PnL: ${day.dayPerformance.totalPnL.toFixed(2)}%, Trades: ${day.dayPerformance.tradeCount}`
-                                                        : `${day.date.toLocaleDateString("en-US", { day: "2-digit", month: "2-digit", year: "numeric" })} - No trades`
-                                                }
-                                            >
-                                                <span className="font-medium text-[9px]">
-                                                    {day.date.getDate()}
-                                                </span>
-                                                {day.dayPerformance && (
-                                                    <div className="font-bold text-[7px]">
-                                                        {day.dayPerformance
-                                                            .totalPnL > 0
-                                                            ? `+${day.dayPerformance.totalPnL.toFixed(0)}%`
-                                                            : `${day.dayPerformance.totalPnL.toFixed(0)}%`}
-                                                    </div>
-                                                )}
-
-                                                {day.dayPerformance && (
-                                                    <div className="-translate-x-1/2 pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 transform whitespace-nowrap rounded-lg bg-black px-3 py-2 text-white text-xs opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
-                                                        <div className="font-semibold">
-                                                            {day.date.toLocaleDateString(
-                                                                "en-US",
-                                                                {
-                                                                    weekday:
-                                                                        "long",
-                                                                    day: "2-digit",
-                                                                    month: "long",
-                                                                    year: "numeric",
-                                                                }
-                                                            )}
-                                                        </div>
-                                                        <div className="text-green-400">
-                                                            PnL:{" "}
-                                                            {day.dayPerformance
-                                                                .totalPnL > 0
-                                                                ? "+"
-                                                                : ""}
-                                                            {day.dayPerformance.totalPnL.toFixed(
-                                                                2
-                                                            )}
-                                                            %
-                                                        </div>
-                                                        <div className="text-gray-300">
-                                                            Trades:{" "}
-                                                            {
-                                                                day
-                                                                    .dayPerformance
-                                                                    .tradeCount
-                                                            }
-                                                        </div>
-                                                        <div className="-translate-x-1/2 absolute top-full left-1/2 h-0 w-0 transform border-transparent border-t-4 border-t-black border-r-4 border-l-4" />
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-            ) : (
-                <div className="mb-6 py-8 text-center">
-                    <div className="inline-flex items-center space-x-2 text-white/40">
-                        <RiCalendarLine className="size-5" />
-                        <span className="text-sm">No journals selected</span>
-                    </div>
-                    <p className="mt-2 text-white/30 text-xs">
-                        Use the filter above to select journals and view your
-                        performance
-                    </p>
-                </div>
-            )}
+            {renderCalendarContent()}
         </div>
     );
 }

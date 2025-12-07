@@ -182,7 +182,10 @@ export const getHabitStatsHandler = getHabitStatsBase.handler(
                     and(
                         eq(habitCompletions.userId, userId),
                         eq(habitCompletions.isCompleted, true),
-                        gte(habitCompletions.completionDate, yearStartDateStr ?? "")
+                        gte(
+                            habitCompletions.completionDate,
+                            yearStartDateStr ?? ""
+                        )
                     )
                 );
 

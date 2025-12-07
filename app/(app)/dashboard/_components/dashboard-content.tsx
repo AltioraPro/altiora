@@ -49,13 +49,13 @@ export function DashboardContent() {
     );
 
     return (
-        <div className="w-full max-w-[1600px] mx-auto">
+        <div className="mx-auto w-full max-w-[1600px]">
             <DashboardGrid
+                goals={goals}
+                habitsDashboard={habitsDashboard}
+                profileStats={profileStats}
                 stats={stats}
                 trades={trades}
-                habitsDashboard={habitsDashboard}
-                goals={goals}
-                profileStats={profileStats}
             />
             <div className="mt-8">
                 <DiscordWelcomeChecker />

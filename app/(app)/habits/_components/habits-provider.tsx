@@ -201,11 +201,13 @@ export function HabitsProvider({ children }: HabitsProviderProps) {
                         todayStatsFromServer &&
                         todayStatsFromServer.completionPercentage > 0;
 
-                    const optimisticCurrentStreak = hasValidatedToday
-                        ? todayWasAlreadyCounted
-                            ? data.currentStreak
-                            : Math.max(data.currentStreak + 1, 1)
-                        : data.currentStreak;
+                    let optimisticCurrentStreak = data.currentStreak;
+                    if (hasValidatedToday && !todayWasAlreadyCounted) {
+                        optimisticCurrentStreak = Math.max(
+                            data.currentStreak + 1,
+                            1
+                        );
+                    }
 
                     const optimisticLongestStreak = Math.max(
                         data.longestStreak,

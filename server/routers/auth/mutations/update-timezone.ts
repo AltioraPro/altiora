@@ -4,7 +4,8 @@ import { user } from "@/server/db/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
 import { updateTimezoneSchema } from "../validators";
 
-export const updateTimezoneBase = protectedProcedure.input(updateTimezoneSchema);
+export const updateTimezoneBase =
+    protectedProcedure.input(updateTimezoneSchema);
 
 export const updateTimezoneHandler = updateTimezoneBase.handler(
     async ({ context, input }) => {
@@ -32,4 +33,3 @@ export const updateTimezoneHandler = updateTimezoneBase.handler(
         return updatedUser;
     }
 );
-

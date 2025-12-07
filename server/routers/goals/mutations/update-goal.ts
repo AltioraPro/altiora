@@ -9,9 +9,11 @@ import { updateGoalValidator } from "../validators";
  */
 function calculateNextReminderDate(
     frequency: "daily" | "weekly" | "monthly" | null | undefined,
-    userTimezone: string = "UTC"
+    userTimezone = "UTC"
 ): Date | null {
-    if (!frequency) return null;
+    if (!frequency) {
+        return null;
+    }
 
     const now = new Date();
     const nextDate = new Date(now);
@@ -43,8 +45,12 @@ function calculateNextReminderDate(
     const targetDate = new Date(Date.UTC(year, month - 1, day, 9, 0, 0, 0));
 
     // Calculer le décalage horaire du timezone de l'utilisateur
-    const utcDate = new Date(targetDate.toLocaleString("en-US", { timeZone: "UTC" }));
-    const tzDate = new Date(targetDate.toLocaleString("en-US", { timeZone: userTimezone }));
+    const utcDate = new Date(
+        targetDate.toLocaleString("en-US", { timeZone: "UTC" })
+    );
+    const tzDate = new Date(
+        targetDate.toLocaleString("en-US", { timeZone: userTimezone })
+    );
     const tzOffset = tzDate.getTime() - utcDate.getTime();
     targetDate.setTime(targetDate.getTime() - tzOffset);
 
@@ -68,8 +74,14 @@ export const updateGoalHandler = updateGoalBase.handler(
 
         // Si on active les reminders, calculer nextReminderDate avec le timezone
         let nextReminderDate: Date | null | undefined;
-        if (updateData.remindersEnabled === true && updateData.reminderFrequency) {
-            nextReminderDate = calculateNextReminderDate(updateData.reminderFrequency, userTimezone);
+        if (
+            updateData.remindersEnabled === true &&
+            updateData.reminderFrequency
+        ) {
+            nextReminderDate = calculateNextReminderDate(
+                updateData.reminderFrequency,
+                userTimezone
+            );
         } else if (updateData.remindersEnabled === false) {
             // Si on désactive, reset les champs
             nextReminderDate = null;

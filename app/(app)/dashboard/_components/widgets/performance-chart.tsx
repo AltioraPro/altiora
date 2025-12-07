@@ -1,5 +1,7 @@
 "use client";
 
+import { InfoIcon, TrendingDown, TrendingUp } from "lucide-react";
+import { useState } from "react";
 import {
     Area,
     AreaChart,
@@ -7,22 +9,20 @@ import {
     BarChart,
     CartesianGrid,
     Cell,
-    ResponsiveContainer,
     Tooltip as RechartsTooltip,
+    ResponsiveContainer,
     XAxis,
     YAxis,
 } from "recharts";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import type { RouterOutput } from "@/orpc/client";
-import { InfoIcon, TrendingUp, TrendingDown } from "lucide-react";
-import { useState } from "react";
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import type { RouterOutput } from "@/orpc/client";
 
 interface PerformanceChartWidgetProps {
     trades: RouterOutput["trading"]["getTrades"];
@@ -30,7 +30,9 @@ interface PerformanceChartWidgetProps {
 
 type ChartView = "cumulative" | "monthly";
 
-export function PerformanceChartWidget({ trades }: PerformanceChartWidgetProps) {
+export function PerformanceChartWidget({
+    trades,
+}: PerformanceChartWidgetProps) {
     const [view, setView] = useState<ChartView>("cumulative");
 
     // Cumulative Performance Data
@@ -50,11 +52,16 @@ export function PerformanceChartWidget({ trades }: PerformanceChartWidgetProps) 
                     const cumulative = previousCumulative + pnl;
 
                     acc.push({
-                        date: new Date(trade.tradeDate).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                        }),
-                        fullDate: new Date(trade.tradeDate).toLocaleDateString("en-US"),
+                        date: new Date(trade.tradeDate).toLocaleDateString(
+                            "en-US",
+                            {
+                                month: "short",
+                                day: "numeric",
+                            }
+                        ),
+                        fullDate: new Date(trade.tradeDate).toLocaleDateString(
+                            "en-US"
+                        ),
                         pnl,
                         cumulative,
                         tradeNumber: acc.length + 1,
@@ -72,7 +79,9 @@ export function PerformanceChartWidget({ trades }: PerformanceChartWidgetProps) 
 
     // Monthly Performance Data
     const monthlyData = (() => {
-        if (!trades || trades.length === 0) return [];
+        if (!trades || trades.length === 0) {
+            return [];
+        }
 
         const monthStats = new Map<
             string,
@@ -97,7 +106,9 @@ export function PerformanceChartWidget({ trades }: PerformanceChartWidgetProps) 
             if (existing) {
                 existing.totalPnL += pnl;
                 existing.count += 1;
-                if (pnl > 0) existing.winningTrades += 1;
+                if (pnl > 0) {
+                    existing.winningTrades += 1;
+                }
             } else {
                 monthStats.set(key, {
                     key,
@@ -115,7 +126,10 @@ export function PerformanceChartWidget({ trades }: PerformanceChartWidgetProps) 
                 name: item.label,
                 pnl: item.totalPnL,
                 count: item.count,
-                winRate: item.count > 0 ? (item.winningTrades / item.count) * 100 : 0,
+                winRate:
+                    item.count > 0
+                        ? (item.winningTrades / item.count) * 100
+                        : 0,
             }));
     })();
 
@@ -124,59 +138,79 @@ export function PerformanceChartWidget({ trades }: PerformanceChartWidgetProps) 
             ? (cumulativeData.at(-1)?.cumulative ?? 0) >= 0
             : true;
 
-    const finalPnL = cumulativeData.length > 0 ? cumulativeData.at(-1)?.cumulative ?? 0 : 0;
+    const finalPnL =
+        cumulativeData.length > 0
+            ? (cumulativeData.at(-1)?.cumulative ?? 0)
+            : 0;
 
     const hasData = trades && trades.length > 0;
 
     return (
         <TooltipProvider delayDuration={100}>
-            <Card className="h-full border-none bg-white dark:bg-secondary/20 shadow-sm">
+            <Card className="h-full border-none bg-white shadow-sm dark:bg-secondary/20">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <div className="flex items-center gap-4">
-                        <CardTitle className="text-base font-medium flex items-center gap-2">
+                        <CardTitle className="flex items-center gap-2 font-medium text-base">
                             Performance
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <InfoIcon className="w-3.5 h-3.5 text-muted-foreground opacity-50 cursor-help hover:opacity-100 transition-opacity" />
+                                    <InfoIcon className="h-3.5 w-3.5 cursor-help text-muted-foreground opacity-50 transition-opacity hover:opacity-100" />
                                 </TooltipTrigger>
                                 <TooltipContent className="max-w-[280px] text-xs leading-relaxed">
-                                    <p><strong>Cumulative:</strong> Running total of all trade P&L over time. Shows your equity curve progression.</p>
-                                    <p className="mt-1"><strong>Monthly:</strong> Sum of all trade P&L grouped by month. Green = profitable month, Red = losing month.</p>
+                                    <p>
+                                        <strong>Cumulative:</strong> Running
+                                        total of all trade P&L over time. Shows
+                                        your equity curve progression.
+                                    </p>
+                                    <p className="mt-1">
+                                        <strong>Monthly:</strong> Sum of all
+                                        trade P&L grouped by month. Green =
+                                        profitable month, Red = losing month.
+                                    </p>
                                 </TooltipContent>
                             </Tooltip>
                         </CardTitle>
                         {hasData && (
-                            <div className={cn(
-                                "flex items-center gap-1 text-sm font-bold",
-                                isPositive ? "text-emerald-500" : "text-rose-500"
-                            )}>
-                                {isPositive ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-                                {finalPnL >= 0 ? "+" : ""}{finalPnL.toFixed(2)}%
+                            <div
+                                className={cn(
+                                    "flex items-center gap-1 font-bold text-sm",
+                                    isPositive
+                                        ? "text-emerald-500"
+                                        : "text-rose-500"
+                                )}
+                            >
+                                {isPositive ? (
+                                    <TrendingUp className="h-4 w-4" />
+                                ) : (
+                                    <TrendingDown className="h-4 w-4" />
+                                )}
+                                {finalPnL >= 0 ? "+" : ""}
+                                {finalPnL.toFixed(2)}%
                             </div>
                         )}
                     </div>
                     {/* View Toggle */}
-                    <div className="flex items-center gap-1 bg-secondary rounded-lg p-1">
+                    <div className="flex items-center gap-1 rounded-lg bg-secondary p-1">
                         <button
-                            onClick={() => setView("cumulative")}
                             className={cn(
-                                "px-3 py-1 text-xs font-medium rounded-md transition-colors",
+                                "rounded-md px-3 py-1 font-medium text-xs transition-colors",
                                 view === "cumulative"
                                     ? "bg-background shadow-sm"
                                     : "text-muted-foreground hover:text-foreground"
                             )}
+                            onClick={() => setView("cumulative")}
                             type="button"
                         >
                             Cumulative
                         </button>
                         <button
-                            onClick={() => setView("monthly")}
                             className={cn(
-                                "px-3 py-1 text-xs font-medium rounded-md transition-colors",
+                                "rounded-md px-3 py-1 font-medium text-xs transition-colors",
                                 view === "monthly"
                                     ? "bg-background shadow-sm"
                                     : "text-muted-foreground hover:text-foreground"
                             )}
+                            onClick={() => setView("monthly")}
                             type="button"
                         >
                             Monthly
@@ -187,7 +221,7 @@ export function PerformanceChartWidget({ trades }: PerformanceChartWidgetProps) 
                     {hasData ? (
                         <div className="h-[300px] w-full">
                             {view === "cumulative" ? (
-                                <ResponsiveContainer width="100%" height="100%">
+                                <ResponsiveContainer height="100%" width="100%">
                                     <AreaChart
                                         data={cumulativeData}
                                         margin={{
@@ -207,60 +241,111 @@ export function PerformanceChartWidget({ trades }: PerformanceChartWidgetProps) 
                                             >
                                                 <stop
                                                     offset="0%"
-                                                    stopColor={isPositive ? "#10b981" : "#ef4444"}
+                                                    stopColor={
+                                                        isPositive
+                                                            ? "#10b981"
+                                                            : "#ef4444"
+                                                    }
                                                     stopOpacity={0.4}
                                                 />
                                                 <stop
                                                     offset="100%"
-                                                    stopColor={isPositive ? "#10b981" : "#ef4444"}
+                                                    stopColor={
+                                                        isPositive
+                                                            ? "#10b981"
+                                                            : "#ef4444"
+                                                    }
                                                     stopOpacity={0}
                                                 />
                                             </linearGradient>
                                         </defs>
                                         <CartesianGrid
+                                            className="text-muted/10"
+                                            stroke="currentColor"
                                             strokeDasharray="3 3"
                                             vertical={false}
-                                            stroke="currentColor"
-                                            className="text-muted/10"
                                         />
                                         <XAxis
-                                            dataKey="date"
                                             axisLine={false}
-                                            tickLine={false}
-                                            tick={{ fontSize: 10, fill: "currentColor" }}
                                             className="text-muted-foreground"
+                                            dataKey="date"
                                             minTickGap={50}
+                                            tick={{
+                                                fontSize: 10,
+                                                fill: "currentColor",
+                                            }}
+                                            tickLine={false}
                                         />
                                         <YAxis
                                             axisLine={false}
-                                            tickLine={false}
-                                            tick={{ fontSize: 10, fill: "currentColor" }}
                                             className="text-muted-foreground"
-                                            tickFormatter={(value) => `${value.toFixed(0)}%`}
+                                            tick={{
+                                                fontSize: 10,
+                                                fill: "currentColor",
+                                            }}
+                                            tickFormatter={(value) =>
+                                                `${value.toFixed(0)}%`
+                                            }
+                                            tickLine={false}
                                         />
                                         <RechartsTooltip
                                             content={({ active, payload }) => {
-                                                if (active && payload && payload.length) {
-                                                    const data = payload[0].payload;
+                                                if (
+                                                    active &&
+                                                    payload &&
+                                                    payload.length
+                                                ) {
+                                                    const data =
+                                                        payload[0].payload;
                                                     return (
-                                                        <div className="rounded-lg border bg-background p-3 shadow-md text-xs">
-                                                            <div className="font-medium mb-1">{data.fullDate}</div>
+                                                        <div className="rounded-lg border bg-background p-3 text-xs shadow-md">
+                                                            <div className="mb-1 font-medium">
+                                                                {data.fullDate}
+                                                            </div>
                                                             <div className="flex items-center justify-between gap-4">
-                                                                <span className="text-muted-foreground">Trade P&L:</span>
-                                                                <span className={cn(
-                                                                    "font-bold",
-                                                                    data.pnl >= 0 ? "text-emerald-500" : "text-rose-500"
-                                                                )}>
-                                                                    {data.pnl >= 0 ? "+" : ""}{data.pnl.toFixed(2)}%
+                                                                <span className="text-muted-foreground">
+                                                                    Trade P&L:
+                                                                </span>
+                                                                <span
+                                                                    className={cn(
+                                                                        "font-bold",
+                                                                        data.pnl >=
+                                                                            0
+                                                                            ? "text-emerald-500"
+                                                                            : "text-rose-500"
+                                                                    )}
+                                                                >
+                                                                    {data.pnl >=
+                                                                    0
+                                                                        ? "+"
+                                                                        : ""}
+                                                                    {data.pnl.toFixed(
+                                                                        2
+                                                                    )}
+                                                                    %
                                                                 </span>
                                                             </div>
                                                             <div className="flex items-center justify-between gap-4">
-                                                                <span className="text-muted-foreground">Cumulative:</span>
-                                                                <span className={cn(
-                                                                    "font-bold",
-                                                                    data.cumulative >= 0 ? "text-emerald-500" : "text-rose-500"
-                                                                )}>
-                                                                    {data.cumulative >= 0 ? "+" : ""}{data.cumulative.toFixed(2)}%
+                                                                <span className="text-muted-foreground">
+                                                                    Cumulative:
+                                                                </span>
+                                                                <span
+                                                                    className={cn(
+                                                                        "font-bold",
+                                                                        data.cumulative >=
+                                                                            0
+                                                                            ? "text-emerald-500"
+                                                                            : "text-rose-500"
+                                                                    )}
+                                                                >
+                                                                    {data.cumulative >=
+                                                                    0
+                                                                        ? "+"
+                                                                        : ""}
+                                                                    {data.cumulative.toFixed(
+                                                                        2
+                                                                    )}
+                                                                    %
                                                                 </span>
                                                             </div>
                                                         </div>
@@ -270,63 +355,116 @@ export function PerformanceChartWidget({ trades }: PerformanceChartWidgetProps) 
                                             }}
                                         />
                                         <Area
-                                            type="monotone"
                                             dataKey="cumulative"
-                                            stroke={isPositive ? "#10b981" : "#ef4444"}
-                                            strokeWidth={2}
                                             fill="url(#performanceGradient)"
+                                            stroke={
+                                                isPositive
+                                                    ? "#10b981"
+                                                    : "#ef4444"
+                                            }
+                                            strokeWidth={2}
+                                            type="monotone"
                                         />
                                     </AreaChart>
                                 </ResponsiveContainer>
                             ) : (
-                                <ResponsiveContainer width="100%" height="100%">
+                                <ResponsiveContainer height="100%" width="100%">
                                     <BarChart
                                         data={monthlyData}
-                                        margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                                        margin={{
+                                            top: 10,
+                                            right: 10,
+                                            left: 0,
+                                            bottom: 0,
+                                        }}
                                     >
                                         <CartesianGrid
+                                            className="text-muted/10"
+                                            stroke="currentColor"
                                             strokeDasharray="3 3"
                                             vertical={false}
-                                            stroke="currentColor"
-                                            className="text-muted/10"
                                         />
                                         <XAxis
-                                            dataKey="name"
                                             axisLine={false}
-                                            tickLine={false}
-                                            tick={{ fontSize: 10, fill: "currentColor" }}
                                             className="text-muted-foreground"
+                                            dataKey="name"
+                                            tick={{
+                                                fontSize: 10,
+                                                fill: "currentColor",
+                                            }}
+                                            tickLine={false}
                                         />
                                         <YAxis
                                             axisLine={false}
-                                            tickLine={false}
-                                            tick={{ fontSize: 10, fill: "currentColor" }}
                                             className="text-muted-foreground"
-                                            tickFormatter={(value) => `${value.toFixed(0)}%`}
+                                            tick={{
+                                                fontSize: 10,
+                                                fill: "currentColor",
+                                            }}
+                                            tickFormatter={(value) =>
+                                                `${value.toFixed(0)}%`
+                                            }
+                                            tickLine={false}
                                         />
                                         <RechartsTooltip
-                                            content={({ active, payload, label }) => {
-                                                if (active && payload && payload.length) {
-                                                    const data = payload[0].payload;
+                                            content={({
+                                                active,
+                                                payload,
+                                                label,
+                                            }) => {
+                                                if (
+                                                    active &&
+                                                    payload &&
+                                                    payload.length
+                                                ) {
+                                                    const data =
+                                                        payload[0].payload;
                                                     return (
-                                                        <div className="rounded-lg border bg-background p-3 shadow-md text-xs">
-                                                            <div className="font-medium mb-1">{label}</div>
+                                                        <div className="rounded-lg border bg-background p-3 text-xs shadow-md">
+                                                            <div className="mb-1 font-medium">
+                                                                {label}
+                                                            </div>
                                                             <div className="flex items-center justify-between gap-4">
-                                                                <span className="text-muted-foreground">P&L:</span>
-                                                                <span className={cn(
-                                                                    "font-bold",
-                                                                    data.pnl >= 0 ? "text-emerald-500" : "text-rose-500"
-                                                                )}>
-                                                                    {data.pnl >= 0 ? "+" : ""}{data.pnl.toFixed(2)}%
+                                                                <span className="text-muted-foreground">
+                                                                    P&L:
+                                                                </span>
+                                                                <span
+                                                                    className={cn(
+                                                                        "font-bold",
+                                                                        data.pnl >=
+                                                                            0
+                                                                            ? "text-emerald-500"
+                                                                            : "text-rose-500"
+                                                                    )}
+                                                                >
+                                                                    {data.pnl >=
+                                                                    0
+                                                                        ? "+"
+                                                                        : ""}
+                                                                    {data.pnl.toFixed(
+                                                                        2
+                                                                    )}
+                                                                    %
                                                                 </span>
                                                             </div>
                                                             <div className="flex items-center justify-between gap-4">
-                                                                <span className="text-muted-foreground">Trades:</span>
-                                                                <span className="font-bold">{data.count}</span>
+                                                                <span className="text-muted-foreground">
+                                                                    Trades:
+                                                                </span>
+                                                                <span className="font-bold">
+                                                                    {data.count}
+                                                                </span>
                                                             </div>
                                                             <div className="flex items-center justify-between gap-4">
-                                                                <span className="text-muted-foreground">Win Rate:</span>
-                                                                <span className="font-bold">{data.winRate.toFixed(0)}%</span>
+                                                                <span className="text-muted-foreground">
+                                                                    Win Rate:
+                                                                </span>
+                                                                <span className="font-bold">
+                                                                    {data.winRate.toFixed(
+                                                                        0
+                                                                    )}
+                                                                    %
+                                                                </span>
                                                             </div>
                                                         </div>
                                                     );
@@ -334,11 +472,18 @@ export function PerformanceChartWidget({ trades }: PerformanceChartWidgetProps) 
                                                 return null;
                                             }}
                                         />
-                                        <Bar dataKey="pnl" radius={[4, 4, 0, 0]}>
+                                        <Bar
+                                            dataKey="pnl"
+                                            radius={[4, 4, 0, 0]}
+                                        >
                                             {monthlyData.map((entry, index) => (
                                                 <Cell
+                                                    fill={
+                                                        entry.pnl >= 0
+                                                            ? "#10b981"
+                                                            : "#ef4444"
+                                                    }
                                                     key={`cell-${index}`}
-                                                    fill={entry.pnl >= 0 ? "#10b981" : "#ef4444"}
                                                 />
                                             ))}
                                         </Bar>
@@ -347,10 +492,12 @@ export function PerformanceChartWidget({ trades }: PerformanceChartWidgetProps) 
                             )}
                         </div>
                     ) : (
-                        <div className="h-[300px] flex flex-col items-center justify-center text-muted-foreground">
-                            <TrendingUp className="w-10 h-10 mb-3 opacity-20" />
-                            <span className="text-sm font-medium">No trading data yet</span>
-                            <span className="text-xs text-center mt-1 opacity-70">
+                        <div className="flex h-[300px] flex-col items-center justify-center text-muted-foreground">
+                            <TrendingUp className="mb-3 h-10 w-10 opacity-20" />
+                            <span className="font-medium text-sm">
+                                No trading data yet
+                            </span>
+                            <span className="mt-1 text-center text-xs opacity-70">
                                 Log your first trade to see performance
                             </span>
                         </div>

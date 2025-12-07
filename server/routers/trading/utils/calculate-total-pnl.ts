@@ -22,4 +22,3 @@ export function calculateTotalPnL(
 
     return { totalPnLPercentage, totalAmountPnL };
 }
-

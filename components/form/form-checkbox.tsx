@@ -58,32 +58,32 @@ export function FormCheckbox<
 
                 return (
                     <Field
-                        data-invalid={!!fieldState.error}
                         data-disabled={disabled || fieldDisabled}
+                        data-invalid={!!fieldState.error}
                         orientation="horizontal"
                     >
                         <div
                             className={cn("flex items-start gap-2", className)}
                         >
                             <Checkbox
-                                id={uniqueId}
                                 checked={!!value}
-                                disabled={disabled || fieldDisabled}
-                                onCheckedChange={onChange}
                                 className={cn(
                                     fieldState.error &&
                                         "border-destructive focus-visible:ring-destructive"
                                 )}
+                                disabled={disabled || fieldDisabled}
+                                id={uniqueId}
+                                onCheckedChange={onChange}
                                 {...restFieldProps}
                             />
                             {label && (
                                 <div className="flex flex-col gap-1">
                                     <FieldLabel
-                                        htmlFor={uniqueId}
                                         className={cn(
                                             "cursor-pointer font-normal",
                                             labelClassName
                                         )}
+                                        htmlFor={uniqueId}
                                     >
                                         {label}
                                     </FieldLabel>

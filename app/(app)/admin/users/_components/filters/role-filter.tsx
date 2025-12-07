@@ -30,4 +30,3 @@ export function RoleFilter({ onValueChange, value }: RoleFilterProps) {
         </Select>
     );
 }
-
