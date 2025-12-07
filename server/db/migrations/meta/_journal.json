@@ -253,6 +253,13 @@
       "when": 1764067242697,
       "tag": "0035_zippy_smasher",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1765117869414,
+      "tag": "0036_tired_xorn",
+      "breakpoints": true
     }
   ]
 }
