@@ -3,3 +3,4 @@ export * from "./disconnect";
 export * from "./finalize-link";
 export * from "./sync-all-users";
 export * from "./sync-rank";
+export * from "./toggle-habit-reminders";
