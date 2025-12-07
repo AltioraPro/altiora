@@ -1,6 +1,8 @@
 import { z } from "zod";
 
-export const periodSchema = z.enum(["all", "week", "month", "year"]).default("all");
+export const periodSchema = z
+    .enum(["all", "week", "month", "year"])
+    .default("all");
 
 export const getLeaderboardSchema = z.object({
     period: periodSchema,

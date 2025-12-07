@@ -30,6 +30,13 @@
         "noImgElement": "off",
         "noBarrelFile": "off"
       },
+      "complexity": {
+        "noExcessiveCognitiveComplexity": {
+          "options": {
+            "maxAllowedComplexity": 25
+          }
+        }
+      },
       "style": {
         "noMagicNumbers": "off"
       },

@@ -36,7 +36,10 @@ export function DiscordConnection() {
             finalizeLink({})
                 .then(() => {
                     refetch();
-                    if (typeof window !== "undefined" && window.location?.href) {
+                    if (
+                        typeof window !== "undefined" &&
+                        window.location?.href
+                    ) {
                         try {
                             const url = new URL(window.location.href);
                             url.searchParams.delete("discord");
@@ -77,18 +80,26 @@ export function DiscordConnection() {
             <RiDiscordFill className="mt-0.5 size-5 text-neutral-400" />
             <div className="flex-1 space-y-1">
                 <p className="font-medium text-neutral-50">
-                    {isLoading
-                        ? "Connecting Discord..."
-                        : isConnected
-                            ? "Discord Connected"
-                            : "Discord Not Connected"}
+                    {(() => {
+                        if (isLoading) {
+                            return "Connecting Discord...";
+                        }
+                        if (isConnected) {
+                            return "Discord Connected";
+                        }
+                        return "Discord Not Connected";
+                    })()}
                 </p>
                 <p className="text-neutral-400">
-                    {isLoading
-                        ? "Finalizing connection with Discord server"
-                        : isConnected
-                            ? "Your Discord account is connected"
-                            : "Connect your Discord account to get the latest news and updates"}
+                    {(() => {
+                        if (isLoading) {
+                            return "Finalizing connection with Discord server";
+                        }
+                        if (isConnected) {
+                            return "Your Discord account is connected";
+                        }
+                        return "Connect your Discord account to get the latest news and updates";
+                    })()}
                 </p>
             </div>
             <Button
@@ -97,11 +108,15 @@ export function DiscordConnection() {
                 size="xs"
                 variant={isConnected ? "destructive" : "primary"}
             >
-                {isLoading
-                    ? "Connecting..."
-                    : isConnected
-                        ? "Disconnect"
-                        : "Connect"}
+                {(() => {
+                    if (isLoading) {
+                        return "Connecting...";
+                    }
+                    if (isConnected) {
+                        return "Disconnect";
+                    }
+                    return "Connect";
+                })()}
                 {!isLoading && <RiArrowRightUpLine className="size-4" />}
             </Button>
         </div>

@@ -1,11 +1,11 @@
 "use client";
 
 import {
-	RiDashboardLine,
-	RiLogoutBoxLine,
-	RiSettingsLine,
-	RiShieldCheckLine,
-	RiUserLine,
+    RiDashboardLine,
+    RiLogoutBoxLine,
+    RiSettingsLine,
+    RiShieldCheckLine,
+    RiUserLine,
 } from "@remixicon/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,85 +14,89 @@ import { USER_ROLES } from "@/constants/roles";
 import { useUserData } from "@/hooks/use-user-data";
 import { LogoutButton } from "./logout-button";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuGroup,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Skeleton } from "./ui/skeleton";
 
 export function DropdownUser() {
-	const { user, isLoading } = useUserData();
+    const { user, isLoading } = useUserData();
 
-	if (isLoading) {
-		return <Skeleton className="size-6 rounded-full" />;
-	}
+    if (isLoading) {
+        return <Skeleton className="size-6 rounded-full" />;
+    }
 
-	if (!user) {
-		return null;
-	}
+    if (!user) {
+        return null;
+    }
 
-	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild className="cursor-pointer">
-				{user.image ? (
-					<Image
-						alt={user.name}
-						className="size-6 rounded-full"
-						height={32}
-						src={user.image}
-						width={32}
-					/>
-				) : (
-					<div className="flex size-8 items-center justify-center rounded-full bg-neutral-700">
-						{user.name.charAt(0)}
-					</div>
-				)}
-			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end" className="w-56" sideOffset={16}>
-				<div className="flex w-full flex-col p-2 pb-1 text-sm">
-					<p className="truncate font-medium text-primary">{user.name}</p>
-					<p className="truncate text-muted-foreground">{user.email}</p>
-				</div>
-				<DropdownMenuSeparator />
-				<DropdownMenuGroup>
-					<DropdownMenuItem asChild>
-						<Link href={PAGES.DASHBOARD}>
-							<RiDashboardLine className="size-4" />
-							Dashboard
-						</Link>
-					</DropdownMenuItem>
-					<DropdownMenuItem asChild>
-						<Link href={PAGES.PROFILE}>
-							<RiUserLine className="size-4" />
-							Profile
-						</Link>
-					</DropdownMenuItem>
-					{user.role === USER_ROLES.ADMIN && (
-						<DropdownMenuItem asChild>
-							<Link href={PAGES.ADMIN_USERS}>
-								<RiShieldCheckLine className="size-4" />
-								Admin
-							</Link>
-						</DropdownMenuItem>
-					)}
-				</DropdownMenuGroup>
-				<DropdownMenuSeparator />
-				<DropdownMenuItem asChild>
-					<Link href={PAGES.SETTINGS}>
-						<RiSettingsLine className="size-4" />
-						Settings
-					</Link>
-				</DropdownMenuItem>
-				<DropdownMenuItem variant="destructive">
-					<LogoutButton className="flex h-full w-full items-center gap-2">
-						<RiLogoutBoxLine className="text-destructive" />
-						Sign Out
-					</LogoutButton>
-				</DropdownMenuItem>
-			</DropdownMenuContent>
-		</DropdownMenu>
-	);
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild className="cursor-pointer">
+                {user.image ? (
+                    <Image
+                        alt={user.name}
+                        className="size-6 rounded-full"
+                        height={32}
+                        src={user.image}
+                        width={32}
+                    />
+                ) : (
+                    <div className="flex size-8 items-center justify-center rounded-full bg-neutral-700">
+                        {user.name.charAt(0)}
+                    </div>
+                )}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56" sideOffset={16}>
+                <div className="flex w-full flex-col p-2 pb-1 text-sm">
+                    <p className="truncate font-medium text-primary">
+                        {user.name}
+                    </p>
+                    <p className="truncate text-muted-foreground">
+                        {user.email}
+                    </p>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                    <DropdownMenuItem asChild>
+                        <Link href={PAGES.DASHBOARD}>
+                            <RiDashboardLine className="size-4" />
+                            Dashboard
+                        </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                        <Link href={PAGES.PROFILE}>
+                            <RiUserLine className="size-4" />
+                            Profile
+                        </Link>
+                    </DropdownMenuItem>
+                    {user.role === USER_ROLES.ADMIN && (
+                        <DropdownMenuItem asChild>
+                            <Link href={PAGES.ADMIN_USERS}>
+                                <RiShieldCheckLine className="size-4" />
+                                Admin
+                            </Link>
+                        </DropdownMenuItem>
+                    )}
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                    <Link href={PAGES.SETTINGS}>
+                        <RiSettingsLine className="size-4" />
+                        Settings
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem variant="destructive">
+                    <LogoutButton className="flex h-full w-full items-center gap-2">
+                        <RiLogoutBoxLine className="text-destructive" />
+                        Sign Out
+                    </LogoutButton>
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
 }

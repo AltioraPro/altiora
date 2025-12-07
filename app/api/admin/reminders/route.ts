@@ -106,7 +106,26 @@ export async function GET(request: NextRequest) {
                 });
                 return acc;
             },
-            {} as Record<string, any[]>
+            {} as Record<
+                string,
+                Array<{
+                    goalId: string;
+                    title: string | null;
+                    description: string | null;
+                    deadline: Date | null;
+                    nextReminderDate: Date | null;
+                    lastReminderSent: Date | null;
+                    isActive: boolean;
+                    isCompleted: boolean;
+                    user: {
+                        id: string;
+                        email: string | null;
+                        discordId: string | null;
+                        discordConnected: boolean | null;
+                        rank: string | null;
+                    };
+                }>
+            >
         );
 
         // Get reminder statistics
@@ -310,7 +329,10 @@ export async function POST(request: NextRequest) {
 
                     await GoalRemindersService.updateNextReminderDate(
                         goal.goalId,
-                        goal.reminderFrequency as "daily" | "weekly" | "monthly",
+                        goal.reminderFrequency as
+                            | "daily"
+                            | "weekly"
+                            | "monthly",
                         goal.userId
                     );
 

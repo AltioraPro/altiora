@@ -30,7 +30,8 @@ export function TimezoneSync() {
             return;
         }
 
-        const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const browserTimezone =
+            Intl.DateTimeFormat().resolvedOptions().timeZone;
         const userTimezone = currentUser.timezone;
 
         if (browserTimezone && browserTimezone !== userTimezone) {
@@ -51,4 +52,3 @@ export function TimezoneSync() {
 
     return null;
 }
-

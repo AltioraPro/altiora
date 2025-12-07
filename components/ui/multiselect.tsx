@@ -269,7 +269,7 @@ const MultipleSelector = ({
             document.removeEventListener("mousedown", handleClickOutside);
             document.removeEventListener("touchend", handleClickOutside);
         };
-    }, [open]);
+    }, [open, handleClickOutside]);
 
     useEffect(() => {
         if (value) {
@@ -286,7 +286,7 @@ const MultipleSelector = ({
         if (JSON.stringify(newOption) !== JSON.stringify(options)) {
             setOptions(newOption);
         }
-    }, [arrayDefaultOptions, arrayOptions, groupBy, onSearch, options]);
+    }, [arrayOptions, groupBy, onSearch, options]);
 
     useEffect(() => {
         /** sync search */
@@ -312,7 +312,13 @@ const MultipleSelector = ({
 
         exec();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [debouncedSearchTerm, groupBy, open, triggerSearchOnFocus]);
+    }, [
+        debouncedSearchTerm,
+        groupBy,
+        open,
+        triggerSearchOnFocus,
+        onSearchSync,
+    ]);
 
     useEffect(() => {
         /** async search */
@@ -340,7 +346,7 @@ const MultipleSelector = ({
 
         exec();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [debouncedSearchTerm, groupBy, open, triggerSearchOnFocus]);
+    }, [debouncedSearchTerm, groupBy, open, triggerSearchOnFocus, onSearch]);
 
     const CreatableItem = React.useCallback(() => {
         if (!creatable) {

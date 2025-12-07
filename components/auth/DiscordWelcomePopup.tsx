@@ -104,7 +104,6 @@ export function DiscordWelcomePopup({
                     onClose();
                 }
             }}
-            tabIndex={0}
         >
             <Card
                 className="max-h-[90vh] w-full max-w-2xl overflow-y-auto border border-white/20 text-pure-white"

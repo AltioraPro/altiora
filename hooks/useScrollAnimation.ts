@@ -15,7 +15,9 @@ export const useScrollAnimation = (options: UseScrollAnimationOptions = {}) => {
 
     useEffect(() => {
         const element = elementRef.current;
-        if (!element) return;
+        if (!element) {
+            return;
+        }
 
         const observer = new IntersectionObserver(
             ([entry]) => {

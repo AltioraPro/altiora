@@ -2,6 +2,18 @@ import { call } from "@orpc/server";
 import { base } from "@/server/context";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
 import {
+    createHabitBase,
+    createHabitHandler,
+    deleteHabitBase,
+    deleteHabitHandler,
+    toggleHabitCompletionBase,
+    toggleHabitCompletionHandler,
+    updateHabitBase,
+    updateHabitHandler,
+    updateUserRankBase,
+    updateUserRankHandler,
+} from "./mutations";
+import {
     getDailyStatsBase,
     getDailyStatsHandler,
 } from "./queries/get-daily-stats";
@@ -21,18 +33,6 @@ import {
     getUserHabitsBase,
     getUserHabitsHandler,
 } from "./queries/get-user-habits";
-import {
-    createHabitBase,
-    createHabitHandler,
-    deleteHabitBase,
-    deleteHabitHandler,
-    toggleHabitCompletionBase,
-    toggleHabitCompletionHandler,
-    updateHabitBase,
-    updateHabitHandler,
-    updateUserRankBase,
-    updateUserRankHandler,
-} from "./mutations";
 import { reorderHabitsSchema } from "./validators";
 
 // Helper for reorder mutation (inline implementation)
@@ -104,8 +104,9 @@ export const habitsRouter = base.router({
                 await call(toggleHabitCompletionHandler, input, { context })
         ),
 
-    reorder: reorderHabitsBase.route({ method: "POST" }).handler(
-        async ({ context, input }) => {
+    reorder: reorderHabitsBase
+        .route({ method: "POST" })
+        .handler(async ({ context, input }) => {
             const { habitIds } = input;
 
             const updatePromises = habitIds.map((habitId, index) =>
@@ -119,8 +120,7 @@ export const habitsRouter = base.router({
             await Promise.all(updatePromises);
 
             return { success: true, message: "Habit order updated" };
-        }
-    ),
+        }),
 
     updateRank: updateUserRankBase
         .route({ method: "POST" })

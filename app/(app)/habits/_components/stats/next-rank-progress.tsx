@@ -24,26 +24,33 @@ export const NextRankProgress = memo(function NextRankProgress({
     return (
         <div className="relative overflow-hidden border border-white/10 bg-black/40 p-5">
             {/* Subtle gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent" />
 
             <div className="relative space-y-4">
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <div className="mb-1 text-[10px] font-bold uppercase tracking-widest text-white/40">
+                        <div className="mb-1 font-bold text-[10px] text-white/40 uppercase tracking-widest">
                             Next Target
                         </div>
-                        <h3 className="font-bold text-lg text-white flex items-center gap-2">
+                        <h3 className="flex items-center gap-2 font-bold text-lg text-white">
                             {nextRank.name}
-                            <NextRankIcon className={cn("h-4 w-4 opacity-70", nextRank.color)} />
+                            <NextRankIcon
+                                className={cn(
+                                    "h-4 w-4 opacity-70",
+                                    nextRank.color
+                                )}
+                            />
                         </h3>
                     </div>
                     <div className="text-right">
-                        <div className="text-[10px] font-bold uppercase tracking-widest text-white/40">
+                        <div className="font-bold text-[10px] text-white/40 uppercase tracking-widest">
                             Progress
                         </div>
-                        <div className="text-sm font-mono text-white/80">
-                            {currentStreak}<span className="text-white/30">/</span>{nextRank.minStreak}
+                        <div className="font-mono text-sm text-white/80">
+                            {currentStreak}
+                            <span className="text-white/30">/</span>
+                            {nextRank.minStreak}
                         </div>
                     </div>
                 </div>
@@ -66,14 +73,17 @@ export const NextRankProgress = memo(function NextRankProgress({
                     </div>
 
                     {/* Days remaining message */}
-                    <p className="text-xs font-medium text-center text-white/50">
+                    <p className="text-center font-medium text-white/50 text-xs">
                         {daysToNextRank === 1 ? (
                             <>
                                 <span className="text-white">1 day</span> left
                             </>
                         ) : (
                             <>
-                                <span className="text-white">{daysToNextRank} days</span> left
+                                <span className="text-white">
+                                    {daysToNextRank} days
+                                </span>{" "}
+                                left
                             </>
                         )}
                     </p>

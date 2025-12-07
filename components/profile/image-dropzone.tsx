@@ -21,7 +21,7 @@ import {
     FieldError,
     FieldLabel,
 } from "@/components/ui/field";
-import { useFileUpload, type FileWithPreview } from "@/hooks/use-file-upload";
+import { type FileWithPreview, useFileUpload } from "@/hooks/use-file-upload";
 
 interface ImageDropzoneProps<
     TFieldValues extends FieldValues = FieldValues,
@@ -79,7 +79,7 @@ export function ImageDropzone<
     const handleFilesAdded = useCallback(
         async (addedFiles: FileWithPreview[]) => {
             const file = addedFiles[0]?.file;
-            if (!(file instanceof File) || !onFileAdded) {
+            if (!(file instanceof File && onFileAdded)) {
                 return;
             }
 

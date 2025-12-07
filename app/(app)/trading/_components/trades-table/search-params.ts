@@ -29,4 +29,3 @@ export const tradesTableParsers = {
 
 export const tradesTableParsersCache =
     createSearchParamsCache(tradesTableParsers);
-

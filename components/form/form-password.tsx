@@ -106,7 +106,11 @@ export function FormPassword<
                                     }
                                     type="button"
                                 >
-                                    {showPassword ? <RiEyeOffLine /> : <RiEyeLine />}
+                                    {showPassword ? (
+                                        <RiEyeOffLine />
+                                    ) : (
+                                        <RiEyeLine />
+                                    )}
                                 </InputGroupButton>
                             </InputGroupAddon>
                         </InputGroup>

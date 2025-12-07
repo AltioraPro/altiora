@@ -5,18 +5,9 @@ import {
     parseAsStringEnum,
 } from "nuqs/server";
 
-export const sortableColumns = [
-    "user",
-    "role",
-    "waitlistStatus",
-    "createdAt",
-];
+export const sortableColumns = ["user", "role", "waitlistStatus", "createdAt"];
 
-export type SortableColumn =
-    | "user"
-    | "role"
-    | "waitlistStatus"
-    | "createdAt";
+export type SortableColumn = "user" | "role" | "waitlistStatus" | "createdAt";
 
 export const adminUsersParsers = {
     // Filters
@@ -40,4 +31,3 @@ export const adminUsersParsers = {
 
 export const adminUsersParsersCache =
     createSearchParamsCache(adminUsersParsers);
-

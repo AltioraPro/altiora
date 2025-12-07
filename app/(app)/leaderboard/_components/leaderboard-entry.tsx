@@ -1,9 +1,9 @@
 import { RiTimerLine, RiUserLine } from "@remixicon/react";
 import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/card";
-import type { RouterOutput } from "@/orpc/client";
 import { getRankByName } from "@/app/(app)/habits/_components/stats/rank-system";
+import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import type { RouterOutput } from "@/orpc/client";
 
 interface LeaderboardEntryProps {
     entry: RouterOutput["leaderboard"]["getLeaderboard"][number];

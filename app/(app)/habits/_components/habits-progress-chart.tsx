@@ -53,12 +53,20 @@ export function HabitsProgressChart({
                 (item) => item.date >= mondayStr && item.date <= sundayStr
             );
 
-            const weekData = [];
+            const weekData: Array<{
+                date: string;
+                completionPercentage: number;
+                dayName: string;
+                dayNumber: number;
+                isToday: boolean;
+                trend: number;
+            }> = [];
             for (let i = 0; i < 7; i++) {
                 const date = new Date(
                     monday.getTime() + i * 24 * 60 * 60 * 1000
                 );
-                const dateStr = date.toISOString().split("T")[0]!;
+                const dateStrParts = date.toISOString().split("T");
+                const dateStr = dateStrParts[0] ?? "";
                 const existingData = filteredData.find(
                     (item) => item.date === dateStr
                 );
@@ -91,7 +99,14 @@ export function HabitsProgressChart({
                 (item) => item.date >= thirtyDaysAgoStr && item.date <= todayStr
             );
 
-            const monthData = [];
+            const monthData: Array<{
+                date: string;
+                completionPercentage: number;
+                dayName: string;
+                dayNumber: number;
+                isToday: boolean;
+                trend: number;
+            }> = [];
             for (let i = 0; i < 30; i++) {
                 const date = new Date(
                     thirtyDaysAgo.getTime() + i * 24 * 60 * 60 * 1000
@@ -152,7 +167,7 @@ export function HabitsProgressChart({
                 trend:
                     index > 0
                         ? item.completionPercentage -
-                          filteredData[index - 1]!.completionPercentage
+                          filteredData[index - 1]?.completionPercentage
                         : 0,
             }));
     }, [optimisticData, viewMode]);
@@ -189,13 +204,15 @@ export function HabitsProgressChart({
                 <div className="mb-6 flex items-center justify-between">
                     <div>
                         <h3 className="font-bold text-xl tracking-tight">
-                            PROGRESS (
-                            {viewMode === "today"
-                                ? "TODAY"
-                                : viewMode === "week"
-                                  ? "LAST 7 DAYS"
-                                  : "LAST 30 DAYS"}
-                            )
+                            PROGRESS ({(() => {
+                                if (viewMode === "today") {
+                                    return "TODAY";
+                                }
+                                if (viewMode === "week") {
+                                    return "LAST 7 DAYS";
+                                }
+                                return "LAST 30 DAYS";
+                            })()})
                         </h3>
                         <p className="mt-1 text-sm text-white/60">
                             Evolution of your daily discipline
@@ -213,21 +230,31 @@ export function HabitsProgressChart({
                         <div className="h-8 w-px bg-white/20" />
 
                         <div className="flex items-center space-x-2">
-                            {stats.trend > 0 ? (
-                                <RiArrowRightUpLine className="size-4 text-green-400" />
-                            ) : stats.trend < 0 ? (
-                                <RiArrowRightDownLine className="size-4 text-red-400" />
-                            ) : (
-                                <RiSubtractLine className="size-4 text-white/60" />
-                            )}
+                            {(() => {
+                                if (stats.trend > 0) {
+                                    return (
+                                        <RiArrowRightUpLine className="size-4 text-green-400" />
+                                    );
+                                }
+                                if (stats.trend < 0) {
+                                    return (
+                                        <RiArrowRightDownLine className="size-4 text-red-400" />
+                                    );
+                                }
+                                return (
+                                    <RiSubtractLine className="size-4 text-white/60" />
+                                );
+                            })()}
                             <span
-                                className={` ${
-                                    stats.trend > 0
-                                        ? "text-green-400"
-                                        : stats.trend < 0
-                                          ? "text-red-400"
-                                          : "text-white/60"
-                                }`}
+                                className={` ${(() => {
+                                    if (stats.trend > 0) {
+                                        return "text-green-400";
+                                    }
+                                    if (stats.trend < 0) {
+                                        return "text-red-400";
+                                    }
+                                    return "text-white/60";
+                                })()}`}
                             >
                                 {stats.trend > 0 ? "+" : ""}
                                 {Math.round(stats.trend)}%

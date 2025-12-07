@@ -33,9 +33,7 @@ export const sendVerificationEmailHandler = sendVerificationEmailBase.handler(
             });
         }
 
-        await db
-            .delete(verification)
-            .where(eq(verification.identifier, email));
+        await db.delete(verification).where(eq(verification.identifier, email));
 
         const token = nanoid();
         const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 heures
