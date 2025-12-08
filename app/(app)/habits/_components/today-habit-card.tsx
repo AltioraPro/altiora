@@ -183,10 +183,10 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
 
                 addToast({
                     type: "error",
-                    title: "Erreur",
+                    title: "Error",
                     message:
                         error.message ||
-                        "Impossible de mettre à jour l'habitude",
+                        "Unable to update the habit",
                 });
             },
         })

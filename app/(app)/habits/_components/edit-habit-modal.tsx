@@ -324,8 +324,8 @@ export function EditHabitModal() {
                 onSuccess: () => {
                     addToast({
                         type: "success",
-                        title: "Habitude mise à jour",
-                        message: "Votre habitude a été modifiée avec succès",
+                        title: "Habits updated",
+                        message: "Your habit has been updated successfully",
                     });
                 },
                 onError: (error, variables, context) => {
@@ -343,10 +343,10 @@ export function EditHabitModal() {
                     console.error("Error updating habit:", error);
                     addToast({
                         type: "error",
-                        title: "Erreur",
+                        title: "Error",
                         message:
                             error.message ||
-                            "Impossible de mettre à jour l'habitude",
+                            "Unable to update the habit",
                     });
                 },
             })
