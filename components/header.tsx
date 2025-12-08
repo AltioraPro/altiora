@@ -1,10 +1,10 @@
 "use client";
 
+import { PAGES } from "@/constants/pages";
+import { cn } from "@/lib/utils";
 import { RiArrowRightLine, RiCloseLine, RiMenuLine } from "@remixicon/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { PAGES } from "@/constants/pages";
-import { cn } from "@/lib/utils";
 import { Logo } from "./logo";
 import { ScrollNavigation } from "./scroll-navigation";
 import { Button } from "./ui/button";

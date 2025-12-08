@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import {
   RiCheckboxLine,
   RiPieChartLine,
@@ -9,7 +10,6 @@ import {
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { cn } from "@/lib/utils";
 import Dither from "./dither";
 
 const MENU_ITEMS = [
@@ -71,7 +71,7 @@ export function HeroImage() {
   }, []);
 
   return (
-    <div className="relative mt-12 aspect-[4/3] w-full bg-neutral-800 sm:mt-16 sm:aspect-video">
+    <div className="relative mt-12 aspect-4/3 w-full bg-neutral-800 sm:mt-16 sm:aspect-video">
       <div className="-top-5 -translate-x-1/2 absolute left-1/2 z-30 flex items-center justify-center gap-1.5 border border-neutral-800 bg-background px-2 py-1.5 sm:-top-6 sm:gap-3 sm:px-3 sm:py-2">
         {MENU_ITEMS.map((item, index) => (
           <button
