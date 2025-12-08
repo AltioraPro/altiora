@@ -23,7 +23,7 @@ type SuccessState = {
     email: string;
 };
 
-export function WaitlistForm() {
+export function WaitlistForm({ className }: { className?: string }) {
     const { addToast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [success, setSuccess] = useState<SuccessState | null>(null);
@@ -100,123 +100,120 @@ export function WaitlistForm() {
 
     return (
         <form
-            className="flex w-full items-center justify-center"
+            className={cn("mt-6 w-full max-w-md", className)}
             onSubmit={handleSubmit(onSubmit)}
         >
-            <div className="mt-12 w-full max-w-md">
-                <BorderGradient
+            <BorderGradient
+                className={cn(
+                    "flex w-full items-center p-0 pr-2 opacity-70",
+                    success && "px-2"
+                )}
+                containerClassName="w-full overflow-hidden rounded-none"
+            >
+                <Input
+                    {...register("email")}
+                    autoComplete="off"
+                    autoFocus
                     className={cn(
-                        "flex w-full items-center p-0 pr-2 opacity-70",
-                        success && "px-2"
+                        "w-full rounded-none border-none py-6 pl-6 text-base focus-visible:border-none focus-visible:outline-none focus-visible:ring-0",
+                        success && "invisible mr-0 w-0 px-0"
                     )}
-                    containerClassName="w-full overflow-hidden rounded-none"
-                >
-                    <Input
-                        {...register("email")}
-                        autoComplete="off"
-                        autoFocus
-                        className={cn(
-                            "w-full rounded-none border-none py-7 pl-6 text-base focus-visible:border-none focus-visible:outline-none focus-visible:ring-0",
-                            success && "invisible mr-0 w-0 px-0"
-                        )}
-                        placeholder="Enter your email"
-                    />
+                    placeholder="Enter your email"
+                />
 
-                    <Button
-                        asChild
-                        className={cn(
-                            "rounded-none",
-                            success &&
-                                "w-full justify-center disabled:opacity-100"
-                        )}
-                        disabled={isLoading || !!success}
-                        size="lg"
-                        type="submit"
-                        variant="primary"
-                    >
-                        <motion.button layout>
-                            <AnimatePresence mode="popLayout">
-                                {success && (
-                                    <motion.span
-                                        animate={{
-                                            opacity: 1,
-                                            y: 0,
-                                            filter: "blur(0px)",
-                                        }}
-                                        className="flex w-full items-center justify-center gap-2"
-                                        initial={{
-                                            opacity: 0,
-                                            y: 10,
-                                            filter: "blur(4px)",
-                                        }}
-                                        key="success"
-                                        transition={{
-                                            duration: 0.3,
-                                            delay: 0.4,
-                                        }}
-                                    >
-                                        <RiCheckboxCircleLine className="size-5" />
-                                        <span className="truncate">
-                                            You're on the waitlist,{" "}
-                                            <span className="font-bold">
-                                                {success.name}{" "}
-                                            </span>
-                                            !
+                <Button
+                    asChild
+                    className={cn(
+                        "rounded-none",
+                        success && "w-full justify-center disabled:opacity-100"
+                    )}
+                    disabled={isLoading || !!success}
+                    size="sm"
+                    type="submit"
+                    variant="primary"
+                >
+                    <motion.button layout>
+                        <AnimatePresence mode="popLayout">
+                            {success && (
+                                <motion.span
+                                    animate={{
+                                        opacity: 1,
+                                        y: 0,
+                                        filter: "blur(0px)",
+                                    }}
+                                    className="flex w-full items-center justify-center gap-2"
+                                    initial={{
+                                        opacity: 0,
+                                        y: 10,
+                                        filter: "blur(4px)",
+                                    }}
+                                    key="success"
+                                    transition={{
+                                        duration: 0.3,
+                                        delay: 0.4,
+                                    }}
+                                >
+                                    <RiCheckboxCircleLine className="size-5" />
+                                    <span className="truncate">
+                                        You're on the waitlist,{" "}
+                                        <span className="font-bold">
+                                            {success.name}{" "}
                                         </span>
-                                    </motion.span>
-                                )}
-                                {isLoading && (
-                                    <motion.span
-                                        animate={{
-                                            opacity: 1,
-                                            y: 0,
-                                            filter: "blur(0px)",
-                                        }}
-                                        className="flex items-center gap-2"
-                                        // exit={{
-                                        //     opacity: 0,
-                                        //     y: -10,
-                                        //     filter: "blur(4px)",
-                                        //     transition: { duration: 0.2 },
-                                        // }}
-                                        initial={{
-                                            opacity: 0,
-                                            y: 10,
-                                            filter: "blur(4px)",
-                                        }}
-                                        key="loading"
-                                    >
-                                        <StaggeredFadeLoader
-                                            size="large"
-                                            variant="light"
-                                        />{" "}
-                                        Sending
-                                    </motion.span>
-                                )}
-                                {showDefaultState && (
-                                    <motion.span
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className="flex items-center gap-2"
-                                        exit={{
-                                            opacity: 0,
-                                            y: -10,
-                                            filter: "blur(4px)",
-                                            transition: { duration: 0.2 },
-                                        }}
-                                        initial={{ opacity: 1, y: 0 }}
-                                        key="join"
-                                    >
-                                        Join Waitlist{" "}
-                                    </motion.span>
-                                )}
-                            </AnimatePresence>
-                            {showDefaultState && (
-                                <ButtonArrow icon={RiArrowRightLine} />
+                                        !
+                                    </span>
+                                </motion.span>
                             )}
-                        </motion.button>
-                    </Button>
-                </BorderGradient>
-            </div>
+                            {isLoading && (
+                                <motion.span
+                                    animate={{
+                                        opacity: 1,
+                                        y: 0,
+                                        filter: "blur(0px)",
+                                    }}
+                                    className="flex items-center gap-2"
+                                    // exit={{
+                                    //     opacity: 0,
+                                    //     y: -10,
+                                    //     filter: "blur(4px)",
+                                    //     transition: { duration: 0.2 },
+                                    // }}
+                                    initial={{
+                                        opacity: 0,
+                                        y: 10,
+                                        filter: "blur(4px)",
+                                    }}
+                                    key="loading"
+                                >
+                                    <StaggeredFadeLoader
+                                        size="large"
+                                        variant="light"
+                                    />{" "}
+                                    Sending
+                                </motion.span>
+                            )}
+                            {showDefaultState && (
+                                <motion.span
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="flex items-center gap-2"
+                                    exit={{
+                                        opacity: 0,
+                                        y: -10,
+                                        filter: "blur(4px)",
+                                        transition: { duration: 0.2 },
+                                    }}
+                                    initial={{ opacity: 1, y: 0 }}
+                                    key="join"
+                                >
+                                    Join Waitlist{" "}
+                                </motion.span>
+                            )}
+                        </AnimatePresence>
+                        {showDefaultState && (
+                            <ButtonArrow icon={RiArrowRightLine} />
+                        )}
+                    </motion.button>
+                </Button>
+            </BorderGradient>
         </form>
     );
 }
