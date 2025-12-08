@@ -29,16 +29,16 @@ export function HabitsManager() {
             onSuccess: () => {
                 addToast({
                     type: "success",
-                    title: "Habitude supprimée",
-                    message: "L'habitude a été supprimée avec succès",
+                    title: "Habit deleted",
+                    message: "The habit has been deleted successfully",
                 });
             },
             onError: (error) => {
                 addToast({
                     type: "error",
-                    title: "Erreur",
+                    title: "Error",
                     message:
-                        error.message || "Impossible de supprimer l'habitude",
+                        error.message || "Unable to delete the habit",
                 });
             },
         })
@@ -55,16 +55,16 @@ export function HabitsManager() {
             onSuccess: () => {
                 addToast({
                     type: "success",
-                    title: "Habitude réactivée",
-                    message: "L'habitude a été réactivée avec succès",
+                    title: "Habit reactivated",
+                    message: "The habit has been reactivated successfully",
                 });
             },
             onError: (error) => {
                 addToast({
                     type: "error",
-                    title: "Erreur",
+                    title: "Error",
                     message:
-                        error.message || "Impossible de réactiver l'habitude",
+                        error.message || "Unable to reactivate the habit",
                 });
             },
         })
