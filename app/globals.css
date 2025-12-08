@@ -3,6 +3,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme inline {
+    --font-serif: var(--font-hedvig-serif);
+    --font-sans: var(--font-hedvig-sans);
+}
+
 @theme {
     --color-primary: hsl(var(--primary));
     --color-primary-foreground: hsl(var(--primary-foreground));
@@ -139,10 +144,6 @@
     }
 }
 
-@utility font-argesta {
-    font-family: "Argesta Display", sans-serif !important;
-}
-
 @utility animate-in {
     animation: animateIn 0.5s ease-out;
 }
@@ -230,13 +231,6 @@
         .liquid-glass-enhanced {
             background: rgba(0, 0, 0, 0.8);
         }
-    }
-
-    @font-face {
-        font-family: "Argesta Display";
-        src: url("/font/MADE2.otf") format("opentype");
-        font-weight: normal;
-        font-style: normal;
     }
 }
 
@@ -510,6 +504,10 @@
     }
     body {
         @apply bg-background text-foreground;
+    }
+
+    .font-serif {
+        font-family: var(--font-hedvig-serif);
     }
 }
 
