@@ -223,7 +223,21 @@ export function TradesTable({ journalId }: TradesTableProps) {
     const totalTrades = stats?.totalTrades || 0;
     const totalPages = Math.ceil(totalTrades / limit);
 
-    const data = useMemo(() => (trades ?? []) as TradeItem[], [trades]);
+    const data = useMemo(() => {
+        const sorted = [...(trades ?? [])].sort((a, b) => {
+            const aTradeDate = new Date(a.tradeDate).getTime();
+            const bTradeDate = new Date(b.tradeDate).getTime();
+
+            if (bTradeDate !== aTradeDate) {
+                return bTradeDate - aTradeDate; // trade date desc (newest first)
+            }
+
+            const aCreated = new Date((a as { createdAt?: Date }).createdAt ?? a.tradeDate).getTime();
+            const bCreated = new Date((b as { createdAt?: Date }).createdAt ?? b.tradeDate).getTime();
+            return bCreated - aCreated; // fallback createdAt desc
+        });
+        return sorted as TradeItem[];
+    }, [trades]);
 
     const columns = useMemo(
         () =>

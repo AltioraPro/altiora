@@ -9,7 +9,6 @@ import {
     Cell,
     Pie,
     PieChart,
-    ReferenceDot,
     ResponsiveContainer,
     Tooltip,
     XAxis,
@@ -153,38 +152,47 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
     );
 
     const cumulativeData =
-        trades
-            ?.sort(
-                (a, b) =>
-                    new Date(a.tradeDate).getTime() -
-                    new Date(b.tradeDate).getTime()
-            )
-            .reduce(
-                (acc, trade, index) => {
-                    const pnl = Number(trade.profitLossPercentage);
-                    const previousCumulative =
-                        acc.length > 0 ? (acc.at(-1)?.cumulative ?? 0) : 0;
+        (() => {
+            if (!trades) {
+                return [];
+            }
 
-                    const cumulative = previousCumulative + pnl;
-
-                    acc.push({
-                        date: new Date(trade.tradeDate).toLocaleDateString(
-                            "en-US"
-                        ),
-                        pnl,
-                        cumulative,
-                        tradeNumber: index + 1,
-                    });
-
-                    return acc;
-                },
-                [] as Array<{
-                    date: string;
+            const dailyMap = new Map<
+                string,
+                {
+                    dateKey: string;
                     pnl: number;
-                    cumulative: number;
-                    tradeNumber: number;
-                }>
-            ) || [];
+                }
+            >();
+
+            for (const trade of trades) {
+                const dateKey = new Date(trade.tradeDate)
+                    .toISOString()
+                    .split("T")[0];
+                const pnl = Number(trade.profitLossPercentage);
+                const existing = dailyMap.get(dateKey);
+                if (existing) {
+                    existing.pnl += pnl;
+                } else {
+                    dailyMap.set(dateKey, { dateKey, pnl });
+                }
+            }
+
+            const dailyTotals = Array.from(dailyMap.values()).sort((a, b) =>
+                a.dateKey.localeCompare(b.dateKey)
+            );
+
+            let cumulative = 0;
+            return dailyTotals.map((day, index) => {
+                cumulative += day.pnl;
+                return {
+                    date: new Date(day.dateKey).toLocaleDateString("en-US"),
+                    pnl: day.pnl,
+                    cumulative,
+                    tradeNumber: index + 1,
+                };
+            });
+        })();
 
     const totalPerformance =
         cumulativeData.length > 0
@@ -196,7 +204,8 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
     return (
         <div className="space-y-6">
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-                <Card className="0 border border-white/20 bg-linear-to-br from-black/40 to-black/6 backdrop-blur-xs">
+                {/* Win rate (back to top-left) */}
+                <Card className="border border-white/20 bg-linear-to-br from-black/40 to-black/6 backdrop-blur-xs">
                     <CardHeader className="pb-3">
                         <CardTitle className="text-lg text-white tracking-wide">
                             WIN RATE
@@ -326,6 +335,7 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                     </CardContent>
                 </Card>
 
+                {/* Session performance (right, spans two columns) */}
                 <Card className="border border-white/20 bg-linear-to-br from-black/40 to-black/60 backdrop-blur-xs lg:col-span-2">
                     <CardHeader className="pb-3">
                         <CardTitle className="text-lg text-white tracking-wide">
@@ -376,15 +386,16 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                                                 strokeOpacity={0.1}
                                             />
                                             <XAxis
-                                                angle={0}
+                                                angle={-45}
                                                 axisLine={false}
                                                 dataKey="name"
                                                 fontSize={10}
+                                                height={60}
                                                 stroke="#ffffff"
                                                 strokeOpacity={0.4}
-                                                textAnchor="middle"
+                                                textAnchor="end"
                                                 tickLine={false}
-                                            />  
+                                            />
                                             <YAxis
                                                 axisLine={false}
                                                 domain={["dataMin - 5", "dataMax + 5"]}
@@ -510,14 +521,11 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                                     />
                                     <XAxis
                                         axisLine={false}
-                                        dataKey="tradeNumber"
+                                        dataKey="date"
                                         fontSize={10}
-                                        interval={4}
-                                        stroke="#ffffff"
-                                        strokeOpacity={0.4}
-                                        tickFormatter={(value) =>
-                                            value % 5 === 0 ? value : ""
-                                        }
+                                        minTickGap={12}
+                                        stroke="transparent"
+                                        tick={false}
                                         tickLine={false}
                                     />
                                     <YAxis
@@ -531,22 +539,39 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                                         tickLine={false}
                                     />
                                     <Tooltip
-                                        contentStyle={{
-                                            backgroundColor: "rgba(0,0,0,0.95)",
-                                            border: "1px solid rgba(255,255,255,0.2)",
-                                            borderRadius: "10px",
-                                            color: "#ffffff",
-                                            backdropFilter: "blur(10px)",
-                                            boxShadow:
-                                                "0 4px 20px rgba(0,0,0,0.5)",
+                                        content={({ active, payload }) => {
+                                            if (active && payload && payload.length) {
+                                                const data = payload[0].payload;
+                                                return (
+                                                    <div className="rounded-lg border border-white/20 bg-black/90 p-3 shadow-lg">
+                                                        <p className="mb-1 text-sm text-white">
+                                                            {data.date}
+                                                        </p>
+                                                        <p className="text-sm text-white">
+                                                            Cumulative:{" "}
+                                                            <span className="font-semibold">
+                                                                {data.cumulative.toFixed(1)}%
+                                                            </span>
+                                                        </p>
+                                                        <p className="text-sm text-white">
+                                                            Daily PnL:{" "}
+                                                            <span className="font-semibold">
+                                                            {data.pnl > 0 ? (
+                                                                <span className="text-green-400">
+                                                                    +{data.pnl.toFixed(1)}%
+                                                                </span>
+                                                            ) : (
+                                                                <span className="text-red-400">
+                                                                    {data.pnl.toFixed(1)}%
+                                                                </span>
+                                                            )}
+                                                            </span>
+                                                        </p>
+                                                    </div>
+                                                );
+                                            }
+                                            return null;
                                         }}
-                                        formatter={(value: number) => [
-                                            `${value.toFixed(1)}%`,
-                                            "Cumulative PnL",
-                                        ]}
-                                        labelFormatter={(label: string) =>
-                                            `Trade #${label}`
-                                        }
                                     />
                                     <Area
                                         dataKey="cumulative"
@@ -558,31 +583,6 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                                         strokeWidth={3}
                                         type="monotone"
                                     />
-                                    {cumulativeData.length > 0 && (
-                                        <ReferenceDot
-                                            fill={
-                                                isPositive
-                                                    ? "#10B981"
-                                                    : "#ef4444"
-                                            }
-                                            r={6}
-                                            stroke={
-                                                isPositive
-                                                    ? "#10B981"
-                                                    : "#ef4444"
-                                            }
-                                            strokeWidth={2}
-                                            style={{
-                                                filter: isPositive
-                                                    ? "drop-shadow(0 0 8px rgba(16, 185, 129, 0.6)) drop-shadow(0 0 16px rgba(16, 185, 129, 0.3))"
-                                                    : "drop-shadow(0 0 8px rgba(239, 68, 68, 0.6)) drop-shadow(0 0 16px rgba(239, 68, 68, 0.3))",
-                                                animation:
-                                                    "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-                                            }}
-                                            x={cumulativeData.length}
-                                            y={totalPerformance}
-                                        />
-                                    )}
                                 </AreaChart>
                             </ResponsiveContainer>
                         </div>
