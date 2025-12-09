@@ -75,6 +75,27 @@ export function TradesTable({ journalId }: TradesTableProps) {
         "dateRange",
         tradingJournalSearchParams.dateRange
     );
+    const [sessionsFilter] = useQueryState(
+        "sessions",
+        tradingJournalSearchParams.sessions
+    );
+    const [confirmationsFilter] = useQueryState(
+        "confirmations",
+        tradingJournalSearchParams.confirmations
+    );
+    const [assetsFilter] = useQueryState(
+        "assets",
+        tradingJournalSearchParams.assets
+    );
+
+    const advancedFilters = useMemo(
+        () => ({
+            sessions: sessionsFilter ?? [],
+            confirmations: confirmationsFilter ?? [],
+            assets: assetsFilter ?? [],
+        }),
+        [sessionsFilter, confirmationsFilter, assetsFilter]
+    );
 
     const offset = (page - 1) * limit;
 
@@ -105,6 +126,25 @@ export function TradesTable({ journalId }: TradesTableProps) {
         };
     }, [dateRange]);
 
+    const tradeFilters = useMemo(() => {
+        const sessionIds =
+            advancedFilters.sessions.length > 0
+                ? advancedFilters.sessions
+                : undefined;
+        const confirmationIds =
+            advancedFilters.confirmations.length > 0
+                ? advancedFilters.confirmations
+                : undefined;
+        const assetIds =
+            advancedFilters.assets.length > 0 ? advancedFilters.assets : undefined;
+
+        return {
+            sessionIds,
+            confirmationIds,
+            assetIds,
+        };
+    }, [advancedFilters]);
+
     const { data: trades, isLoading } = useQuery(
         orpc.trading.getTrades.queryOptions({
             input: {
@@ -113,6 +153,9 @@ export function TradesTable({ journalId }: TradesTableProps) {
                 offset,
                 startDate: formattedDates.startDate,
                 endDate: formattedDates.endDate,
+                sessionIds: tradeFilters.sessionIds,
+                confirmationIds: tradeFilters.confirmationIds,
+                assetIds: tradeFilters.assetIds,
             },
             placeholderData: keepPreviousData,
         })
@@ -124,6 +167,9 @@ export function TradesTable({ journalId }: TradesTableProps) {
                 journalId,
                 startDate: formattedDates.startDate,
                 endDate: formattedDates.endDate,
+                sessionIds: tradeFilters.sessionIds,
+                confirmationIds: tradeFilters.confirmationIds,
+                assetIds: tradeFilters.assetIds,
             },
         })
     );
@@ -148,10 +194,26 @@ export function TradesTable({ journalId }: TradesTableProps) {
                 meta: {
                     invalidateQueries: [
                         orpc.trading.getTrades.queryKey({
-                            input: { journalId },
+                            input: {
+                                journalId,
+                                limit,
+                                offset,
+                                startDate: formattedDates.startDate,
+                                endDate: formattedDates.endDate,
+                                sessionIds: tradeFilters.sessionIds,
+                                confirmationIds: tradeFilters.confirmationIds,
+                                assetIds: tradeFilters.assetIds,
+                            },
                         }),
                         orpc.trading.getStats.queryKey({
-                            input: { journalId },
+                            input: {
+                                journalId,
+                                startDate: formattedDates.startDate,
+                                endDate: formattedDates.endDate,
+                                sessionIds: tradeFilters.sessionIds,
+                                confirmationIds: tradeFilters.confirmationIds,
+                                assetIds: tradeFilters.assetIds,
+                            },
                         }),
                     ],
                 },
@@ -293,10 +355,10 @@ export function TradesTable({ journalId }: TradesTableProps) {
                                                 {header.isPlaceholder
                                                     ? null
                                                     : flexRender(
-                                                          header.column
-                                                              .columnDef.header,
-                                                          header.getContext()
-                                                      )}
+                                                        header.column
+                                                            .columnDef.header,
+                                                        header.getContext()
+                                                    )}
                                             </TableHead>
                                         ))}
                                     </TableRow>
