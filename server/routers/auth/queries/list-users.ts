@@ -1,5 +1,5 @@
 import { and, asc, desc, eq, ilike, or, type SQL, sql } from "drizzle-orm";
-import { accessList, user } from "@/server/db/schema";
+import { user } from "@/server/db/schema/auth/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
 import { listUsersSchema } from "../validators";
 
@@ -26,17 +26,12 @@ export const listUsersHandler = listUsersBase.handler(
             filters.push(eq(user.role, input.role));
         }
 
-        if (input.waitlistStatus && input.waitlistStatus !== "all") {
-            filters.push(eq(accessList.status, input.waitlistStatus));
-        }
-
         const whereCondition = filters.length > 0 ? and(...filters) : undefined;
 
         const sortDirection = input.sortOrder === "asc" ? asc : desc;
         let sortColumn:
             | typeof user.name
             | typeof user.role
-            | typeof accessList.status
             | typeof user.createdAt;
         switch (input.sortBy) {
             case "user":
@@ -44,9 +39,6 @@ export const listUsersHandler = listUsersBase.handler(
                 break;
             case "role":
                 sortColumn = user.role;
-                break;
-            case "waitlistStatus":
-                sortColumn = accessList.status;
                 break;
             default:
                 sortColumn = user.createdAt;
@@ -56,15 +48,13 @@ export const listUsersHandler = listUsersBase.handler(
         const [countResult] = await db
             .select({ count: sql<number>`count(*)` })
             .from(user)
-            .leftJoin(accessList, eq(accessList.email, user.email))
             .where(whereCondition ?? sql`true`);
 
         const total = countResult?.count ?? 0;
 
         const rows = await db
-            .select({ user, accessStatus: accessList })
+            .select({ user })
             .from(user)
-            .leftJoin(accessList, eq(accessList.email, user.email))
             .where(whereCondition ?? sql`true`)
             .orderBy(sortDirection(sortColumn))
             .offset((input.page - 1) * input.limit)
@@ -72,7 +62,6 @@ export const listUsersHandler = listUsersBase.handler(
 
         const users = rows.map((r) => ({
             ...r.user,
-            accessStatus: r.accessStatus,
         }));
 
         return {

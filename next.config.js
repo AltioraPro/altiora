@@ -1,11 +1,6 @@
 export async function redirects() {
     return [
         {
-            source: "/admin",
-            destination: "/admin/users",
-            permanent: true,
-        },
-        {
             source: "/trading",
             destination: "/trading/journals",
             permanent: true,

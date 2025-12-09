@@ -76,7 +76,7 @@ export function DropdownUser() {
                     </DropdownMenuItem>
                     {user.role === USER_ROLES.ADMIN && (
                         <DropdownMenuItem asChild>
-                            <Link href={PAGES.ADMIN_USERS}>
+                            <Link href={PAGES.ADMIN}>
                                 <RiShieldCheckLine className="size-4" />
                                 Admin
                             </Link>
