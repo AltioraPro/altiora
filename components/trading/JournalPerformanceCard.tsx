@@ -9,10 +9,9 @@ import {
     RiStockLine,
 } from "@remixicon/react";
 import { useQuery } from "@tanstack/react-query";
-import html2canvas from "html2canvas";
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 import {
     Area,
     AreaChart,
@@ -32,6 +31,7 @@ import {
 } from "@/components/ui/card";
 import { PAGES } from "@/constants/pages";
 import { orpc, type RouterOutput } from "@/orpc/client";
+import { useJournalSnapshot } from "./use-journal-snapshot";
 
 interface JournalPerformanceCardProps {
     journal: RouterOutput["trading"]["getJournalById"];
@@ -44,10 +44,15 @@ export function JournalPerformanceCard({
     onEdit,
     onDelete,
 }: JournalPerformanceCardProps) {
-    const [isCapturing, setIsCapturing] = useState(false);
-    const [showPreview, setShowPreview] = useState(false);
-    const [capturedImage, setCapturedImage] = useState<string | null>(null);
-    const flexCardRef = useRef<HTMLDivElement>(null);
+    const {
+        captureRef,
+        capturedImage,
+        handleCapture,
+        handleClosePreview,
+        handleDownload,
+        isCapturing,
+        showPreview,
+    } = useJournalSnapshot({ journalName: journal.name });
 
     const { data: tradesData } = useQuery(
         orpc.trading.getTrades.queryOptions({
@@ -113,56 +118,10 @@ export function JournalPerformanceCard({
             : Number(stats?.totalPnL || 0);
     const isPositive = finalCumulative >= 0;
 
-    const handleFlexCapture = async () => {
-        if (!flexCardRef.current) {
-            return;
-        }
-
-        setIsCapturing(true);
-
-        try {
-            const canvas = await html2canvas(flexCardRef.current, {
-                backgroundColor: "#000000",
-                scale: 2,
-                useCORS: true,
-                allowTaint: true,
-                logging: false,
-                width: flexCardRef.current.scrollWidth,
-                height: flexCardRef.current.scrollHeight,
-            });
-
-            const imageDataUrl = canvas.toDataURL("image/png", 0.95);
-            setCapturedImage(imageDataUrl);
-            setShowPreview(true);
-        } catch (error) {
-            console.error("Erreur lors de la capture:", error);
-        } finally {
-            setIsCapturing(false);
-        }
-    };
-
-    const handleDownload = () => {
-        if (!capturedImage) {
-            return;
-        }
-
-        const link = document.createElement("a");
-        link.href = capturedImage;
-        link.download = `altiora-${journal.name.replace(/[^a-zA-Z0-9]/g, "-")}-${new Date().toISOString().split("T")[0]}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
-
-    const handleClosePreview = () => {
-        setShowPreview(false);
-        setCapturedImage(null);
-    };
-
     return (
         <>
             <div
-                ref={flexCardRef}
+                ref={captureRef}
                 style={{
                     position: "fixed",
                     top: "-9999px",
@@ -681,7 +640,7 @@ export function JournalPerformanceCard({
                             <Button
                                 className="text-white/60 hover:bg-white/10 hover:text-white"
                                 disabled={isCapturing}
-                                onClick={handleFlexCapture}
+                                onClick={handleCapture}
                                 size="sm"
                                 variant="ghost"
                             >
@@ -725,8 +684,19 @@ export function JournalPerformanceCard({
                 <div
                     className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-xs"
                     onClick={handleClosePreview}
+                    onKeyDown={(event) => {
+                        if (event.key === "Escape" || event.key === "Enter") {
+                            handleClosePreview();
+                        }
+                    }}
+                    role="button"
+                    tabIndex={0}
                 >
-                    <div className="w-full max-w-lg rounded-2xl border border-white/20 bg-gradient-to-br from-black/90 to-black/80 p-4 shadow-2xl">
+                    <div
+                        className="w-full max-w-lg rounded-2xl border border-white/20 bg-linear-to-br from-black/90 to-black/80 p-4 shadow-2xl"
+                        onClick={(event) => event.stopPropagation()}
+                        role="presentation"
+                    >
                         <div className="mb-3">
                             <h3 className="mb-1 text-lg text-white">
                                 Performance Preview

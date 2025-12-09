@@ -53,6 +53,14 @@ import {
     getJournalOverviewHandler,
 } from "./queries/get-journal-overview";
 import {
+    getJournalsTableDataBase,
+    getJournalsTableDataHandler,
+} from "./queries/get-journals-table-data";
+import {
+    getSnapshotDataBase,
+    getSnapshotDataHandler,
+} from "./queries/get-snapshot-data";
+import {
     getTradingAssetByIdBase,
     getTradingAssetByIdHandler,
 } from "./queries/get-trading-asset-by-id";
@@ -76,6 +84,10 @@ import {
     getTradingJournalsBase,
     getTradingJournalsHandler,
 } from "./queries/get-trading-journals";
+import {
+    getTradingJournalsFilterBase,
+    getTradingJournalsFilterHandler,
+} from "./queries/get-trading-journals-filter";
 import {
     getTradingSessionByIdBase,
     getTradingSessionByIdHandler,
@@ -222,6 +234,15 @@ export const tradingRouter = base.router({
                 await call(getTradingJournalsHandler, undefined, { context })
         ),
 
+    getJournalsFilter: getTradingJournalsFilterBase
+        .route({ method: "GET" })
+        .handler(
+            async ({ context }) =>
+                await call(getTradingJournalsFilterHandler, undefined, {
+                    context,
+                })
+        ),
+
     getJournalById: getTradingJournalByIdBase
         .route({ method: "GET" })
         .handler(
@@ -308,5 +329,21 @@ export const tradingRouter = base.router({
         .handler(
             async ({ context, input }) =>
                 await call(getJournalOverviewHandler, input, { context })
+        ),
+
+    getJournalsTableData: getJournalsTableDataBase
+        .route({ method: "GET" })
+        .handler(
+            async ({ context, input }) =>
+                await call(getJournalsTableDataHandler, input ?? {}, {
+                    context,
+                })
+        ),
+
+    getSnapshotData: getSnapshotDataBase
+        .route({ method: "GET" })
+        .handler(
+            async ({ context, input }) =>
+                await call(getSnapshotDataHandler, input, { context })
         ),
 });
