@@ -4,15 +4,13 @@ import { autumn } from "autumn-js/better-auth";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, emailOTP, lastLoginMethod } from "better-auth/plugins";
-import { PAGES } from "@/constants/pages";
 import { PROJECT } from "@/constants/project";
 import ResetPasswordTemplate from "@/emails/reset-password";
 import VerifyEmailTemplate from "@/emails/verify-email";
-import WaitlistApprovedTemplate from "@/emails/waitlist-approved";
+
 import { env } from "@/env";
 import { resend } from "@/lib/resend";
 import { db } from "@/server/db";
-import { whitelist } from "./auth/plugins/whitelist";
 
 const WWW_PREFIX_REGEX = /^www\./;
 
@@ -156,39 +154,6 @@ export const auth = betterAuth({
                     subject: `Your verification code for ${PROJECT.NAME}`,
                     html,
                 });
-            },
-        }),
-        whitelist({
-            enforceOnRegistration: false,
-            allowAdminManagement: true,
-            allowWaitlist: true,
-            sendStatusNotification: async ({ email, status, oldStatus }) => {
-                if (oldStatus !== "pending") {
-                    return;
-                }
-
-                switch (status) {
-                    case "approved": {
-                        const signUpUrl = `${getBaseUrl()}${PAGES.SIGN_UP}?signUpEmail=${email}`;
-                        const html = await render(
-                            WaitlistApprovedTemplate({
-                                signUpUrl,
-                                email,
-                            })
-                        );
-
-                        await resend.emails.send({
-                            from: "Altiora <noreply@altiora.pro>",
-                            to: email,
-                            subject: `Your application to ${PROJECT.NAME} has been approved`,
-                            html,
-                        });
-                        break;
-                    }
-                    default: {
-                        break;
-                    }
-                }
             },
         }),
     ],

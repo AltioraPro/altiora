@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
     boolean,
     index,
@@ -126,14 +127,29 @@ export const passkey = pgTable(
     ]
 );
 
-export const accessList = pgTable("access_list", {
-    id: text("id").primaryKey(),
-    email: text("email").notNull().unique(),
-    status: text("status").notNull(),
-    addedBy: text("added_by").references(() => user.id, {
-        onDelete: "set null",
+export const userRelations = relations(user, ({ many }) => ({
+    sessions: many(session),
+    accounts: many(account),
+    passkeys: many(passkey),
+}));
+
+export const sessionRelations = relations(session, ({ one }) => ({
+    user: one(user, {
+        fields: [session.userId],
+        references: [user.id],
     }),
-    userId: text("user_id").references(() => user.id, { onDelete: "cascade" }),
-    createdAt: timestamp("created_at").notNull(),
-    updatedAt: timestamp("updated_at").notNull(),
-});
+}));
+
+export const accountRelations = relations(account, ({ one }) => ({
+    user: one(user, {
+        fields: [account.userId],
+        references: [user.id],
+    }),
+}));
+
+export const passkeyRelations = relations(passkey, ({ one }) => ({
+    user: one(user, {
+        fields: [passkey.userId],
+        references: [user.id],
+    }),
+}));

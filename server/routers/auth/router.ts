@@ -12,8 +12,6 @@ import {
     syncUserHandler,
     updateLeaderboardVisibilityBase,
     updateLeaderboardVisibilityHandler,
-    updateMultipleUsersStatusBase,
-    updateMultipleUsersStatusHandler,
     updateProfileBase,
     updateProfileHandler,
     updateRankBase,
@@ -34,8 +32,6 @@ import {
     getUserEmailStatusHandler,
     listUsersBase,
     listUsersHandler,
-    listWaitlistBase,
-    listWaitlistHandler,
 } from "./queries/";
 
 export const authRouter = base.router({
@@ -47,16 +43,6 @@ export const authRouter = base.router({
         .handler(
             async ({ input, context }) =>
                 await call(listUsersHandler, input, {
-                    context,
-                })
-        ),
-
-    listWaitlist: listWaitlistBase
-        .route({ method: "GET" })
-        .meta({ roles: [USER_ROLES.ADMIN] })
-        .handler(
-            async ({ input, context }) =>
-                await call(listWaitlistHandler, input, {
                     context,
                 })
         ),
@@ -133,16 +119,6 @@ export const authRouter = base.router({
         .handler(
             async ({ input, context }) =>
                 await call(banMultipleUsersHandler, input, {
-                    context,
-                })
-        ),
-
-    updateMultipleUsersStatus: updateMultipleUsersStatusBase
-        .route({ method: "PATCH" })
-        .meta({ roles: [USER_ROLES.ADMIN] })
-        .handler(
-            async ({ input, context }) =>
-                await call(updateMultipleUsersStatusHandler, input, {
                     context,
                 })
         ),

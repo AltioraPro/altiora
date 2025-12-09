@@ -21,19 +21,17 @@ import {
     queryParamsToSortingState,
 } from "@/lib/table/sorting-state";
 import { orpc } from "@/orpc/client";
-import TablePagination from "../../waitlist/_components/pagination";
 import { adminUsersParsers } from "../search-params";
 import { columns } from "./columns";
 import type { Item } from "./filters";
 import { Filters } from "./filters/index";
+import TablePagination from "./pagination";
 
-type SortableColumn = "user" | "role" | "waitlistStatus" | "createdAt";
+type SortableColumn = "user" | "role" | "createdAt";
 
 export default function UsersTable() {
-    const [
-        { search, sortBy, sortOrder, page, limit, role, waitlistStatus },
-        setQueryStates,
-    ] = useQueryStates(adminUsersParsers);
+    const [{ search, sortBy, sortOrder, page, limit, role }, setQueryStates] =
+        useQueryStates(adminUsersParsers);
 
     const setSortBy = (value: SortableColumn | null) => {
         setQueryStates({ sortBy: value });
@@ -59,8 +57,6 @@ export default function UsersTable() {
                 sortOrder,
                 search,
                 role: role === "all" ? undefined : role,
-                waitlistStatus:
-                    waitlistStatus === "all" ? undefined : waitlistStatus,
             },
             placeholderData: keepPreviousData,
         })
@@ -75,7 +71,6 @@ export default function UsersTable() {
                 role: user.role,
                 banned: user.banned ?? false,
                 createdAt: user.createdAt,
-                accessStatus: user.accessStatus,
             })) as Item[],
         [usersData]
     );

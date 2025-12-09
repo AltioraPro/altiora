@@ -4,27 +4,23 @@ import { useQueryState } from "nuqs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { useDebounce } from "@/lib/hooks/useDebounce";
-import { adminWaitlistParsers } from "../../search-params";
+import { adminUsersParsers } from "../../search-params";
 import { ClearFiltersButton } from "./clear-filters-button";
+import { RoleFilter } from "./role-filter";
 import { SearchInput } from "./search-input";
-import { StatusFilter } from "./status-filter";
 
-const waitlistStatusSchema = z.union([
-    z.literal("approved"),
-    z.literal("pending"),
-    z.literal("rejected"),
+const roleSchema = z.union([
+    z.literal("admin"),
+    z.literal("user"),
     z.literal("all"),
 ]);
 
 export function Filters() {
     const [search, setSearch] = useQueryState(
         "search",
-        adminWaitlistParsers.search
+        adminUsersParsers.search
     );
-    const [waitlistStatus, setWaitlistStatus] = useQueryState(
-        "waitlistStatus",
-        adminWaitlistParsers.waitlistStatus
-    );
+    const [role, setRole] = useQueryState("role", adminUsersParsers.role);
 
     const [inputValue, setInputValue] = useState(search || "");
     const debouncedValue = useDebounce(inputValue, 300);
@@ -34,10 +30,7 @@ export function Filters() {
         [inputValue, debouncedValue]
     );
 
-    const hasActiveFilters = !!(
-        search ||
-        (waitlistStatus && waitlistStatus !== "all")
-    );
+    const hasActiveFilters = !!(search || (role && role !== "all"));
 
     useEffect(() => {
         if (debouncedValue !== search) {
@@ -57,19 +50,19 @@ export function Filters() {
         setInputValue("");
     }, [setSearch]);
 
-    const handleWaitlistStatusChange = useCallback(
+    const handleRoleChange = useCallback(
         (value: string) => {
-            const parsedValue = waitlistStatusSchema.safeParse(value);
+            const parsedValue = roleSchema.safeParse(value);
             if (parsedValue.success) {
-                setWaitlistStatus(parsedValue.data);
+                setRole(parsedValue.data);
             }
         },
-        [setWaitlistStatus]
+        [setRole]
     );
 
     const clearAllFilters = () => {
         setSearch(null);
-        setWaitlistStatus(null);
+        setRole(null);
         setInputValue("");
     };
 
@@ -96,10 +89,7 @@ export function Filters() {
             </div>
 
             <div className="flex flex-wrap gap-3">
-                <StatusFilter
-                    onValueChange={handleWaitlistStatusChange}
-                    value={waitlistStatus}
-                />
+                <RoleFilter onValueChange={handleRoleChange} value={role} />
 
                 <ClearFiltersButton
                     onClick={clearAllFilters}
