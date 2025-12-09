@@ -36,7 +36,8 @@ export function TradingContent({
     const hasDateFilter = dateRange.from || dateRange.to;
     const showCharts = activeTab === "trades";
     const shouldShowChartsSkeleton =
-        showCharts && (isLoadingStats || !stats || !sessions || !filteredTrades);
+        showCharts &&
+        (isLoadingStats || !stats || !sessions || !filteredTrades);
     const shouldShowCharts =
         showCharts &&
         !isLoadingStats &&

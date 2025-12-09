@@ -5,6 +5,7 @@ import {
     RiCheckLine,
     RiFilterOffLine,
 } from "@remixicon/react";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
 import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
@@ -13,18 +14,14 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
+import { orpc } from "@/orpc/client";
 import { dashboardSearchParams } from "../search-params";
 
-interface Journal {
-    id: string;
-    name: string;
-}
+export function JournalFilter() {
+    const { data: journals } = useSuspenseQuery(
+        orpc.trading.getJournalsFilter.queryOptions()
+    );
 
-interface JournalFilterProps {
-    journals: Journal[];
-}
-
-export function JournalFilter({ journals }: JournalFilterProps) {
     const [journalIds, setJournalIds] = useQueryState(
         "journalIds",
         dashboardSearchParams.journalIds

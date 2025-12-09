@@ -194,6 +194,11 @@ export const deleteMultipleTradesSchema = z.object({
     tradeIds: z.array(z.string()),
 });
 
+export const getJournalsTableDataSchema = z.object({
+    page: z.number().min(0).default(0).optional(),
+    pageSize: z.number().min(1).default(8).optional(),
+});
+
 export type CreateTradingJournalInput = z.infer<
     typeof createTradingJournalSchema
 >;
@@ -218,3 +223,6 @@ export type UpdateAdvancedTradeInput = z.infer<
 >;
 export type FilterTradesInput = z.infer<typeof filterTradesSchema>;
 export type TradingStatsInput = z.infer<typeof tradingStatsSchema>;
+export type GetJournalsTableDataInput = z.infer<
+    typeof getJournalsTableDataSchema
+>;

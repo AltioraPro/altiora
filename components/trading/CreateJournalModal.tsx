@@ -59,6 +59,9 @@ export function CreateJournalModal() {
                 meta: {
                     invalidateQueries: [
                         orpc.trading.getJournals.queryKey({ input: {} }),
+                        orpc.trading.getJournalsTableData.queryKey({
+                            input: {},
+                        }),
                     ],
                 },
 
