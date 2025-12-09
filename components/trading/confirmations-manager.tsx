@@ -2,10 +2,9 @@
 
 import {
     RiAddLine,
-    RiAlertLine,
-    RiBrush3Line,
+    RiErrorWarningLine,
     RiLoader2Line,
-    RiSearchLine,
+    RiDeleteBinLine
 } from "@remixicon/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -27,7 +26,6 @@ interface ConfirmationsManagerProps {
 
 export function ConfirmationsManager({ journalId }: ConfirmationsManagerProps) {
     const [isCreatingModalOpen, setIsCreatingModalOpen] = useState(false);
-    const [searchTerm, setSearchTerm] = useState("");
     const [newConfirmation, setNewConfirmation] = useState({
         name: "",
         description: "",
@@ -35,7 +33,7 @@ export function ConfirmationsManager({ journalId }: ConfirmationsManagerProps) {
         successRate: "",
     });
 
-    const { data: confirmations, isLoading } = useQuery(
+    const { data: confirmations = [], isLoading } = useQuery(
         orpc.trading.getConfirmations.queryOptions({
             input: { journalId },
         })
@@ -100,20 +98,6 @@ export function ConfirmationsManager({ journalId }: ConfirmationsManagerProps) {
         await deleteConfirmation({ id: confirmationId });
     };
 
-    const filteredConfirmations =
-        confirmations?.filter(
-            (confirmation) =>
-                confirmation.name
-                    .toLowerCase()
-                    .includes(searchTerm.toLowerCase()) ||
-                confirmation.description
-                    ?.toLowerCase()
-                    .includes(searchTerm.toLowerCase()) ||
-                confirmation.strategy
-                    ?.toLowerCase()
-                    .includes(searchTerm.toLowerCase())
-        ) || [];
-
     if (isLoading) {
         return (
             <Card className="border border-white/10 bg-black/20">
@@ -157,17 +141,6 @@ export function ConfirmationsManager({ journalId }: ConfirmationsManagerProps) {
                 </div>
             </CardHeader>
             <CardContent className="space-y-4">
-                {/* Search */}
-                <div className="relative">
-                    <RiSearchLine className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
-                    <Input
-                        className="border-white/30 bg-black pl-10 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder="Search confirmations..."
-                        value={searchTerm}
-                    />
-                </div>
-
                 {/* Create new setup form */}
                 {isCreatingModalOpen && (
                     <div className="rounded-lg border border-white/10 bg-black/20 p-4">
@@ -217,9 +190,9 @@ export function ConfirmationsManager({ journalId }: ConfirmationsManagerProps) {
                 )}
 
                 {/* Setups list */}
-                {filteredConfirmations.length > 0 ? (
+                {confirmations?.length > 0 ? (
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {filteredConfirmations.map((confirmation) => (
+                        {confirmations?.map((confirmation) => (
                             <div
                                 className="flex items-center justify-between rounded-lg border border-white/10 bg-black/20 p-3 transition-colors hover:border-white/20"
                                 key={confirmation.id}
@@ -241,7 +214,7 @@ export function ConfirmationsManager({ journalId }: ConfirmationsManagerProps) {
                                     {isDeletingConfirmation ? (
                                         <RiLoader2Line className="h-4 w-4 animate-spin" />
                                     ) : (
-                                        <RiBrush3Line className="h-4 w-4" />
+                                        <RiDeleteBinLine className="h-4 w-4" />
                                     )}
                                 </Button>
                             </div>
@@ -249,16 +222,12 @@ export function ConfirmationsManager({ journalId }: ConfirmationsManagerProps) {
                     </div>
                 ) : (
                     <div className="py-8 text-center">
-                        <RiAlertLine className="mx-auto mb-4 h-12 w-12 text-white/40" />
+                        <RiErrorWarningLine className="mx-auto mb-4 h-12 w-12 text-white/40" />
                         <p className="text-white/60">
-                            {searchTerm
-                                ? "No confirmations found matching your search"
-                                : "No confirmations found"}
+                            No confirmations found
                         </p>
                         <p className="text-sm text-white/40">
-                            {searchTerm
-                                ? "Try a different search term"
-                                : "Start by creating your first confirmations"}
+                            Start by creating your first confirmations
                         </p>
                     </div>
                 )}
