@@ -4,7 +4,6 @@ import {
     RiAddLine,
     RiDeleteBinLine,
     RiErrorWarningLine,
-    RiSearchLine,
 } from "@remixicon/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -26,7 +25,6 @@ interface SessionsManagerProps {
 
 export function SessionsManager({ journalId }: SessionsManagerProps) {
     const [isCreating, setIsCreating] = useState(false);
-    const [searchTerm, setSearchTerm] = useState("");
     const [newSession, setNewSession] = useState({
         name: "",
         description: "",
@@ -111,13 +109,6 @@ export function SessionsManager({ journalId }: SessionsManagerProps) {
             };
         }) || [];
 
-    const filteredSessions = sessionPerformances.filter(
-        (session) =>
-            session.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            session.description
-                ?.toLowerCase()
-                .includes(searchTerm.toLowerCase())
-    );
 
     if (isLoading) {
         return (
@@ -158,16 +149,6 @@ export function SessionsManager({ journalId }: SessionsManagerProps) {
                 </div>
             </CardHeader>
             <CardContent className="space-y-4">
-                {/* Search */}
-                <div className="relative">
-                    <RiSearchLine className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-white/40" />
-                    <Input
-                        className="border-white/30 bg-black pl-10 text-white placeholder:text-white/50 focus:border-white focus:ring-1 focus:ring-white"
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder="Search sessions..."
-                        value={searchTerm}
-                    />
-                </div>
 
                 {/* Create new session form */}
                 {isCreating && (
@@ -216,9 +197,9 @@ export function SessionsManager({ journalId }: SessionsManagerProps) {
                 )}
 
                 {/* Sessions list */}
-                {filteredSessions.length > 0 ? (
+                {sessionPerformances.length > 0 ? (
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {filteredSessions.map((session) => (
+                        {sessionPerformances.map((session) => (
                             <div
                                 className="group relative flex items-center justify-between rounded-lg border border-white/10 bg-black/20 p-3 transition-colors hover:border-white/20"
                                 key={session.id}
@@ -275,14 +256,10 @@ export function SessionsManager({ journalId }: SessionsManagerProps) {
                     <div className="py-8 text-center">
                         <RiErrorWarningLine className="mx-auto mb-4 h-12 w-12 text-white/40" />
                         <p className="text-white/60">
-                            {searchTerm
-                                ? "No sessions found matching your search"
-                                : "No sessions found"}
+                            No sessions found
                         </p>
                         <p className="text-sm text-white/40">
-                            {searchTerm
-                                ? "Try a different search term"
-                                : "Start by creating your first session"}
+                            Start by creating your first session
                         </p>
                     </div>
                 )}
