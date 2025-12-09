@@ -1,8 +1,10 @@
 import { RiArrowRightLine } from "@remixicon/react";
+import Link from "next/link";
 import { Header } from "@/components/header";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { PAGES } from "@/constants/pages";
 import { HeroImage } from "./_components/hero-image";
-import { WaitlistForm } from "./_components/waitlist-form";
 
 export default function HomePage() {
     return (
@@ -11,10 +13,10 @@ export default function HomePage() {
 
             <main className="relative mx-auto w-full max-w-7xl overflow-hidden border-neutral-800 border-r border-l pb-20">
                 <div className="px-6 pt-20">
-                    <span className="inline-flex items-center gap-2 bg-neutral-800 px-2 py-1 text-xs uppercase">
-                        Join the waitlist{" "}
+                    <p className="inline-flex items-center gap-1.5 bg-neutral-800 px-2 py-1 text-xs uppercase">
+                        <span>Altiora is in beta</span>
                         <RiArrowRightLine className="size-3" />
-                    </span>
+                    </p>
 
                     <div className="mt-6">
                         <h1 className="max-w-3xl font-normal text-5xl">
@@ -32,7 +34,18 @@ export default function HomePage() {
                         </p>
                     </div>
 
-                    <WaitlistForm />
+                    <div className="mt-6 flex items-center gap-2.5">
+                        <Button asChild size="lg">
+                            <Link href={PAGES.SIGN_UP}>
+                                Try a 14 days free trial
+                            </Link>
+                        </Button>
+
+                        <Button size="lg" variant="outline">
+                            Discover our Features
+                        </Button>
+                    </div>
+                    {/* <WaitlistForm /> */}
 
                     <div className="mt-6 flex items-center gap-2.5">
                         <div className="-space-x-2 flex *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:ring-background *:data-[slot=avatar]:grayscale">
