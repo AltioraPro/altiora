@@ -1,6 +1,6 @@
 export * from "./advanced-trades";
 export * from "./assets";
-export * from "./auth";
+export * from "./auth/schema";
 export * from "./confirmations";
 export * from "./discord-profile";
 export * from "./goals";

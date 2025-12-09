@@ -45,7 +45,6 @@ export default function HomePage() {
                             Discover our Features
                         </Button>
                     </div>
-                    {/* <WaitlistForm /> */}
 
                     <div className="mt-6 flex items-center gap-2.5">
                         <div className="-space-x-2 flex *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:ring-background *:data-[slot=avatar]:grayscale">
