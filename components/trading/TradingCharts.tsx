@@ -147,6 +147,11 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
         return transformSessionStats(sessionStats);
     })();
 
+    const sessionChartWidth = Math.max(
+        sessionPerformanceData.length * 72,
+        640
+    );
+
     const cumulativeData =
         trades
             ?.sort(
@@ -332,116 +337,122 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                     </CardHeader>
                     <CardContent>
                         <div className="h-[200px] w-full pr-4">
-                            <ResponsiveContainer height="100%" width="100%">
-                                <BarChart
-                                    data={sessionPerformanceData}
-                                    margin={{ right: 20 }}
+                            <div className="w-full overflow-x-auto">
+                                <div
+                                    className="h-[200px]"
+                                    style={{ minWidth: `${sessionChartWidth}px` }}
                                 >
-                                    <defs>
-                                        {COLORS.map((color, index) => (
-                                            <linearGradient
-                                                id={`barGradient${index}`}
-                                                key={`gradient-${index}`}
-                                                x1="0"
-                                                x2="0"
-                                                y1="0"
-                                                y2="1"
-                                            >
-                                                <stop
-                                                    offset="0%"
-                                                    stopColor={color}
-                                                    stopOpacity={0.9}
-                                                />
-                                                <stop
-                                                    offset="100%"
-                                                    stopColor={color}
-                                                    stopOpacity={0.3}
-                                                />
-                                            </linearGradient>
-                                        ))}
-                                    </defs>
-                                    <CartesianGrid
-                                        stroke="#ffffff"
-                                        strokeDasharray="3 3"
-                                        strokeOpacity={0.1}
-                                    />
-                                    <XAxis
-                                        angle={-45}
-                                        axisLine={false}
-                                        dataKey="name"
-                                        fontSize={10}
-                                        height={60}
-                                        stroke="#ffffff"
-                                        strokeOpacity={0.4}
-                                        textAnchor="end"
-                                        tickLine={false}
-                                    />
-                                    <YAxis
-                                        axisLine={false}
-                                        domain={["dataMin - 5", "dataMax + 5"]}
-                                        fontSize={10}
-                                        stroke="#ffffff"
-                                        strokeOpacity={0.4}
-                                        tickFormatter={(value) =>
-                                            `${value.toFixed(1)}%`
-                                        }
-                                        tickLine={false}
-                                    />
-                                    <Tooltip
-                                        content={({
-                                            active,
-                                            payload,
-                                            label,
-                                        }) => {
-                                            if (
-                                                active &&
-                                                payload &&
-                                                payload.length
-                                            ) {
-                                                const data = payload[0].payload;
-                                                return (
-                                                    <div className="rounded-lg border border-white/20 bg-black/85 p-3 shadow-lg">
-                                                        <p className="mb-1 font-medium text-white">
-                                                            {label}
-                                                        </p>
-                                                        <p className="text-sm text-white">
-                                                            PnL:{" "}
-                                                            <span className="font-semibold">
-                                                                {data.pnl.toFixed(
-                                                                    1
-                                                                )}
-                                                                %
-                                                            </span>
-                                                        </p>
-                                                        <p className="text-sm text-white">
-                                                            Win Rate:{" "}
-                                                            <span className="font-semibold">
-                                                                {data.winRate.toFixed(
-                                                                    1
-                                                                )}
-                                                                %
-                                                            </span>
-                                                        </p>
-                                                    </div>
-                                                );
-                                            }
-                                            return null;
-                                        }}
-                                    />
-                                    <Bar dataKey="pnl" radius={[4, 4, 4, 4]}>
-                                        {sessionPerformanceData.map(
-                                            (_, index) => (
-                                                <Cell
-                                                    fill={`url(#barGradient${index % COLORS.length})`}
-                                                    key={`cell-${index}`}
-                                                    stroke="rgba(255,255,255,0.1)"
-                                                    strokeWidth={1}
-                                                />
-                                            )
-                                        )}
-                                    </Bar>
-                                </BarChart>
-                            </ResponsiveContainer>
+                                    <ResponsiveContainer height="100%" width="100%">
+                                        <BarChart
+                                            data={sessionPerformanceData}
+                                            margin={{ right: 20 }}
+                                        >
+                                            <defs>
+                                                {COLORS.map((color, index) => (
+                                                    <linearGradient
+                                                        id={`barGradient${index}`}
+                                                        key={`gradient-${index}`}
+                                                        x1="0"
+                                                        x2="0"
+                                                        y1="0"
+                                                        y2="1"
+                                                    >
+                                                        <stop
+                                                            offset="0%"
+                                                            stopColor={color}
+                                                            stopOpacity={0.9}
+                                                        />
+                                                        <stop
+                                                            offset="100%"
+                                                            stopColor={color}
+                                                            stopOpacity={0.3}
+                                                        />
+                                                    </linearGradient>
+                                                ))}
+                                            </defs>
+                                            <CartesianGrid
+                                                stroke="#ffffff"
+                                                strokeDasharray="3 3"
+                                                strokeOpacity={0.1}
+                                            />
+                                            <XAxis
+                                                angle={0}
+                                                axisLine={false}
+                                                dataKey="name"
+                                                fontSize={10}
+                                                stroke="#ffffff"
+                                                strokeOpacity={0.4}
+                                                textAnchor="middle"
+                                                tickLine={false}
+                                            />  
+                                            <YAxis
+                                                axisLine={false}
+                                                domain={["dataMin - 5", "dataMax + 5"]}
+                                                fontSize={10}
+                                                stroke="#ffffff"
+                                                strokeOpacity={0.4}
+                                                tickFormatter={(value) =>
+                                                    `${value.toFixed(1)}%`
+                                                }
+                                                tickLine={false}
+                                            />
+                                            <Tooltip
+                                                content={({
+                                                    active,
+                                                    payload,
+                                                    label,
+                                                }) => {
+                                                    if (
+                                                        active &&
+                                                        payload &&
+                                                        payload.length
+                                                    ) {
+                                                        const data = payload[0].payload;
+                                                        return (
+                                                            <div className="rounded-lg border border-white/20 bg-black/85 p-3 shadow-lg">
+                                                                <p className="mb-1 font-medium text-white">
+                                                                    {label}
+                                                                </p>
+                                                                <p className="text-sm text-white">
+                                                                    PnL:{" "}
+                                                                    <span className="font-semibold">
+                                                                        {data.pnl.toFixed(
+                                                                            1
+                                                                        )}
+                                                                        %
+                                                                    </span>
+                                                                </p>
+                                                                <p className="text-sm text-white">
+                                                                    Win Rate:{" "}
+                                                                    <span className="font-semibold">
+                                                                        {data.winRate.toFixed(
+                                                                            1
+                                                                        )}
+                                                                        %
+                                                                    </span>
+                                                                </p>
+                                                            </div>
+                                                        );
+                                                    }
+                                                    return null;
+                                                }}
+                                            />
+                                            <Bar dataKey="pnl" radius={[4, 4, 4, 4]}>
+                                                {sessionPerformanceData.map(
+                                                    (_, index) => (
+                                                        <Cell
+                                                            fill={`url(#barGradient${index % COLORS.length})`}
+                                                            key={`cell-${index}`}
+                                                            stroke="rgba(255,255,255,0.1)"
+                                                            strokeWidth={1}
+                                                        />
+                                                    )
+                                                )}
+                                            </Bar>
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>

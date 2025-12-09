@@ -101,10 +101,10 @@ export function JournalPerformanceCard({
     const bestTrade =
         tradesData && tradesData.length > 0
             ? tradesData.reduce((best, current) => {
-                  const currentPnl = Number(current.profitLossPercentage || 0);
-                  const bestPnl = Number(best.profitLossPercentage || 0);
-                  return currentPnl > bestPnl ? current : best;
-              })
+                const currentPnl = Number(current.profitLossPercentage || 0);
+                const bestPnl = Number(best.profitLossPercentage || 0);
+                return currentPnl > bestPnl ? current : best;
+            })
             : null;
 
     const finalCumulative =
@@ -624,43 +624,39 @@ export function JournalPerformanceCard({
 
                     {bestTrade && (
                         <div
-                            className={`mb-4 rounded-lg border p-3 ${
-                                Number(bestTrade.profitLossPercentage) >= 0
-                                    ? "border-green-500/20 bg-green-500/10"
-                                    : "border-red-500/20 bg-red-500/10"
-                            }`}
+                            className={`mb-4 rounded-lg border p-3 ${Number(bestTrade.profitLossPercentage) >= 0
+                                ? "border-green-500/20 bg-green-500/10"
+                                : "border-red-500/20 bg-red-500/10"
+                                }`}
                         >
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
                                     <RiStockLine
-                                        className={`h-4 w-4 ${
-                                            Number(
-                                                bestTrade.profitLossPercentage
-                                            ) >= 0
-                                                ? "text-green-400"
-                                                : "text-red-400"
-                                        }`}
+                                        className={`h-4 w-4 ${Number(
+                                            bestTrade.profitLossPercentage
+                                        ) >= 0
+                                            ? "text-green-400"
+                                            : "text-red-400"
+                                            }`}
                                     />
                                     <span
-                                        className={`text-sm ${
-                                            Number(
-                                                bestTrade.profitLossPercentage
-                                            ) >= 0
-                                                ? "text-green-400"
-                                                : "text-red-400"
-                                        }`}
+                                        className={`text-sm ${Number(
+                                            bestTrade.profitLossPercentage
+                                        ) >= 0
+                                            ? "text-green-400"
+                                            : "text-red-400"
+                                            }`}
                                     >
                                         Best trade
                                     </span>
                                 </div>
                                 <Badge
-                                    className={`${
-                                        Number(
-                                            bestTrade.profitLossPercentage
-                                        ) >= 0
-                                            ? "border-green-500/30 bg-green-500/20 text-green-400"
-                                            : "border-red-500/30 bg-red-500/20 text-red-400"
-                                    }`}
+                                    className={`${Number(
+                                        bestTrade.profitLossPercentage
+                                    ) >= 0
+                                        ? "border-green-500/30 bg-green-500/20 text-green-400"
+                                        : "border-red-500/30 bg-red-500/20 text-red-400"
+                                        }`}
                                 >
                                     {Number(bestTrade.profitLossPercentage) >= 0
                                         ? "+"
@@ -724,9 +720,23 @@ export function JournalPerformanceCard({
             {showPreview && capturedImage && (
                 <div
                     className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-xs"
-                    onClick={handleClosePreview}
+                    role="presentation"
                 >
-                    <div className="w-full max-w-lg rounded-2xl border border-white/20 bg-gradient-to-br from-black/90 to-black/80 p-4 shadow-2xl">
+                    <button
+                        aria-label="Close performance preview"
+                        className="absolute inset-0 z-0 h-full w-full"
+                        onClick={handleClosePreview}
+                        onKeyDown={(event) => {
+                            if (event.key === "Escape" || event.key === "Enter" || event.key === " ") {
+                                event.preventDefault();
+                                handleClosePreview();
+                            }
+                        }}
+                        type="button"
+                    />
+                    <div
+                        className="relative z-10 w-full max-w-lg rounded-2xl border border-white/20 bg-linear-to-br from-black/90 to-black/80 p-4 shadow-2xl"
+                    >
                         <div className="mb-3">
                             <h3 className="mb-1 text-lg text-white">
                                 Performance Preview
