@@ -1,3 +1,6 @@
+import { PROJECT } from "@/constants/project";
+import ResetPasswordTemplate from "@/emails/reset-password";
+import VerifyEmailTemplate from "@/emails/verify-email";
 import { passkey } from "@better-auth/passkey";
 import { stripe } from "@better-auth/stripe";
 import { render } from "@react-email/components";
@@ -5,9 +8,6 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, emailOTP, lastLoginMethod } from "better-auth/plugins";
 import Stripe from "stripe";
-import { PROJECT } from "@/constants/project";
-import ResetPasswordTemplate from "@/emails/reset-password";
-import VerifyEmailTemplate from "@/emails/verify-email";
 
 import { env } from "@/env";
 import { resend } from "@/lib/resend";
