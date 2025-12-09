@@ -1,17 +1,12 @@
 "use client";
 
-import {
-    RiAddLine,
-    RiCalendarLine,
-    RiSparklingLine,
-    RiStockLine,
-    RiTargetLine,
-} from "@remixicon/react";
+import { RiAddLine } from "@remixicon/react";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { CreateGoalModal } from "@/components/goals/CreateGoalModal";
 import { GoalsDashboard } from "@/components/goals/GoalsDashboard";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { orpc } from "@/orpc/client";
 
 export default function GoalsPage() {
@@ -99,79 +94,61 @@ export default function GoalsPage() {
                 {/* Quick Stats Cards */}
                 <div className="mt-6 mb-12 grid grid-cols-1 gap-6 md:grid-cols-4">
                     {/* Active Goals */}
-                    <div className="relative rounded-lg border border-white/10 bg-black/20 p-6">
-                        <div className="absolute top-4 right-4">
-                            <RiTargetLine className="size-4 text-white" />
-                        </div>
-                        <div>
-                            <p className="mb-2 font-medium text-sm text-white/60">
-                                Active Goals
-                            </p>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Active Goals</CardTitle>
+                        </CardHeader>
+                        <CardContent>
                             <p className="font-bold text-3xl text-green-400">
                                 {animatedStats.active}
                             </p>
-                        </div>
-                    </div>
+                        </CardContent>
+                    </Card>
 
-                    {/* Completed Goals */}
-                    <div className="relative rounded-lg border border-white/10 bg-black/20 p-6">
-                        <div className="absolute top-4 right-4">
-                            <RiStockLine className="size-4 text-white" />
-                        </div>
-                        <div>
-                            <p className="mb-2 font-medium text-sm text-white/60">
-                                Completed
-                            </p>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Completed Goals</CardTitle>
+                        </CardHeader>
+                        <CardContent>
                             <p className="font-bold text-3xl text-green-400">
                                 {animatedStats.completed}
                             </p>
-                        </div>
-                    </div>
+                        </CardContent>
+                    </Card>
 
-                    {/* Overdue Goals */}
-                    <div className="relative rounded-lg border border-white/10 bg-black/20 p-6">
-                        <div className="absolute top-4 right-4">
-                            <RiCalendarLine className="size-4 text-white" />
-                        </div>
-                        <div>
-                            <p className="mb-2 font-medium text-sm text-white/60">
-                                Overdue
-                            </p>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Overdue Goals</CardTitle>
+                        </CardHeader>
+                        <CardContent>
                             <p className="font-bold text-3xl text-red-400">
                                 {animatedStats.overdue}
                             </p>
-                        </div>
-                    </div>
+                        </CardContent>
+                    </Card>
 
-                    {/* Success Rate */}
-                    <div className="relative rounded-lg border border-white/10 bg-black/20 p-6">
-                        <div className="absolute top-4 right-4">
-                            <RiSparklingLine className="size-4 text-white" />
-                        </div>
-                        <div>
-                            <p className="mb-2 font-medium text-sm text-white/60">
-                                Success Rate
-                            </p>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Success Rate</CardTitle>
+                        </CardHeader>
+                        <CardContent>
                             <p className="font-bold text-3xl text-white">
                                 {animatedStats.successRate}%
                             </p>
-                        </div>
-                    </div>
+                        </CardContent>
+                    </Card>
                 </div>
 
-                {/* Goals Dashboard */}
                 <div className="mx-auto max-w-7xl">
                     <GoalsDashboard />
                 </div>
 
-                {/* Create Goal Modal */}
                 <CreateGoalModal
                     isOpen={isCreateModalOpen}
                     onClose={() => setIsCreateModalOpen(false)}
                 />
             </div>
 
-            {/* Background decoration */}
             <div className="-z-10 pointer-events-none fixed inset-0 overflow-hidden">
                 <div className="absolute top-20 left-20 h-64 w-64 rounded-full bg-white/1 blur-3xl" />
                 <div className="absolute right-20 bottom-20 h-96 w-96 rounded-full bg-white/0.5 blur-3xl" />

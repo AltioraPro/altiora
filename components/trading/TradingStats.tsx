@@ -1,11 +1,5 @@
 "use client";
 
-import {
-    RiBarChartLine,
-    RiPulseLine,
-    RiStockLine,
-    RiTargetLine,
-} from "@remixicon/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import type { RouterOutput } from "@/orpc/client";
@@ -31,14 +25,11 @@ export function TradingStats({
         <div className={cn("space-y-8", className)} {...props}>
             {/* Performance Overview */}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                <Card className="border border-white/10 bg-black/20 p-6 transition-colors hover:bg-black/30">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 px-0 pt-0 pb-3">
-                        <CardTitle className="font-medium text-sm text-white/90">
-                            Performance
-                        </CardTitle>
-                        <RiStockLine className="size-4 text-white/60" />
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Performance</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-2 px-0 pb-0">
+                    <CardContent>
                         <div
                             className={`font-bold text-3xl ${totalPnL >= 0 ? "text-green-400" : "text-red-400"}`}
                         >
@@ -64,14 +55,11 @@ export function TradingStats({
                     </CardContent>
                 </Card>
 
-                <Card className="border border-white/10 bg-black/20 p-6 transition-colors hover:bg-black/30">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 px-0 pt-0 pb-3">
-                        <CardTitle className="font-medium text-sm text-white/90">
-                            Win Rate
-                        </CardTitle>
-                        <RiTargetLine className="h-4 w-4 text-white/60" />
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Win Rate</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-2 px-0 pb-0">
+                    <CardContent>
                         <div className="font-bold text-3xl text-white">
                             {stats.winRate.toFixed(1)}%
                         </div>
@@ -81,14 +69,11 @@ export function TradingStats({
                     </CardContent>
                 </Card>
 
-                <Card className="border border-white/10 bg-black/20 p-6 transition-colors hover:bg-black/30">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 px-0 pt-0 pb-3">
-                        <CardTitle className="font-medium text-sm text-white/90">
-                            Trades
-                        </CardTitle>
-                        <RiBarChartLine className="h-4 w-4 text-white/60" />
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Trades</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-2 px-0 pb-0">
+                    <CardContent>
                         <div className="font-bold text-3xl text-white">
                             {stats.totalTrades}
                         </div>
@@ -98,14 +83,11 @@ export function TradingStats({
                     </CardContent>
                 </Card>
 
-                <Card className="border border-white/10 bg-black/20 p-6 transition-colors hover:bg-black/30">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 px-0 pt-0 pb-3">
-                        <CardTitle className="font-medium text-sm text-white/90">
-                            Profit Factor
-                        </CardTitle>
-                        <RiPulseLine className="h-4 w-4 text-white/60" />
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Profit Factor</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-2 px-0 pb-0">
+                    <CardContent>
                         <div className="font-bold text-3xl text-white">
                             {Number.isFinite(profitFactor)
                                 ? profitFactor.toFixed(2)
