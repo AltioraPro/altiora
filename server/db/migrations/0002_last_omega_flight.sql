@@ -1,2 +1,0 @@
-CREATE INDEX "habit_completion_user_date_completed_idx" ON "altiora_habit_completion" USING btree ("user_id","completion_date","is_completed");--> statement-breakpoint
-CREATE INDEX "habit_completion_user_habit_date_completed_idx" ON "altiora_habit_completion" USING btree ("user_id","habit_id","completion_date","is_completed");

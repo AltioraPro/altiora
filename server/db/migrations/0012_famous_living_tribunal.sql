@@ -1,1 +1,0 @@
-ALTER TABLE "altiora_trading_journal" ADD COLUMN "order" integer DEFAULT 0 NOT NULL;

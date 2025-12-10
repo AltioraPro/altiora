@@ -1,1 +1,0 @@
-ALTER TABLE "user" ADD COLUMN "is_leaderboard_public" boolean DEFAULT false NOT NULL;

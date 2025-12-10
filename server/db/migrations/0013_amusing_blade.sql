@@ -1,3 +1,0 @@
--- Migration 0013_amusing_blade
--- This migration file was missing and has been recreated
--- No schema changes were made in this migration
