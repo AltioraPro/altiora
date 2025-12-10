@@ -80,12 +80,6 @@ export function SignUpForm() {
                         case AUTH_ERRORS.USER_ALREADY_EXISTS:
                             setError("User already exists");
                             break;
-                        case AUTH_ERRORS.WAITLIST_DISABLED:
-                            setError("Waitlist is disabled");
-                            break;
-                        case AUTH_ERRORS.NOT_WHITELISTED:
-                            setError("Email not on whitelist");
-                            break;
                         default:
                             setError(ctx.error.message);
                     }

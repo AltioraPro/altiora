@@ -11,6 +11,6 @@ export async function stopImpersonating(
     queryClient.invalidateQueries({
         queryKey: ["user"],
     });
-    router.push(PAGES.ADMIN_USERS);
+    router.push(PAGES.ADMIN);
     router.refresh();
 }

@@ -1,45 +1,16 @@
 import { z } from "zod";
 
-export const waitlistStatuses = ["approved", "pending", "rejected"] as const;
-export type WaitlistStatus = (typeof waitlistStatuses)[number];
-
 export const listUsersSchema = z.object({
     page: z.number().int().min(1).default(1),
     limit: z.number().min(1).max(100).default(25),
-    sortBy: z
-        .enum(["user", "waitlistStatus", "role", "createdAt"])
-        .default("createdAt"),
+    sortBy: z.enum(["user", "role", "createdAt"]).default("createdAt"),
     sortOrder: z.enum(["asc", "desc"]).default("desc"),
     search: z.string().nullable(),
     role: z.enum(["admin", "user", "all"]).optional(),
-    waitlistStatus: z
-        .enum(["approved", "pending", "rejected", "all"])
-        .optional(),
-});
-
-export const listWaitlistSchema = z.object({
-    page: z.number().int().min(1).default(1),
-    limit: z.number().min(1).max(100).default(25),
-    sortBy: z
-        .enum(["email", "waitlistStatus", "registrationStatus", "createdAt"])
-        .default("createdAt"),
-    sortOrder: z.enum(["asc", "desc"]).default("desc"),
-    search: z.string().nullable(),
-    waitlistStatus: z
-        .enum(["approved", "pending", "rejected", "all"])
-        .optional(),
-    registrationStatus: z
-        .enum(["registered", "unregistered", "all"])
-        .default("all"),
 });
 
 export const banMultipleUsersSchema = z.object({
     userIds: z.array(z.string()).min(1),
-});
-
-export const updateMultipleUsersStatusSchema = z.object({
-    emails: z.array(z.string()).min(1),
-    status: z.enum(["approved", "pending", "rejected"]),
 });
 
 export const syncUserSchema = z.object({
@@ -84,10 +55,6 @@ export const updateTimezoneSchema = z.object({
         .max(100, "Le fuseau horaire est trop long"),
 });
 
-export const waitlistSchema = z.object({
-    email: z.email(),
-});
-
 export type SyncUserInput = z.infer<typeof syncUserSchema>;
 export type SendVerificationEmailInput = z.infer<
     typeof sendVerificationEmailSchema
@@ -100,5 +67,3 @@ export type UpdateLeaderboardVisibilityInput = z.infer<
     typeof updateLeaderboardVisibilitySchema
 >;
 export type UpdateTimezoneInput = z.infer<typeof updateTimezoneSchema>;
-
-export type WaitlistInput = z.infer<typeof waitlistSchema>;

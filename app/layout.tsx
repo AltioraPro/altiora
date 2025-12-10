@@ -3,7 +3,22 @@ import { Providers } from "@/app/providers";
 
 import "@/orpc/server"; // for pre-rendering
 import "./globals.css";
+import { Hedvig_Letters_Sans, Hedvig_Letters_Serif } from "next/font/google";
 import { PROJECT } from "@/constants/project";
+
+const hedvigSans = Hedvig_Letters_Sans({
+    weight: "400",
+    subsets: ["latin"],
+    display: "swap",
+    variable: "--font-hedvig-sans",
+});
+
+const hedvigSerif = Hedvig_Letters_Serif({
+    weight: "400",
+    subsets: ["latin"],
+    display: "swap",
+    variable: "--font-hedvig-serif",
+});
 
 export const metadata: Metadata = {
     title: PROJECT.NAME,
@@ -20,7 +35,7 @@ export default function RootLayout({
 }) {
     return (
         <html
-            className="dark"
+            className={`dark overscroll-none font-sans ${hedvigSans.variable} ${hedvigSerif.variable}`}
             lang="fr"
             style={{ colorScheme: "dark" }}
             suppressHydrationWarning

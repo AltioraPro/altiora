@@ -1,5 +1,4 @@
 import type { FilterFn } from "@tanstack/react-table";
-import type { WaitlistStatus } from "@/server/routers/auth/validators";
 
 export type Item = {
     id: string;
@@ -8,12 +7,6 @@ export type Item = {
     role: string | null;
     banned: boolean | null;
     createdAt: Date;
-    accessStatus: {
-        id: string;
-        email: string;
-        status: WaitlistStatus;
-        createdAt: Date;
-    } | null;
 };
 
 // Custom filter function for multi-column searching

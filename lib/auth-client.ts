@@ -9,7 +9,6 @@ import {
 } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 import type { auth } from "./auth";
-import { whitelistClient } from "./auth/plugins/whitelist/client";
 
 function resolveBaseUrl(): string {
     if (typeof window !== "undefined") {
@@ -33,7 +32,6 @@ export const authClient = createAuthClient({
         emailOTPClient(),
         adminClient(),
         lastLoginMethodClient(),
-        whitelistClient(),
         passkeyClient(),
         inferAdditionalFields<typeof auth>(),
     ],

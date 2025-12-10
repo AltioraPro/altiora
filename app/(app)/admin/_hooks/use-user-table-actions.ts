@@ -17,7 +17,7 @@ export function useUserTableActions(user: Item) {
 
     const router = useRouter();
 
-    const [{ search, sortBy, sortOrder, page, limit, role, waitlistStatus }] =
+    const [{ search, sortBy, sortOrder, page, limit, role }] =
         useQueryStates(adminUsersParsers);
 
     // Get current user to prevent self-actions
@@ -33,8 +33,6 @@ export function useUserTableActions(user: Item) {
             sortOrder,
             search,
             role: role === "all" ? undefined : role,
-            waitlistStatus:
-                waitlistStatus === "all" ? undefined : waitlistStatus,
         },
     });
 

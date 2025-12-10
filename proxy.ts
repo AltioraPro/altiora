@@ -1,28 +1,5 @@
-import { type NextRequest, NextResponse } from "next/server";
-import { env } from "./env";
-
-const authPaths = [
-    "/register",
-    "/forgot-password",
-    "/reset-password",
-    "/verify-email",
-    "/check-email",
-    "/confirm-2fa",
-    "/error",
-];
-
-export function proxy(request: NextRequest) {
-    // In production only, we will redirect all auth paths to the home page
-    if (env.VERCEL_ENV === "production") {
-        const path = request.nextUrl.pathname;
-
-        if (authPaths.some((p) => path.startsWith(p))) {
-            return NextResponse.redirect(new URL("/", request.url));
-        }
-    }
-
-    return NextResponse.next();
-}
+// biome-ignore lint/suspicious/noEmptyBlockStatements: needed for proxy
+export function proxy() {}
 
 export const config = {
     matcher: [

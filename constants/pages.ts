@@ -7,7 +7,6 @@ export const AUTH_PAGES = {
     VERIFICATION: route("/verification"),
     RESET_PASSWORD: route("/reset-password"),
     CONFIRM_ACCESS: route("/confirm-2fa"),
-    WAITLIST: route("/waitlist"),
     ERROR: route("/error"),
 };
 
@@ -40,8 +39,6 @@ export const SETTINGS_PAGES = {
 
 export const ADMIN_PAGES = {
     ADMIN: route("/admin"),
-    ADMIN_USERS: route("/admin/users"),
-    ADMIN_WAITLIST: route("/admin/waitlist"),
 };
 
 export const ORGANIZATION_ONBOARDING_PAGES = {
