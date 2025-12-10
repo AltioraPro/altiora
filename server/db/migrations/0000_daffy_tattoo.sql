@@ -1,3 +1,6 @@
+CREATE SCHEMA IF NOT EXISTS public;
+SET search_path TO public;
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "advanced_trade" (
 	"id" varchar(255) PRIMARY KEY NOT NULL,
 	"user_id" varchar(255) NOT NULL,
