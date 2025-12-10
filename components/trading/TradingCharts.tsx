@@ -601,10 +601,10 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                                     TRADES
                                 </div>
                                 <div className="text-center font-bold text-2xl text-white">
-                                    {cumulativeData.length}
+                                    {trades?.length}
                                 </div>
                             </div>
-                        </div>
+                        </div>  
                     </div>
                 </CardContent>
             </Card>
