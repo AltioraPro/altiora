@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PAGES } from "@/constants/pages";
+import Link from "next/link";
 import { Section } from "./section";
 
 interface CTASectionProps {

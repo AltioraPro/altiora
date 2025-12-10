@@ -1,6 +1,6 @@
-import { RiDiscordFill, RiLinksLine, RiShareFill } from "@remixicon/react";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
+import { RiDiscordFill, RiLinksLine, RiShareFill } from "@remixicon/react";
 import { Section } from "./section";
 
 interface IntegrationSectionProps {
