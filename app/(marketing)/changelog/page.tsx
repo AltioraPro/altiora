@@ -1,11 +1,10 @@
+import { Header } from "@/components/header";
+import { getWebsiteUrl } from "@/lib/urls";
 import {
     RiAddLine,
     RiBugLine,
-    RiLightbulbFlashLine,
-    RiStarLine,
+    RiLightbulbFlashLine
 } from "@remixicon/react";
-import { Header } from "@/components/header";
-import { getWebsiteUrl } from "@/lib/urls";
 import { ChangelogList } from "./_components/changelog-list";
 
 interface ChangelogEntry {

@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Footer } from "@/components/layout/Footer";
+import { Footer } from "@/app/(marketing)/_components/footer";
 
 export default function MarketingLayout({
     children,
