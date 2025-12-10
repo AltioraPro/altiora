@@ -556,15 +556,15 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                                                         <p className="text-sm text-white">
                                                             Daily PnL:{" "}
                                                             <span className="font-semibold">
-                                                            {data.pnl > 0 ? (
-                                                                <span className="text-green-400">
-                                                                    +{data.pnl.toFixed(1)}%
-                                                                </span>
-                                                            ) : (
-                                                                <span className="text-red-400">
-                                                                    {data.pnl.toFixed(1)}%
-                                                                </span>
-                                                            )}
+                                                                {data.pnl > 0 ? (
+                                                                    <span className="text-green-400">
+                                                                        +{data.pnl.toFixed(1)}%
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="text-red-400">
+                                                                        {data.pnl.toFixed(1)}%
+                                                                    </span>
+                                                                )}
                                                             </span>
                                                         </p>
                                                     </div>
@@ -601,10 +601,10 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                                     TRADES
                                 </div>
                                 <div className="text-center font-bold text-2xl text-white">
-                                    {trades?.length}
+                                    {stats.totalTrades}
                                 </div>
                             </div>
-                        </div>  
+                        </div>
                     </div>
                 </CardContent>
             </Card>
