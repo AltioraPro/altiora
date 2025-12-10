@@ -4,8 +4,8 @@ import {
     RiLightbulbFlashLine,
     RiStarLine,
 } from "@remixicon/react";
+import { Footer } from "@/app/(marketing)/_components/footer";
 import { Header } from "@/components/header";
-import { Footer } from "@/components/layout/Footer";
 
 export default function ChangelogPage() {
     const releases = [
