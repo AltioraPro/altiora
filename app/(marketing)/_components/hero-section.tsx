@@ -7,7 +7,7 @@ import { HeroImage } from "./hero-image";
 
 export function HeroSection() {
     return (
-        <>
+        <section className="border-neutral-800 border-r border-l">
             <div className="px-6 pt-20">
                 <p className="inline-flex items-center gap-1.5 bg-neutral-800 px-2 py-1 text-xs uppercase">
                     <span>Altiora is in beta</span>
@@ -23,23 +23,29 @@ export function HeroSection() {
                         .
                     </h1>
 
-                    <p className="text- mt-6 max-w-xl text-neutral-400 text-sm">
+                    <p className="mt-6 max-w-xl text-neutral-400 text-sm">
                         Altiora turns your journal into a clear improvement
                         loop: track, review, get objective insights on your edge
                         and discipline.
                     </p>
                 </div>
 
-                <div className="mt-6 flex items-center gap-2.5">
-                    <Button asChild size="lg">
-                        <Link href={PAGES.SIGN_UP}>
-                            Try a 14 days free trial
-                        </Link>
-                    </Button>
+                <div>
+                    <div className="mt-6 flex items-center gap-2.5">
+                        <Button asChild size="lg">
+                            <Link href={PAGES.SIGN_UP}>
+                                Start your free trial
+                            </Link>
+                        </Button>
 
-                    <Button size="lg" variant="outline">
-                        Discover our Features
-                    </Button>
+                        <Button size="lg" variant="outline">
+                            Discover our Features
+                        </Button>
+                    </div>
+
+                    <p className="mt-2 text-neutral-400 text-xs">
+                        Start your 14 days free trial - No card required.
+                    </p>
                 </div>
 
                 <div className="mt-6 flex items-center gap-2.5">
@@ -87,6 +93,6 @@ export function HeroSection() {
             </div>
 
             <HeroImage />
-        </>
+        </section>
     );
 }

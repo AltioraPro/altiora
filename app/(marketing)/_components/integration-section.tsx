@@ -1,10 +1,15 @@
 import { RiDiscordFill, RiLinksLine, RiShareFill } from "@remixicon/react";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
+import { Section } from "./section";
 
-export function IntegrationSection() {
+interface IntegrationSectionProps {
+    id?: string;
+}
+
+export function IntegrationSection({ id }: IntegrationSectionProps) {
     return (
-        <div className="mt-40 flex min-h-96 w-full flex-col items-center justify-center gap-12">
+        <Section className="mt-40 flex min-h-96 items-center justify-center gap-12" id={id}>
             <div className="relative flex w-full max-w-[600px] justify-center pb-8">
                 <div className="absolute right-0 bottom-0 left-0 h-52 bg-neutral-900" />
                 <div className="z-10 flex w-fit flex-col items-center justify-center gap-8 border border-neutral-800 bg-background p-8 pb-9 shadow-md">
@@ -56,6 +61,6 @@ export function IntegrationSection() {
                     get insights on your productivity.
                 </p>
             </div>
-        </div>
+        </Section>
     );
 }
