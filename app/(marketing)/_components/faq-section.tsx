@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import {
   Accordion,
   AccordionContent,
@@ -8,6 +7,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { PAGES } from "@/constants/pages";
+import Link from "next/link";
 import { Section } from "./section";
 
 interface FAQItem {
