@@ -1,8 +1,13 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PAGES } from "@/constants/pages";
+import { Section } from "./section";
 
-export function CTASection() {
+interface CTASectionProps {
+    id?: string;
+}
+
+export function CTASection({ id }: CTASectionProps) {
     const heights = [
         "h-8",
         "h-9",
@@ -15,7 +20,7 @@ export function CTASection() {
     ];
 
     return (
-        <div className="mt-40">
+        <Section className="mt-40" id={id}>
             <div className="relative z-10 mx-auto flex min-h-96 w-full flex-col items-center justify-center gap-6 bg-neutral-900 px-6 py-8">
                 <h2 className="font-medium text-6xl">Try Altiora now.</h2>
                 <Button asChild size="lg">
@@ -35,6 +40,6 @@ export function CTASection() {
                     })}
                 </div>
             </div>
-        </div>
+        </Section>
     );
 }
