@@ -575,6 +575,22 @@ select option {
     color: white !important;
 }
 
+/* Smooth scroll behavior for anchor links */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Offset scroll position to account for sticky header */
+section[id] {
+    scroll-margin-top: 5rem;
+}
+
+/* Navigation link active state (managed by JavaScript Intersection Observer) */
+.scroll-target-nav .nav-link[data-active="true"] {
+    background-color: rgb(38 38 38); /* neutral-800 */
+    color: rgb(250 250 250); /* neutral-50 */
+}
+
 input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     filter: invert(1);
     cursor: pointer;

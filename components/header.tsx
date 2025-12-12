@@ -3,14 +3,8 @@ import Link from "next/link";
 import { PAGES } from "@/constants/pages";
 import { cn } from "@/lib/utils";
 import { Logo } from "./logo";
+import { ScrollNavigation } from "./scroll-navigation";
 import { Button } from "./ui/button";
-
-const navigationLinks = [
-    { label: "About", href: PAGES.ABOUT_US, number: "01" },
-    { label: "Pricing", href: PAGES.PRICING, number: "02" },
-    { label: "Contact", href: PAGES.CONTACT_US, number: "03" },
-    { label: "Changelog", href: PAGES.CHANGELOG, number: "04" },
-] as const;
 
 export const Header = ({
     className,
@@ -35,24 +29,7 @@ export const Header = ({
                         </Link>
                     </div>
 
-                    <div className="flex flex-1 items-center justify-center text-sm">
-                        {navigationLinks.map((link) => (
-                            <Link
-                                className={cn(
-                                    "flex items-center gap-1 px-3.5 py-2 text-neutral-400 hover:text-neutral-50",
-                                    link.href === PAGES.ABOUT_US &&
-                                        "bg-neutral-800 text-neutral-50"
-                                )}
-                                href={link.href}
-                                key={link.href}
-                            >
-                                <span>{link.label}</span>
-                                <span className="-translate-y-1 text-[9px]">
-                                    ({link.number})
-                                </span>
-                            </Link>
-                        ))}
-                    </div>
+                    <ScrollNavigation />
 
                     {/* Auth Section - Right */}
                     <div className="z-10 ml-auto flex flex-1 items-center justify-end space-x-3">
