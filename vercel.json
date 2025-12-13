@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "pnpm db:migrate && pnpm build",
+  "buildCommand": "bun db:migrate && bun build",
   "regions": ["fra1"],
   "crons": [
     {
