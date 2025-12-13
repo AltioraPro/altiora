@@ -38,13 +38,12 @@ export function HeroSection() {
                             </Link>
                         </Button>
 
-                        <Button size="lg" variant="outline">
-                            Discover our Features
+                        <Button asChild size="lg" variant="outline">
+                            <Link href="#features">Discover our Features</Link>
                         </Button>
                     </div>
-
                     <p className="mt-2 text-neutral-400 text-xs">
-                        Start your 14 days free trial - No card required.
+                        14 days free trial - No card required.
                     </p>
                 </div>
 
