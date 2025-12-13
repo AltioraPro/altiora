@@ -12,7 +12,7 @@ const nextConfig = {
     experimental: {
         turbopackFileSystemCacheForDev: true,
     },
-    reactCompiler: true,
+
     typedRoutes: true,
 
     images: {
