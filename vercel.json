@@ -2,7 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "bun db:migrate && bun build",
   "regions": ["fra1"],
-  "bunVersion": "1.x",
   "crons": [
     {
       "path": "/api/reminders/process",
