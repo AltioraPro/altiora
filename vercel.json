@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "bun db:migrate && bun build",
+  "buildCommand": "bun run db:migrate && bun run build",
   "regions": ["fra1"],
   "crons": [
     {
