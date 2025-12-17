@@ -3,6 +3,7 @@ export * from "./assets";
 export * from "./auth";
 export * from "./confirmations";
 export * from "./discord-profile";
+export * from "./goal-categories";
 export * from "./goals";
 export * from "./goals-reminders";
 export * from "./goals-tasks";
