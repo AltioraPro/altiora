@@ -59,7 +59,7 @@ export function CreateGoalModal({
         deadline?: Date;
         remindersEnabled: boolean;
         reminderFrequency?: "daily" | "weekly" | "monthly";
-    }) => {
+    }): void => {
         createGoal(data, {
             onSuccess: () => {
                 handleClose();
@@ -68,7 +68,7 @@ export function CreateGoalModal({
         });
     };
 
-    const handleClose = () => {
+    const handleClose = (): void => {
         setFormData({
             title: "",
             description: "",
@@ -85,7 +85,7 @@ export function CreateGoalModal({
     const getQuarterDate = (
         quarter: string,
         year: number = new Date().getFullYear()
-    ) => {
+    ): Date => {
         const quarterMap = {
             Q1: new Date(year, 2, 31), // March 31
             Q2: new Date(year, 5, 30), // June 30
@@ -95,7 +95,7 @@ export function CreateGoalModal({
         return quarterMap[quarter as keyof typeof quarterMap];
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent): void => {
         e.preventDefault();
         if (!formData.title.trim()) {
             return;
@@ -108,7 +108,8 @@ export function CreateGoalModal({
             const year = Number.parseInt(formData.year);
             deadline = new Date(year, 11, 31); // December 31st
         } else if (formData.type === "quarterly") {
-            deadline = getQuarterDate(formData.quarter);
+            const year = Number.parseInt(formData.year);
+            deadline = getQuarterDate(formData.quarter, year);
         } else if (formData.deadline) {
             deadline = new Date(formData.deadline);
         }
@@ -251,37 +252,62 @@ export function CreateGoalModal({
                                 value={formData.year}
                             />
                         ) : formData.type === "quarterly" ? (
-                            <Select
-                                onValueChange={(value) =>
-                                    setFormData({
-                                        ...formData,
-                                        quarter: value as
-                                            | "Q1"
-                                            | "Q2"
-                                            | "Q3"
-                                            | "Q4",
-                                    })
-                                }
-                                value={formData.quarter}
-                            >
-                                <SelectTrigger id="quarter">
-                                    <SelectValue placeholder="Select quarter" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="Q1">
-                                        Q1 (Jan - Mar)
-                                    </SelectItem>
-                                    <SelectItem value="Q2">
-                                        Q2 (Apr - Jun)
-                                    </SelectItem>
-                                    <SelectItem value="Q3">
-                                        Q3 (Jul - Sep)
-                                    </SelectItem>
-                                    <SelectItem value="Q4">
-                                        Q4 (Oct - Dec)
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-2">
+                                    <Label htmlFor="quarter-year" className="text-xs text-muted-foreground">
+                                        Year
+                                    </Label>
+                                    <Input
+                                        id="quarter-year"
+                                        max={new Date().getFullYear() + 10}
+                                        min={new Date().getFullYear()}
+                                        onChange={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                year: e.target.value,
+                                            })
+                                        }
+                                        type="number"
+                                        value={formData.year}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="quarter" className="text-xs text-muted-foreground">
+                                        Quarter
+                                    </Label>
+                                    <Select
+                                        onValueChange={(value) =>
+                                            setFormData({
+                                                ...formData,
+                                                quarter: value as
+                                                    | "Q1"
+                                                    | "Q2"
+                                                    | "Q3"
+                                                    | "Q4",
+                                            })
+                                        }
+                                        value={formData.quarter}
+                                    >
+                                        <SelectTrigger id="quarter">
+                                            <SelectValue placeholder="Select quarter" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Q1">
+                                                Q1 (Jan - Mar)
+                                            </SelectItem>
+                                            <SelectItem value="Q2">
+                                                Q2 (Apr - Jun)
+                                            </SelectItem>
+                                            <SelectItem value="Q3">
+                                                Q3 (Jul - Sep)
+                                            </SelectItem>
+                                            <SelectItem value="Q4">
+                                                Q4 (Oct - Dec)
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
                         ) : (
                             <Input
                                 id="deadline"

@@ -47,6 +47,9 @@ export function EditGoalModal({
         year: goal.deadline
             ? new Date(goal.deadline).getFullYear().toString()
             : new Date().getFullYear().toString(),
+        quarter: goal.deadline && goal.type === "quarterly"
+            ? `Q${Math.floor(new Date(goal.deadline).getMonth() / 3) + 1}` as "Q1" | "Q2" | "Q3" | "Q4"
+            : "Q1" as "Q1" | "Q2" | "Q3" | "Q4",
         remindersEnabled: goal.remindersEnabled,
         reminderFrequency: goal.reminderFrequency || "weekly",
     });
@@ -78,12 +81,28 @@ export function EditGoalModal({
             year: goal.deadline
                 ? new Date(goal.deadline).getFullYear().toString()
                 : new Date().getFullYear().toString(),
+            quarter: goal.deadline && goal.type === "quarterly"
+                ? `Q${Math.floor(new Date(goal.deadline).getMonth() / 3) + 1}` as "Q1" | "Q2" | "Q3" | "Q4"
+                : "Q1" as "Q1" | "Q2" | "Q3" | "Q4",
             remindersEnabled: goal.remindersEnabled,
             reminderFrequency: goal.reminderFrequency || "weekly",
         });
     }, [goal]);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const getQuarterDate = (
+        quarter: string,
+        year: number = new Date().getFullYear()
+    ): Date => {
+        const quarterMap = {
+            Q1: new Date(year, 2, 31), // March 31
+            Q2: new Date(year, 5, 30), // June 30
+            Q3: new Date(year, 8, 30), // September 30
+            Q4: new Date(year, 11, 31), // December 31
+        };
+        return quarterMap[quarter as keyof typeof quarterMap];
+    };
+
+    const handleSubmit = (e: React.FormEvent): void => {
         e.preventDefault();
         if (!formData.title.trim()) {
             return;
@@ -95,6 +114,9 @@ export function EditGoalModal({
             // For annual goals, use December 31st of the selected year
             const year = Number.parseInt(formData.year);
             deadline = new Date(year, 11, 31); // December 31st
+        } else if (formData.type === "quarterly") {
+            const year = Number.parseInt(formData.year);
+            deadline = getQuarterDate(formData.quarter, year);
         } else if (formData.deadline) {
             deadline = new Date(formData.deadline);
         }
@@ -184,10 +206,14 @@ export function EditGoalModal({
                         </Select>
                     </div>
 
-                    {/* Deadline or Year */}
+                    {/* Deadline, Year, or Quarter */}
                     <div className="space-y-2">
                         <Label htmlFor="edit-deadline">
-                            {formData.type === "annual" ? "Year" : "Deadline"}
+                            {formData.type === "quarterly"
+                                ? "Quarter"
+                                : formData.type === "annual"
+                                    ? "Year"
+                                    : "Deadline"}
                         </Label>
                         {formData.type === "annual" ? (
                             <Input
@@ -204,6 +230,63 @@ export function EditGoalModal({
                                 type="number"
                                 value={formData.year}
                             />
+                        ) : formData.type === "quarterly" ? (
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-2">
+                                    <Label htmlFor="edit-quarter-year" className="text-xs text-muted-foreground">
+                                        Year
+                                    </Label>
+                                    <Input
+                                        id="edit-quarter-year"
+                                        max={new Date().getFullYear() + 10}
+                                        min={new Date().getFullYear()}
+                                        onChange={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                year: e.target.value,
+                                            })
+                                        }
+                                        type="number"
+                                        value={formData.year}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="edit-quarter" className="text-xs text-muted-foreground">
+                                        Quarter
+                                    </Label>
+                                    <Select
+                                        onValueChange={(value) =>
+                                            setFormData({
+                                                ...formData,
+                                                quarter: value as
+                                                    | "Q1"
+                                                    | "Q2"
+                                                    | "Q3"
+                                                    | "Q4",
+                                            })
+                                        }
+                                        value={formData.quarter}
+                                    >
+                                        <SelectTrigger id="edit-quarter">
+                                            <SelectValue placeholder="Select quarter" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Q1">
+                                                Q1 (Jan - Mar)
+                                            </SelectItem>
+                                            <SelectItem value="Q2">
+                                                Q2 (Apr - Jun)
+                                            </SelectItem>
+                                            <SelectItem value="Q3">
+                                                Q3 (Jul - Sep)
+                                            </SelectItem>
+                                            <SelectItem value="Q4">
+                                                Q4 (Oct - Dec)
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
                         ) : (
                             <Input
                                 id="edit-deadline"
