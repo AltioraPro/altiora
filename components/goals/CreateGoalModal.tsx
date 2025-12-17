@@ -125,7 +125,7 @@ export function CreateGoalModal({
             reminderFrequency: formData.remindersEnabled
                 ? formData.reminderFrequency
                 : undefined,
-        });
+        } as any);
     };
 
     return (
