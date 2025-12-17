@@ -375,7 +375,7 @@ export function GoalsDashboard() {
     const [search, setSearch] = useState("");
     const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
     const [filters, setFilters] = useState({
-        status: "all" as "all" | "active" | "completed" | "overdue",
+        status: "all" as "all" | "active" | "completed",
         type: "all" as "all" | "annual" | "quarterly" | "monthly",
         hasReminders: null as boolean | null,
         categoryIds: [] as string[],
