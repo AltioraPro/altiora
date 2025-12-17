@@ -8,6 +8,13 @@
       "when": 1765406440579,
       "tag": "0000_daffy_tattoo",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1765988822733,
+      "tag": "0001_stormy_the_stranger",
+      "breakpoints": true
     }
   ]
 }

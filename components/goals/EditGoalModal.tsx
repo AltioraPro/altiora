@@ -1,5 +1,3 @@
-"use client";
-
 import { useMutation } from "@tanstack/react-query";
 import type React from "react";
 import { useEffect, useState } from "react";
@@ -25,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { CategorySelector } from "./CategorySelector";
 
 interface EditGoalModalProps {
     goal: Goal;
@@ -50,6 +49,7 @@ export function EditGoalModal({
         quarter: goal.deadline && goal.type === "quarterly"
             ? `Q${Math.floor(new Date(goal.deadline).getMonth() / 3) + 1}` as "Q1" | "Q2" | "Q3" | "Q4"
             : "Q1" as "Q1" | "Q2" | "Q3" | "Q4",
+        categoryId: goal.categoryId || null,
         remindersEnabled: goal.remindersEnabled,
         reminderFrequency: goal.reminderFrequency || "weekly",
     });
@@ -84,6 +84,7 @@ export function EditGoalModal({
             quarter: goal.deadline && goal.type === "quarterly"
                 ? `Q${Math.floor(new Date(goal.deadline).getMonth() / 3) + 1}` as "Q1" | "Q2" | "Q3" | "Q4"
                 : "Q1" as "Q1" | "Q2" | "Q3" | "Q4",
+            categoryId: goal.categoryId || null,
             remindersEnabled: goal.remindersEnabled,
             reminderFrequency: goal.reminderFrequency || "weekly",
         });
@@ -126,6 +127,7 @@ export function EditGoalModal({
             ...formData,
             type: formData.type as "annual" | "quarterly" | "monthly",
             deadline,
+            categoryId: formData.categoryId,
             reminderFrequency: formData.remindersEnabled
                 ? (formData.reminderFrequency as "daily" | "weekly" | "monthly")
                 : undefined,
@@ -205,6 +207,14 @@ export function EditGoalModal({
                             </SelectContent>
                         </Select>
                     </div>
+
+                    {/* Category Selector */}
+                    <CategorySelector
+                        onChange={(categoryId) =>
+                            setFormData({ ...formData, categoryId })
+                        }
+                        value={formData.categoryId}
+                    />
 
                     {/* Deadline, Year, or Quarter */}
                     <div className="space-y-2">

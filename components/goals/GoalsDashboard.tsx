@@ -3,8 +3,8 @@
 import {
     RiArrowDownSLine,
     RiArrowRightSLine,
+    RiCheckboxBlankCircleLine,
     RiCheckboxCircleFill,
-    RiCircleLine,
     RiDeleteBin2Line,
     RiEditLine,
     RiSearchLine,
@@ -16,6 +16,7 @@ import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { orpc } from "@/orpc/client";
 import type { Goal } from "@/server/db/schema";
+import { CategoryBadge } from "./CategoryBadge";
 import { EditGoalModal } from "./EditGoalModal";
 import { GoalFilters } from "./GoalFilters";
 import { GoalStats } from "./GoalStats";
@@ -26,7 +27,11 @@ function GoalRow({
 }: {
     goal: Goal;
     onEdit: (goal: Goal) => void;
-}) {
+}): React.JSX.Element {
+    const { data: categories } = useQuery(
+        orpc.categories.getAll.queryOptions({ input: undefined })
+    );
+
     const { mutateAsync: markCompleted, isPending } = useMutation(
         orpc.goals.markCompleted.mutationOptions({
             meta: {
@@ -56,43 +61,53 @@ function GoalRow({
         new Date(goal.deadline) < new Date() &&
         !goal.isCompleted;
 
+    const handleToggle = () => {
+        markCompleted({ id: goal.id, isCompleted: !goal.isCompleted });
+    };
+
     return (
         <div
             className={cn(
-                "group flex items-center gap-3 rounded-md px-2 py-1.5 transition-all",
-                goal.isCompleted
-                    ? "opacity-50 hover:opacity-70"
-                    : "hover:bg-white/5"
+                "group relative flex items-center gap-2 rounded-lg border border-white/5 bg-white/5 px-2 py-1.5 transition-all hover:border-white/10 hover:bg-white/10",
+                goal.isCompleted && "opacity-60"
             )}
         >
             <button
                 className="shrink-0"
                 disabled={isPending}
-                onClick={() =>
-                    markCompleted({ id: goal.id, isCompleted: !goal.isCompleted })
-                }
+                onClick={handleToggle}
                 type="button"
             >
                 {goal.isCompleted ? (
                     <RiCheckboxCircleFill className="size-4 text-green-400" />
                 ) : (
-                    <RiCircleLine className="size-4 text-white/30 hover:text-green-400" />
+                    <RiCheckboxBlankCircleLine className="size-4 text-white/30 transition-colors group-hover:text-white/50" />
                 )}
             </button>
 
             <span
                 className={cn(
-                    "flex-1 truncate text-sm",
+                    "min-w-0 flex-1 truncate text-sm",
                     goal.isCompleted && "line-through"
                 )}
             >
                 {goal.title}
             </span>
 
+            {goal.categoryId && categories?.find(c => c.id === goal.categoryId) && (
+                <div>
+                    <CategoryBadge
+                        category={categories.find(c => c.id === goal.categoryId)!}
+                        size="sm"
+                        className="truncate block w-fit max-w-full"
+                    />
+                </div>
+            )}
+
             {goal.deadline && (
                 <span
                     className={cn(
-                        "shrink-0 text-xs",
+                        "shrink-0 text-xs text-nowrap",
                         isOverdue ? "font-medium text-red-400" : "text-white/40"
                     )}
                 >
@@ -103,20 +118,20 @@ function GoalRow({
                 </span>
             )}
 
-            <div className="flex shrink-0 gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+            <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 transition-all group-hover:opacity-100 bg-black/40 backdrop-blur-md rounded-md p-0.5 border border-white/5">
                 <button
-                    className="rounded p-1 hover:bg-white/10"
+                    className="rounded p-1 hover:bg-white/10 text-white/70 hover:text-white"
                     onClick={() => onEdit(goal)}
                     type="button"
                 >
-                    <RiEditLine className="size-3.5 text-white/50" />
+                    <RiEditLine className="size-3.5" />
                 </button>
                 <button
-                    className="rounded p-1 hover:bg-red-500/10"
+                    className="rounded p-1 hover:bg-red-500/20 text-white/70 hover:text-red-400"
                     onClick={() => deleteGoal({ id: goal.id })}
                     type="button"
                 >
-                    <RiDeleteBin2Line className="size-3.5 text-white/50 hover:text-red-400" />
+                    <RiDeleteBin2Line className="size-3.5" />
                 </button>
             </div>
         </div>
@@ -260,7 +275,7 @@ function YearCard({ year, goals, defaultOpen = true, onEdit }: YearCardProps) {
                                 "h-full rounded-full transition-all",
                                 allDone ? "bg-green-400" : "bg-white/30"
                             )}
-                            style={{ width: `${percent}%` }}
+                            style={{ width: `${percent}% ` }}
                         />
                     </div>
                     <span className="text-sm text-white/50">
@@ -311,7 +326,7 @@ function YearCard({ year, goals, defaultOpen = true, onEdit }: YearCardProps) {
                                             defaultOpen={isCurrent || isFuture}
                                             goals={qGoals}
                                             key={q}
-                                            label={`Q${q}`}
+                                            label={`Q${q} `}
                                             onEdit={onEdit}
                                         />
                                     );
@@ -329,7 +344,7 @@ function YearCard({ year, goals, defaultOpen = true, onEdit }: YearCardProps) {
                                 </span>
                                 <div className="h-px flex-1 bg-white/5" />
                             </div>
-                            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-6">
+                            <div className="grid grid-cols-1 gap-4 overflow-hidden sm:grid-cols-2 lg:grid-cols-3">
                                 {Object.entries(months)
                                     .sort(([a], [b]) => Number(a) - Number(b))
                                     .map(([monthIdx, mGoals]) => {
@@ -363,6 +378,7 @@ export function GoalsDashboard() {
         status: "all" as "all" | "active" | "completed" | "overdue",
         type: "all" as "all" | "annual" | "quarterly" | "monthly",
         hasReminders: null as boolean | null,
+        categoryIds: [] as string[],
     });
 
     const { data, isLoading, error } = useQuery(
@@ -375,6 +391,7 @@ export function GoalsDashboard() {
                 search: search || undefined,
                 status: filters.status !== "all" ? filters.status : undefined,
                 type: filters.type !== "all" ? filters.type : undefined,
+                categoryIds: filters.categoryIds.length > 0 ? filters.categoryIds : undefined,
             },
         })
     );
@@ -432,22 +449,46 @@ export function GoalsDashboard() {
 
     if (!data?.goals.length) {
         return (
-            <div className="flex flex-col items-center justify-center rounded-xl border border-white/10 bg-white/2 p-12 text-center">
-                <RiSearchLine className="mb-4 size-12 text-white/20" />
-                <h3 className="mb-2 font-semibold text-xl">No goals found</h3>
-                <p className="text-white/60">
-                    {search
-                        ? "Try a different search"
-                        : "Create your first goal to get started"}
-                </p>
-                {!search && (
-                    <div className="mt-4 flex items-center gap-2 text-white/40">
-                        <RiSparklingLine className="size-4" />
-                        <span className="text-sm">
-                            Ready to achieve something amazing?
-                        </span>
+            <div className="space-y-6">
+                {/* Filters */}
+                <GoalFilters
+                    filters={filters}
+                    onFiltersChange={setFilters}
+                    onSearchChange={setSearch}
+                    search={search}
+                />
+
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+                    {/* Empty State */}
+                    <div className="space-y-4 lg:col-span-8">
+                        <div className="flex flex-col items-center justify-center rounded-xl border border-white/10 bg-white/2 p-12 text-center">
+                            <RiSearchLine className="mb-4 size-12 text-white/20" />
+                            <h3 className="mb-2 font-semibold text-xl">No goals found</h3>
+                            <p className="mb-6 text-white/60">
+                                {search || filters.status !== "all" || filters.type !== "all" || filters.categoryIds.length > 0
+                                    ? "Try adjusting your filters or search query"
+                                    : "Create your first goal to get started"}
+                            </p>
+                        </div>
                     </div>
-                )}
+
+                    {/* Stats Sidebar */}
+                    {stats && (
+                        <div className="lg:col-span-4">
+                            <GoalStats
+                                stats={
+                                    stats as {
+                                        total: number;
+                                        completed: number;
+                                        overdue: number;
+                                        active: number;
+                                        completionRate: number;
+                                    }
+                                }
+                            />
+                        </div>
+                    )}
+                </div>
             </div>
         );
     }

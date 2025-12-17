@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, like, lte, type SQL, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, like, lte, type SQL, sql } from "drizzle-orm";
 import { goals } from "@/server/db/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
 import { getGoalsPaginatedValidator } from "../validators";
@@ -18,11 +18,12 @@ export const getGoalsPaginatedHandler = getGoalsPaginatedBase.handler(
             search,
             type,
             status,
+            categoryIds,
             showInactive,
         } = input;
         const offset = page * limit;
 
-        console.info("Filter params:", { search, type, status, showInactive });
+        console.info("Filter params:", { search, type, status, categoryIds, showInactive });
 
         const whereConditions = [eq(goals.userId, session.user.id)];
 
@@ -38,6 +39,11 @@ export const getGoalsPaginatedHandler = getGoalsPaginatedBase.handler(
         if (type) {
             whereConditions.push(eq(goals.type, type));
             console.info("Applied type filter:", type);
+        }
+
+        if (categoryIds && categoryIds.length > 0) {
+            whereConditions.push(inArray(goals.categoryId, categoryIds));
+            console.info("Applied category filter:", categoryIds);
         }
 
         if (status) {

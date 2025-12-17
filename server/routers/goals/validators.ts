@@ -9,6 +9,7 @@ export const createGoalValidator = z.object({
     currentValue: z.string().optional(),
     unit: z.string().optional(),
     deadline: z.date().optional(),
+    categoryId: z.string().optional(),
     remindersEnabled: z.boolean().default(false),
     reminderFrequency: z.enum(["daily", "weekly", "monthly"]).optional(),
     sortOrder: z.number().int().min(0).optional(),
@@ -30,6 +31,7 @@ export const updateGoalValidator = z.object({
     currentValue: z.string().optional(),
     unit: z.string().optional(),
     deadline: z.date().optional(),
+    categoryId: z.string().nullable().optional(),
     isCompleted: z.boolean().optional(),
     isActive: z.boolean().optional(),
     remindersEnabled: z.boolean().optional(),
@@ -65,6 +67,7 @@ export const getGoalsPaginatedValidator = z.object({
     search: z.string().optional(),
     type: z.enum(["annual", "quarterly", "monthly"]).optional(),
     status: z.enum(["active", "completed", "overdue"]).optional(),
+    categoryIds: z.array(z.string()).optional(),
     showInactive: z.boolean().default(false),
 });
 

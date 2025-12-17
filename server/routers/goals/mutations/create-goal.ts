@@ -92,6 +92,7 @@ export const createGoalHandler = createGoalBase.handler(
             currentValue: input.currentValue ?? "0",
             unit: input.unit ?? null,
             deadline: input.deadline ?? null,
+            categoryId: input.categoryId ?? null,
             remindersEnabled: input.remindersEnabled,
             reminderFrequency: input.reminderFrequency ?? null,
             sortOrder: input.sortOrder ?? null,

@@ -1,5 +1,3 @@
-"use client";
-
 import {
     RiAlertLine,
     RiVipCrownLine,
@@ -27,6 +25,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { CategorySelector } from "./CategorySelector";
 
 interface CreateGoalModalProps {
     isOpen: boolean;
@@ -46,6 +45,7 @@ export function CreateGoalModal({
         deadline: "",
         year: new Date().getFullYear().toString(),
         quarter: "Q1" as "Q1" | "Q2" | "Q3" | "Q4",
+        categoryId: null as string | null,
         remindersEnabled: false,
         reminderFrequency: "weekly" as "daily" | "weekly" | "monthly",
     });
@@ -76,6 +76,7 @@ export function CreateGoalModal({
             deadline: "",
             year: new Date().getFullYear().toString(),
             quarter: "Q1",
+            categoryId: null,
             remindersEnabled: false,
             reminderFrequency: "weekly",
         });
@@ -119,6 +120,7 @@ export function CreateGoalModal({
             description: formData.description,
             type: formData.type,
             deadline,
+            categoryId: formData.categoryId,
             remindersEnabled: formData.remindersEnabled,
             reminderFrequency: formData.remindersEnabled
                 ? formData.reminderFrequency
@@ -226,6 +228,14 @@ export function CreateGoalModal({
                             </div>
                         </div> */}
                     </div>
+
+                    {/* Category Selector */}
+                    <CategorySelector
+                        onChange={(categoryId) =>
+                            setFormData({ ...formData, categoryId })
+                        }
+                        value={formData.categoryId}
+                    />
 
                     {/* Deadline, Year, or Quarter */}
                     <div className="space-y-2">

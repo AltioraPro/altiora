@@ -9,6 +9,7 @@ import {
     varchar,
 } from "drizzle-orm/pg-core";
 import { user } from "@/server/db/schema";
+import { goalCategories } from "../goal-categories/schema";
 
 export const goals = pgTable(
     "goal",
@@ -30,6 +31,9 @@ export const goals = pgTable(
         isActive: boolean("is_active").default(true).notNull(),
         sortOrder: integer("sort_order").default(0),
 
+        categoryId: varchar("category_id", { length: 255 })
+            .references(() => goalCategories.id, { onDelete: "set null" }),
+
         remindersEnabled: boolean("reminders_enabled").default(false).notNull(),
         reminderFrequency: varchar("reminder_frequency", { length: 20 }),
         lastReminderSent: timestamp("last_reminder_sent", {
@@ -50,6 +54,7 @@ export const goals = pgTable(
         index("goal_user_id_idx").on(table.userId),
         index("goal_type_idx").on(table.type),
         index("goal_active_idx").on(table.isActive),
+        index("goal_category_id_idx").on(table.categoryId),
         index("goal_reminder_idx").on(
             table.remindersEnabled,
             table.nextReminderDate
