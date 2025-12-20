@@ -1,11 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import { PAGES } from "@/constants/pages";
 import { Section } from "./section";
 
 interface FAQItem {
@@ -47,12 +49,17 @@ interface FAQSectionProps {
 export function FAQSection({ id }: FAQSectionProps) {
     return (
         <Section id={id}>
-            <div className="text-center">
+            <div className="mx-auto max-w-2xl text-center">
                 <h2 className="font-normal text-3xl">
-                    Frequently Asked Questions
+                    Your answers might be found here.
                 </h2>
                 <p className="mt-2 text-neutral-400">
-                    Everything you need to know about Altiora.
+                    If you don't find the answer you're looking for, please
+                    contact us{" "}
+                    <Link className="underline" href={PAGES.CONTACT_US}>
+                        here
+                    </Link>
+                    .
                 </p>
             </div>
 

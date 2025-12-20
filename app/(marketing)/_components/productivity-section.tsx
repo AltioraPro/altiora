@@ -30,8 +30,8 @@ const notifications = [
 
 export function ProductivitySection({ id }: ProductivitySectionProps) {
     return (
-        <Section id={id}>
-            <CardLarge.Root className="mt-0">
+        <Section className="mt-0" id={id}>
+            <CardLarge.Root className="mt-0" contentPosition="right">
                 <CardLarge.Text
                     description="Track your deepwork sessions, set your goals and your habits, follow your progress and get insights on your productivity."
                     linkHref={PAGES.SIGN_UP}

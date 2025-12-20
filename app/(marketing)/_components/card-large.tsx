@@ -6,7 +6,9 @@ import type { Route } from "next";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-interface CardLargeProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface CardLargeProps extends React.HTMLAttributes<HTMLDivElement> {
+    contentPosition?: "left" | "right";
+}
 
 interface CardLargeTextProps {
     title: string;
@@ -26,7 +28,7 @@ function CardLargeText({
     linkHref,
 }: CardLargeTextProps) {
     return (
-        <div className="flex max-w-[470px] flex-col gap-2 text-2xl">
+        <div className="flex w-full max-w-[470px] flex-col gap-2 text-left text-xl md:text-2xl">
             <h2 className="font-medium">{title}</h2>
             <p className="text-neutral-400">{description}</p>
             {linkText && linkHref && (
@@ -55,7 +57,7 @@ function CardLargeContent({
             <motion.div
                 {...motionProps}
                 className={cn(
-                    "flex size-full min-h-[600px] flex-col items-center justify-center gap-3 bg-background p-8",
+                    "flex size-full min-h-[400px] flex-col items-center justify-center gap-3 bg-background p-4 md:min-h-[600px] md:p-8",
                     className
                 )}
             >
@@ -67,7 +69,7 @@ function CardLargeContent({
     return (
         <div
             className={cn(
-                "flex size-full min-h-[600px] flex-col items-center justify-center gap-3 bg-background p-8",
+                "flex size-full min-h-[400px] flex-col items-center justify-center gap-3 bg-background p-4 md:min-h-[600px] md:p-8",
                 className
             )}
             {...props}
@@ -82,12 +84,14 @@ CardLargeContent.displayName = "CardLargeContent";
 export function CardLargeRoot({
     children,
     className,
+    contentPosition = "right",
     ...props
 }: CardLargeProps) {
     return (
         <div
             className={cn(
-                "mt-40 flex w-full items-center justify-between gap-12 bg-neutral-900 p-4.5",
+                "mt-20 flex w-full items-start justify-between gap-6 bg-neutral-900 p-4 md:mt-40 md:flex-row md:items-center md:gap-12 md:p-4.5",
+                contentPosition === "right" ? "flex-col-reverse" : "flex-col",
                 className
             )}
             {...props}

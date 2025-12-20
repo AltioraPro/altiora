@@ -9,7 +9,10 @@ interface IntegrationSectionProps {
 
 export function IntegrationSection({ id }: IntegrationSectionProps) {
     return (
-        <Section className="mt-40 flex min-h-96 items-center justify-center gap-12" id={id}>
+        <Section
+            className="mt-40 flex min-h-96 items-center justify-center gap-12"
+            id={id}
+        >
             <div className="relative flex w-full max-w-[600px] justify-center pb-8">
                 <div className="absolute right-0 bottom-0 left-0 h-52 bg-neutral-900" />
                 <div className="z-10 flex w-fit flex-col items-center justify-center gap-8 border border-neutral-800 bg-background p-8 pb-9 shadow-md">
@@ -52,7 +55,7 @@ export function IntegrationSection({ id }: IntegrationSectionProps) {
                 </div>
             </div>
 
-            <div className="flex flex-col items-center justify-center gap-4">
+            <div className="flex flex-col items-center justify-center gap-4 text-center">
                 <h2 className="text-2xl">
                     Unlock the full potential of Altiora
                 </h2>

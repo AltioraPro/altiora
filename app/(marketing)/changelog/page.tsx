@@ -4,260 +4,115 @@ import {
     RiLightbulbFlashLine,
     RiStarLine,
 } from "@remixicon/react";
-import { Footer } from "@/app/(marketing)/_components/footer";
 import { Header } from "@/components/header";
+import { RELEASES } from "@/constants/releases";
 
 export default function ChangelogPage() {
-    const releases = [
-        {
-            version: "2.1.0",
-            date: "2024-01-15",
-            type: "major",
-            title: "Discord Integration & Advanced Analytics",
-            changes: [
-                {
-                    type: "feature",
-                    text: "Discord bot integration for Pomodoro sessions",
-                },
-                {
-                    type: "feature",
-                    text: "Advanced trading analytics dashboard",
-                },
-                {
-                    type: "feature",
-                    text: "Habit streak analytics and insights",
-                },
-                {
-                    type: "improvement",
-                    text: "Improved performance across all modules",
-                },
-                {
-                    type: "fix",
-                    text: "Fixed timezone issues in habit tracking",
-                },
-            ],
-        },
-        {
-            version: "2.0.0",
-            date: "2024-01-01",
-            type: "major",
-            title: "Major Platform Overhaul",
-            changes: [
-                {
-                    type: "feature",
-                    text: "Complete UI/UX redesign with glassmorphism effects",
-                },
-                { type: "feature", text: "New goal planning system with OKRs" },
-                {
-                    type: "feature",
-                    text: "Enhanced trading journal with emotion tracking",
-                },
-                {
-                    type: "improvement",
-                    text: "Faster load times and better mobile experience",
-                },
-                {
-                    type: "improvement",
-                    text: "Improved accessibility features",
-                },
-            ],
-        },
-        {
-            version: "1.8.2",
-            date: "2023-12-20",
-            type: "patch",
-            title: "Bug Fixes & Performance",
-            changes: [
-                {
-                    type: "fix",
-                    text: "Fixed habit completion not saving properly",
-                },
-                { type: "fix", text: "Resolved trading journal export issues" },
-                {
-                    type: "improvement",
-                    text: "Optimized database queries for better performance",
-                },
-            ],
-        },
-        {
-            version: "1.8.0",
-            date: "2023-12-10",
-            type: "minor",
-            title: "Enhanced Habit Tracking",
-            changes: [
-                { type: "feature", text: "Calendar view for habit tracking" },
-                { type: "feature", text: "Habit templates and suggestions" },
-                {
-                    type: "improvement",
-                    text: "Better habit statistics and insights",
-                },
-                { type: "fix", text: "Fixed notification timing issues" },
-            ],
-        },
-        {
-            version: "1.7.0",
-            date: "2023-11-25",
-            type: "minor",
-            title: "Trading Journal Enhancements",
-            changes: [
-                {
-                    type: "feature",
-                    text: "AI-powered trade analysis suggestions",
-                },
-                { type: "feature", text: "Custom tags and filtering system" },
-                {
-                    type: "feature",
-                    text: "Trade performance visualization charts",
-                },
-                {
-                    type: "improvement",
-                    text: "Enhanced data export capabilities",
-                },
-            ],
-        },
-    ];
-
     const getTypeIcon = (type: string) => {
         switch (type) {
             case "feature":
-                return <RiAddLine className="size-4 text-green-400" />;
+                return <RiAddLine className="size-4 text-neutral-400" />;
             case "improvement":
                 return (
-                    <RiLightbulbFlashLine className="size-4 text-blue-400" />
+                    <RiLightbulbFlashLine className="size-4 text-neutral-400" />
                 );
             case "fix":
-                return <RiBugLine className="size-4 text-red-400" />;
+                return <RiBugLine className="size-4 text-neutral-400" />;
             default:
-                return <RiStarLine className="size-4 text-white/60" />;
+                return <RiStarLine className="size-4 text-neutral-500" />;
         }
     };
 
     const getVersionBadgeColor = (type: string) => {
         switch (type) {
             case "major":
-                return "bg-red-500/20 text-red-300 border-red-500/30";
+                return "bg-neutral-800 text-neutral-300 border-neutral-700";
             case "minor":
-                return "bg-blue-500/20 text-blue-300 border-blue-500/30";
+                return "bg-neutral-800 text-neutral-300 border-neutral-700";
             case "patch":
-                return "bg-green-500/20 text-green-300 border-green-500/30";
+                return "bg-neutral-800 text-neutral-300 border-neutral-700";
             default:
-                return "bg-white/10 text-white/60 border-white/20";
+                return "bg-neutral-800 text-neutral-400 border-neutral-700";
         }
     };
 
     return (
-        <>
+        <div>
             <Header />
-            <div className="min-h-screen pt-20 text-pure-white">
-                <div className="mx-auto max-w-4xl px-6 py-16">
-                    <div className="mb-12 text-center">
-                        <h1 className="mb-4 bg-linear-to-b from-white to-gray-400 bg-clip-text font-bold text-5xl text-transparent">
-                            CHANGELOG
-                        </h1>
-                        <div className="mx-auto h-px w-24 bg-linear-to-r from-transparent via-white to-transparent opacity-50" />
-                        <p className="mt-6 text-white/60">
-                            Track all updates, improvements, and new features
-                        </p>
-                    </div>
 
-                    <div className="space-y-8">
-                        {releases.map((release, index) => (
-                            <div
-                                className="overflow-hidden rounded-2xl border border-white/10 bg-white/5"
-                                key={index}
-                            >
-                                {/* Release Header */}
-                                <div className="border-white/10 border-b p-6">
-                                    <div className="mb-4 flex items-center justify-between">
-                                        <div className="flex items-center space-x-4">
-                                            <span
-                                                className={`rounded-full border px-3 py-1 font-bold text-xs ${getVersionBadgeColor(release.type)}`}
-                                            >
-                                                v{release.version}
-                                            </span>
-                                            <span className="text-sm text-white/50">
-                                                {new Date(
-                                                    release.date
-                                                ).toLocaleDateString("en-US", {
-                                                    year: "numeric",
-                                                    month: "long",
-                                                    day: "numeric",
-                                                })}
-                                            </span>
+            <main className="scroll-target-container px-4">
+                <div className="relative mx-auto w-full max-w-7xl overflow-hidden pt-20 pb-20">
+                    <div className="mx-auto max-w-4xl">
+                        <div className="mb-12">
+                            <h1 className="mb-4 font-normal text-5xl text-neutral-50">
+                                Changelog
+                            </h1>
+                            <p className="mt-4 text-neutral-400 text-sm">
+                                Track all updates, improvements, and new
+                                features
+                            </p>
+                        </div>
+
+                        <div className="space-y-6">
+                            {RELEASES.map((release, index) => (
+                                <div
+                                    className="overflow-hidden border border-neutral-800 bg-neutral-900"
+                                    key={index}
+                                >
+                                    {/* Release Header */}
+                                    <div className="border-neutral-800 border-b p-6">
+                                        <div className="mb-4 flex items-center justify-between">
+                                            <div className="flex items-center gap-4">
+                                                <span
+                                                    className={`rounded-full border px-3 py-1 font-medium text-xs ${getVersionBadgeColor(release.type)}`}
+                                                >
+                                                    v{release.version}
+                                                </span>
+                                                <span className="text-neutral-400 text-sm">
+                                                    {new Date(
+                                                        release.date
+                                                    ).toLocaleDateString(
+                                                        "en-US",
+                                                        {
+                                                            year: "numeric",
+                                                            month: "long",
+                                                            day: "numeric",
+                                                        }
+                                                    )}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <h2 className="font-medium text-neutral-50 text-xl">
+                                            {release.title}
+                                        </h2>
+                                    </div>
+
+                                    {/* Changes List */}
+                                    <div className="p-6">
+                                        <div className="space-y-3">
+                                            {release.changes.map(
+                                                (change, changeIndex) => (
+                                                    <div
+                                                        className="flex items-start gap-3"
+                                                        key={changeIndex}
+                                                    >
+                                                        {getTypeIcon(
+                                                            change.type
+                                                        )}
+                                                        <span className="flex-1 text-neutral-400 text-sm leading-relaxed">
+                                                            {change.text}
+                                                        </span>
+                                                    </div>
+                                                )
+                                            )}
                                         </div>
                                     </div>
-                                    <h2 className="font-bold text-white text-xl">
-                                        {release.title}
-                                    </h2>
                                 </div>
-
-                                {/* Changes List */}
-                                <div className="p-6">
-                                    <div className="space-y-3">
-                                        {release.changes.map(
-                                            (change, changeIndex) => (
-                                                <div
-                                                    className="flex items-start space-x-3"
-                                                    key={changeIndex}
-                                                >
-                                                    {getTypeIcon(change.type)}
-                                                    <span className="flex-1 text-sm text-white/80 leading-relaxed">
-                                                        {change.text}
-                                                    </span>
-                                                </div>
-                                            )
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Legend */}
-                    <div className="mt-12 rounded-2xl border border-white/10 bg-white/5 p-6">
-                        <h3 className="mb-4 font-bold text-lg text-white">
-                            Legend
-                        </h3>
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                            <div className="flex items-center space-x-3">
-                                <RiAddLine className="size-4 text-green-400" />
-                                <span className="text-sm text-white/70">
-                                    New Feature
-                                </span>
-                            </div>
-                            <div className="flex items-center space-x-3">
-                                <RiLightbulbFlashLine className="size-4 text-blue-400" />
-                                <span className="text-sm text-white/70">
-                                    Improvement
-                                </span>
-                            </div>
-                            <div className="flex items-center space-x-3">
-                                <RiBugLine className="size-4 text-red-400" />
-                                <span className="text-sm text-white/70">
-                                    Bug Fix
-                                </span>
-                            </div>
+                            ))}
                         </div>
                     </div>
-
-                    {/* Subscribe to Updates */}
-                    <div className="mt-12 rounded-2xl border border-white/10 bg-white/5 p-8 text-center">
-                        <h3 className="mb-4 font-bold text-white text-xl">
-                            Stay Updated
-                        </h3>
-                        <p className="mb-6 text-white/60">
-                            Get notified about new releases and features
-                        </p>
-                        <a
-                            className="inline-flex items-center rounded-xl border border-white/20 bg-white/10 px-6 py-3 text-white transition-all duration-300 hover:border-white/40 hover:bg-white/20"
-                            href="mailto:updates@altiora.app?subject=Subscribe to Updates"
-                        >
-                            Subscribe to Updates
-                        </a>
-                    </div>
                 </div>
-            </div>
-            <Footer />
-        </>
+            </main>
+        </div>
     );
 }
