@@ -1,4 +1,3 @@
-import { RiArrowRightLine } from "@remixicon/react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -8,14 +7,13 @@ import { HeroImage } from "./hero-image";
 export function HeroSection() {
     return (
         <section className="border-neutral-800 border-r border-l">
-            <div className="px-6 pt-20">
+            <div className="px-4 pt-20 md:px-6">
                 <p className="inline-flex items-center gap-1.5 bg-neutral-800 px-2 py-1 text-xs uppercase">
-                    <span>Altiora is in beta</span>
-                    <RiArrowRightLine className="size-3" />
+                    Altiora is in Beta
                 </p>
 
                 <div className="mt-6">
-                    <h1 className="max-w-3xl font-normal text-5xl">
+                    <h1 className="max-w-3xl font-normal text-3xl md:text-5xl">
                         For traders who don’t just want a journal, but a{" "}
                         <span className="font-serif text-neutral-400">
                             real growth system
@@ -34,11 +32,16 @@ export function HeroSection() {
                     <div className="mt-6 flex items-center gap-2.5">
                         <Button asChild size="lg">
                             <Link href={PAGES.SIGN_UP}>
-                                Start your free trial
+                                Create your growth space
                             </Link>
                         </Button>
 
-                        <Button asChild size="lg" variant="outline">
+                        <Button
+                            asChild
+                            className="max-md:hidden"
+                            size="lg"
+                            variant="outline"
+                        >
                             <Link href="#features">Discover our Features</Link>
                         </Button>
                     </div>

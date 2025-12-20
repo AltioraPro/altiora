@@ -72,7 +72,7 @@ export function HeroImage() {
 
     return (
         <div className="relative mt-16 aspect-video w-full bg-neutral-800">
-            <div className="-top-6 -translate-x-1/2 absolute left-1/2 z-40 flex items-center justify-center gap-3 border border-neutral-800 bg-background px-3 py-2">
+            <div className="-top-6 -translate-x-1/2 absolute left-1/2 z-30 flex items-center justify-center gap-3 border border-neutral-800 bg-background px-3 py-2">
                 {MENU_ITEMS.map((item, index) => (
                     <button
                         className={cn(

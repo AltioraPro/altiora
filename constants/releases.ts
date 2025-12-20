@@ -1,29 +1,4 @@
-import { Header } from "@/components/header";
-import { getWebsiteUrl } from "@/lib/urls";
-import {
-    RiAddLine,
-    RiBugLine,
-    RiLightbulbFlashLine
-} from "@remixicon/react";
-import { ChangelogList } from "./_components/changelog-list";
-
-interface ChangelogEntry {
-    type: "feature" | "improvement" | "fix";
-    text: string;
-    prNumber?: number;
-    prUrl?: string;
-}
-
-interface Release {
-    version: string;
-    date: string;
-    type: "major" | "minor" | "patch";
-    title: string;
-    changes: ChangelogEntry[];
-}
-
-// Fallback releases if no GitHub data
-const fallbackReleases: Release[] = [
+export const RELEASES = [
     {
         version: "2.1.0",
         date: "2024-01-15",
@@ -130,64 +105,4 @@ const fallbackReleases: Release[] = [
             },
         ],
     },
-];
-
-async function getChangelogData(): Promise<Release[]> {
-    try {
-        const baseUrl = getWebsiteUrl();
-        const response = await fetch(`${baseUrl}/api/changelog`, {
-            next: { revalidate: 300 }, // Revalidate every 5 minutes
-        });
-
-        if (!response.ok) {
-            console.error("Failed to fetch changelog:", response.statusText);
-            return fallbackReleases;
-        }
-
-        const data = await response.json();
-        const githubReleases = data.releases || [];
-        return githubReleases.length > 0 ? githubReleases : fallbackReleases;
-    } catch (error) {
-        console.error("Error fetching changelog:", error);
-        return fallbackReleases;
-    }
-}
-
-export default async function ChangelogPage() {
-    const releases = await getChangelogData();
-
-    return (
-        <div>
-            <Header />
-
-                    <ChangelogList releases={releases} />
-
-                    {/* Legend */}
-                    <div className="mt-12 rounded-2xl border border-white/10 bg-white/5 p-6">
-                        <h3 className="mb-4 font-bold text-lg text-white">
-                            Legend
-                        </h3>
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                            <div className="flex items-center space-x-3">
-                                <RiAddLine className="size-4 text-green-400" />
-                                <span className="text-sm text-white/70">
-                                    New Feature
-                                </span>
-                            </div>
-                            <div className="flex items-center space-x-3">
-                                <RiLightbulbFlashLine className="size-4 text-blue-400" />
-                                <span className="text-sm text-white/70">
-                                    Improvement
-                                </span>
-                            </div>
-                            <div className="flex items-center space-x-3">
-                                <RiBugLine className="size-4 text-red-400" />
-                                <span className="text-sm text-white/70">
-                                    Bug Fix
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-        </div>
-    );
-}
+] as const;
