@@ -1,77 +1,69 @@
-import { RiCheckboxCircleLine } from "@remixicon/react";
+import Image from "next/image";
+import Link from "next/link";
+import Dither from "@/app/(marketing)/_components/dither";
+import { PAGES } from "@/constants/pages";
 import { SignUpForm } from "./_components/sign-up-form";
 
 export default function RegisterPage() {
     return (
-        <div className="relative min-h-screen overflow-hidden text-pure-white">
-            {/* Éléments décoratifs géométriques */}
-            <div className="pointer-events-none absolute inset-0 overflow-hidden">
-                <div className="absolute top-32 right-32 h-6 w-6 rotate-12 border border-white/15" />
-                <div className="absolute bottom-40 left-40 h-3 w-3 animate-pulse rounded-full bg-white/10" />
-                <div className="absolute right-20 bottom-60 h-8 w-8 rotate-45 border border-white/25" />
+        <div className="flex min-h-screen p-4">
+            {/* Left section - Form */}
+            <div className="flex w-full flex-col justify-center pt-12 lg:w-1/2">
+                <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center space-y-8">
+                    {/* Form title */}
+                    <div className="mb-8">
+                        <h2 className="mb-2 font-bold font-serif text-2xl text-white">
+                            Welcome to Altiora
+                        </h2>
+                        <p className="text-muted-foreground">
+                            Join thousands of users who are transforming their
+                            lives
+                        </p>
+                    </div>
 
-                {/* Grille de points subtile */}
-                <div
-                    className="absolute inset-0 opacity-[0.02]"
-                    style={{
-                        backgroundImage:
-                            "radial-gradient(circle, white 1px, transparent 1px)",
-                        backgroundSize: "50px 50px",
-                    }}
-                />
+                    <SignUpForm />
+                </div>
+                <p className="mt-8 text-center text-muted-foreground text-xs">
+                    By signing in you agree to our{" "}
+                    <Link
+                        className="font-medium underline transition-colors hover:text-gray-300"
+                        href={PAGES.TERMS_OF_SERVICE}
+                    >
+                        Terms of service
+                    </Link>{" "}
+                    &{" "}
+                    <Link
+                        className="font-medium underline transition-colors hover:text-gray-300"
+                        href={PAGES.PRIVACY_POLICY}
+                    >
+                        Privacy policy
+                    </Link>
+                </p>
             </div>
 
-            <div className="relative z-10 flex min-h-screen">
-                {/* Left section - Branding */}
-                <div className="hidden flex-col justify-center px-12 lg:flex lg:w-1/2 xl:px-20">
-                    <div className="max-w-lg">
-                        <h1 className="mb-6 bg-linear-to-b from-white to-gray-400 bg-clip-text font-argesta font-bold text-[4rem] text-transparent leading-none">
-                            ALTIORA
-                        </h1>
-
-                        <div className="space-y-4 text-gray-300">
-                            <p className="text-xl">
-                                Start your transformation.
-                            </p>
-                            <p className="text-base opacity-80">
-                                Create your account and join a community
-                                dedicated to excellence in trading and personal
-                                development.
-                            </p>
-                        </div>
-
-                        {/* Benefits */}
-                        <div className="mt-8 space-y-3">
-                            {[
-                                "Professional trading journal",
-                                "Smart habit tracking",
-                                "Goal planning",
-                                "Discord integration",
-                            ].map((benefit, index) => (
-                                <div
-                                    className="flex items-center space-x-3"
-                                    key={index}
-                                >
-                                    <RiCheckboxCircleLine className="size-4 text-white/60" />
-                                    <span className="text-sm text-white/70">
-                                        {benefit}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Decorative line */}
-                        <div className="mt-12 flex items-center space-x-4">
-                            <div className="h-px w-20 bg-linear-to-r from-white to-transparent" />
-                            <span className="text-white/60 text-xs tracking-widest">
-                                SIGN UP
-                            </span>
-                            <div className="h-px w-20 bg-linear-to-l from-white to-transparent" />
-                        </div>
-                    </div>
+            {/* Right section - Image */}
+            <div className="relative hidden overflow-hidden border border-neutral-900 lg:flex lg:w-1/2 lg:items-center lg:justify-end">
+                <div className="absolute inset-0 z-0 size-full opacity-50">
+                    <Dither
+                        colorNum={4}
+                        disableAnimation={false}
+                        enableMouseInteraction={false}
+                        waveAmplitude={0}
+                        waveColor={[0.4, 0.4, 0.4]}
+                        waveFrequency={3}
+                        waveSpeed={0.005}
+                    />
                 </div>
-
-                <SignUpForm />
+                <Image
+                    alt="Altiora Dashboard"
+                    className="z-40 size-5/6 object-cover object-left"
+                    height={1000}
+                    priority
+                    src="/img/hero-journal3.png"
+                    width={1000}
+                />
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-linear-to-r from-background to-transparent" />
             </div>
         </div>
     );
