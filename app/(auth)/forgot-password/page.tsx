@@ -2,9 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-    RiAlertLine,
     RiArrowLeftLine,
-    RiArrowRightLine,
     RiCheckboxCircleFill,
     RiMailLine,
 } from "@remixicon/react";
@@ -12,12 +10,16 @@ import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+
+import { StaggeredFadeLoader } from "@/components/staggered-fade-loader";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import { PAGES } from "@/constants/pages";
 import { authClient } from "@/lib/auth-client";
 
 const forgotPasswordSchema = z.object({
-    email: z.email("Invalid email address"),
+    email: z.string().email("Invalid email address"),
 });
 
 type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
@@ -29,7 +31,7 @@ export default function ForgotPasswordPage() {
     const {
         register,
         handleSubmit,
-        formState: { errors, isSubmitting },
+        formState: { errors },
         getValues,
         setError,
     } = useForm<ForgotPasswordFormValues>({
@@ -51,7 +53,7 @@ export default function ForgotPasswordPage() {
             setError("email", {
                 message: error.message,
             });
-
+            setIsLoading(false);
             return;
         }
 
@@ -61,90 +63,61 @@ export default function ForgotPasswordPage() {
 
     if (isSuccess) {
         return (
-            <div className="relative min-h-screen overflow-hidden text-pure-white">
-                {/* Éléments décoratifs géométriques */}
-                <div className="pointer-events-none absolute inset-0 overflow-hidden">
-                    <div className="absolute top-32 right-32 h-6 w-6 rotate-12 border border-white/15" />
-                    <div className="absolute bottom-40 left-40 h-3 w-3 animate-pulse rounded-full bg-white/10" />
-                    <div className="absolute right-20 bottom-60 h-8 w-8 rotate-45 border border-white/25" />
+            <div className="flex h-screen w-full items-center justify-center">
+                <div className="w-full max-w-[472px] px-4">
+                    <div className="flex w-full flex-col gap-6 p-5 md:p-8">
+                        <div className="flex flex-col items-center gap-2">
+                            <div className="relative flex size-[68px] shrink-0 items-center justify-center lg:size-24">
+                                <div className="relative z-10 flex size-12 items-center justify-center bg-neutral-900 ring-1 ring-neutral-800 ring-inset lg:size-16">
+                                    <RiCheckboxCircleFill className="size-6 text-text-sub-600 lg:size-8" />
+                                </div>
+                            </div>
 
-                    {/* Grille de points subtile */}
-                    <div
-                        className="absolute inset-0 opacity-[0.02]"
-                        style={{
-                            backgroundImage:
-                                "radial-gradient(circle, white 1px, transparent 1px)",
-                            backgroundSize: "50px 50px",
-                        }}
-                    />
-                </div>
-
-                <div className="relative z-10 flex min-h-screen items-center justify-center p-8">
-                    <div className="w-full max-w-md text-center">
-                        {/* Success icon */}
-                        <div className="mb-8 flex justify-center">
-                            <div className="flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-white/10">
-                                <RiCheckboxCircleFill className="size-8 text-white" />
+                            <div className="space-y-1 text-center">
+                                <div className="mb-2 font-semibold text-2xl">
+                                    Check Your Email
+                                </div>
+                                <div className="text-neutral-400 text-sm">
+                                    We sent a password reset link to{" "}
+                                    <span className="font-medium text-neutral-50">
+                                        {getValues("email")}
+                                    </span>
+                                </div>
+                                <div className="text-neutral-400 text-sm">
+                                    Click the link in the email to reset your
+                                    password. The link will expire in 1 hour.
+                                </div>
                             </div>
                         </div>
 
-                        {/* Success message */}
-                        <div className="mb-8">
-                            <h1 className="mb-4 font-bold text-2xl text-white">
-                                Check Your Email
-                            </h1>
-                            <p className="mb-2 text-gray-400">
-                                We&apos;ve sent a password reset link to:
-                            </p>
-                            <p className="font-medium text-white">
-                                {getValues("email")}
-                            </p>
-                            <p className="mt-4 text-gray-400 text-sm">
-                                Click the link in the email to reset your
-                                password. The link will expire in 1 hour.
-                            </p>
-                        </div>
+                        <Separator />
 
-                        {/* Actions */}
-                        <div className="space-y-4">
-                            <button
-                                className="w-full rounded-lg border border-white/20 bg-transparent py-3 text-white transition-all duration-300 hover:border-white/40 hover:bg-white/5"
-                                onClick={() => {
-                                    setIsSuccess(false);
-                                }}
+                        <div className="flex flex-col gap-2">
+                            <Button
+                                onClick={() => setIsSuccess(false)}
                                 type="button"
+                                variant="primary"
                             >
                                 Send Another Email
-                            </button>
-
-                            <Link
-                                className="block w-full rounded-lg border border-white/30 bg-transparent py-3 text-center transition-all duration-300 hover:border-white hover:bg-white/10"
-                                href={PAGES.SIGN_IN}
-                            >
-                                <div className="flex items-center justify-center space-x-3">
+                            </Button>
+                            <Button asChild variant="outline">
+                                <Link href={PAGES.SIGN_IN}>
                                     <RiArrowLeftLine className="size-4" />
-                                    <span className="tracking-widest">
-                                        BACK TO LOGIN
-                                    </span>
-                                </div>
-                            </Link>
+                                    Back to Login
+                                </Link>
+                            </Button>
                         </div>
 
-                        {/* Help text */}
-                        <div className="mt-8">
-                            <p className="text-gray-400 text-sm">
-                                Didn&apos;t receive the email? Check your spam
-                                folder or{" "}
-                                <button
-                                    className="text-white underline hover:text-gray-300"
-                                    onClick={() => {
-                                        setIsSuccess(false);
-                                    }}
-                                    type="button"
-                                >
-                                    try again
-                                </button>
-                            </p>
+                        <div className="flex flex-col items-center gap-1 text-center text-neutral-400 text-sm">
+                            Didn&apos;t receive the email? Check your spam
+                            folder or{" "}
+                            <button
+                                className="text-primary hover:text-primary/90"
+                                onClick={() => setIsSuccess(false)}
+                                type="button"
+                            >
+                                try again
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -153,154 +126,86 @@ export default function ForgotPasswordPage() {
     }
 
     return (
-        <div className="relative min-h-screen overflow-hidden text-pure-white">
-            {/* Éléments décoratifs géométriques */}
-            <div className="pointer-events-none absolute inset-0 overflow-hidden">
-                <div className="absolute top-32 right-32 h-6 w-6 rotate-12 border border-white/15" />
-                <div className="absolute bottom-40 left-40 h-3 w-3 animate-pulse rounded-full bg-white/10" />
-                <div className="absolute right-20 bottom-60 h-8 w-8 rotate-45 border border-white/25" />
+        <div className="flex h-screen w-full items-center justify-center">
+            <div className="w-full max-w-[472px] px-4">
+                <form
+                    className="flex w-full flex-col gap-6 p-5 md:p-8"
+                    onSubmit={handleSubmit(onSubmit)}
+                >
+                    <div className="flex flex-col items-center gap-2">
+                        <div className="relative flex size-[68px] shrink-0 items-center justify-center lg:size-24">
+                            <div className="relative z-10 flex size-12 items-center justify-center bg-neutral-900 ring-1 ring-neutral-800 ring-inset lg:size-16">
+                                <RiMailLine className="size-6 text-text-sub-600 lg:size-8" />
+                            </div>
+                        </div>
 
-                {/* Grille de points subtile */}
-                <div
-                    className="absolute inset-0 opacity-[0.02]"
-                    style={{
-                        backgroundImage:
-                            "radial-gradient(circle, white 1px, transparent 1px)",
-                        backgroundSize: "50px 50px",
-                    }}
-                />
-            </div>
-
-            <div className="relative z-10 flex min-h-screen">
-                {/* Left section - Branding */}
-                <div className="hidden flex-col justify-center px-12 lg:flex lg:w-1/2 xl:px-20">
-                    <div className="max-w-lg">
-                        <h1 className="mb-6 bg-linear-to-b from-white to-gray-400 bg-clip-text font-argesta font-bold text-[4rem] text-transparent leading-none">
-                            ALTIORA
-                        </h1>
-
-                        <div className="space-y-4 text-gray-300">
-                            <p className="text-xl">Reset your password.</p>
-                            <p className="text-base opacity-80">
+                        <div className="space-y-1 text-center">
+                            <div className="mb-2 font-semibold text-2xl">
+                                Forgot Password
+                            </div>
+                            <div className="text-neutral-400 text-sm">
                                 Enter your email address and we&apos;ll send you
                                 a link to reset your password.
-                            </p>
-                        </div>
-
-                        {/* Decorative line */}
-                        <div className="mt-12 flex items-center space-x-4">
-                            <div className="h-px w-20 bg-linear-to-r from-white to-transparent" />
-                            <span className="text-white/60 text-xs tracking-widest">
-                                RESET
-                            </span>
-                            <div className="h-px w-20 bg-linear-to-l from-white to-transparent" />
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Right section - Form */}
-                <div className="flex flex-1 items-center justify-center p-8 lg:w-1/2">
-                    <div className="w-full max-w-md">
-                        {/* Mobile logo */}
-                        <div className="mb-8 text-center lg:hidden">
-                            <h1 className="font-argesta font-bold text-3xl text-white">
-                                ALTIORA
-                            </h1>
-                            <p className="mt-2 text-gray-400 text-sm">
-                                Personal coaching platform
-                            </p>
-                        </div>
+                    <Separator />
 
-                        {/* Form title */}
-                        <div className="mb-8 text-center">
-                            <h2 className="mb-2 font-bold text-2xl text-white">
-                                Forgot Password
-                            </h2>
-                            <p className="text-gray-400">
-                                Enter your email to receive a password reset
-                                link
-                            </p>
-                        </div>
-
-                        {/* Message d'erreur global */}
-                        {errors.email && (
-                            <div className="mb-6 flex items-start space-x-3 rounded-lg border border-red-500/20 bg-red-500/10 p-4">
-                                <RiAlertLine className="mt-0.5 size-5 shrink-0 text-red-400" />
-                                <p className="text-red-400 text-sm">
-                                    {errors.email.message}
-                                </p>
-                            </div>
-                        )}
-
-                        {/* Form */}
-                        <form
-                            className="space-y-6"
-                            onSubmit={handleSubmit(onSubmit)}
+                    <div className="flex flex-col gap-2">
+                        <label
+                            className="font-medium text-neutral-400 text-sm"
+                            htmlFor="email"
                         >
-                            {/* Email */}
-                            <div>
-                                <label
-                                    className="mb-2 block font-medium text-white/80 text-xs tracking-widest"
-                                    htmlFor="email"
-                                >
-                                    EMAIL
-                                </label>
-                                <div className="relative">
-                                    <RiMailLine className="-translate-y-1/2 absolute top-1/2 left-3 size-4 transform text-white/40" />
-                                    <input
-                                        {...register("email")}
-                                        className="w-full rounded-lg border border-white/20 bg-transparent py-3 pr-3 pl-10 text-white placeholder-white/40 transition-all duration-300 focus:border-white focus:outline-hidden"
-                                        placeholder="your@email.com"
-                                        type="email"
-                                    />
-                                </div>
-                                {errors.email && (
-                                    <p className="mt-1 text-red-400 text-sm">
-                                        {errors.email.message}
-                                    </p>
-                                )}
-                            </div>
-
-                            {/* Send reset link button */}
-                            <button
-                                className="group relative w-full overflow-hidden rounded-lg border border-white/30 bg-transparent py-4 transition-all duration-300 hover:border-white disabled:cursor-not-allowed disabled:opacity-50"
-                                disabled={isSubmitting || isLoading}
-                                type="submit"
-                            >
-                                {/* Hover effects */}
-                                <div className="absolute inset-0 translate-y-full transform bg-white/10 transition-transform duration-300 group-hover:translate-y-0" />
-
-                                <div className="relative flex items-center justify-center space-x-3">
-                                    {isSubmitting || isLoading ? (
-                                        <>
-                                            <div className="size-5 animate-spin rounded-full border-2 border-white/20 border-t-white" />
-                                            <span className="tracking-widest">
-                                                SENDING...
-                                            </span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <span className="tracking-widest">
-                                                SEND RESET LINK
-                                            </span>
-                                            <RiArrowRightLine className="size-5 transition-transform duration-300 group-hover:translate-x-1" />
-                                        </>
-                                    )}
-                                </div>
-                            </button>
-                        </form>
-
-                        {/* Back to home */}
-                        <div className="mt-6 text-center">
-                            <Button asChild variant="dim">
-                                <Link href={PAGES.SIGN_IN}>
-                                    <RiArrowLeftLine className="size-4" />
-                                    Back to login
-                                </Link>
-                            </Button>
-                        </div>
+                            Email
+                        </label>
+                        <Input
+                            {...register("email")}
+                            id="email"
+                            placeholder="your@email.com"
+                            type="email"
+                        />
+                        {errors.email && (
+                            <p className="text-destructive text-sm">
+                                {errors.email.message}
+                            </p>
+                        )}
                     </div>
-                </div>
+
+                    <div className="flex flex-col gap-2">
+                        <Button
+                            disabled={isLoading}
+                            type="submit"
+                            variant="primary"
+                        >
+                            {isLoading ? (
+                                <>
+                                    <StaggeredFadeLoader variant="muted" />
+                                    Sending...
+                                </>
+                            ) : (
+                                "Send Reset Link"
+                            )}
+                        </Button>
+                        <Button asChild variant="outline">
+                            <Link href={PAGES.SIGN_IN}>
+                                <RiArrowLeftLine className="size-4" />
+                                Back to Login
+                            </Link>
+                        </Button>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-1 text-center text-neutral-400 text-sm">
+                        If you have issues, contact support at{" "}
+                        <a
+                            className="text-primary hover:text-primary/90"
+                            href="mailto:support@altiora.com"
+                        >
+                            support@altiora.com
+                        </a>
+                        .
+                    </div>
+                </form>
             </div>
         </div>
     );
