@@ -42,7 +42,7 @@ const features: Feature[] = [
 export function AdvantagesSection({ id }: AdvantagesSectionProps) {
     return (
         <Section id={id}>
-            <h2 className="flex flex-col font-normal text-3xl">
+            <h2 className="flex flex-col font-normal text-2xl sm:text-3xl">
                 <span>Why Altiora ?</span>
                 <span className="text-neutral-400">
                     It's the modern platform for traders.

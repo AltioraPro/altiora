@@ -1,7 +1,9 @@
 "use client";
 
+import { RiDiscordFill, RiLinksLine } from "@remixicon/react";
 import { motion } from "motion/react";
 import Image from "next/image";
+import { Logo } from "@/components/logo";
 import { PAGES } from "@/constants/pages";
 import { cn } from "@/lib/utils";
 import * as CardLarge from "./card-large";
@@ -34,8 +36,8 @@ const leaderboardEntries = [
 
 export function LeaderboardSection({ id }: LeaderboardSectionProps) {
     return (
-        <Section id={id}>
-            <CardLarge.Root className="mt-0">
+        <Section className="mt-0" id={id}>
+            <CardLarge.Root className="mt-0" contentPosition="left">
                 <CardLarge.Content
                     motionProps={{
                         initial: "hidden",
@@ -49,6 +51,17 @@ export function LeaderboardSection({ id }: LeaderboardSectionProps) {
                         whileInView: "visible",
                     }}
                 >
+                    <div className="flex items-center justify-center gap-4">
+                        <div className="-translate-x-1 flex size-[72px] items-center justify-center">
+                            <Logo className="h-6 w-fit sm:h-8" />
+                        </div>
+                        <div className="flex size-9 items-center justify-center rounded-full bg-neutral-800">
+                            <RiLinksLine className="size-4 text-neutral-300 sm:size-5" />
+                        </div>
+                        <div className="flex size-[72px] items-center justify-center">
+                            <RiDiscordFill className="h-6 w-fit sm:h-10" />
+                        </div>
+                    </div>
                     {leaderboardEntries.map((entry) => (
                         <motion.div
                             className="flex w-full max-w-sm items-center justify-between gap-3 bg-neutral-900/80 px-4 py-3"
@@ -117,7 +130,7 @@ export function LeaderboardSection({ id }: LeaderboardSectionProps) {
                 </CardLarge.Content>
 
                 <CardLarge.Text
-                    description="Work with your friends to achieve your goals together. The leaderboard ranks participants by total focused time."
+                    description="Work with your friends to achieve your goals together. Enable deepwork sessions by linking your Discord account."
                     linkHref={PAGES.SIGN_UP}
                     linkText="Join the leaderboard"
                     title="Deep Work Leaderboard"

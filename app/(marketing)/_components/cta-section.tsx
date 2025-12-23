@@ -22,7 +22,9 @@ export function CTASection({ id }: CTASectionProps) {
     return (
         <Section className="mt-40" id={id}>
             <div className="relative z-10 mx-auto flex min-h-96 w-full flex-col items-center justify-center gap-6 bg-neutral-900 px-6 py-8">
-                <h2 className="font-medium text-6xl">Try Altiora now.</h2>
+                <h2 className="text-center font-medium text-4xl sm:text-6xl">
+                    Try Altiora now.
+                </h2>
                 <Button asChild size="lg">
                     <Link href={PAGES.SIGN_UP}>Get started</Link>
                 </Button>

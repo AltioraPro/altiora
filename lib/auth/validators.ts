@@ -22,9 +22,6 @@ export const signUpSchema = z.object({
             error: "Password must contain at least 1 uppercase letter",
         })
         .regex(/[0-9]/, { error: "Password must contain at least 1 number" }),
-    acceptTerms: z
-        .boolean()
-        .refine((val) => val === true, "You must accept the terms"),
 });
 
 export const verifyEmailSchema = z.object({

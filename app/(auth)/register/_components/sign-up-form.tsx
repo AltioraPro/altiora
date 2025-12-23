@@ -1,20 +1,16 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-    RiAlertLine,
-    RiArrowRightLine,
-    RiEyeLine,
-    RiEyeOffLine,
-    RiLockLine,
-    RiMailLine,
-    RiUserLine,
-} from "@remixicon/react";
+import { RiAlertLine } from "@remixicon/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import sendVerificationOtp from "@/app/(auth)/_lib/send-verification-otp";
+import { FormInput } from "@/components/form";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { AUTH_ERRORS } from "@/constants/auth-errors";
 import { PAGES } from "@/constants/pages";
 import { type SignUpFormValues, signUpSchema } from "@/lib/auth/validators";
@@ -44,23 +40,25 @@ const GoogleIcon = () => (
 );
 
 export function SignUpForm() {
-    const [showPassword, setShowPassword] = useState(false);
+    const lastLoginMethod = useMemo(
+        () => authClient.getLastUsedLoginMethod(),
+        []
+    );
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const router = useRouter();
 
     const {
-        register,
         handleSubmit,
         formState: { errors, isSubmitting },
+        control,
     } = useForm<SignUpFormValues>({
         resolver: zodResolver(signUpSchema),
         defaultValues: {
             email: "",
             password: "",
             fullName: "",
-            acceptTerms: false,
         },
     });
 
@@ -143,228 +141,111 @@ export function SignUpForm() {
     };
 
     return (
-        <div className="flex flex-1 items-center justify-center p-8 lg:w-1/2">
-            <div className="w-full max-w-md">
-                {/* Mobile logo */}
-                <div className="mb-8 text-center lg:hidden">
-                    <h1 className="font-argesta font-bold text-3xl text-white">
-                        ALTIORA
-                    </h1>
-                    <p className="mt-2 text-gray-400 text-sm">
-                        Personal coaching platform
+        <div className="w-full">
+            {/* Google Sign Up */}
+            <Button
+                className="relative w-full"
+                disabled={isLoading}
+                onClick={handleGoogleSignUp}
+                size="lg"
+                type="button"
+                variant="outline"
+            >
+                <GoogleIcon />
+                Continue with Google
+                {lastLoginMethod === "google" && (
+                    <Badge
+                        className="-top-1.5 -right-2 absolute rounded-none text-xs"
+                        size="sm"
+                        variant="primary"
+                    >
+                        Last used
+                    </Badge>
+                )}
+            </Button>
+
+            {/* Divider */}
+            <div className="my-6 flex items-center gap-4">
+                <Separator className="flex-1" />
+                <span className="text-muted-foreground text-xs">OR</span>
+                <Separator className="flex-1" />
+            </div>
+
+            {/* Form */}
+            <form
+                className="flex flex-col gap-5"
+                onSubmit={handleSubmit(onSubmit)}
+            >
+                <FormInput
+                    aria-invalid={!!errors.fullName}
+                    control={control}
+                    label="Full Name"
+                    name="fullName"
+                    placeholder="John Doe"
+                    type="text"
+                />
+
+                <FormInput
+                    aria-invalid={!!errors.email}
+                    control={control}
+                    label="Email"
+                    name="email"
+                    placeholder="your@email.com"
+                    type="email"
+                />
+
+                <div>
+                    <FormInput
+                        control={control}
+                        label="Password"
+                        name="password"
+                        placeholder="Your secure password"
+                        type="password"
+                    />
+                    <p className="mt-1.5 text-[10px] text-muted-foreground">
+                        Your password must be at least 8 characters long and
+                        contain at least 1 uppercase letter and 1 number.
                     </p>
                 </div>
 
-                {/* Form title */}
-                <div className="mb-8 text-center">
-                    <h2 className="mb-2 font-bold text-2xl text-white">
-                        Create Account
-                    </h2>
-                    <p className="text-gray-400">
-                        Join thousands of users who are transforming their lives
-                    </p>
-                </div>
-
-                {/* Message d'erreur global */}
+                {/* Global error message */}
                 {error && (
-                    <div className="mb-6 flex items-start space-x-3 rounded-lg border border-red-500/20 bg-red-500/10 p-4">
-                        <RiAlertLine className="mt-0.5 size-5 shrink-0 text-red-400" />
-                        <p className="text-red-400 text-sm">{error}</p>
+                    <div className="flex items-center gap-3 border border-destructive bg-destructive/40 p-4">
+                        <RiAlertLine className="mt-0.5 size-5 shrink-0 text-white" />
+                        <p className="text-sm text-white">{error}</p>
                     </div>
                 )}
 
-                {/* Form */}
-                <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-                    <div>
-                        <label
-                            className="mb-2 block font-medium text-white/80 text-xs tracking-widest"
-                            htmlFor="fullName"
-                        >
-                            FULL NAME
-                        </label>
-                        <div className="relative">
-                            <RiUserLine className="-translate-y-1/2 absolute top-1/2 left-3 size-4 transform text-white/40" />
-                            <input
-                                {...register("fullName")}
-                                className="w-full rounded-lg border border-white/20 bg-transparent py-3 pr-3 pl-10 text-white placeholder-white/40 transition-all duration-300 focus:border-white focus:outline-hidden"
-                                placeholder="John Doe"
-                                type="text"
-                            />
-                        </div>
-                        {errors.fullName && (
-                            <p className="mt-1 text-red-400 text-sm">
-                                {errors.fullName.message}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* Email */}
-                    <div>
-                        <label
-                            className="mb-2 block font-medium text-white/80 text-xs tracking-widest"
-                            htmlFor="email"
-                        >
-                            EMAIL
-                        </label>
-                        <div className="relative">
-                            <RiMailLine className="-translate-y-1/2 absolute top-1/2 left-3 size-4 transform text-white/40" />
-                            <input
-                                {...register("email")}
-                                className="w-full rounded-lg border border-white/20 bg-transparent py-3 pr-3 pl-10 text-white placeholder-white/40 transition-all duration-300 focus:border-white focus:outline-hidden"
-                                placeholder="your@email.com"
-                                type="email"
-                            />
-                        </div>
-                        {errors.email && (
-                            <p className="mt-1 text-red-400 text-sm">
-                                {errors.email.message}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* Password */}
-                    <div>
-                        <label
-                            className="mb-2 block font-medium text-white/80 text-xs tracking-widest"
-                            htmlFor="password"
-                        >
-                            PASSWORD
-                        </label>
-                        <div className="relative">
-                            <RiLockLine className="-translate-y-1/2 absolute top-1/2 left-3 size-4 transform text-white/40" />
-                            <input
-                                {...register("password")}
-                                className="w-full rounded-lg border border-white/20 bg-transparent py-3 pr-12 pl-10 text-white placeholder-white/40 transition-all duration-300 focus:border-white focus:outline-hidden"
-                                placeholder="••••••••"
-                                type={showPassword ? "text" : "password"}
-                            />
-                            <button
-                                className="-translate-y-1/2 absolute top-1/2 right-3 transform text-white/40 transition-colors hover:text-white/60"
-                                onClick={() => setShowPassword(!showPassword)}
-                                type="button"
-                            >
-                                {showPassword ? (
-                                    <RiEyeOffLine className="size-4" />
-                                ) : (
-                                    <RiEyeLine className="size-4" />
-                                )}
-                            </button>
-                        </div>
-                        {errors.password && (
-                            <p className="mt-1 text-red-400 text-sm">
-                                {errors.password.message}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* Terms acceptance */}
-                    <div>
-                        <label className="flex cursor-pointer items-start space-x-3">
-                            <input
-                                {...register("acceptTerms")}
-                                className="mt-1 h-4 w-4 rounded border border-white/20 bg-transparent text-white focus:ring-white/20"
-                                type="checkbox"
-                            />
-                            <span className="text-sm text-white/80 leading-relaxed">
-                                I accept the{" "}
-                                <Link
-                                    className="text-white underline hover:text-gray-300"
-                                    href={PAGES.TERMS_OF_SERVICE}
-                                >
-                                    terms of service
-                                </Link>{" "}
-                                and{" "}
-                                <Link
-                                    className="text-white underline hover:text-gray-300"
-                                    href={PAGES.PRIVACY_POLICY}
-                                >
-                                    privacy policy
-                                </Link>
-                            </span>
-                        </label>
-                        {errors.acceptTerms && (
-                            <p className="mt-1 text-red-400 text-sm">
-                                {errors.acceptTerms.message}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* Sign up button */}
-                    <button
-                        className="group relative w-full overflow-hidden rounded-lg border border-white/30 bg-transparent py-4 transition-all duration-300 hover:border-white disabled:cursor-not-allowed disabled:opacity-50"
-                        disabled={isSubmitting || isLoading}
-                        type="submit"
-                    >
-                        {/* Hover effects */}
-                        <div className="absolute inset-0 translate-y-full transform bg-white/10 transition-transform duration-300 group-hover:translate-y-0" />
-
-                        <div className="relative flex items-center justify-center space-x-3">
-                            {isSubmitting || isLoading ? (
-                                <>
-                                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/20 border-t-white" />
-                                    <span className="tracking-widest">
-                                        CREATING...
-                                    </span>
-                                </>
-                            ) : (
-                                <>
-                                    <span className="tracking-widest">
-                                        CREATE ACCOUNT
-                                    </span>
-                                    <RiArrowRightLine className="size-5 transition-transform duration-300 group-hover:translate-x-1" />
-                                </>
-                            )}
-                        </div>
-                    </button>
-                </form>
-
-                {/* Divider */}
-                <div className="mt-8 mb-6 flex items-center">
-                    <div className="h-px flex-1 bg-white/20" />
-                    <span className="px-4 text-white/60 text-xs tracking-widest">
-                        OR
-                    </span>
-                    <div className="h-px flex-1 bg-white/20" />
-                </div>
-
-                {/* Google Sign Up */}
-                <button
-                    className="group relative w-full overflow-hidden rounded-lg border border-white/20 bg-transparent py-3 transition-all duration-300 hover:border-white/40 hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-50"
-                    disabled={isLoading}
-                    onClick={handleGoogleSignUp}
-                    type="button"
+                {/* Sign up button */}
+                <Button
+                    className="mt-8 w-full"
+                    disabled={isSubmitting || isLoading}
+                    size="lg"
+                    type="submit"
                 >
-                    <div className="relative flex items-center justify-center space-x-3">
-                        <GoogleIcon />
-                        <span className="font-medium text-sm">
-                            Continue with Google
-                        </span>
-                    </div>
-                </button>
+                    {isSubmitting || isLoading ? (
+                        <>
+                            <div className="h-5 w-5 animate-spin rounded-full border-2 border-current/20 border-t-current" />
+                            Creating your account...
+                        </>
+                    ) : (
+                        <>Continue</>
+                    )}
+                </Button>
 
                 {/* Sign in link */}
-                <div className="mt-8 text-center">
-                    <p className="text-gray-400">
+                <div className="text-center">
+                    <p className="text-muted-foreground text-sm">
                         Already have an account?{" "}
                         <Link
-                            className="font-medium text-white transition-colors hover:text-gray-300"
+                            className="font-medium text-primary transition-colors hover:text-gray-300"
                             href={PAGES.SIGN_IN}
                         >
                             Sign in
                         </Link>
                     </p>
                 </div>
-
-                {/* Back to home */}
-                <div className="mt-6 text-center">
-                    <Link
-                        className="text-sm text-white/60 transition-colors hover:text-white/80"
-                        href={PAGES.LANDING_PAGE}
-                    >
-                        ← Back to home
-                    </Link>
-                </div>
-            </div>
+            </form>
         </div>
     );
 }
