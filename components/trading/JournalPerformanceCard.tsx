@@ -30,6 +30,12 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { PAGES } from "@/constants/pages";
 import { orpc, type RouterOutput } from "@/orpc/client";
 
@@ -57,6 +63,17 @@ export function JournalPerformanceCard({
             enabled: !!journal.id,
         })
     );
+
+    // Check if this journal is connected to cTrader
+    const { data: connectionsData } = useQuery(
+        orpc.integrations.ctrader.getConnections.queryOptions({
+            input: {},
+            retry: false,
+        })
+    );
+    const isCTraderConnected = connectionsData?.connections?.some(
+        (c) => c.journalId === journal.id && c.isActive
+    ) ?? false;
 
     const cumulativeData = useMemo(() => {
         if (!tradesData || tradesData.length === 0) {
@@ -462,7 +479,7 @@ export function JournalPerformanceCard({
                                 {finalCumulative.toFixed(2)}%
                             </span>
                         </div>
-                        <div style={{ height: "8rem" }}>
+                        <div style={{ height: "8rem", minHeight: 0 }}>
                             <ResponsiveContainer height="100%" width="100%">
                                 <AreaChart
                                     data={chartData}
@@ -581,6 +598,21 @@ export function JournalPerformanceCard({
                                 <CardTitle className="line-clamp-1 text-lg text-white">
                                     {journal.name}
                                 </CardTitle>
+                                {isCTraderConnected && (
+                                    <TooltipProvider>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <span className="flex h-3 w-3 shrink-0">
+                                                    <span className="absolute inline-flex h-3 w-3 animate-ping rounded-full bg-green-400 opacity-75" />
+                                                    <span className="relative inline-flex h-3 w-3 rounded-full bg-green-500" />
+                                                </span>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>Synced with cTrader</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                )}
                             </div>
                             <CardDescription className="line-clamp-2 text-white/60">
                                 {journal.description || "No description"}

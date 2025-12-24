@@ -165,6 +165,16 @@ export const createColumns = ({
             header: "Exit",
             accessorKey: "exitReason",
             cell: ({ row }) => {
+                const isClosed = row.original.isClosed;
+
+                if (isClosed === false) {
+                    return (
+                        <Badge className="border-sky-500/30 bg-sky-500/20 text-sky-400 animate-pulse">
+                            OPEN
+                        </Badge>
+                    );
+                }
+
                 const exitReason = row.original.exitReason;
                 return getExitReasonBadge(exitReason);
             },
