@@ -61,6 +61,11 @@ export function TradingStats({
                                 ? "Total Realized P&L"
                                 : "Total P&L"}
                         </p>
+                        {stats.journal?.currentCapital && (
+                        	<p className="text-xs text-white/40">
+                        		Balance: {Number(stats.journal.currentCapital).toFixed(2)}€
+                        	</p>
+                        )}
                     </CardContent>
                 </Card>
 

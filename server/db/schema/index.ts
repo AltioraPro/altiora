@@ -9,6 +9,7 @@ export * from "./goals-reminders";
 export * from "./goals-tasks";
 export * from "./habits";
 export * from "./habits-completions";
+export * from "./integrations";
 export * from "./journals";
 export * from "./monthly-usage";
 export * from "./pomodoro-sessions";

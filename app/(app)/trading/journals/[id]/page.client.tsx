@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 import { CreateTradeModal } from "@/components/trading/create-trade-modal";
 import type { DateRangeFilterState } from "@/components/trading/DateRangeFilter";
 import { ImportTradesModal } from "@/components/trading/ImportTradesModal";
@@ -138,6 +138,7 @@ interface JournalPageClientProps {
 export function JournalPageClient({ journalId }: JournalPageClientProps) {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+    const [isSyncing, setIsSyncing] = useState(false);
 
     const [activeTab, setActiveTab] = useQueryState(
         "tab",
@@ -153,6 +154,56 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
         orpc.trading.getJournalById.queryOptions({ input: { id: journalId } })
     );
 
+    // Check if journal has broker connection
+    const { data: brokerConnection } = useQuery(
+        orpc.integrations.getBrokerConnection.queryOptions({
+            input: { journalId },
+        })
+    );
+
+    // Auto-sync on journal load if connected to broker
+    const { mutateAsync: syncCTrader } = useMutation(
+        orpc.integrations.ctrader.syncPositions.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.trading.getTrades.queryKey({ input: { journalId } }),
+                    orpc.trading.getStats.queryKey({ input: { journalId } }),
+                ],
+            },
+        })
+    );
+
+    // Auto-sync when journal loads
+    useEffect(() => {
+        if (brokerConnection?.isActive && brokerConnection?.provider === "ctrader") {
+            console.log("[Auto-sync] Triggering sync for journal:", journalId);
+            setIsSyncing(true);
+            syncCTrader({ journalId })
+                .then(() => {
+                    console.log("[Auto-sync] Sync completed successfully");
+                })
+                .catch((error) => {
+                    console.error("[Auto-sync] Sync failed:", error);
+                })
+                .finally(() => {
+                    setIsSyncing(false);
+                });
+        }
+    }, [journalId, brokerConnection?.isActive, brokerConnection?.provider, syncCTrader]);
+
+    const handleManualSync = async () => {
+        if (!brokerConnection?.isActive) return;
+
+        setIsSyncing(true);
+        try {
+            await syncCTrader({ journalId });
+            // Success handled by invalidation
+        } catch (error) {
+            console.error("Manual sync failed:", error);
+        } finally {
+            setIsSyncing(false);
+        }
+    };
     const dateRangeStrings = useDateRangeStrings(dateRange);
 
     const { data: allTrades } = useSuspenseQuery(
@@ -251,6 +302,8 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
                 onCreateTradeClick={handleOpenCreateModal}
                 onDateRangeChange={setDateRange}
                 onImportClick={handleOpenImportModal}
+                onSyncClick={brokerConnection?.isActive ? handleManualSync : undefined}
+                isSyncing={isSyncing}
             />
 
             {stats && <TradingStats className="mb-8" stats={stats} />}
