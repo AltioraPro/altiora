@@ -195,7 +195,7 @@ export class CTraderClient {
 						const close = low + Number(lastBar.deltaClose || 0);
 						
 						if (close > 0) {
-							prices.set(symbolId.toString(), close);
+							prices.set(String(symbolId), close);
 						}
 					} else {
                         console.log(`[CTraderClient] No trendbars found for symbol ${symbolId} in last 48h`);

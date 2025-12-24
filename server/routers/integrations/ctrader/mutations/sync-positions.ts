@@ -74,7 +74,7 @@ export const syncCTraderPositionsHandler = syncCTraderPositionsBase.handler(
 						created: 0,
 						updated: 0,
 						closed: 0,
-						totalPositions: cached.count,
+						totalPositions: cached?.count ?? 0,
 						errors: [],
 					};
 				}

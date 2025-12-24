@@ -63,7 +63,7 @@ export function BrokerCard({
                     onClick={onConnect}
                     disabled={isConnected}
                     className="w-full"
-                    variant={isConnected ? "outline" : "default"}
+                    variant={isConnected ? "outline" : "primary"}
                 >
                     {isConnected ? (
                         <>

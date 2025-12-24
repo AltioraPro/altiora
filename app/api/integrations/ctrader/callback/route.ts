@@ -126,7 +126,6 @@ export async function GET(request: NextRequest) {
 				.set({
 					accessToken: encryptedAccessToken,
 					refreshToken: encryptedRefreshToken,
-					expiresAt: new Date(Date.now() + tokens.expires_in * 1000),
 				})
 				.where(eq(account.id, existingAccount.id));
 			accountId = existingAccount.id;
@@ -140,7 +139,6 @@ export async function GET(request: NextRequest) {
 				providerId: "ctrader",
 				accessToken: encryptedAccessToken,
 				refreshToken: encryptedRefreshToken,
-				expiresAt: new Date(Date.now() + tokens.expires_in * 1000),
 				createdAt: new Date(),
 			});
 			accountId = newAccountId;

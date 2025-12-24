@@ -16,12 +16,12 @@ const SOURCE_CONFIG = {
     },
     ctrader: {
         label: "cTrader",
-        variant: "default" as const,
+        variant: "primary" as const,
         className: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
     },
     metatrader: {
         label: "MetaTrader",
-        variant: "default" as const,
+        variant: "primary" as const,
         className: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
     },
 };

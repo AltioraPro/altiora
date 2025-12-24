@@ -31,7 +31,7 @@ export function SyncStatus({
         switch (syncStatus) {
             case "success":
                 return (
-                    <Badge variant="default" className="gap-1 bg-green-500">
+                    <Badge variant="success" className="gap-1 bg-green-500">
                         <RiCheckLine className="h-3 w-3" />
                         Synced
                     </Badge>

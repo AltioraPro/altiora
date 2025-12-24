@@ -64,7 +64,7 @@ export async function updateJournalCapital(
 	await db
 		.update(tradingJournals)
 		.set({
-			currentCapital: balance.toString(),
+			startingCapital: balance.toString(),
 			updatedAt: new Date(),
 		})
 		.where(eq(tradingJournals.id, journalId));
