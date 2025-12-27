@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import {
     BarChart3,
     BookOpen,
@@ -9,7 +10,6 @@ import {
     Sparkles,
     TrendingUp,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Section } from "./section";
 
 interface BentoFeaturesSectionProps {
