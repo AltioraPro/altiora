@@ -47,11 +47,6 @@ const faqs: FAQItem[] = [
       "Yes. Security and data privacy are a priority. Your information is stored securely and is never sold to third parties.",
   },
   {
-    question: "Is Altiora available on mobile?",
-    answer:
-      "Altiora is currently accessible via web browser. A mobile app is planned in the roadmap.",
-  },
-  {
     question: "Do you offer personalized coaching?",
     answer:
       "Yes. Altiora offers personalized coaching by application, including an initial selection call, a personalized assessment, and regular follow-ups based on your goals.",
@@ -60,16 +55,6 @@ const faqs: FAQItem[] = [
     question: "Can I cancel my subscription anytime?",
     answer:
       "Yes. The subscription is commitment-free and can be canceled at any time from your personal dashboard.",
-  },
-  {
-    question: "How do I join the Altiora community?",
-    answer:
-      "The Altiora community is accessible via Discord, reserved for platform users based on their subscription. Roles and progression are directly linked to your activity on Altiora.",
-  },
-  {
-    question: "How can I contact Altiora?",
-    answer:
-      "You can reach us anytime at contact@altiora.pro or through our contact page.",
   },
 ];
 
