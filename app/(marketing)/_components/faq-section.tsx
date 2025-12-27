@@ -2,85 +2,115 @@
 
 import Link from "next/link";
 import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
 } from "@/components/ui/accordion";
 import { PAGES } from "@/constants/pages";
 import { Section } from "./section";
 
 interface FAQItem {
-    question: string;
-    answer: string;
+  question: string;
+  answer: string;
 }
 
 const faqs: FAQItem[] = [
-    {
-        question: "What is Altiora?",
-        answer: "Altiora is a modern productivity and trading self-coaching platform. It combines a trading journal, habit tracking, goal planning, and deep work sessions into one unified experience.",
-    },
-    {
-        question: "Is there a free plan?",
-        answer: "Yes! Altiora offers a free plan that includes basic trading journal features, up to 50 trades per month, and 3 habits tracking. You can upgrade anytime to unlock more features.",
-    },
-    {
-        question: "How does the Discord integration work?",
-        answer: "Connect your Discord account to Altiora to track deep work sessions with your community. You can see a leaderboard of focused time and get notifications about your progress.",
-    },
-    {
-        question: "Can I import my existing trades?",
-        answer: "Absolutely. Altiora supports CSV imports from most trading platforms. You can easily migrate your trading history and continue tracking from where you left off.",
-    },
-    {
-        question: "Is my data secure?",
-        answer: "Your data is encrypted at rest and in transit. We use industry-standard security practices and never share your trading data with third parties.",
-    },
-    {
-        question: "Can I cancel my subscription anytime?",
-        answer: "Yes, you can cancel your subscription at any time. Your data will remain accessible until the end of your billing period, and you can always export it.",
-    },
+  {
+    question: "What is Altiora?",
+    answer:
+      "Altiora is an all-in-one platform designed to help ambitious individuals structure their lives, improve their performance, and achieve their goals. It brings together trading, productivity, and personal development tools in one simple and accessible space.",
+  },
+  {
+    question: "Who is Altiora for?",
+    answer:
+      "Altiora is for traders (beginners and advanced), entrepreneurs, ambitious students, and anyone looking to improve their discipline, organization, and consistency on a daily basis.",
+  },
+  {
+    question: "How is Altiora different from Notion or other tools?",
+    answer:
+      "Altiora is not a generic tool. Everything is already structured and designed for performance: a ready-to-use trading journal, habit tracking connected to your progress, organized goals (annual and quarterly), Deep Work tracking, and automations. No complex setup required.",
+  },
+  {
+    question: "Can I try Altiora for free?",
+    answer:
+      "Yes. Altiora offers a 14-day free trial to explore all the platform's features. After the trial, you can subscribe to continue accessing the full suite of tools.",
+  },
+  {
+    question: "Can I connect my broker for the trading journal?",
+    answer:
+      "Yes. Altiora supports or will progressively support broker connections to automatically import trades and enable auto-journaling, without manual entry.",
+  },
+  {
+    question: "Is my data secure?",
+    answer:
+      "Yes. Security and data privacy are a priority. Your information is stored securely and is never sold to third parties.",
+  },
+  {
+    question: "Is Altiora available on mobile?",
+    answer:
+      "Altiora is currently accessible via web browser. A mobile app is planned in the roadmap.",
+  },
+  {
+    question: "Do you offer personalized coaching?",
+    answer:
+      "Yes. Altiora offers personalized coaching by application, including an initial selection call, a personalized assessment, and regular follow-ups based on your goals.",
+  },
+  {
+    question: "Can I cancel my subscription anytime?",
+    answer:
+      "Yes. The subscription is commitment-free and can be canceled at any time from your personal dashboard.",
+  },
+  {
+    question: "How do I join the Altiora community?",
+    answer:
+      "The Altiora community is accessible via Discord, reserved for platform users based on their subscription. Roles and progression are directly linked to your activity on Altiora.",
+  },
+  {
+    question: "How can I contact Altiora?",
+    answer:
+      "You can reach us anytime at contact@altiora.pro or through our contact page.",
+  },
 ];
 
 interface FAQSectionProps {
-    id?: string;
+  id?: string;
 }
 
 export function FAQSection({ id }: FAQSectionProps) {
-    return (
-        <Section id={id}>
-            <div className="mx-auto max-w-2xl text-center">
-                <h2 className="font-normal text-3xl">
-                    Your answers might be found here.
-                </h2>
-                <p className="mt-2 text-neutral-400">
-                    If you don't find the answer you're looking for, please
-                    contact us{" "}
-                    <Link className="underline" href={PAGES.CONTACT_US}>
-                        here
-                    </Link>
-                    .
-                </p>
-            </div>
+  return (
+    <Section id={id}>
+      <div className="mx-auto max-w-2xl text-center">
+        <h2 className="font-normal text-3xl">
+          Your answers might be found here.
+        </h2>
+        <p className="mt-2 text-neutral-400">
+          If you don't find the answer you're looking for, please contact us{" "}
+          <Link className="underline" href={PAGES.CONTACT_US}>
+            here
+          </Link>
+          .
+        </p>
+      </div>
 
-            <div className="mx-auto w-full max-w-3xl">
-                <Accordion className="w-full" collapsible type="single">
-                    {faqs.map((faq, index) => (
-                        <AccordionItem
-                            className=""
-                            key={faq.question}
-                            value={`item-${index}`}
-                        >
-                            <AccordionTrigger className="text-left font-medium">
-                                {faq.question}
-                            </AccordionTrigger>
-                            <AccordionContent className="text-neutral-400 text-sm">
-                                {faq.answer}
-                            </AccordionContent>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
-            </div>
-        </Section>
-    );
+      <div className="mx-auto w-full max-w-3xl">
+        <Accordion className="w-full" collapsible type="single">
+          {faqs.map((faq, index) => (
+            <AccordionItem
+              className=""
+              key={faq.question}
+              value={`item-${index}`}
+            >
+              <AccordionTrigger className="text-left font-medium">
+                {faq.question}
+              </AccordionTrigger>
+              <AccordionContent className="text-neutral-400 text-sm">
+                {faq.answer}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </div>
+    </Section>
+  );
 }
