@@ -1,5 +1,6 @@
 import { Header } from "@/components/header";
 import { AdvantagesSection } from "./_components/advantages-section";
+import { BentoFeaturesSection } from "./_components/bento-features-section";
 import { CTASection } from "./_components/cta-section";
 import { FAQSection } from "./_components/faq-section";
 import { HeroSection } from "./_components/hero-section";
@@ -17,6 +18,7 @@ export default function HomePage() {
                     <section id="features">
                         <HeroSection />
                         <AdvantagesSection />
+                        <BentoFeaturesSection />
                         <ProductivitySection />
                         <LeaderboardSection />
                         {/* <IntegrationSection /> */}
