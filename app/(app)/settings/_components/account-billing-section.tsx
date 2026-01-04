@@ -10,6 +10,9 @@ import Image from "next/image";
 import { useState } from "react";
 import { EditProfileModal } from "@/app/(app)/settings/_components/edit-profile-modal";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast";
+import { PAGES } from "@/constants/pages";
+import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import type { RouterOutput } from "@/orpc/client";
 import { signOut } from "@/server/actions/sign-out";
@@ -25,6 +28,24 @@ export function AccountBillingSection({
     user: GetCurrentUserResponse;
 }) {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const { addToast } = useToast();
+
+    const handleManageBilling = async () => {
+        const { error } = await authClient.subscription.billingPortal({
+            locale: "en",
+            referenceId: user.id,
+            returnUrl: PAGES.SETTINGS,
+            disableRedirect: false,
+        });
+
+        if (error) {
+            addToast({
+                title: "Error",
+                message: error.message,
+                type: "error",
+            });
+        }
+    };
 
     return (
         <SettingsContentLayout
@@ -76,7 +97,11 @@ export function AccountBillingSection({
                         Sign Out
                     </Button>
 
-                    <Button size="sm" variant="outline">
+                    <Button
+                        onClick={handleManageBilling}
+                        size="sm"
+                        variant="outline"
+                    >
                         <RiBankCardLine />
                         Manage Billing
                     </Button>

@@ -8,7 +8,7 @@ import {
     RiVipCrownLine,
 } from "@remixicon/react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useCustomer } from "autumn-js/react";
+import { useSubscription } from "@/hooks/use-subscription";
 import { orpc } from "@/orpc/client";
 import { ActivityStatsLoading } from "./activity-stats-loading";
 
@@ -17,11 +17,17 @@ export function ActivityStats() {
         orpc.profile.getUserStats.queryOptions()
     );
 
-    const { customer } = useCustomer();
+    const { subscription, isTrial } = useSubscription();
 
     if (isLoading || !stats) {
         return <ActivityStatsLoading />;
     }
+
+    const planName = subscription
+        ? isTrial
+            ? "Pro (Trial)"
+            : "Pro"
+        : "No Plan";
 
     return (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -109,9 +115,7 @@ export function ActivityStats() {
                     <p className="mb-2 font-medium text-sm text-white/60">
                         Plan
                     </p>
-                    <p className="font-bold text-2xl text-white">
-                        {customer?.products[0]?.name}
-                    </p>
+                    <p className="font-bold text-2xl text-white">{planName}</p>
                 </div>
             </div>
         </div>

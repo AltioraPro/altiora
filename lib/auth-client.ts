@@ -1,6 +1,7 @@
 "use client";
 
 import { passkeyClient } from "@better-auth/passkey/client";
+import { stripeClient } from "@better-auth/stripe/client";
 import {
     adminClient,
     emailOTPClient,
@@ -29,6 +30,9 @@ function resolveBaseUrl(): string {
 export const authClient = createAuthClient({
     baseURL: resolveBaseUrl(),
     plugins: [
+        stripeClient({
+            subscription: true,
+        }),
         emailOTPClient(),
         adminClient(),
         lastLoginMethodClient(),

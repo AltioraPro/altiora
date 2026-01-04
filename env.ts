@@ -13,7 +13,9 @@ export const env = createEnv({
 
         REDIS_URL: z.url(),
 
-        AUTUMN_SECRET_KEY: z.string().min(1),
+        STRIPE_SECRET_KEY: z.string().min(1),
+        STRIPE_WEBHOOK_SECRET: z.string().min(1),
+        STRIPE_PRICE_ID: z.string().min(1),
 
         DISCORD_CLIENT_ID: z.string().min(1),
         DISCORD_CLIENT_SECRET: z.string().min(1),
