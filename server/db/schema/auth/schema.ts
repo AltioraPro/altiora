@@ -19,6 +19,7 @@ export const user = pgTable("user", {
         .defaultNow()
         .$onUpdate(() => /* @__PURE__ */ new Date())
         .notNull(),
+    stripeCustomerId: text("stripe_customer_id"),
     role: text("role"),
     banned: boolean("banned").default(false),
     banReason: text("ban_reason"),
@@ -103,6 +104,24 @@ export const verification = pgTable(
     },
     (table) => [index("verification_identifier_idx").on(table.identifier)]
 );
+
+export const subscription = pgTable("subscription", {
+    id: text("id").primaryKey(),
+    plan: text("plan").notNull(),
+    referenceId: text("reference_id").notNull(),
+    stripeCustomerId: text("stripe_customer_id"),
+    stripeSubscriptionId: text("stripe_subscription_id"),
+    status: text("status").default("incomplete"),
+    periodStart: timestamp("period_start"),
+    periodEnd: timestamp("period_end"),
+    trialStart: timestamp("trial_start"),
+    trialEnd: timestamp("trial_end"),
+    cancelAtPeriodEnd: boolean("cancel_at_period_end").default(false),
+    cancelAt: timestamp("cancel_at"),
+    canceledAt: timestamp("canceled_at"),
+    endedAt: timestamp("ended_at"),
+    seats: integer("seats"),
+});
 
 export const passkey = pgTable(
     "passkey",
