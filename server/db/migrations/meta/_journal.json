@@ -267,6 +267,13 @@
       "when": 1765286304906,
       "tag": "0037_melted_menace",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1767537363610,
+      "tag": "0038_wealthy_bloodscream",
+      "breakpoints": true
     }
   ]
 }
