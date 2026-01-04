@@ -14,6 +14,7 @@ const nextConfig = {
     },
     reactCompiler: true,
     typedRoutes: true,
+    transpilePackages: ["@date-fns/utc"],
 
     images: {
         remotePatterns: [
