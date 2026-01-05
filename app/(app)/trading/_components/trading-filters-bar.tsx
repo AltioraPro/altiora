@@ -1,12 +1,13 @@
 "use client";
 
-import { RiAddLine, RiUploadLine, RiRefreshLine, RiLink } from "@remixicon/react";
+import { RiAddLine, RiUploadLine, RiRefreshLine } from "@remixicon/react";
 import { AdvancedFilters } from "@/components/trading/AdvancedFilters";
 import {
     DateRangeFilter,
     type DateRangeFilterState,
 } from "@/components/trading/DateRangeFilter";
 import { Button } from "@/components/ui/button";
+import { BrokerConnectMenu } from "@/components/integrations";
 
 interface TradingFiltersBarProps {
     journalId: string | null;
@@ -16,8 +17,6 @@ interface TradingFiltersBarProps {
     onCreateTradeClick: () => void;
     onSyncClick?: () => void;
     isSyncing?: boolean;
-    /** URL to connect broker (shown when no broker is connected) */
-    brokerConnectUrl?: string;
 }
 
 export function TradingFiltersBar({
@@ -28,14 +27,7 @@ export function TradingFiltersBar({
     onCreateTradeClick,
     onSyncClick,
     isSyncing,
-    brokerConnectUrl,
 }: TradingFiltersBarProps) {
-    const handleConnectBroker = () => {
-        if (brokerConnectUrl) {
-            window.location.href = brokerConnectUrl;
-        }
-    };
-
     return (
         <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             {/* Filters Section */}
@@ -51,7 +43,11 @@ export function TradingFiltersBar({
 
             {/* Actions Section */}
             <div className="flex items-center gap-3">
-                {onSyncClick ? (
+                {/* Broker Connection Menu */}
+                {journalId && <BrokerConnectMenu journalId={journalId} />}
+
+                {/* Manual Sync Button (shown when connected) */}
+                {onSyncClick && (
                     <Button
                         onClick={onSyncClick}
                         variant="outline"
@@ -60,16 +56,8 @@ export function TradingFiltersBar({
                         <RiRefreshLine className={`size-4 ${isSyncing ? "animate-spin" : ""}`} />
                         {isSyncing ? "Syncing..." : "Sync"}
                     </Button>
-                ) : brokerConnectUrl ? (
-                    <Button
-                        onClick={handleConnectBroker}
-                        variant="outline"
-                        className="border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300"
-                    >
-                        <RiLink className="size-4" />
-                        Connect cTrader
-                    </Button>
-                ) : null}
+                )}
+
                 <Button onClick={onImportClick} variant="outline">
                     <RiUploadLine className="size-4" />
                     Import Excel
@@ -82,3 +70,4 @@ export function TradingFiltersBar({
         </div>
     );
 }
+

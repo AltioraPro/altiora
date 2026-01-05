@@ -78,7 +78,6 @@ export const connectCTraderAccountHandler = connectCTraderAccountBase.handler(
 				accountNumber: accountNumber || accountDetails.accountNumber,
 				accountType: accountType || (accountDetails.isLive ? "live" : "demo"),
 				currency: currency || accountDetails.currency,
-				externalServiceType: "direct",
 				isActive: true,
 				lastSyncStatus: "pending",
 				createdAt: new Date(),

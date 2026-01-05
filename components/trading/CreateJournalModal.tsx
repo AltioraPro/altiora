@@ -25,7 +25,6 @@ import {
     FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { orpc } from "@/orpc/client";
 import {
@@ -37,12 +36,19 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 type JournalSource = "manual" | "ctrader" | "metatrader";
+type Step = "source" | "details" | "metatrader-setup";
+type Platform = "mt4" | "mt5";
 
 export function CreateJournalModal() {
     const router = useRouter();
     const { isOpen, close } = useCreateJournalStore();
-    const [step, setStep] = useState<"source" | "details">("source");
+    const [step, setStep] = useState<Step>("source");
     const [selectedSource, setSelectedSource] = useState<JournalSource>("manual");
+
+    // MetaTrader setup state
+    const [createdJournalId, setCreatedJournalId] = useState<string | null>(null);
+    const [webhookToken, setWebhookToken] = useState<string | null>(null);
+    const [copied, setCopied] = useState(false);
 
     const {
         register,
@@ -74,6 +80,10 @@ export function CreateJournalModal() {
             }),
         );
 
+    const { mutateAsync: generateToken, isPending: isGeneratingToken } = useMutation(
+        orpc.integrations.metatrader.generateToken.mutationOptions()
+    );
+
     const onSubmit = async (data: CreateTradingJournalInput) => {
         await createJournal(data);
         reset();
@@ -81,7 +91,7 @@ export function CreateJournalModal() {
         resetState();
     };
 
-    const isPending = isCreatingJournal || isSubmitting;
+    const isPending = isCreatingJournal || isSubmitting || isGeneratingToken;
 
     const handleContinue = async () => {
         if (selectedSource === "manual") {
@@ -104,9 +114,65 @@ export function CreateJournalModal() {
                 toast.error("Failed to create journal");
             }
         } else if (selectedSource === "metatrader") {
+            // Create journal and generate token directly
+            try {
+                const journal = await createJournal({
+                    name: "MetaTrader Account",
+                    description: "Auto-synced from MetaTrader",
+                    startingCapital: "10000",
+                    usePercentageCalculation: true,
+                });
+                setCreatedJournalId(journal.id);
+
+                // Generate webhook token
+                const result = await generateToken({
+                    journalId: journal.id,
+                    platform: "mt5", // Default to MT5, token works for both
+                });
+                setWebhookToken(result.webhookToken);
+
+                // Go to setup instructions
+                setStep("metatrader-setup");
+                toast.success("Journal created! Now configure your MetaTrader EA.");
+            } catch (error) {
+                console.error("MetaTrader setup error:", error);
+                toast.error("Failed to setup MetaTrader");
+            }
+        }
+    };
+
+    const handleCopyToken = async () => {
+        if (webhookToken) {
+            await navigator.clipboard.writeText(webhookToken);
+            setCopied(true);
+            toast.success("Token copied!");
+            setTimeout(() => setCopied(false), 2000);
+        }
+    };
+
+    const handleCopyUrl = async () => {
+        const url = `${window.location.origin}/api/integrations/metatrader/webhook`;
+        await navigator.clipboard.writeText(url);
+        toast.success("URL copied!");
+    };
+
+    const handleDownloadEA = (platform: Platform) => {
+        if (!webhookToken) {
+            toast.error("Token not generated yet");
+            return;
+        }
+        const downloadUrl = `/api/integrations/metatrader/download-ea?platform=${platform}&token=${encodeURIComponent(webhookToken)}`;
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        link.click();
+        toast.success("EA downloaded with your token");
+    };
+
+    const handleFinishMetaTrader = () => {
+        if (createdJournalId) {
             close();
             resetState();
-            toast.info("MetaTrader integration coming soon!");
+            router.push(`/trading/journals/${createdJournalId}`);
         }
     };
 
@@ -114,6 +180,8 @@ export function CreateJournalModal() {
         setTimeout(() => {
             setStep("source");
             setSelectedSource("manual");
+            setCreatedJournalId(null);
+            setWebhookToken(null);
         }, 200);
     };
 
@@ -140,14 +208,14 @@ export function CreateJournalModal() {
         {
             value: "metatrader",
             label: "MetaTrader 4/5",
-            description: "Connect MT4/MT5 account (coming soon)",
+            description: "Connect MT4/MT5 via Expert Advisor",
         },
     ] as const;
 
     return (
         <Dialog onOpenChange={handleClose} open={isOpen}>
-            <DialogContent>
-                {step === "source" ? (
+            <DialogContent className="sm:max-w-[600px]">
+                {step === "source" && (
                     <>
                         <DialogHeader>
                             <DialogTitle>Create a new journal</DialogTitle>
@@ -215,7 +283,9 @@ export function CreateJournalModal() {
                             </Button>
                         </DialogFooter>
                     </>
-                ) : (
+                )}
+
+                {step === "details" && (
                     <form id="create-journal-form" onSubmit={handleSubmit(onSubmit)}>
                         <DialogHeader>
                             <DialogTitle>Create a new journal</DialogTitle>
@@ -336,6 +406,96 @@ export function CreateJournalModal() {
                             </Button>
                         </DialogFooter>
                     </form>
+                )}
+
+                {step === "metatrader-setup" && webhookToken && (
+                    <>
+                        <DialogHeader>
+                            <DialogTitle>Connect MetaTrader</DialogTitle>
+                            <DialogDescription>
+                                Follow these steps to start syncing your trades automatically
+                            </DialogDescription>
+                        </DialogHeader>
+
+                        <div className="space-y-4">
+                            {/* Step 1: Download */}
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-medium">1</span>
+                                    <span className="font-medium">Download the Expert Advisor</span>
+                                </div>
+                                <div className="ml-8 space-y-2">
+                                    <div className="flex gap-2">
+                                        <Button variant="outline" onClick={() => handleDownloadEA("mt5")} className="flex-1">
+                                            MetaTrader 5
+                                        </Button>
+                                        <Button variant="outline" onClick={() => handleDownloadEA("mt4")} className="flex-1">
+                                            MetaTrader 4
+                                        </Button>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground">
+                                        Place the file in your <code className="text-foreground">Experts</code> folder
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Step 2: Token */}
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-medium">2</span>
+                                    <span className="font-medium">Copy your token</span>
+                                </div>
+                                <div className="ml-8">
+                                    <div className="flex gap-2">
+                                        <Input
+                                            readOnly
+                                            value={webhookToken}
+                                            className="font-mono text-sm"
+                                        />
+                                        <Button
+                                            variant={copied ? "primary" : "outline"}
+                                            onClick={handleCopyToken}
+                                            className="shrink-0 w-20"
+                                        >
+                                            {copied ? "Copied" : "Copy"}
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Step 3: WebRequest */}
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-medium">3</span>
+                                    <span className="font-medium">Allow web requests</span>
+                                </div>
+                                <div className="ml-8 space-y-2">
+                                    <p className="text-sm text-muted-foreground">
+                                        In MetaTrader: <span className="text-foreground">Tools → Options → Expert Advisors</span>
+                                    </p>
+                                    <p className="text-sm text-muted-foreground">
+                                        Enable web requests and add this URL:
+                                    </p>
+                                    <div className="flex gap-2">
+                                        <Input
+                                            readOnly
+                                            value={typeof window !== 'undefined' ? `${window.location.origin}/api/integrations/metatrader/webhook` : 'https://altiora.app/api/integrations/metatrader/webhook'}
+                                            className="font-mono text-xs"
+                                        />
+                                        <Button variant="outline" onClick={handleCopyUrl} className="shrink-0 w-20">
+                                            Copy
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <DialogFooter>
+                            <Button type="button" onClick={handleFinishMetaTrader}>
+                                Go to Journal
+                            </Button>
+                        </DialogFooter>
+                    </>
                 )}
             </DialogContent>
         </Dialog>

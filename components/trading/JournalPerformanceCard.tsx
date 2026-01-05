@@ -75,6 +75,14 @@ export function JournalPerformanceCard({
         (c) => c.journalId === journal.id && c.isActive
     ) ?? false;
 
+    // Check if this journal is connected to MetaTrader
+    const { data: brokerConnection } = useQuery(
+        orpc.integrations.getBrokerConnection.queryOptions({
+            input: { journalId: journal.id },
+        })
+    );
+    const isMetaTraderConnected = brokerConnection?.provider === "metatrader" && brokerConnection?.isActive;
+
     const cumulativeData = useMemo(() => {
         if (!tradesData || tradesData.length === 0) {
             return [];
@@ -609,6 +617,21 @@ export function JournalPerformanceCard({
                                             </TooltipTrigger>
                                             <TooltipContent>
                                                 <p>Synced with cTrader</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                )}
+                                {isMetaTraderConnected && (
+                                    <TooltipProvider>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <span className="flex h-3 w-3 shrink-0">
+                                                    <span className="absolute inline-flex h-3 w-3 animate-ping rounded-full bg-green-400 opacity-75" />
+                                                    <span className="relative inline-flex h-3 w-3 rounded-full bg-green-500" />
+                                                </span>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>Synced with MetaTrader</p>
                                             </TooltipContent>
                                         </Tooltip>
                                     </TooltipProvider>

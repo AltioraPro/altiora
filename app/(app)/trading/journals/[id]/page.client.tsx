@@ -2,11 +2,13 @@
 
 import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useCallback, useMemo, useState, useEffect } from "react";
 import { CreateTradeModal } from "@/components/trading/create-trade-modal";
 import type { DateRangeFilterState } from "@/components/trading/DateRangeFilter";
 import { ImportTradesModal } from "@/components/trading/ImportTradesModal";
 import { TradingStats } from "@/components/trading/TradingStats";
+import { ConnectMetaTraderDialog } from "@/components/integrations";
 import { orpc, type RouterOutput } from "@/orpc/client";
 import { EmptyTradingState } from "../../_components/empty-trading-state";
 import { TradingContent } from "../../_components/trading-content";
@@ -136,9 +138,22 @@ interface JournalPageClientProps {
 }
 
 export function JournalPageClient({ journalId }: JournalPageClientProps) {
+    const router = useRouter();
+    const searchParams = useSearchParams();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isImportModalOpen, setIsImportModalOpen] = useState(false);
     const [isSyncing, setIsSyncing] = useState(false);
+    const [isMetaTraderDialogOpen, setIsMetaTraderDialogOpen] = useState(false);
+
+    // Auto-open MetaTrader dialog when redirected from journal creation
+    useEffect(() => {
+        if (searchParams.get("setup") === "metatrader") {
+            setIsMetaTraderDialogOpen(true);
+            // Clear the query param without triggering navigation
+            const newUrl = window.location.pathname;
+            window.history.replaceState({}, "", newUrl);
+        }
+    }, [searchParams]);
 
     const [activeTab, setActiveTab] = useQueryState(
         "tab",
@@ -330,6 +345,12 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
                 isOpen={isImportModalOpen}
                 journalId={journalId}
                 onClose={handleCloseImportModal}
+            />
+
+            <ConnectMetaTraderDialog
+                open={isMetaTraderDialogOpen}
+                onOpenChange={setIsMetaTraderDialogOpen}
+                journalId={journalId}
             />
         </div>
     );
