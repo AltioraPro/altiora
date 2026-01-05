@@ -216,7 +216,7 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                     </CardHeader>
                     <CardContent>
                         <div className="relative flex items-center justify-center">
-                            <ResponsiveContainer height={220} width="100%">
+                            <ResponsiveContainer height={220} minHeight={220} minWidth={200} width="100%">
                                 <PieChart>
                                     <defs>
                                         <linearGradient
@@ -352,7 +352,7 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                                     className="h-[200px]"
                                     style={{ minWidth: `${sessionChartWidth}px` }}
                                 >
-                                    <ResponsiveContainer height="100%" width="100%">
+                                    <ResponsiveContainer height="100%" minHeight={200} minWidth={300} width="100%">
                                         <BarChart
                                             data={sessionPerformanceData}
                                             margin={{ right: 20 }}
@@ -481,7 +481,7 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                 <CardContent>
                     <div className="space-y-6">
                         <div className="h-[250px] w-full pr-4">
-                            <ResponsiveContainer height="100%" width="100%">
+                            <ResponsiveContainer height="100%" minHeight={250} minWidth={300} width="100%">
                                 <AreaChart
                                     data={cumulativeData}
                                     margin={{ right: 20 }}

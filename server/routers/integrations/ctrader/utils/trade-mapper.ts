@@ -1,9 +1,10 @@
 import { nanoid } from "nanoid";
 import { eq, and } from "drizzle-orm";
 import type { Database } from "@/server/db";
-import { advancedTrades } from "@/server/db/schema";
+import { advancedTrades, tradingSessions } from "@/server/db/schema";
 import type { CTraderPosition, CTraderDeal } from "./ctrader-client";
 import { getOrCreateAsset, mapSymbolIdToName } from "./asset-helpers";
+import { determineSessionFromTime } from "@/server/routers/trading/utils/auto-sessions";
 
 /**
  * Map cTrader positions to Altiora advancedTrades format
@@ -49,12 +50,33 @@ export async function syncPositionsToAdvancedTrades(
 			
 			const existing = existingTrades[0];
 
+			// Auto-assign session based on open timestamp
+			const tradeDate = new Date(position.openTimestamp);
+			const sessionName = determineSessionFromTime(tradeDate);
+			const journalSessions = await db
+				.select()
+				.from(tradingSessions)
+				.where(
+					and(
+						eq(tradingSessions.journalId, journalId),
+						eq(tradingSessions.name, sessionName)
+					)
+				)
+				.limit(1);
+			const sessionId = journalSessions[0]?.id || null;
+
+			// Auto-create asset for the symbol
+			const symbolName = mapSymbolIdToName(position.symbol);
+			const assetId = await getOrCreateAsset(db, symbolName, journalId, userId);
+
 			const tradeData = mapPositionToTrade(
 				position,
 				journalId,
 				userId,
 				accountId,
 				accountBalance,
+				sessionId,
+				assetId,
 			);
 
 			if (existing) {
@@ -173,6 +195,21 @@ export async function syncDealsToAdvancedTrades(
 			const symbolName = mapSymbolIdToName(lastDeal.symbol);
 			const assetId = await getOrCreateAsset(db, symbolName, journalId, userId);
 			
+			// Auto-assign session based on execution time (close time for closed trades)
+			const tradeDate = new Date(lastDeal.executionTime);
+			const sessionName = determineSessionFromTime(tradeDate);
+			const journalSessions = await db
+				.select()
+				.from(tradingSessions)
+				.where(
+					and(
+						eq(tradingSessions.journalId, journalId),
+						eq(tradingSessions.name, sessionName)
+					)
+				)
+				.limit(1);
+			const sessionId = journalSessions[0]?.id || null;
+
 			const tradeData = mapAggregatedDealToTrade(
 				lastDeal,
 				netProfit,
@@ -185,6 +222,7 @@ export async function syncDealsToAdvancedTrades(
 				assetId, // Pass assetId
 				riskInput, // Pass calculated risk
 				accountBalance, // Capital for P&L %
+				sessionId, // Pass sessionId
 			);
 
 			if (existing) {
@@ -248,6 +286,8 @@ function mapPositionToTrade(
 	userId: string,
 	accountId: string,
 	accountBalance: number,
+	sessionId: string | null,
+	assetId: string | null,
 ) {
 	// Calculate P&L percentage: (profit / capital) * 100
 	let profitLossPercentage = "0";
@@ -271,8 +311,8 @@ function mapPositionToTrade(
 	return {
 		userId,
 		journalId,
-		assetId: null, 
-		sessionId: null,
+		assetId: assetId, 
+		sessionId: sessionId,
 		tradeDate: new Date(position.openTimestamp),
 		riskInput, // Calculated from SL
 		
@@ -322,6 +362,7 @@ function mapAggregatedDealToTrade(
 	assetId: string,
 	riskInput: string | null,
 	accountBalance: number,
+	sessionId: string | null,
 ) {
 	// Detect exit reason based on NET profit
 	let exitReason: string | null = null;
@@ -336,18 +377,27 @@ function mapAggregatedDealToTrade(
 		}
 	}
 	
+	// Use balance at trade close time if available, otherwise use current account balance
+	// closePositionDetail.balance is the balance AFTER the trade, so we subtract the profit to get balance BEFORE
+	let capitalForCalculation = accountBalance;
+	if (lastDeal.closePositionDetail?.balance) {
+		// Balance after trade - profit = balance before trade
+		capitalForCalculation = lastDeal.closePositionDetail.balance - netProfit;
+		console.log(`[P&L%] Using trade-time capital: ${capitalForCalculation.toFixed(2)}€ (balance after: ${lastDeal.closePositionDetail.balance.toFixed(2)}€ - profit: ${netProfit.toFixed(2)}€)`);
+	}
+	
 	// Calculate P&L percentage: (profit / capital) * 100
-	const profitLossPercentage = accountBalance > 0
-		? ((netProfit / accountBalance) * 100).toFixed(2)
+	const profitLossPercentage = capitalForCalculation > 0
+		? ((netProfit / capitalForCalculation) * 100).toFixed(2)
 		: "0";
 	
-	console.log(`[P&L%] Deal: profit=${netProfit.toFixed(2)}, capital=${accountBalance}, %=${profitLossPercentage}`);
+	console.log(`[P&L%] Deal: profit=${netProfit.toFixed(2)}, capital=${capitalForCalculation.toFixed(2)}, %=${profitLossPercentage}`);
 
 	return {
 		userId,
 		journalId,
 		assetId, // Auto-created asset
-		sessionId: null,
+		sessionId: sessionId,
 		tradeDate: new Date(lastDeal.executionTime),
 		riskInput, // Calculated from opening deal SL
 		profitLossAmount: netProfit.toFixed(2), // NET profit

@@ -167,9 +167,15 @@ bool ProcessAndSendDeal(ulong dealTicket)
       openPrice = price;
    }
    
+   double stopLoss = 0;
+   GetPositionStopLoss(positionId, stopLoss);
+   
+   double stopLossAmount = CalculateStopLossAmount(symbol, openPrice, stopLoss, volume, typeStr);
+   
    string json = BuildDealJson(
       dealTicket, symbol, typeStr, volume, openPrice, price,
-      profit, commission, swap, comment, magic, positionId, openTime, dealTime
+      profit, commission, swap, comment, magic, positionId, openTime, dealTime,
+      stopLoss, stopLossAmount
    );
    
    return SendToServer(json);
@@ -207,10 +213,62 @@ bool GetPositionOpenInfo(long positionId, datetime& openTime, double& openPrice)
    return false;
 }
 
+bool GetPositionStopLoss(long positionId, double& stopLoss)
+{
+   datetime fromDate = 0;
+   stopLoss = 0;
+   
+   if(!HistorySelect(fromDate, TimeCurrent()))
+      return false;
+   
+   int totalOrders = HistoryOrdersTotal();
+   
+   for(int i = totalOrders - 1; i >= 0; i--)
+   {
+      ulong orderTicket = HistoryOrderGetTicket(i);
+      
+      if(orderTicket == 0)
+         continue;
+      
+      if(HistoryOrderGetInteger(orderTicket, ORDER_POSITION_ID) != positionId)
+         continue;
+      
+      double sl = HistoryOrderGetDouble(orderTicket, ORDER_SL);
+      
+      if(sl > 0)
+      {
+         stopLoss = sl;
+         return true;
+      }
+   }
+   
+   return false;
+}
+
+double CalculateStopLossAmount(string symbol, double openPrice, double stopLoss, double volume, string dealType)
+{
+   if(stopLoss == 0)
+      return 0;
+   
+   double point = SymbolInfoDouble(symbol, SYMBOL_POINT);
+   double tickValue = SymbolInfoDouble(symbol, SYMBOL_TRADE_TICK_VALUE);
+   double tickSize = SymbolInfoDouble(symbol, SYMBOL_TRADE_TICK_SIZE);
+   
+   if(point == 0 || tickSize == 0)
+      return 0;
+   
+   double priceDistance = MathAbs(openPrice - stopLoss);
+   double ticks = priceDistance / tickSize;
+   double slAmount = ticks * tickValue * volume;
+   
+   return slAmount;
+}
+
 string BuildDealJson(ulong ticket, string symbol, string type, double volume,
                      double openPrice, double closePrice, double profit,
                      double commission, double swap, string comment,
-                     long magic, long positionId, datetime openTime, datetime closeTime)
+                     long magic, long positionId, datetime openTime, datetime closeTime,
+                     double stopLoss, double stopLossAmount)
 {
    string safeComment = EscapeJsonString(comment);
    
@@ -223,6 +281,8 @@ string BuildDealJson(ulong ticket, string symbol, string type, double volume,
    json += "\"volume\":" + DoubleToString(volume, 2) + ",";
    json += "\"open_price\":" + DoubleToString(openPrice, 5) + ",";
    json += "\"close_price\":" + DoubleToString(closePrice, 5) + ",";
+   json += "\"stop_loss\":" + DoubleToString(stopLoss, 5) + ",";
+   json += "\"stop_loss_amount\":" + DoubleToString(stopLossAmount, 2) + ",";
    json += "\"profit\":" + DoubleToString(profit, 2) + ",";
    json += "\"commission\":" + DoubleToString(commission, 2) + ",";
    json += "\"swap\":" + DoubleToString(swap, 2) + ",";

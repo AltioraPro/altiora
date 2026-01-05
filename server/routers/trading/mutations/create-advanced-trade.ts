@@ -5,10 +5,12 @@ import {
     tradesConfirmations,
     tradingAssets,
     tradingJournals,
+    tradingSessions,
 } from "@/server/db/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
 import { calculateTradeResults } from "@/server/services/trade-calculation";
 import { createAdvancedTradeSchema } from "../validators";
+import { determineSessionFromTime } from "../utils/auto-sessions";
 
 export const createAdvancedTradeBase = protectedProcedure.input(
     createAdvancedTradeSchema
@@ -66,12 +68,36 @@ export const createAdvancedTradeHandler = createAdvancedTradeBase.handler(
                 journal[0]
             );
 
+            // Auto-assign session if not provided
+            let sessionId = input.sessionId;
+            if (!sessionId) {
+                const tradeDate = new Date(input.tradeDate);
+                const sessionName = determineSessionFromTime(tradeDate);
+                
+                const journalSessions = await db
+                    .select()
+                    .from(tradingSessions)
+                    .where(
+                        and(
+                            eq(tradingSessions.journalId, input.journalId),
+                            eq(tradingSessions.name, sessionName)
+                        )
+                    )
+                    .limit(1);
+
+                sessionId = journalSessions[0]?.id;
+                
+                if (sessionId) {
+                    console.log(`[Trade] Auto-assigned to session: ${sessionName}`);
+                }
+            }
+
             const tradeValues = {
                 id: crypto.randomUUID(),
                 userId,
                 journalId: input.journalId,
                 assetId,
-                sessionId: input.sessionId,
+                sessionId: sessionId,
                 tradeDate: new Date(input.tradeDate),
                 riskInput: input.riskInput,
                 profitLossAmount: calculatedResults.profitLossAmount,

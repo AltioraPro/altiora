@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { nanoid } from "nanoid";
 import { eq, and } from "drizzle-orm";
 import { db } from "@/server/db";
-import { brokerConnections, advancedTrades } from "@/server/db/schema";
+import { brokerConnections, advancedTrades, tradingSessions, tradingJournals } from "@/server/db/schema";
 import { metatraderWebhookPayloadSchema } from "@/server/routers/integrations/metatrader/validators";
 import { getOrCreateAsset } from "@/server/routers/integrations/metatrader/utils";
+import { determineSessionFromTime } from "@/server/routers/trading/utils/auto-sessions";
 
 /**
  * MetaTrader Webhook Endpoint
@@ -122,7 +123,47 @@ export async function POST(request: NextRequest) {
 			connection.userId
 		);
 
-		// 9. Create the advanced trade
+		// 9. Determine trading session based on close time
+		const sessionName = determineSessionFromTime(closeTime);
+		const journalSessions = await db
+			.select()
+			.from(tradingSessions)
+			.where(
+				and(
+					eq(tradingSessions.journalId, connection.journalId),
+					eq(tradingSessions.name, sessionName)
+				)
+			)
+			.limit(1);
+
+		const sessionId = journalSessions[0]?.id || null;
+
+		if (sessionId) {
+			console.log(`[MT Webhook] Trade assigned to session: ${sessionName}`);
+		} else {
+			console.warn(`[MT Webhook] Session "${sessionName}" not found for journal ${connection.journalId}`);
+		}
+
+		// 10. Calculate risk percentage from stop loss amount
+		const journal = await db.query.tradingJournals.findFirst({
+			where: eq(tradingJournals.id, connection.journalId),
+			columns: {
+				startingCapital: true,
+			},
+		});
+
+		let riskPercentage: string | undefined = undefined;
+		
+		if (data.stop_loss_amount && data.stop_loss_amount > 0 && journal?.startingCapital) {
+			const startingCapital = Number(journal.startingCapital);
+			if (startingCapital > 0) {
+				const riskPct = (data.stop_loss_amount / startingCapital) * 100;
+				riskPercentage = riskPct.toFixed(2);
+				console.log(`[MT Webhook] Calculated risk: ${riskPercentage}% (SL: ${data.stop_loss_amount}€ / Capital: ${startingCapital}€)`);
+			}
+		}
+
+		// 11. Create the advanced trade
 		const tradeId = nanoid();
 		const [newTrade] = await db
 			.insert(advancedTrades)
@@ -131,12 +172,14 @@ export async function POST(request: NextRequest) {
 				userId: connection.userId,
 				journalId: connection.journalId,
 				assetId: assetId,
+				sessionId: sessionId,
 				
 				// Trade timing - use close time as the trade date
 				tradeDate: closeTime,
 				
 				// Financial data
 				profitLossAmount: String(netPnL),
+				riskInput: riskPercentage,
 				
 				// Source tracking
 				source: "metatrader",
@@ -154,6 +197,8 @@ export async function POST(request: NextRequest) {
 					volume: data.volume,
 					openPrice: data.open_price,
 					closePrice: data.close_price,
+					stopLoss: data.stop_loss,
+					stopLossAmount: data.stop_loss_amount,
 					profit: data.profit,
 					commission: data.commission,
 					swap: data.swap,
@@ -175,7 +220,7 @@ export async function POST(request: NextRequest) {
 			})
 			.returning();
 
-		// 10. Update broker connection stats
+		// 12. Update broker connection stats
 		const currentSyncCount = parseInt(connection.syncCount || "0", 10);
 		await db
 			.update(brokerConnections)

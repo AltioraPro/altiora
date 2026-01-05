@@ -1,5 +1,5 @@
 import { eq, and } from "drizzle-orm";
-import { brokerConnections, account } from "@/server/db/schema";
+import { brokerConnections, account, tradingJournals } from "@/server/db/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
 import { EncryptionService } from "@/server/services/encryption.service";
 import { CTraderClient } from "../utils/ctrader-client";
@@ -123,7 +123,19 @@ export const syncCTraderPositionsHandler = syncCTraderPositionsBase.handler(
             const isLive = accountList[0].isLive;
             // Fetch REAL account balance from cTrader API
 			console.log(`[syncCTraderPositions] Fetching account balance for ${tradingAccountId}...`);
-			const accountBalance = await getAccountBalance(decryptedToken, tradingAccountId, isLive);
+			let accountBalance = await getAccountBalance(decryptedToken, tradingAccountId, isLive);
+            
+            // Fallback to journal starting capital if balance is 0 or unavailable
+            if (!accountBalance || accountBalance === 0) {
+            	console.warn(`[syncCTraderPositions] cTrader balance is 0 or unavailable, fetching journal capital...`);
+            	const journal = await db.query.tradingJournals.findFirst({
+            		where: eq(tradingJournals.id, journalId),
+            		columns: { startingCapital: true },
+            	});
+            	accountBalance = journal?.startingCapital ? Number(journal.startingCapital) : 0;
+            	console.log(`[syncCTraderPositions] Using journal capital as fallback: ${accountBalance}€`);
+            }
+            
             console.log(`[syncCTraderPositions] Using ctidTraderAccountId: ${tradingAccountId} (Found ${accountList.length} accounts) [${isLive ? 'LIVE' : 'DEMO'}] Balance: ${accountBalance}€`);
 
 			// 5b. Open Positions - DISABLED AS PER USER REQUEST (Only Closed Trades)
@@ -203,7 +215,7 @@ export const syncCTraderPositionsHandler = syncCTraderPositionsBase.handler(
 			
 			const allErrors = [...(positionResult.errors || []), ...dealResult.errors];
 
-			// 9. Update connection status
+			// 9. Update connection status and account type
 			await db
 				.update(brokerConnections)
 				.set({
@@ -212,6 +224,8 @@ export const syncCTraderPositionsHandler = syncCTraderPositionsBase.handler(
 					lastSyncError:
 						allErrors.length > 0 ? allErrors.join("; ").substring(0, 255) : null,
 					syncCount: (Number(connection.syncCount || 0) + 1).toString(),
+					// Update accountType in case it changed or wasn't set correctly
+					accountType: isLive ? "live" : "demo",
 					updatedAt: new Date(),
 				})
 				.where(eq(brokerConnections.id, connection.id));
