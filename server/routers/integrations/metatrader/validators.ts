@@ -20,6 +20,8 @@ export const metatraderWebhookPayloadSchema = z.object({
 	// Prices
 	open_price: z.number().nonnegative(),
 	close_price: z.number().nonnegative(),
+	stop_loss: z.number().nonnegative().optional().default(0),
+	stop_loss_amount: z.number().nonnegative().optional().default(0),
 
 	// Financial results
 	profit: z.number(), // Can be negative

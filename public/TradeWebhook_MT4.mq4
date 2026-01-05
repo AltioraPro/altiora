@@ -164,6 +164,7 @@ bool ProcessAndSendOrder(int ticket)
    double lots       = OrderLots();
    double openPrice  = OrderOpenPrice();
    double closePrice = OrderClosePrice();
+   double stopLoss   = OrderStopLoss();
    double profit     = OrderProfit();
    double commission = OrderCommission();
    double swap       = OrderSwap();
@@ -181,18 +182,41 @@ bool ProcessAndSendOrder(int ticket)
       default:      typeStr = "other"; break;
    }
    
+   double stopLossAmount = CalculateStopLossAmount(symbol, openPrice, stopLoss, lots, typeStr);
+   
    string json = BuildOrderJson(
       ticket, symbol, typeStr, lots, openPrice, closePrice,
-      profit, commission, swap, comment, magic, openTime, closeTime
+      profit, commission, swap, comment, magic, openTime, closeTime,
+      stopLoss, stopLossAmount
    );
    
    return SendToServer(json);
 }
 
+double CalculateStopLossAmount(string symbol, double openPrice, double stopLoss, double volume, string orderType)
+{
+   if(stopLoss == 0)
+      return 0;
+   
+   double point = MarketInfo(symbol, MODE_POINT);
+   double tickValue = MarketInfo(symbol, MODE_TICKVALUE);
+   double tickSize = MarketInfo(symbol, MODE_TICKSIZE);
+   
+   if(point == 0 || tickSize == 0)
+      return 0;
+   
+   double priceDistance = MathAbs(openPrice - stopLoss);
+   double ticks = priceDistance / tickSize;
+   double slAmount = ticks * tickValue * volume;
+   
+   return slAmount;
+}
+
 string BuildOrderJson(int ticket, string symbol, string type, double volume,
                       double openPrice, double closePrice, double profit,
                       double commission, double swap, string comment,
-                      int magic, datetime openTime, datetime closeTime)
+                      int magic, datetime openTime, datetime closeTime,
+                      double stopLoss, double stopLossAmount)
 {
    string safeComment = EscapeJsonString(comment);
    
@@ -205,6 +229,8 @@ string BuildOrderJson(int ticket, string symbol, string type, double volume,
    json += "\"volume\":" + DoubleToString(volume, 2) + ",";
    json += "\"open_price\":" + DoubleToString(openPrice, 5) + ",";
    json += "\"close_price\":" + DoubleToString(closePrice, 5) + ",";
+   json += "\"stop_loss\":" + DoubleToString(stopLoss, 5) + ",";
+   json += "\"stop_loss_amount\":" + DoubleToString(stopLossAmount, 2) + ",";
    json += "\"profit\":" + DoubleToString(profit, 2) + ",";
    json += "\"commission\":" + DoubleToString(commission, 2) + ",";
    json += "\"swap\":" + DoubleToString(swap, 2) + ",";

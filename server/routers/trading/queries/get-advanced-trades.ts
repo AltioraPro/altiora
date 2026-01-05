@@ -56,6 +56,13 @@ export const getAdvancedTradesHandler = getAdvancedTradesBase.handler(
                         confirmations: true,
                     },
                 },
+                brokerConnection: {
+                    columns: {
+                        accountType: true,
+                        currency: true,
+                        provider: true,
+                    },
+                },
             },
             where: and(...whereConditions),
             orderBy: [

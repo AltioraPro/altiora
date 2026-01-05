@@ -130,30 +130,56 @@ export const createColumns = ({
                 const usePercentageCalculation =
                     stats?.journal?.usePercentageCalculation;
 
+                // Check broker connection info for demo/live account
+                const brokerConnection = trade.brokerConnection;
+                const isDemo = brokerConnection?.accountType === "demo";
+                const currency = brokerConnection?.currency || "EUR";
+                
+                // Break-Even threshold: trades within ±1% of capital are considered BE
+                const BE_THRESHOLD = 1;
+                const isBreakEven = Math.abs(profitLossPercentage) <= BE_THRESHOLD;
+                const isWin = profitLossPercentage > BE_THRESHOLD;
+                const isLoss = profitLossPercentage < -BE_THRESHOLD;
+                
+                // Get currency symbol
+                const getCurrencySymbol = (curr: string) => {
+                    const symbols: Record<string, string> = {
+                        USD: "$",
+                        EUR: "€",
+                        GBP: "£",
+                        JPY: "¥",
+                        CHF: "CHF",
+                        AUD: "$",
+                        CAD: "$",
+                    };
+                    return symbols[curr] || curr;
+                };
+
                 return (
                     <div className="space-y-1">
                         <span
                             className={cn(
                                 "text-sm",
-                                profitLossPercentage > 0 && "text-green-400",
-                                profitLossPercentage < 0 && "text-red-400",
-                                profitLossPercentage === 0 && "text-blue-400"
+                                isWin && "text-green-400",
+                                isLoss && "text-red-400",
+                                isBreakEven && "text-blue-400"
                             )}
                         >
                             {profitLossPercentage >= 0 ? "+" : ""}
                             {trade.profitLossPercentage}%
                         </span>
-                        {trade.profitLossAmount && usePercentageCalculation && (
+                        {/* Show amount only for LIVE accounts */}
+                        {!isDemo && trade.profitLossAmount && usePercentageCalculation && (
                             <div
                                 className={cn(
                                     "text-xs",
-                                    profitLossAmount > 0 && "text-green-400",
-                                    profitLossAmount < 0 && "text-red-400",
-                                    profitLossAmount === 0 && "text-blue-400"
+                                    isWin && "text-green-400",
+                                    isLoss && "text-red-400",
+                                    isBreakEven && "text-blue-400"
                                 )}
                             >
                                 {profitLossAmount >= 0 ? "+" : ""}
-                                {trade.profitLossAmount}€
+                                {trade.profitLossAmount}{getCurrencySymbol(currency)}
                             </div>
                         )}
                     </div>
@@ -165,7 +191,8 @@ export const createColumns = ({
             header: "Exit",
             accessorKey: "exitReason",
             cell: ({ row }) => {
-                const isClosed = row.original.isClosed;
+                const trade = row.original;
+                const isClosed = trade.isClosed;
 
                 if (isClosed === false) {
                     return (
@@ -175,8 +202,30 @@ export const createColumns = ({
                     );
                 }
 
-                const exitReason = row.original.exitReason;
-                return getExitReasonBadge(exitReason);
+                // Check if trade is within BE threshold (±1%)
+                const profitLossPercentage = Number(trade.profitLossPercentage || 0);
+                const BE_THRESHOLD = 1;
+                const isBreakEven = Math.abs(profitLossPercentage) <= BE_THRESHOLD;
+                
+                // If within BE threshold, always show BE regardless of stored exitReason
+                if (isBreakEven) {
+                    return (
+                        <Badge className="border-blue-500/30 bg-blue-500/20 text-blue-400">
+                            BE
+                        </Badge>
+                    );
+                }
+
+                // Otherwise, use stored exitReason or derive from P&L
+                const exitReason = trade.exitReason;
+                if (exitReason) {
+                    return getExitReasonBadge(exitReason);
+                }
+                
+                // Derive from P&L if no exitReason stored
+                return profitLossPercentage > 0 
+                    ? getExitReasonBadge("TP") 
+                    : getExitReasonBadge("SL");
             },
             size: 100,
         },
