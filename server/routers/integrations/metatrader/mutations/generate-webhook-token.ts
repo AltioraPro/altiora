@@ -1,0 +1,81 @@
+import { nanoid } from "nanoid";
+import { eq, and } from "drizzle-orm";
+import { brokerConnections, tradingJournals } from "@/server/db/schema";
+import type { GenerateWebhookTokenContext } from "./types";
+
+/**
+ * Generates a secure webhook token for MetaTrader EA authentication
+ * Creates a new broker connection if none exists, or returns existing token
+ */
+export async function generateWebhookToken({ db, session, input }: GenerateWebhookTokenContext) {
+	const { journalId, platform } = input;
+
+	console.log(`[MT] Generating token for journal ${journalId} (${platform})`);
+
+	// 1. Verify journal ownership
+	const journal = await db.query.tradingJournals.findFirst({
+		where: and(
+			eq(tradingJournals.id, journalId),
+			eq(tradingJournals.userId, session.user.id)
+		),
+	});
+
+	if (!journal) {
+		console.warn(`[MT] Journal ${journalId} not found for user ${session.user.id}`);
+		throw new Error("Journal not found or access denied");
+	}
+
+	// 2. Check for existing connection (any provider)
+	const existingConnection = await db.query.brokerConnections.findFirst({
+		where: eq(brokerConnections.journalId, journalId),
+	});
+
+	if (existingConnection) {
+		// If it's already a MetaTrader connection, return existing token
+		if (existingConnection.provider === "metatrader") {
+			console.log(`[MT] Returning existing token for journal ${journalId}`);
+			return {
+				success: true,
+				webhookToken: existingConnection.webhookToken,
+				isNew: false,
+				message: "Existing MetaTrader connection found",
+			};
+		}
+		
+		// If it's a different provider, block
+		console.warn(`[MT] Journal ${journalId} already has ${existingConnection.provider} connection`);
+		throw new Error(
+			`Journal already has a ${existingConnection.provider} connection. Disconnect it first.`
+		);
+	}
+
+	// 3. Generate a secure webhook token
+	const webhookToken = `mt_${nanoid(32)}`;
+
+	// 4. Create the broker connection
+	const [connection] = await db
+		.insert(brokerConnections)
+		.values({
+			id: nanoid(),
+			userId: session.user.id,
+			journalId,
+			provider: "metatrader",
+			platform: platform,
+			webhookToken,
+			isActive: true,
+			lastSyncStatus: "pending",
+			syncCount: "0",
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		})
+		.returning();
+
+	console.log(`[MT] Created new connection for journal ${journalId} (token: ${webhookToken.substring(0, 10)}...)`);
+
+	return {
+		success: true,
+		webhookToken: connection.webhookToken,
+		isNew: true,
+		message: "MetaTrader connection created successfully",
+	};
+}

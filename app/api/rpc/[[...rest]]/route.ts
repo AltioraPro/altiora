@@ -7,6 +7,7 @@ import {
 import z from "zod";
 import { db } from "@/server/db";
 import { appRouter } from "@/server/routers/_app";
+import { auth } from "@/lib/auth";
 
 const handler = new RPCHandler(appRouter, {
     plugins: [new StrictGetMethodPlugin(), new BatchHandlerPlugin()],
@@ -33,11 +34,22 @@ const handler = new RPCHandler(appRouter, {
 });
 
 async function handleRequest(request: Request) {
+    let session = null;
+    try {
+        session = await auth.api.getSession({
+            headers: request.headers
+        });
+    } catch (e) {
+        // Failed to get session, not fatal for public endpoints
+        console.error("Failed to retrieve session in RPC handler", e);
+    }
+
     const { response } = await handler.handle(request, {
         prefix: "/api/rpc",
         context: {
             headers: request.headers,
             db,
+            session,
         },
     });
 

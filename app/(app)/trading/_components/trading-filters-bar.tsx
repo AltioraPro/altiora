@@ -1,12 +1,13 @@
 "use client";
 
-import { RiAddLine, RiUploadLine } from "@remixicon/react";
+import { RiAddLine, RiUploadLine, RiRefreshLine } from "@remixicon/react";
 import { AdvancedFilters } from "@/components/trading/AdvancedFilters";
 import {
     DateRangeFilter,
     type DateRangeFilterState,
 } from "@/components/trading/DateRangeFilter";
 import { Button } from "@/components/ui/button";
+import { BrokerConnectMenu } from "@/components/integrations";
 
 interface TradingFiltersBarProps {
     journalId: string | null;
@@ -14,6 +15,8 @@ interface TradingFiltersBarProps {
     onDateRangeChange: (range: DateRangeFilterState) => void;
     onImportClick: () => void;
     onCreateTradeClick: () => void;
+    onSyncClick?: () => void;
+    isSyncing?: boolean;
 }
 
 export function TradingFiltersBar({
@@ -22,6 +25,8 @@ export function TradingFiltersBar({
     onDateRangeChange,
     onImportClick,
     onCreateTradeClick,
+    onSyncClick,
+    isSyncing,
 }: TradingFiltersBarProps) {
     return (
         <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -38,6 +43,21 @@ export function TradingFiltersBar({
 
             {/* Actions Section */}
             <div className="flex items-center gap-3">
+                {/* Broker Connection Menu */}
+                {journalId && <BrokerConnectMenu journalId={journalId} />}
+
+                {/* Manual Sync Button (shown when connected) */}
+                {onSyncClick && (
+                    <Button
+                        onClick={onSyncClick}
+                        variant="outline"
+                        disabled={isSyncing}
+                    >
+                        <RiRefreshLine className={`size-4 ${isSyncing ? "animate-spin" : ""}`} />
+                        {isSyncing ? "Syncing..." : "Sync"}
+                    </Button>
+                )}
+
                 <Button onClick={onImportClick} variant="outline">
                     <RiUploadLine className="size-4" />
                     Import Excel
@@ -50,3 +70,4 @@ export function TradingFiltersBar({
         </div>
     );
 }
+
