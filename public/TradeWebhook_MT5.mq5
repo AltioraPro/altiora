@@ -232,7 +232,8 @@ string BuildDealJson(ulong ticket, string symbol, string type, double volume,
    json += "\"close_time\":\"" + TimeToString(closeTime, TIME_DATE|TIME_SECONDS) + "\",";
    json += "\"account\":" + IntegerToString(AccountInfoInteger(ACCOUNT_LOGIN)) + ",";
    json += "\"broker\":\"" + EscapeJsonString(AccountInfoString(ACCOUNT_COMPANY)) + "\",";
-   json += "\"currency\":\"" + AccountInfoString(ACCOUNT_CURRENCY) + "\"";
+   json += "\"currency\":\"" + AccountInfoString(ACCOUNT_CURRENCY) + "\",";
+   json += "\"platform\":\"MT5\"";
    json += "}";
    
    return json;
