@@ -364,19 +364,6 @@ function mapAggregatedDealToTrade(
 	accountBalance: number,
 	sessionId: string | null,
 ) {
-	// Detect exit reason based on NET profit
-	let exitReason: string | null = null;
-	if (isClosed) {
-		// BE only if profit is very close to 0 (within 0.10€ absolute)
-		if (Math.abs(netProfit) <= 0.10) {
-			exitReason = "BE"; // Break Even
-		} else if (netProfit < 0) {
-			exitReason = "SL"; // Stop Loss (loss)
-		} else {
-			exitReason = "TP"; // Take Profit (win)
-		}
-	}
-	
 	// Use balance at trade close time if available, otherwise use current account balance
 	// closePositionDetail.balance is the balance AFTER the trade, so we subtract the profit to get balance BEFORE
 	let capitalForCalculation = accountBalance;
@@ -392,6 +379,24 @@ function mapAggregatedDealToTrade(
 		: "0";
 	
 	console.log(`[P&L%] Deal: profit=${netProfit.toFixed(2)}, capital=${capitalForCalculation.toFixed(2)}, %=${profitLossPercentage}`);
+	
+	// Detect exit reason based on P&L percentage
+	// Thresholds: BE = -0.10% to +1%, TP = >+1%, SL = <-0.10%
+	const BE_THRESHOLD_LOW = -0.10;
+	const BE_THRESHOLD_HIGH = 1;
+	const pnlPct = parseFloat(profitLossPercentage);
+	
+	let exitReason: string | null = null;
+	if (isClosed) {
+		if (pnlPct > BE_THRESHOLD_HIGH) {
+			exitReason = "TP"; // Take Profit (win)
+		} else if (pnlPct < BE_THRESHOLD_LOW) {
+			exitReason = "SL"; // Stop Loss (loss)
+		} else {
+			exitReason = "BE"; // Break Even
+		}
+		console.log(`[Exit] ${exitReason} (P&L%: ${pnlPct}%)`);
+	}
 
 	return {
 		userId,
