@@ -115,6 +115,18 @@ export async function POST(request: NextRequest) {
 		// 7. Calculate net P&L (profit + commission + swap)
 		const netPnL = data.profit + data.commission + data.swap;
 
+		// 7b. Calculate P&L percentage using account balance from MT
+		// Capital at trade entry ≈ current balance - this trade's P&L
+		let profitLossPercentage: string | undefined = undefined;
+		if (data.account_balance && data.account_balance > 0) {
+			const capitalAtEntry = data.account_balance - netPnL;
+			if (capitalAtEntry > 0) {
+				const pnlPct = (netPnL / capitalAtEntry) * 100;
+				profitLossPercentage = pnlPct.toFixed(2);
+				console.log(`[MT Webhook] P&L%: ${profitLossPercentage}% (${netPnL} / ${capitalAtEntry.toFixed(2)})`);
+			}
+		}
+
 		// 8. Find or create asset for this symbol
 		const assetId = await getOrCreateAsset(
 			db,
@@ -179,6 +191,7 @@ export async function POST(request: NextRequest) {
 				
 				// Financial data
 				profitLossAmount: String(netPnL),
+				profitLossPercentage: profitLossPercentage,
 				riskInput: riskPercentage,
 				
 				// Source tracking
@@ -209,6 +222,9 @@ export async function POST(request: NextRequest) {
 					broker: data.broker,
 					currency: data.currency,
 					platform: data.platform || "MT5",
+					accountBalance: data.account_balance,
+					accountEquity: data.account_equity,
+					accountType: data.account_type,
 				}),
 				
 				// Mark as closed since we only receive closed trades
@@ -222,6 +238,8 @@ export async function POST(request: NextRequest) {
 
 		// 12. Update broker connection stats
 		const currentSyncCount = parseInt(connection.syncCount || "0", 10);
+		const isDemo = data.account_type === "demo";
+		
 		await db
 			.update(brokerConnections)
 			.set({
@@ -233,9 +251,42 @@ export async function POST(request: NextRequest) {
 				accountNumber: connection.accountNumber || String(data.account),
 				currency: connection.currency || data.currency,
 				platform: data.platform?.toLowerCase() || connection.platform,
+				accountType: isDemo ? "demo" : "live",
 				updatedAt: new Date(),
 			})
 			.where(eq(brokerConnections.id, connection.id));
+
+		// 13. Update journal name and capital on first sync
+		if (currentSyncCount === 0) {
+			const platformName = data.platform || "MetaTrader";
+			const journalName = isDemo 
+				? `${platformName} Demo Account`
+				: `${platformName} Live Account`;
+			
+			// Calculate approximate starting capital from current balance
+			// Starting capital ≈ current balance - this trade's P&L (rough estimate for first trade)
+			const estimatedStartingCapital = data.account_balance 
+				? Math.round(data.account_balance - netPnL)
+				: undefined;
+			
+			await db
+				.update(tradingJournals)
+				.set({
+					name: journalName,
+					// Update starting capital if we have balance info and current capital seems wrong
+					...(estimatedStartingCapital && journal?.startingCapital && 
+						Math.abs(Number(journal.startingCapital) - estimatedStartingCapital) > 100
+						? { startingCapital: String(estimatedStartingCapital) }
+						: {}),
+					updatedAt: new Date(),
+				})
+				.where(eq(tradingJournals.id, connection.journalId));
+			
+			console.log(`[MT Webhook] Updated journal name to: ${journalName}`);
+			if (estimatedStartingCapital) {
+				console.log(`[MT Webhook] Estimated starting capital: ${estimatedStartingCapital}`);
+			}
+		}
 
 		const processingTime = Date.now() - startTime;
 		console.log(`[MT Webhook] Trade ${data.ticket} saved in ${processingTime}ms`);

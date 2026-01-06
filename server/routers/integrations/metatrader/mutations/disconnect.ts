@@ -13,8 +13,6 @@ interface DisconnectContext extends MetaTraderMutationContext {
 export async function disconnect({ db, session, input }: DisconnectContext) {
 	const { journalId } = input;
 
-	console.log(`[MT] Disconnecting journal ${journalId}`);
-
 	// 1. Verify journal ownership
 	const journal = await db.query.tradingJournals.findFirst({
 		where: and(
@@ -43,7 +41,6 @@ export async function disconnect({ db, session, input }: DisconnectContext) {
 		throw new Error("No MetaTrader connection found for this journal");
 	}
 
-	console.log(`[MT] Disconnected journal ${journalId}`);
 
 	return {
 		success: true,

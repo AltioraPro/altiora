@@ -293,7 +293,14 @@ string BuildDealJson(ulong ticket, string symbol, string type, double volume,
    json += "\"account\":" + IntegerToString(AccountInfoInteger(ACCOUNT_LOGIN)) + ",";
    json += "\"broker\":\"" + EscapeJsonString(AccountInfoString(ACCOUNT_COMPANY)) + "\",";
    json += "\"currency\":\"" + AccountInfoString(ACCOUNT_CURRENCY) + "\",";
-   json += "\"platform\":\"MT5\"";
+   json += "\"platform\":\"MT5\",";
+   // Account type: 0 = demo, 1 = contest, 2 = real
+   ENUM_ACCOUNT_TRADE_MODE tradeMode = (ENUM_ACCOUNT_TRADE_MODE)AccountInfoInteger(ACCOUNT_TRADE_MODE);
+   string accountType = (tradeMode == ACCOUNT_TRADE_MODE_REAL) ? "live" : "demo";
+   json += "\"account_type\":\"" + accountType + "\",";
+   // Account balance and equity for capital tracking
+   json += "\"account_balance\":" + DoubleToString(AccountInfoDouble(ACCOUNT_BALANCE), 2) + ",";
+   json += "\"account_equity\":" + DoubleToString(AccountInfoDouble(ACCOUNT_EQUITY), 2);
    json += "}";
    
    return json;

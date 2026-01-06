@@ -41,8 +41,15 @@ export const metatraderWebhookPayloadSchema = z.object({
 	broker: z.string().min(1, "Broker name is required"),
 	currency: z.string().min(1, "Currency is required"),
 
-	// Platform identification (only present in MT4)
+	// Platform identification
 	platform: z.enum(["MT4", "MT5"]).optional(),
+	
+	// Account type (demo or live)
+	account_type: z.enum(["demo", "live"]).optional().default("demo"),
+	
+	// Account balance and equity for capital tracking
+	account_balance: z.number().nonnegative().optional(),
+	account_equity: z.number().nonnegative().optional(),
 });
 
 export type MetaTraderWebhookPayload = z.infer<typeof metatraderWebhookPayloadSchema>;
