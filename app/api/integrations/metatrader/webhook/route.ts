@@ -175,7 +175,22 @@ export async function POST(request: NextRequest) {
 			}
 		}
 
-		// 11. Create the advanced trade
+		// 11. Determine exit reason based on P&L%
+		// Thresholds: BE = -0.10% to +1%, TP = >+1%, SL = <-0.10%
+		const BE_THRESHOLD_LOW = -0.10;
+		const BE_THRESHOLD_HIGH = 1;
+		const pnlPct = profitLossPercentage ? parseFloat(profitLossPercentage) : 0;
+		
+		let exitReason: "TP" | "BE" | "SL" = "BE";
+		if (pnlPct > BE_THRESHOLD_HIGH) {
+			exitReason = "TP";
+		} else if (pnlPct < BE_THRESHOLD_LOW) {
+			exitReason = "SL";
+		}
+		
+		console.log(`[MT Webhook] Exit reason: ${exitReason} (P&L%: ${pnlPct}%)`);
+
+		// 12. Create the advanced trade
 		const tradeId = nanoid();
 		const [newTrade] = await db
 			.insert(advancedTrades)
@@ -192,6 +207,7 @@ export async function POST(request: NextRequest) {
 				// Financial data
 				profitLossAmount: String(netPnL),
 				profitLossPercentage: profitLossPercentage,
+				exitReason: exitReason,
 				riskInput: riskPercentage,
 				
 				// Source tracking
@@ -236,7 +252,7 @@ export async function POST(request: NextRequest) {
 			})
 			.returning();
 
-		// 12. Update broker connection stats
+		// 13. Update broker connection stats
 		const currentSyncCount = parseInt(connection.syncCount || "0", 10);
 		const isDemo = data.account_type === "demo";
 		
@@ -256,7 +272,7 @@ export async function POST(request: NextRequest) {
 			})
 			.where(eq(brokerConnections.id, connection.id));
 
-		// 13. Update journal name and capital on first sync
+		// 14. Update journal name and capital on first sync
 		if (currentSyncCount === 0) {
 			const platformName = data.platform || "MetaTrader";
 			const journalName = isDemo 
