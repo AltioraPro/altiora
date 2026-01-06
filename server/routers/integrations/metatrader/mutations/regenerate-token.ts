@@ -10,8 +10,6 @@ import type { RegenerateTokenContext } from "./types";
 export async function regenerateToken({ db, session, input }: RegenerateTokenContext) {
 	const { journalId } = input;
 
-	console.log(`[MT] Regenerating token for journal ${journalId}`);
-
 	// 1. Verify journal ownership
 	const journal = await db.query.tradingJournals.findFirst({
 		where: and(
@@ -51,8 +49,6 @@ export async function regenerateToken({ db, session, input }: RegenerateTokenCon
 		})
 		.where(eq(brokerConnections.id, existingConnection.id))
 		.returning();
-
-	console.log(`[MT] Token regenerated for journal ${journalId}`);
 
 	return {
 		success: true,

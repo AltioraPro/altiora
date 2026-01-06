@@ -10,7 +10,6 @@ import type { GenerateWebhookTokenContext } from "./types";
 export async function generateWebhookToken({ db, session, input }: GenerateWebhookTokenContext) {
 	const { journalId, platform } = input;
 
-	console.log(`[MT] Generating token for journal ${journalId} (${platform})`);
 
 	// 1. Verify journal ownership
 	const journal = await db.query.tradingJournals.findFirst({
@@ -33,7 +32,6 @@ export async function generateWebhookToken({ db, session, input }: GenerateWebho
 	if (existingConnection) {
 		// If it's already a MetaTrader connection, return existing token
 		if (existingConnection.provider === "metatrader") {
-			console.log(`[MT] Returning existing token for journal ${journalId}`);
 			return {
 				success: true,
 				webhookToken: existingConnection.webhookToken,
@@ -43,7 +41,6 @@ export async function generateWebhookToken({ db, session, input }: GenerateWebho
 		}
 		
 		// If it's a different provider, block
-		console.warn(`[MT] Journal ${journalId} already has ${existingConnection.provider} connection`);
 		throw new Error(
 			`Journal already has a ${existingConnection.provider} connection. Disconnect it first.`
 		);
@@ -70,7 +67,6 @@ export async function generateWebhookToken({ db, session, input }: GenerateWebho
 		})
 		.returning();
 
-	console.log(`[MT] Created new connection for journal ${journalId} (token: ${webhookToken.substring(0, 10)}...)`);
 
 	return {
 		success: true,

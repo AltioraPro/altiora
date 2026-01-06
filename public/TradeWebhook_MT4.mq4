@@ -241,7 +241,13 @@ string BuildOrderJson(int ticket, string symbol, string type, double volume,
    json += "\"account\":" + IntegerToString(AccountNumber()) + ",";
    json += "\"broker\":\"" + EscapeJsonString(AccountCompany()) + "\",";
    json += "\"currency\":\"" + AccountCurrency() + "\",";
-   json += "\"platform\":\"MT4\"";
+   json += "\"platform\":\"MT4\",";
+   // Account type: IsDemo() returns true for demo accounts
+   string accountType = IsDemo() ? "demo" : "live";
+   json += "\"account_type\":\"" + accountType + "\",";
+   // Account balance and equity for capital tracking
+   json += "\"account_balance\":" + DoubleToString(AccountBalance(), 2) + ",";
+   json += "\"account_equity\":" + DoubleToString(AccountEquity(), 2);
    json += "}";
    
    return json;

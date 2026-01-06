@@ -250,7 +250,7 @@ export function CreateGoalModal({
                             <Input
                                 id="year"
                                 max={new Date().getFullYear() + 10}
-                                min={new Date().getFullYear()}
+                                min={new Date().getFullYear()} 
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
