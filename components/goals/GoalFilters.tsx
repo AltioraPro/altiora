@@ -86,12 +86,12 @@ export function GoalFilters({
         localSearch;
 
     return (
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
             {/* Search Bar */}
-            <div className="relative flex-1 max-w-sm">
+            <div className="relative flex-1 sm:max-w-sm">
                 <RiSearchLine className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                    className="pl-9 bg-secondary/50 border-0 h-9"
+                    className="pl-9 bg-secondary/50 border-0 h-9 text-sm sm:text-base"
                     placeholder="Search goals..."
                     value={localSearch}
                     onChange={(e) => setLocalSearch(e.target.value)}
