@@ -6,11 +6,28 @@ import {
     RiCheckboxBlankCircleLine,
     RiCheckboxCircleFill,
     RiDeleteBin2Line,
+    RiDraggable,
     RiEditLine,
     RiSearchLine,
-    RiSparklingLine,
     RiStockLine,
 } from "@remixicon/react";
+import {
+    DndContext,
+    closestCenter,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    useSortable,
+    verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -24,9 +41,13 @@ import { GoalStats } from "./GoalStats";
 function GoalRow({
     goal,
     onEdit,
+    isDragging = false,
+    dragHandleProps,
 }: {
     goal: Goal;
     onEdit: (goal: Goal) => void;
+    isDragging?: boolean;
+    dragHandleProps?: React.HTMLAttributes<HTMLButtonElement>;
 }): React.JSX.Element {
     const { data: categories } = useQuery(
         orpc.categories.getAll.queryOptions({ input: undefined })
@@ -68,12 +89,24 @@ function GoalRow({
     return (
         <div
             className={cn(
-                "group relative flex items-center gap-2 rounded-lg border border-white/5 bg-white/5 px-2 py-1.5 transition-all hover:border-white/10 hover:bg-white/10",
-                goal.isCompleted && "opacity-60"
+                "group relative flex flex-wrap sm:flex-nowrap items-center gap-1.5 sm:gap-2 rounded-lg border border-white/5 bg-white/5 px-2 py-2 sm:py-1.5 transition-all hover:border-white/10 hover:bg-white/10",
+                goal.isCompleted && "opacity-60",
+                isDragging && "ring-2 ring-white/30 bg-white/10 z-50"
             )}
         >
+            {/* Drag Handle */}
+            {dragHandleProps && (
+                <button
+                    {...dragHandleProps}
+                    className="shrink-0 cursor-grab active:cursor-grabbing touch-none text-white/20 hover:text-white/50 transition-colors"
+                    type="button"
+                >
+                    <RiDraggable className="size-3.5 sm:size-4" />
+                </button>
+            )}
+
             <button
-                className="shrink-0"
+                className="shrink-0 order-1 sm:order-none"
                 disabled={isPending}
                 onClick={handleToggle}
                 type="button"
@@ -87,53 +120,80 @@ function GoalRow({
 
             <span
                 className={cn(
-                    "min-w-0 flex-1 truncate text-sm",
+                    "min-w-0 flex-1 order-2 sm:order-none text-xs sm:text-sm line-clamp-2 sm:truncate",
                     goal.isCompleted && "line-through"
                 )}
             >
                 {goal.title}
             </span>
 
-            {goal.categoryId && categories?.find(c => c.id === goal.categoryId) && (
-                <div>
+            <div className="flex items-center gap-1.5 order-3 sm:order-none w-full sm:w-auto mt-1 sm:mt-0 pl-6 sm:pl-0">
+                {goal.categoryId && categories?.find(c => c.id === goal.categoryId) && (
                     <CategoryBadge
                         category={categories.find(c => c.id === goal.categoryId)!}
                         size="sm"
-                        className="truncate block w-fit max-w-full"
+                        className="truncate block w-fit max-w-full text-[10px] sm:text-xs"
                     />
-                </div>
-            )}
+                )}
 
-            {goal.deadline && (
-                <span
-                    className={cn(
-                        "shrink-0 text-xs text-nowrap",
-                        isOverdue ? "font-medium text-red-400" : "text-white/40"
-                    )}
-                >
-                    {new Date(goal.deadline).toLocaleDateString("en-US", {
-                        day: "numeric",
-                        month: "short",
-                    })}
-                </span>
-            )}
+                {goal.deadline && (
+                    <span
+                        className={cn(
+                            "shrink-0 text-[10px] sm:text-xs text-nowrap",
+                            isOverdue ? "font-medium text-red-400" : "text-white/40"
+                        )}
+                    >
+                        {new Date(goal.deadline).toLocaleDateString("en-US", {
+                            day: "numeric",
+                            month: "short",
+                        })}
+                    </span>
+                )}
+            </div>
 
-            <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 transition-all group-hover:opacity-100 bg-black/40 backdrop-blur-md rounded-md p-0.5 border border-white/5">
+            <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-0.5 sm:gap-1 opacity-100 sm:opacity-0 transition-all group-hover:opacity-100 bg-black/40 backdrop-blur-md rounded-md p-0.5 border border-white/5">
                 <button
                     className="rounded p-1 hover:bg-white/10 text-white/70 hover:text-white"
                     onClick={() => onEdit(goal)}
                     type="button"
                 >
-                    <RiEditLine className="size-3.5" />
+                    <RiEditLine className="size-3 sm:size-3.5" />
                 </button>
                 <button
                     className="rounded p-1 hover:bg-red-500/20 text-white/70 hover:text-red-400"
                     onClick={() => deleteGoal({ id: goal.id })}
                     type="button"
                 >
-                    <RiDeleteBin2Line className="size-3.5" />
+                    <RiDeleteBin2Line className="size-3 sm:size-3.5" />
                 </button>
             </div>
+        </div>
+    );
+}
+
+function SortableGoalRow({ goal, onEdit }: { goal: Goal; onEdit: (goal: Goal) => void }) {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({ id: goal.id });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
+
+    return (
+        <div ref={setNodeRef} style={style}>
+            <GoalRow
+                goal={goal}
+                onEdit={onEdit}
+                isDragging={isDragging}
+                dragHandleProps={{ ...attributes, ...listeners }}
+            />
         </div>
     );
 }
@@ -145,22 +205,70 @@ interface SubSectionProps {
     onEdit: (goal: Goal) => void;
 }
 
-function SubSection({ label, goals, defaultOpen = true, onEdit }: SubSectionProps) {
+function SubSectionInner({ label, goals, defaultOpen = true, onEdit }: SubSectionProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
 
-    const completed = goals.filter((g) => g.isCompleted).length;
-    const total = goals.length;
-    const allDone = completed === total && total > 0;
+    // Sort goals initially
+    const initialSortedGoals = useMemo(() => {
+        return [...goals].sort((a, b) => {
+            // First, sort by sortOrder if it exists
+            if (a.sortOrder !== null && b.sortOrder !== null) {
+                return a.sortOrder - b.sortOrder;
+            }
+            // Then by completion status
+            if (a.isCompleted !== b.isCompleted) {
+                return a.isCompleted ? 1 : -1;
+            }
+            // Then by deadline
+            if (a.deadline && b.deadline) {
+                return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+            }
+            return 0;
+        });
+    }, [goals]);
 
-    const sorted = [...goals].sort((a, b) => {
-        if (a.isCompleted !== b.isCompleted) {
-            return a.isCompleted ? 1 : -1;
+    const [localGoals, setLocalGoals] = useState<Goal[]>(initialSortedGoals);
+
+    const { mutateAsync: reorderGoals } = useMutation(
+        orpc.goals.reorder.mutationOptions({
+            meta: {
+                invalidateQueries: [
+                    orpc.goals.getPaginated.queryKey({ input: {} }),
+                    orpc.goals.getAll.queryKey({ input: {} }),
+                ],
+            },
+        })
+    );
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 8,
+            },
+        }),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
+
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
+
+        if (over && active.id !== over.id) {
+            const oldIndex = localGoals.findIndex((g) => g.id === active.id);
+            const newIndex = localGoals.findIndex((g) => g.id === over.id);
+
+            const newOrder = arrayMove(localGoals, oldIndex, newIndex);
+            setLocalGoals(newOrder);
+
+            // Persist the new order
+            reorderGoals({ goalIds: newOrder.map((g) => g.id) });
         }
-        if (a.deadline && b.deadline) {
-            return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
-        }
-        return 0;
-    });
+    };
+
+    const completed = localGoals.filter((g) => g.isCompleted).length;
+    const total = localGoals.length;
+    const allDone = completed === total && total > 0;
 
     return (
         <div>
@@ -183,15 +291,32 @@ function SubSection({ label, goals, defaultOpen = true, onEdit }: SubSectionProp
                 )}
             </button>
 
-            {isOpen && sorted.length > 0 && (
-                <div className="ml-2 border-white/10 border-l pl-2">
-                    {sorted.map((goal) => (
-                        <GoalRow goal={goal} key={goal.id} onEdit={onEdit} />
-                    ))}
+            {isOpen && localGoals.length > 0 && (
+                <div className="ml-1 sm:ml-2 border-white/10 border-l pl-1 sm:pl-2 space-y-1">
+                    <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={handleDragEnd}
+                    >
+                        <SortableContext
+                            items={localGoals.map((g) => g.id)}
+                            strategy={verticalListSortingStrategy}
+                        >
+                            {localGoals.map((goal) => (
+                                <SortableGoalRow goal={goal} key={goal.id} onEdit={onEdit} />
+                            ))}
+                        </SortableContext>
+                    </DndContext>
                 </div>
             )}
         </div>
     );
+}
+
+// Wrapper to force remount when goals change (prevents stale state)
+function SubSection({ goals, ...props }: SubSectionProps) {
+    const goalsKey = goals.map(g => g.id).sort().join(',');
+    return <SubSectionInner key={goalsKey} goals={goals} {...props} />;
 }
 
 interface YearCardProps {
@@ -256,20 +381,20 @@ function YearCard({ year, goals, defaultOpen = true, onEdit }: YearCardProps) {
         >
             {/* Year Header */}
             <button
-                className="flex w-full items-center gap-4 p-4"
+                className="flex w-full items-center gap-2 sm:gap-4 p-3 sm:p-4"
                 onClick={() => setIsOpen(!isOpen)}
                 type="button"
             >
                 {isOpen ? (
-                    <RiArrowDownSLine className="size-5 text-white/40" />
+                    <RiArrowDownSLine className="size-4 sm:size-5 text-white/40 shrink-0" />
                 ) : (
-                    <RiArrowRightSLine className="size-5 text-white/40" />
+                    <RiArrowRightSLine className="size-4 sm:size-5 text-white/40 shrink-0" />
                 )}
 
-                <span className="font-semibold text-lg">{year}</span>
+                <span className="font-semibold text-base sm:text-lg shrink-0">{year}</span>
 
-                <div className="flex flex-1 items-center gap-3">
-                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
+                <div className="flex flex-1 items-center gap-2 sm:gap-3 min-w-0">
+                    <div className="h-1 sm:h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
                         <div
                             className={cn(
                                 "h-full rounded-full transition-all",
@@ -278,13 +403,13 @@ function YearCard({ year, goals, defaultOpen = true, onEdit }: YearCardProps) {
                             style={{ width: `${percent}% ` }}
                         />
                     </div>
-                    <span className="text-sm text-white/50">
+                    <span className="text-xs sm:text-sm text-white/50 shrink-0">
                         {completed}/{total}
                     </span>
                 </div>
 
                 {allDone && (
-                    <span className="rounded-full bg-green-400/10 px-2 py-0.5 text-green-400 text-xs">
+                    <span className="rounded-full bg-green-400/10 px-1.5 sm:px-2 py-0.5 text-green-400 text-[10px] sm:text-xs shrink-0 hidden xs:inline">
                         Complete
                     </span>
                 )}
@@ -292,7 +417,7 @@ function YearCard({ year, goals, defaultOpen = true, onEdit }: YearCardProps) {
 
             {/* Year Content */}
             {isOpen && (
-                <div className="space-y-4 border-white/5 border-t p-4">
+                <div className="space-y-3 sm:space-y-4 border-white/5 border-t p-3 sm:p-4">
                     {/* Annual Goals */}
                     {annual.length > 0 && (
                         <SubSection
@@ -307,12 +432,12 @@ function YearCard({ year, goals, defaultOpen = true, onEdit }: YearCardProps) {
                     {Object.entries(quarters).some(([, q]) => q.length > 0) && (
                         <div className="space-y-2">
                             <div className="flex items-center gap-2">
-                                <span className="font-medium text-white/40 text-xs uppercase tracking-wider">
+                                <span className="font-medium text-white/40 text-[10px] sm:text-xs uppercase tracking-wider">
                                     Quarters
                                 </span>
                                 <div className="h-px flex-1 bg-white/5" />
                             </div>
-                            <div className="grid grid-cols-2 gap-2 sm:grid-cols-2">
+                            <div className="grid grid-cols-2 gap-2 sm:gap-4">
                                 {[1, 2, 3, 4].map((q) => {
                                     const qGoals = quarters[q];
                                     if (qGoals.length === 0) {
@@ -339,12 +464,12 @@ function YearCard({ year, goals, defaultOpen = true, onEdit }: YearCardProps) {
                     {Object.keys(months).length > 0 && (
                         <div className="space-y-2">
                             <div className="flex items-center gap-2">
-                                <span className="font-medium text-white/40 text-xs uppercase tracking-wider">
+                                <span className="font-medium text-white/40 text-[10px] sm:text-xs uppercase tracking-wider">
                                     Months
                                 </span>
                                 <div className="h-px flex-1 bg-white/5" />
                             </div>
-                            <div className="grid grid-cols-1 gap-4 overflow-hidden sm:grid-cols-2 lg:grid-cols-3">
+                            <div className="grid grid-cols-1 gap-2 sm:gap-3 overflow-hidden xs:grid-cols-2 lg:grid-cols-3">
                                 {Object.entries(months)
                                     .sort(([a], [b]) => Number(a) - Number(b))
                                     .map(([monthIdx, mGoals]) => {
@@ -366,8 +491,9 @@ function YearCard({ year, goals, defaultOpen = true, onEdit }: YearCardProps) {
                         </div>
                     )}
                 </div>
-            )}
-        </div>
+            )
+            }
+        </div >
     );
 }
 
@@ -449,7 +575,7 @@ export function GoalsDashboard() {
 
     if (!data?.goals.length) {
         return (
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
                 {/* Filters */}
                 <GoalFilters
                     filters={filters}
@@ -458,13 +584,13 @@ export function GoalsDashboard() {
                     search={search}
                 />
 
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+                <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-12">
                     {/* Empty State */}
-                    <div className="space-y-4 lg:col-span-8">
-                        <div className="flex flex-col items-center justify-center rounded-xl border border-white/10 bg-white/2 p-12 text-center">
-                            <RiSearchLine className="mb-4 size-12 text-white/20" />
-                            <h3 className="mb-2 font-semibold text-xl">No goals found</h3>
-                            <p className="mb-6 text-white/60">
+                    <div className="space-y-4 lg:col-span-8 order-2 lg:order-1">
+                        <div className="flex flex-col items-center justify-center rounded-xl border border-white/10 bg-white/2 p-6 sm:p-12 text-center">
+                            <RiSearchLine className="mb-3 sm:mb-4 size-8 sm:size-12 text-white/20" />
+                            <h3 className="mb-2 font-semibold text-lg sm:text-xl">No goals found</h3>
+                            <p className="mb-4 sm:mb-6 text-sm sm:text-base text-white/60">
                                 {search || filters.status !== "all" || filters.type !== "all" || filters.categoryIds.length > 0
                                     ? "Try adjusting your filters or search query"
                                     : "Create your first goal to get started"}
@@ -474,7 +600,7 @@ export function GoalsDashboard() {
 
                     {/* Stats Sidebar */}
                     {stats && (
-                        <div className="lg:col-span-4">
+                        <div className="lg:col-span-4 order-1 lg:order-2">
                             <GoalStats
                                 stats={
                                     stats as {
@@ -494,7 +620,7 @@ export function GoalsDashboard() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
             <GoalFilters
                 filters={filters}
                 onFiltersChange={setFilters}
@@ -502,8 +628,8 @@ export function GoalsDashboard() {
                 search={search}
             />
 
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-                <div className="space-y-4 lg:col-span-8">
+            <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-12">
+                <div className="space-y-3 sm:space-y-4 lg:col-span-8 order-2 lg:order-1">
                     {years.map((year) => (
                         <YearCard
                             defaultOpen={year >= currentYear}
@@ -515,7 +641,7 @@ export function GoalsDashboard() {
                     ))}
                 </div>
 
-                <div className="lg:col-span-4">
+                <div className="lg:col-span-4 order-1 lg:order-2 lg:sticky lg:top-4">
                     {stats && (
                         <GoalStats
                             stats={
