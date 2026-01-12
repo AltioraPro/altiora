@@ -7,6 +7,9 @@ export type Item = {
     role: string | null;
     banned: boolean | null;
     createdAt: Date;
+    subscriptionId: string | null;
+    subscriptionStatus: string | null;
+    subscriptionPlan: string | null;
 };
 
 // Custom filter function for multi-column searching

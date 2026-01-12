@@ -1,5 +1,5 @@
 import { and, asc, desc, eq, ilike, or, type SQL, sql } from "drizzle-orm";
-import { user } from "@/server/db/schema/auth/schema";
+import { subscription, user } from "@/server/db/schema/auth/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
 import { listUsersSchema } from "../validators";
 
@@ -53,8 +53,16 @@ export const listUsersHandler = listUsersBase.handler(
         const total = countResult?.count ?? 0;
 
         const rows = await db
-            .select({ user })
+            .select({
+                user,
+                subscription: {
+                    id: subscription.id,
+                    status: subscription.status,
+                    plan: subscription.plan,
+                },
+            })
             .from(user)
+            .leftJoin(subscription, eq(user.id, subscription.referenceId))
             .where(whereCondition ?? sql`true`)
             .orderBy(sortDirection(sortColumn))
             .offset((input.page - 1) * input.limit)
@@ -62,6 +70,9 @@ export const listUsersHandler = listUsersBase.handler(
 
         const users = rows.map((r) => ({
             ...r.user,
+            subscriptionId: r.subscription?.id ?? null,
+            subscriptionStatus: r.subscription?.status ?? null,
+            subscriptionPlan: r.subscription?.plan ?? null,
         }));
 
         return {

@@ -8,6 +8,7 @@ import {
     RiUserSettingsLine,
     RiUserStarLine,
     RiUserUnfollowLine,
+    RiVipCrownLine,
 } from "@remixicon/react";
 import type { Row } from "@tanstack/react-table";
 import { useState } from "react";
@@ -40,10 +41,13 @@ export default function RowActions({ row }: { row: Row<Item> }) {
         handleBanUser,
         handleUnbanUser,
         handleChangeRole,
+        handleChangePlan,
         handleImpersonate,
         isBanning,
         isUnbanning,
         isChangingRole,
+        isChangingPlan,
+        currentSubscriptionStatus,
     } = useUserTableActions(user);
 
     const [showBanDialog, setShowBanDialog] = useState(false);
@@ -59,7 +63,11 @@ export default function RowActions({ row }: { row: Row<Item> }) {
         setShowUnbanDialog(false);
     };
 
-    const isLoading = isBanning || isUnbanning || isChangingRole;
+    const isPro =
+        currentSubscriptionStatus === "active" ||
+        currentSubscriptionStatus === "trialing";
+
+    const isLoading = isBanning || isUnbanning || isChangingRole || isChangingPlan;
 
     return (
         <>
@@ -119,6 +127,34 @@ export default function RowActions({ row }: { row: Row<Item> }) {
                                     </DropdownMenuItem>
                                 </DropdownMenuSubContent>
                             </DropdownMenuSub>
+                            {user.subscriptionId && (
+                                <DropdownMenuSub>
+                                    <DropdownMenuSubTrigger>
+                                        <RiVipCrownLine className="h-4 w-4" />
+                                        Change plan
+                                    </DropdownMenuSubTrigger>
+                                    <DropdownMenuSubContent>
+                                        <DropdownMenuItem
+                                            disabled={isPro}
+                                            onClick={() =>
+                                                handleChangePlan("active")
+                                            }
+                                        >
+                                            <RiVipCrownLine className="h-4 w-4" />
+                                            Pro
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            disabled={!isPro}
+                                            onClick={() =>
+                                                handleChangePlan("canceled")
+                                            }
+                                        >
+                                            <RiUserFill className="h-4 w-4" />
+                                            Free
+                                        </DropdownMenuItem>
+                                    </DropdownMenuSubContent>
+                                </DropdownMenuSub>
+                            )}
                         </>
                     )}
 

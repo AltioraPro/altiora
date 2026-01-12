@@ -116,6 +116,31 @@ export function useUserTableActions(user: Item) {
         },
     });
 
+    // Change subscription plan mutation
+    const changePlanMutation = useMutation(
+        orpc.auth.updateUserSubscription.mutationOptions({
+            meta: {
+                invalidateQueries: [queryKey],
+            },
+            onSuccess: (_, variables) => {
+                const planLabel =
+                    variables.status === "active" ? "Pro" : "Free";
+                addToast({
+                    type: "success",
+                    title: "Plan updated",
+                    message: `${user.email}'s plan has been changed to ${planLabel}`,
+                });
+            },
+            onError: () => {
+                addToast({
+                    type: "error",
+                    title: "Failed to change plan",
+                    message: `Failed to change plan for ${user.email}`,
+                });
+            },
+        })
+    );
+
     const handleBanUser = () => {
         if (currentUser?.id === user.id) {
             addToast({
@@ -144,6 +169,10 @@ export function useUserTableActions(user: Item) {
         changeRoleMutation.mutate(newRole);
     };
 
+    const handleChangePlan = (status: "active" | "canceled") => {
+        changePlanMutation.mutate({ userId: user.id, status });
+    };
+
     const handleImpersonate = () => {
         impersonateUser(user.id, queryClient, router);
     };
@@ -152,9 +181,12 @@ export function useUserTableActions(user: Item) {
         handleBanUser,
         handleUnbanUser,
         handleChangeRole,
+        handleChangePlan,
         handleImpersonate,
         isBanning: banUserMutation.isPending,
         isUnbanning: unbanUserMutation.isPending,
         isChangingRole: changeRoleMutation.isPending,
+        isChangingPlan: changePlanMutation.isPending,
+        currentSubscriptionStatus: user.subscriptionStatus,
     };
 }

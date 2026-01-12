@@ -18,6 +18,8 @@ import {
     updateRankHandler,
     updateTimezoneBase,
     updateTimezoneHandler,
+    updateUserSubscriptionBase,
+    updateUserSubscriptionHandler,
     verifyEmailBase,
     verifyEmailHandler,
 } from "./mutations";
@@ -119,6 +121,16 @@ export const authRouter = base.router({
         .handler(
             async ({ input, context }) =>
                 await call(banMultipleUsersHandler, input, {
+                    context,
+                })
+        ),
+
+    updateUserSubscription: updateUserSubscriptionBase
+        .route({ method: "PATCH" })
+        .meta({ roles: [USER_ROLES.ADMIN] })
+        .handler(
+            async ({ input, context }) =>
+                await call(updateUserSubscriptionHandler, input, {
                     context,
                 })
         ),

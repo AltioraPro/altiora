@@ -6,4 +6,5 @@ export * from "./update-leaderboard-visibility";
 export * from "./update-profile";
 export * from "./update-rank";
 export * from "./update-timezone";
+export * from "./update-user-subscription";
 export * from "./verify-email";
