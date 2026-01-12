@@ -1,6 +1,7 @@
 "use client";
 
 import { passkeyClient } from "@better-auth/passkey/client";
+import { stripeClient } from "@better-auth/stripe/client";
 import {
     adminClient,
     emailOTPClient,
@@ -9,7 +10,6 @@ import {
 } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 import type { auth } from "./auth";
-import { whitelistClient } from "./auth/plugins/whitelist/client";
 
 function resolveBaseUrl(): string {
     if (typeof window !== "undefined") {
@@ -30,10 +30,12 @@ function resolveBaseUrl(): string {
 export const authClient = createAuthClient({
     baseURL: resolveBaseUrl(),
     plugins: [
+        stripeClient({
+            subscription: true,
+        }),
         emailOTPClient(),
         adminClient(),
         lastLoginMethodClient(),
-        whitelistClient(),
         passkeyClient(),
         inferAdditionalFields<typeof auth>(),
     ],

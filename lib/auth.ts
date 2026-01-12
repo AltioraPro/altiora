@@ -1,18 +1,17 @@
-import { passkey } from "@better-auth/passkey";
-import { render } from "@react-email/components";
-import { autumn } from "autumn-js/better-auth";
-import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { admin, emailOTP, lastLoginMethod } from "better-auth/plugins";
-import { PAGES } from "@/constants/pages";
 import { PROJECT } from "@/constants/project";
 import ResetPasswordTemplate from "@/emails/reset-password";
 import VerifyEmailTemplate from "@/emails/verify-email";
-import WaitlistApprovedTemplate from "@/emails/waitlist-approved";
+import { passkey } from "@better-auth/passkey";
+import { stripe } from "@better-auth/stripe";
+import { render } from "@react-email/components";
+import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { admin, emailOTP, lastLoginMethod } from "better-auth/plugins";
+import Stripe from "stripe";
+
 import { env } from "@/env";
 import { resend } from "@/lib/resend";
 import { db } from "@/server/db";
-import { whitelist } from "./auth/plugins/whitelist";
 
 const WWW_PREFIX_REGEX = /^www\./;
 
@@ -51,6 +50,8 @@ function getTrustedOrigins(): string[] {
 
     return [baseUrl];
 }
+
+const stripeClient = new Stripe(env.STRIPE_SECRET_KEY);
 
 const userAdditionalFields = {
     rank: {
@@ -129,7 +130,67 @@ export const auth = betterAuth({
     },
 
     plugins: [
-        autumn(),
+        stripe({
+            stripeClient,
+            stripeWebhookSecret: env.STRIPE_WEBHOOK_SECRET,
+            createCustomerOnSignUp: true,
+            async onCustomerCreate({ stripeCustomer, user }, ctx) {
+                // Check if user already has a subscription
+                const existingSubscriptions =
+                    await ctx.context.adapter.findMany({
+                        model: "subscription",
+                        where: [
+                            {
+                                field: "referenceId",
+                                value: user.id,
+                            },
+                        ],
+                    });
+
+                // Only create trial if user doesn't have any subscription
+                if (existingSubscriptions.length === 0) {
+                    try {
+                        // Create a local trial subscription record
+                        // The Stripe subscription will be created when user upgrades through checkout
+                        const trialStart = new Date();
+                        const trialEnd = new Date();
+                        trialEnd.setDate(trialEnd.getDate() + 14);
+
+                        // Create subscription record in database with trialing status
+                        await ctx.context.adapter.create({
+                            model: "subscription",
+                            data: {
+                                plan: "pro",
+                                referenceId: user.id,
+                                stripeCustomerId: stripeCustomer.id,
+                                status: "trialing",
+                                trialStart,
+                                trialEnd,
+                                periodStart: trialStart,
+                                periodEnd: trialEnd,
+                            },
+                        });
+                    } catch (error) {
+                        ctx.context.logger.error(
+                            `Failed to create trial subscription for user ${user.id}:`,
+                            error
+                        );
+                    }
+                }
+            },
+            subscription: {
+                enabled: true,
+                plans: [
+                    {
+                        name: "pro",
+                        priceId: env.STRIPE_PRICE_ID,
+                        freeTrial: {
+                            days: 14,
+                        },
+                    },
+                ],
+            },
+        }),
         lastLoginMethod(),
         passkey({
             origin: getBaseUrl(),
@@ -156,39 +217,6 @@ export const auth = betterAuth({
                     subject: `Your verification code for ${PROJECT.NAME}`,
                     html,
                 });
-            },
-        }),
-        whitelist({
-            enforceOnRegistration: false,
-            allowAdminManagement: true,
-            allowWaitlist: true,
-            sendStatusNotification: async ({ email, status, oldStatus }) => {
-                if (oldStatus !== "pending") {
-                    return;
-                }
-
-                switch (status) {
-                    case "approved": {
-                        const signUpUrl = `${getBaseUrl()}${PAGES.SIGN_UP}?signUpEmail=${email}`;
-                        const html = await render(
-                            WaitlistApprovedTemplate({
-                                signUpUrl,
-                                email,
-                            })
-                        );
-
-                        await resend.emails.send({
-                            from: "Altiora <noreply@altiora.pro>",
-                            to: email,
-                            subject: `Your application to ${PROJECT.NAME} has been approved`,
-                            html,
-                        });
-                        break;
-                    }
-                    default: {
-                        break;
-                    }
-                }
             },
         }),
     ],

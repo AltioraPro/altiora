@@ -1,15 +1,15 @@
-import { ORPCError, onError, ValidationError } from "@orpc/server";
+import { db } from "@/server/db";
+import { appRouter } from "@/server/routers/_app";
+import { onError, ORPCError, ValidationError } from "@orpc/server";
 import { RPCHandler } from "@orpc/server/fetch";
 import {
     BatchHandlerPlugin,
     StrictGetMethodPlugin,
 } from "@orpc/server/plugins";
+import { Elysia } from "elysia";
 import z from "zod";
-import { db } from "@/server/db";
-import { appRouter } from "@/server/routers/_app";
-import { auth } from "@/lib/auth";
 
-const handler = new RPCHandler(appRouter, {
+const orpcHandler = new RPCHandler(appRouter, {
     plugins: [new StrictGetMethodPlugin(), new BatchHandlerPlugin()],
     clientInterceptors: [
         onError((error) => {
@@ -33,32 +33,27 @@ const handler = new RPCHandler(appRouter, {
     ],
 });
 
-async function handleRequest(request: Request) {
-    let session = null;
-    try {
-        session = await auth.api.getSession({
-            headers: request.headers
+const app = new Elysia({ prefix: "/api/rpc" }).all(
+    "*",
+    async ({ request }: { request: Request }) => {
+        const { response } = await orpcHandler.handle(request, {
+            prefix: "/api/rpc",
+            context: {
+                headers: request.headers,
+                db,
+            },
         });
-    } catch (e) {
-        // Failed to get session, not fatal for public endpoints
-        console.error("Failed to retrieve session in RPC handler", e);
+
+        return response ?? new Response("Not found", { status: 404 });
+    },
+    {
+        parse: "none", // Disable Elysia body parser to prevent "body already used" error
     }
+);
 
-    const { response } = await handler.handle(request, {
-        prefix: "/api/rpc",
-        context: {
-            headers: request.headers,
-            db,
-            session,
-        },
-    });
-
-    return response ?? new Response("Not found", { status: 404 });
-}
-
-export const HEAD = handleRequest;
-export const GET = handleRequest;
-export const POST = handleRequest;
-export const PUT = handleRequest;
-export const PATCH = handleRequest;
-export const DELETE = handleRequest;
+export const HEAD = app.fetch;
+export const GET = app.fetch;
+export const POST = app.fetch;
+export const PUT = app.fetch;
+export const PATCH = app.fetch;
+export const DELETE = app.fetch;

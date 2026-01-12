@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
     boolean,
     index,
@@ -18,6 +19,7 @@ export const user = pgTable("user", {
         .defaultNow()
         .$onUpdate(() => /* @__PURE__ */ new Date())
         .notNull(),
+    stripeCustomerId: text("stripe_customer_id"),
     role: text("role"),
     banned: boolean("banned").default(false),
     banReason: text("ban_reason"),
@@ -103,6 +105,24 @@ export const verification = pgTable(
     (table) => [index("verification_identifier_idx").on(table.identifier)]
 );
 
+export const subscription = pgTable("subscription", {
+    id: text("id").primaryKey(),
+    plan: text("plan").notNull(),
+    referenceId: text("reference_id").notNull(),
+    stripeCustomerId: text("stripe_customer_id"),
+    stripeSubscriptionId: text("stripe_subscription_id"),
+    status: text("status").default("incomplete"),
+    periodStart: timestamp("period_start"),
+    periodEnd: timestamp("period_end"),
+    trialStart: timestamp("trial_start"),
+    trialEnd: timestamp("trial_end"),
+    cancelAtPeriodEnd: boolean("cancel_at_period_end").default(false),
+    cancelAt: timestamp("cancel_at"),
+    canceledAt: timestamp("canceled_at"),
+    endedAt: timestamp("ended_at"),
+    seats: integer("seats"),
+});
+
 export const passkey = pgTable(
     "passkey",
     {
@@ -126,14 +146,29 @@ export const passkey = pgTable(
     ]
 );
 
-export const accessList = pgTable("access_list", {
-    id: text("id").primaryKey(),
-    email: text("email").notNull().unique(),
-    status: text("status").notNull(),
-    addedBy: text("added_by").references(() => user.id, {
-        onDelete: "set null",
+export const userRelations = relations(user, ({ many }) => ({
+    sessions: many(session),
+    accounts: many(account),
+    passkeys: many(passkey),
+}));
+
+export const sessionRelations = relations(session, ({ one }) => ({
+    user: one(user, {
+        fields: [session.userId],
+        references: [user.id],
     }),
-    userId: text("user_id").references(() => user.id, { onDelete: "cascade" }),
-    createdAt: timestamp("created_at").notNull(),
-    updatedAt: timestamp("updated_at").notNull(),
-});
+}));
+
+export const accountRelations = relations(account, ({ one }) => ({
+    user: one(user, {
+        fields: [account.userId],
+        references: [user.id],
+    }),
+}));
+
+export const passkeyRelations = relations(passkey, ({ one }) => ({
+    user: one(user, {
+        fields: [passkey.userId],
+        references: [user.id],
+    }),
+}));

@@ -1,3 +1,4 @@
+import { TrialIndicator } from "@/app/(app)/_components/trial-indicator";
 import { DropdownUser } from "@/components/dropdown-user";
 import { cn } from "@/lib/utils";
 import { MobileMenu } from "./mobile-menu";
@@ -19,6 +20,7 @@ export const Header = ({
             <OpenSearchButton />
 
             <div className="z-10 ml-auto flex flex-1 items-center justify-end space-x-3">
+                <TrialIndicator />
                 <DropdownUser />
             </div>
         </div>

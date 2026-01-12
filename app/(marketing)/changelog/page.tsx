@@ -1,11 +1,10 @@
+import { Header } from "@/components/header";
+import { getWebsiteUrl } from "@/lib/urls";
 import {
     RiAddLine,
     RiBugLine,
-    RiLightbulbFlashLine,
-    RiStarLine,
+    RiLightbulbFlashLine
 } from "@remixicon/react";
-import { Header } from "@/components/header";
-import { getWebsiteUrl } from "@/lib/urls";
 import { ChangelogList } from "./_components/changelog-list";
 
 interface ChangelogEntry {
@@ -158,19 +157,8 @@ export default async function ChangelogPage() {
     const releases = await getChangelogData();
 
     return (
-        <>
+        <div>
             <Header />
-            <div className="min-h-screen pt-20 text-pure-white">
-                <div className="mx-auto max-w-4xl px-6 py-16">
-                    <div className="mb-12 text-center">
-                        <h1 className="mb-4 bg-linear-to-b from-white to-gray-400 bg-clip-text font-bold text-5xl text-transparent">
-                            CHANGELOG
-                        </h1>
-                        <div className="mx-auto h-px w-24 bg-linear-to-r from-transparent via-white to-transparent opacity-50" />
-                        <p className="mt-6 text-white/60">
-                            Track all updates, improvements, and new features
-                        </p>
-                    </div>
 
                     <ChangelogList releases={releases} />
 
@@ -200,25 +188,6 @@ export default async function ChangelogPage() {
                             </div>
                         </div>
                     </div>
-
-                    {/* Subscribe to Updates */}
-                    <div className="mt-12 rounded-2xl border border-white/10 bg-white/5 p-8 text-center">
-                        <h3 className="mb-4 font-bold text-white text-xl">
-                            Stay Updated
-                        </h3>
-                        <p className="mb-6 text-white/60">
-                            Get notified about new releases and features
-                        </p>
-                        <a
-                            className="inline-flex items-center rounded-xl border border-white/20 bg-white/10 px-6 py-3 text-white transition-all duration-300 hover:border-white/40 hover:bg-white/20"
-                            href="mailto:updates@altiora.app?subject=Subscribe to Updates"
-                        >
-                            Subscribe to Updates
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-        </>
+        </div>
     );
 }

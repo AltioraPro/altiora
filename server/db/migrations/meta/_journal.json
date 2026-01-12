@@ -36,6 +36,13 @@
       "when": 1767610876017,
       "tag": "0004_volatile_killer_shrike",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1768213196072,
+      "tag": "0005_rare_joseph",
+      "breakpoints": true
     }
   ]
 }

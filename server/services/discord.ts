@@ -3,7 +3,7 @@ import { z } from "zod";
 import { DISCORD_ROLE_IDS } from "@/constants/discord";
 import { env } from "@/env";
 import { db } from "@/server/db";
-import { user } from "../db/schema/auth";
+import { user } from "../db/schema/auth/schema";
 import { discordProfile } from "../db/schema/discord-profile";
 
 export interface DiscordUser {

@@ -1,5 +1,3 @@
-import { ERROR_CODES as WHITELIST_ERROR_CODES } from "@/lib/auth/plugins/whitelist/errors";
-
 const CORE_ERRORS = {
     USER_NOT_FOUND: "USER_NOT_FOUND",
     FAILED_TO_CREATE_USER: "FAILED_TO_CREATE_USER",
@@ -33,7 +31,6 @@ const CORE_ERRORS = {
 
 export const AUTH_ERRORS = {
     ...CORE_ERRORS,
-    ...WHITELIST_ERROR_CODES,
 };
 
 export type AuthErrorCode = (typeof AUTH_ERRORS)[keyof typeof AUTH_ERRORS];

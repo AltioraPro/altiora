@@ -1,6 +1,6 @@
 import { ORPCError } from "@orpc/client";
 import { eq } from "drizzle-orm";
-import { discordProfile, user } from "@/server/db/schema";
+import { discordProfile, subscription, user } from "@/server/db/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
 
 export const getMeBase = protectedProcedure;
@@ -39,7 +39,7 @@ export const getMeHandler = getMeBase.handler(async ({ context }) => {
         });
     }
 
-    const discordProfileData = await db.query.discordProfile.findFirst({
+    const discordProfilePromise = db.query.discordProfile.findFirst({
         where: eq(discordProfile.id, session.user.id),
         columns: {
             discordId: true,
@@ -50,6 +50,15 @@ export const getMeHandler = getMeBase.handler(async ({ context }) => {
         },
     });
 
+    const subscriptionsPromise = db.query.subscription.findMany({
+        where: eq(subscription.referenceId, session.user.id),
+    });
+
+    const [discordProfileData, subscriptionsData] = await Promise.all([
+        discordProfilePromise,
+        subscriptionsPromise,
+    ]);
+
     const hasPasswordAccount = currentUser.accounts.some(
         (account) => account.providerId === "credential"
     );
@@ -57,6 +66,7 @@ export const getMeHandler = getMeBase.handler(async ({ context }) => {
     const userData = {
         ...currentUser,
         discordProfile: discordProfileData,
+        subscriptions: subscriptionsData,
         hasPasswordAccount,
     };
 
