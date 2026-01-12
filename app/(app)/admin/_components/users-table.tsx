@@ -71,6 +71,9 @@ export default function UsersTable() {
                 role: user.role,
                 banned: user.banned ?? false,
                 createdAt: user.createdAt,
+                subscriptionId: user.subscriptionId,
+                subscriptionStatus: user.subscriptionStatus,
+                subscriptionPlan: user.subscriptionPlan,
             })) as Item[],
         [usersData]
     );

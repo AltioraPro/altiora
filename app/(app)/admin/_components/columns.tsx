@@ -83,6 +83,23 @@ export const columns: ColumnDef<Item>[] = [
         size: 100,
     },
     {
+        header: "Plan",
+        accessorKey: "subscriptionStatus",
+        cell: ({ row }) => {
+            const status = row.original.subscriptionStatus;
+            const isPro = status === "active" || status === "trialing";
+            return (
+                <Badge
+                    className={cn("flex w-fit items-center gap-2 capitalize")}
+                    variant={isPro ? "primary" : "secondary"}
+                >
+                    {isPro ? "Pro" : "Free"}
+                </Badge>
+            );
+        },
+        size: 80,
+    },
+    {
         header: "Created At",
         accessorKey: "createdAt",
         cell: ({ row }) => (
