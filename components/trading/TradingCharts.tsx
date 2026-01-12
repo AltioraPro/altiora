@@ -292,9 +292,9 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                                             boxShadow:
                                                 "0 4px 20px rgba(0,0,0,0.5)",
                                         }}
-                                        formatter={(name: string) => [
+                                        formatter={(_value, name) => [
                                             `${name === "Winners" ? stats.winRate.toFixed(1) : (100 - stats.winRate).toFixed(1)}%`,
-                                            name,
+                                            name ?? "",
                                         ]}
                                         labelFormatter={(label: string) =>
                                             label
