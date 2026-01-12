@@ -184,9 +184,6 @@ export const auth = betterAuth({
                     {
                         name: "pro",
                         priceId: env.STRIPE_PRICE_ID,
-                        freeTrial: {
-                            days: 14,
-                        },
                     },
                 ],
             },
