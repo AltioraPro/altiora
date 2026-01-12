@@ -1,8 +1,8 @@
 import { relations } from "drizzle-orm";
+import { user } from "../auth/schema";
+import { tradingJournals } from "../journals";
 import { brokerConnections } from "./broker-connections";
 import { oauthStates } from "./oauth-states";
-import { tradingJournals } from "../journals";
-import { user } from "../auth";
 
 export const brokerConnectionsRelations = relations(
 	brokerConnections,
