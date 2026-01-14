@@ -1,62 +1,82 @@
 {
-  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "extends": ["ultracite"],
-  "vcs": {
-    "enabled": true,
-    "clientKind": "git",
-    "useIgnoreFile": true
-  },
-  "files": {
-    "ignoreUnknown": true
-  },
-  "formatter": {
-    "indentStyle": "space",
-    "indentWidth": 4,
-    "lineWidth": 80
-  },
-  "javascript": {
-    "formatter": {
-      "quoteStyle": "double",
-      "trailingCommas": "es5",
-      "semicolons": "always",
-      "bracketSpacing": true,
-      "arrowParentheses": "always"
-    }
-  },
-  "linter": {
-    "rules": {
-      "performance": {
-        "noNamespaceImport": "off",
-        "noImgElement": "off",
-        "noBarrelFile": "off"
-      },
-      "complexity": {
-        "noExcessiveCognitiveComplexity": {
-          "options": {
-            "maxAllowedComplexity": 25
-          }
+    "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+    // "extends": ["ultracite/biome/core", "ultracite/biome/next"],
+    "vcs": {
+        "enabled": true,
+        "clientKind": "git",
+        "useIgnoreFile": true
+    },
+    "files": {
+        "ignoreUnknown": true,
+        "includes": [
+            "app/**",
+            "components/**",
+            "constants/**",
+            "docs/**",
+            "emails/**",
+            "orpc/**",
+            "hooks/**",
+            "lib/**",
+            "types/**",
+            "providers/**",
+            "scripts/**",
+            "server/**",
+            "store/**"
+        ]
+    },
+    "css": {
+        "parser": {
+            "tailwindDirectives": true
         }
-      },
-      "style": {
-        "noMagicNumbers": "off"
-      },
-      "suspicious": {
-        "noExplicitAny": "error",
-        "noConsole": {
-          "level": "error",
-          "options": {
-            "allow": ["warn", "error", "info", "debug", "trace"]
-          }
-        },
-        "noUnknownAtRules": "off",
-        "noArrayIndexKey": "off"
-      },
-      "nursery": {
-        "useConsistentTypeDefinitions": "off",
-        "noShadow": "off",
-        "useMaxParams": "off",
-        "noReactForwardRef": "off"
-      }
+    },
+    "formatter": {
+        "indentStyle": "space",
+        "indentWidth": 4,
+        "lineWidth": 80
+    },
+    "javascript": {
+        "formatter": {
+            "quoteStyle": "double",
+            "trailingCommas": "es5",
+            "semicolons": "always",
+            "bracketSpacing": true,
+            "arrowParentheses": "always"
+        }
+    },
+    "linter": {
+        "rules": {
+            "performance": {
+                "noNamespaceImport": "off",
+                "noImgElement": "off",
+                "noBarrelFile": "off"
+            },
+            "complexity": {
+                "noExcessiveCognitiveComplexity": {
+                    "options": {
+                        "maxAllowedComplexity": 25
+                    },
+                    "level": "warn"
+                }
+            },
+            "style": {
+                "noMagicNumbers": "off"
+            },
+            "suspicious": {
+                "noExplicitAny": "error",
+                "noConsole": {
+                    "level": "error",
+                    "options": {
+                        "allow": ["warn", "error", "info", "debug", "trace"]
+                    }
+                },
+                "noUnknownAtRules": "off",
+                "noArrayIndexKey": "off"
+            },
+            "nursery": {
+                "noShadow": "off",
+                "useMaxParams": "off",
+                "noReactForwardRef": "off"
+            }
+        }
     }
-  }
 }

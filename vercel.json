@@ -1,23 +1,23 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "bun run db:migrate && bun run build",
-  "regions": ["fra1"],
-  "crons": [
-    {
-      "path": "/api/reminders/process",
-      "schedule": "0 9 * * *"
-    },
-    {
-      "path": "/api/habits/reminders/process",
-      "schedule": "0 * * * *"
+    "$schema": "https://openapi.vercel.sh/vercel.json",
+    "buildCommand": "bun run db:migrate && bun run build",
+    "regions": ["fra1"],
+    "crons": [
+        {
+            "path": "/api/reminders/process",
+            "schedule": "0 9 * * *"
+        },
+        {
+            "path": "/api/habits/reminders/process",
+            "schedule": "0 * * * *"
+        }
+    ],
+    "functions": {
+        "app/api/reminders/process/route.ts": {
+            "maxDuration": 30
+        },
+        "app/api/habits/reminders/process/route.ts": {
+            "maxDuration": 30
+        }
     }
-  ],
-  "functions": {
-    "app/api/reminders/process/route.ts": {
-      "maxDuration": 30
-    },
-    "app/api/habits/reminders/process/route.ts": {
-      "maxDuration": 30
-    }
-  }
 }
