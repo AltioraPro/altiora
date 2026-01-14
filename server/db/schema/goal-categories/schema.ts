@@ -1,10 +1,5 @@
 import { type InferSelectModel, sql } from "drizzle-orm";
-import {
-    index,
-    pgTable,
-    timestamp,
-    varchar,
-} from "drizzle-orm/pg-core";
+import { index, pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
 import { user } from "@/server/db/schema";
 
 export const goalCategories = pgTable(

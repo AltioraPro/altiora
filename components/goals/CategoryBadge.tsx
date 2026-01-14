@@ -16,7 +16,7 @@ export function CategoryBadge({
     return (
         <span
             className={cn(
-                "inline-flex gap-1.5 px-2 py-0.5 font-medium max-w-full rounded-full",
+                "inline-flex max-w-full gap-1.5 rounded-full px-2 py-0.5 font-medium",
                 size === "sm" && "text-xs",
                 size === "md" && "text-sm",
                 className
@@ -31,10 +31,10 @@ export function CategoryBadge({
         >
             <div className="flex items-center justify-center gap-1.5">
                 <div
-                    className="size-1.5 rounded-full shrink-0"
+                    className="size-1.5 shrink-0 rounded-full"
                     style={{ backgroundColor: category.color }}
                 />
-                <span className="leading-normal truncate">{category.name}</span>
+                <span className="truncate leading-normal">{category.name}</span>
             </div>
         </span>
     );

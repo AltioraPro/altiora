@@ -1,6 +1,6 @@
+import { eq } from "drizzle-orm";
 import { goalCategories } from "@/server/db/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
-import { eq } from "drizzle-orm";
 
 export const getAllCategoriesBase = protectedProcedure;
 

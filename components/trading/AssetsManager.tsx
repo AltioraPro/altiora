@@ -120,7 +120,6 @@ export function AssetsManager({ journalId }: AssetsManagerProps) {
                 </div>
             </CardHeader>
             <CardContent className="space-y-4">
-
                 {/* Create new asset form */}
                 {isCreating && (
                     <div className="rounded-lg border border-white/10 bg-black/20 p-4">
@@ -193,9 +192,7 @@ export function AssetsManager({ journalId }: AssetsManagerProps) {
                 {assets && assets?.length === 0 && (
                     <div className="py-8 text-center">
                         <RiErrorWarningLine className="mx-auto mb-4 h-12 w-12 text-white/40" />
-                        <p className="text-white/60">
-                            No assets found
-                        </p>
+                        <p className="text-white/60">No assets found</p>
                         <p className="text-sm text-white/40">
                             Start by creating your first asset
                         </p>

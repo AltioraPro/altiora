@@ -1,16 +1,16 @@
 export {
-	connectCTraderAccountBase,
-	connectCTraderAccountHandler,
+    connectCTraderAccountBase,
+    connectCTraderAccountHandler,
 } from "./connect-account";
 export {
-	syncCTraderPositionsBase,
-	syncCTraderPositionsHandler,
-} from "./sync-positions";
-export {
-	disconnectCTraderAccountBase,
-	disconnectCTraderAccountHandler,
+    disconnectCTraderAccountBase,
+    disconnectCTraderAccountHandler,
 } from "./disconnect-account";
 export {
-	disconnectAllCTraderBase,
-	disconnectAllCTraderHandler,
+    disconnectAllCTraderBase,
+    disconnectAllCTraderHandler,
 } from "./disconnect-all";
+export {
+    syncCTraderPositionsBase,
+    syncCTraderPositionsHandler,
+} from "./sync-positions";

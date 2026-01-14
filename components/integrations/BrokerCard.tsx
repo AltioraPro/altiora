@@ -1,9 +1,15 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { RiArrowRightLine, RiCheckLine, RiLockLine } from "@remixicon/react";
 import { Badge } from "@/components/ui/badge";
-import { RiCheckLine, RiLockLine, RiArrowRightLine } from "@remixicon/react";
+import { Button } from "@/components/ui/button";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
 
 interface BrokerCardProps {
     name: string;
@@ -28,7 +34,7 @@ export function BrokerCard({
         <Card className="relative overflow-hidden transition-all hover:shadow-lg">
             {isPremium && (
                 <div className="absolute top-3 right-3">
-                    <Badge variant="secondary" className="gap-1">
+                    <Badge className="gap-1" variant="secondary">
                         <RiLockLine className="h-3 w-3" />
                         Premium
                     </Badge>
@@ -38,8 +44,12 @@ export function BrokerCard({
             <CardHeader>
                 <div className="flex items-center gap-4">
                     {logo && (
-                        <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center">
-                            <img src={logo} alt={name} className="h-8 w-8 object-contain" />
+                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-muted">
+                            <img
+                                alt={name}
+                                className="h-8 w-8 object-contain"
+                                src={logo}
+                            />
                         </div>
                     )}
                     <div className="flex-1">
@@ -50,9 +60,9 @@ export function BrokerCard({
             </CardHeader>
 
             <CardContent className="space-y-4">
-                <ul className="space-y-2 text-sm text-muted-foreground">
+                <ul className="space-y-2 text-muted-foreground text-sm">
                     {features.map((feature, index) => (
-                        <li key={index} className="flex items-center gap-2">
+                        <li className="flex items-center gap-2" key={index}>
                             <RiCheckLine className="h-4 w-4 text-green-500" />
                             {feature}
                         </li>
@@ -60,9 +70,9 @@ export function BrokerCard({
                 </ul>
 
                 <Button
-                    onClick={onConnect}
-                    disabled={isConnected}
                     className="w-full"
+                    disabled={isConnected}
+                    onClick={onConnect}
                     variant={isConnected ? "outline" : "primary"}
                 >
                     {isConnected ? (

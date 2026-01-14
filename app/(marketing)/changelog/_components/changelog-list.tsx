@@ -113,7 +113,7 @@ export function ChangelogList({ releases }: ChangelogListProps) {
                                             {change.text}
                                             {change.prUrl && (
                                                 <a
-                                                    className="ml-2 text-white/50 hover:text-white/80 transition-colors"
+                                                    className="ml-2 text-white/50 transition-colors hover:text-white/80"
                                                     href={change.prUrl}
                                                     rel="noopener noreferrer"
                                                     target="_blank"

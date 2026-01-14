@@ -1,26 +1,22 @@
 "use client";
 
+import { RiCheckLine, RiLinkUnlink, RiSettings4Line } from "@remixicon/react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuTrigger,
-    DropdownMenuSeparator,
     DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
-import {
-    RiCheckLine,
-    RiSettings4Line,
-    RiLinkUnlink,
-} from "@remixicon/react";
+import { orpc } from "@/orpc/client";
 import { ConnectCTraderDialog } from "./ConnectCTraderDialog";
 import { ConnectMetaTraderDialog } from "./ConnectMetaTraderDialog";
-import { orpc } from "@/orpc/client";
-import { toast } from "sonner";
 
 interface BrokerConnectMenuProps {
     journalId: string;
@@ -39,17 +35,20 @@ export function BrokerConnectMenu({ journalId }: BrokerConnectMenuProps) {
         })
     );
 
-    const { mutateAsync: disconnectBroker, isPending: isDisconnecting } = useMutation(
-        orpc.integrations.disconnectBroker.mutationOptions({
-            onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: ["integrations", "getBrokerConnection"] });
-                toast.success("Broker disconnected successfully");
-            },
-            onError: () => {
-                toast.error("Failed to disconnect broker");
-            },
-        })
-    );
+    const { mutateAsync: disconnectBroker, isPending: isDisconnecting } =
+        useMutation(
+            orpc.integrations.disconnectBroker.mutationOptions({
+                onSuccess: () => {
+                    queryClient.invalidateQueries({
+                        queryKey: ["integrations", "getBrokerConnection"],
+                    });
+                    toast.success("Broker disconnected successfully");
+                },
+                onError: () => {
+                    toast.error("Failed to disconnect broker");
+                },
+            })
+        );
 
     const isConnected = !!brokerConnection?.isActive;
     const provider = brokerConnection?.provider;
@@ -74,18 +73,18 @@ export function BrokerConnectMenu({ journalId }: BrokerConnectMenuProps) {
     };
 
     // Only show when connected - connection is handled during journal creation
-    if (!isConnected || !provider || isLoading) {
+    if (!(isConnected && provider) || isLoading) {
         return null;
     }
 
     return (
         <>
-            <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
+            <DropdownMenu onOpenChange={setDropdownOpen} open={dropdownOpen}>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="gap-2">
+                    <Button className="gap-2" variant="outline">
                         <RiCheckLine className="size-4 text-green-500" />
                         {provider === "ctrader" ? "cTrader" : "MetaTrader"}
-                        <Badge variant="success" className="ml-1 text-xs py-0">
+                        <Badge className="ml-1 py-0 text-xs" variant="success">
                             Connected
                         </Badge>
                     </Button>
@@ -95,7 +94,7 @@ export function BrokerConnectMenu({ journalId }: BrokerConnectMenuProps) {
                     <DropdownMenuSeparator />
                     {provider === "ctrader" && (
                         <DropdownMenuItem
-                            className="gap-2 cursor-pointer"
+                            className="cursor-pointer gap-2"
                             onSelect={(e) => {
                                 e.preventDefault();
                                 openCTraderDialog();
@@ -107,7 +106,7 @@ export function BrokerConnectMenu({ journalId }: BrokerConnectMenuProps) {
                     )}
                     {provider === "metatrader" && (
                         <DropdownMenuItem
-                            className="gap-2 cursor-pointer"
+                            className="cursor-pointer gap-2"
                             onSelect={(e) => {
                                 e.preventDefault();
                                 openMetaTraderDialog();
@@ -119,30 +118,31 @@ export function BrokerConnectMenu({ journalId }: BrokerConnectMenuProps) {
                     )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
-                        className="gap-2 cursor-pointer text-destructive focus:text-destructive"
+                        className="cursor-pointer gap-2 text-destructive focus:text-destructive"
+                        disabled={isDisconnecting}
                         onSelect={(e) => {
                             e.preventDefault();
                             handleDisconnect();
                         }}
-                        disabled={isDisconnecting}
                     >
                         <RiLinkUnlink className="size-4" />
-                        {isDisconnecting ? "Disconnecting..." : "Disconnect Broker"}
+                        {isDisconnecting
+                            ? "Disconnecting..."
+                            : "Disconnect Broker"}
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
 
             <ConnectCTraderDialog
-                open={ctraderDialogOpen}
-                onOpenChange={setCtraderDialogOpen}
                 journalId={journalId}
+                onOpenChange={setCtraderDialogOpen}
+                open={ctraderDialogOpen}
             />
             <ConnectMetaTraderDialog
-                open={metatraderDialogOpen}
-                onOpenChange={setMetatraderDialogOpen}
                 journalId={journalId}
+                onOpenChange={setMetatraderDialogOpen}
+                open={metatraderDialogOpen}
             />
         </>
     );
 }
-

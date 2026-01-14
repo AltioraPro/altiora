@@ -3,9 +3,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { useMutation } from "@tanstack/react-query";
-import { Controller, useForm } from "react-hook-form";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -26,14 +27,13 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 import { orpc } from "@/orpc/client";
 import {
     type CreateTradingJournalInput,
     createTradingJournalSchema,
 } from "@/server/routers/trading/validators";
 import { useCreateJournalStore } from "@/store/create-journal-store";
-import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 
 type JournalSource = "manual" | "ctrader" | "metatrader";
 type Step = "source" | "details" | "metatrader-setup";
@@ -43,10 +43,13 @@ export function CreateJournalModal() {
     const router = useRouter();
     const { isOpen, close } = useCreateJournalStore();
     const [step, setStep] = useState<Step>("source");
-    const [selectedSource, setSelectedSource] = useState<JournalSource>("manual");
+    const [selectedSource, setSelectedSource] =
+        useState<JournalSource>("manual");
 
     // MetaTrader setup state
-    const [createdJournalId, setCreatedJournalId] = useState<string | null>(null);
+    const [createdJournalId, setCreatedJournalId] = useState<string | null>(
+        null
+    );
     const [webhookToken, setWebhookToken] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
 
@@ -77,12 +80,13 @@ export function CreateJournalModal() {
                         orpc.trading.getJournals.queryKey({ input: {} }),
                     ],
                 },
-            }),
+            })
         );
 
-    const { mutateAsync: generateToken, isPending: isGeneratingToken } = useMutation(
-        orpc.integrations.metatrader.generateToken.mutationOptions()
-    );
+    const { mutateAsync: generateToken, isPending: isGeneratingToken } =
+        useMutation(
+            orpc.integrations.metatrader.generateToken.mutationOptions()
+        );
 
     const onSubmit = async (data: CreateTradingJournalInput) => {
         await createJournal(data);
@@ -110,7 +114,7 @@ export function CreateJournalModal() {
                 resetState();
                 // Redirect directly to cTrader OAuth
                 window.location.href = `/api/integrations/ctrader/authorize?journalId=${journal.id}`;
-            } catch (error) {
+            } catch (_error) {
                 toast.error("Failed to create journal");
             }
         } else if (selectedSource === "metatrader") {
@@ -133,7 +137,9 @@ export function CreateJournalModal() {
 
                 // Go to setup instructions
                 setStep("metatrader-setup");
-                toast.success("Journal created! Now configure your MetaTrader EA.");
+                toast.success(
+                    "Journal created! Now configure your MetaTrader EA."
+                );
             } catch (error) {
                 console.error("MetaTrader setup error:", error);
                 toast.error("Failed to setup MetaTrader");
@@ -230,19 +236,24 @@ export function CreateJournalModal() {
                                 <FieldContent>
                                     <div className="space-y-2">
                                         {sourceOptions.map((option) => {
-                                            const isSelected = selectedSource === option.value;
+                                            const isSelected =
+                                                selectedSource === option.value;
 
                                             return (
                                                 <button
-                                                    key={option.value}
-                                                    type="button"
-                                                    onClick={() => setSelectedSource(option.value)}
                                                     className={cn(
-                                                        "w-full flex items-start gap-3 rounded-lg border-2 p-4 text-left transition-colors",
+                                                        "flex w-full items-start gap-3 rounded-lg border-2 p-4 text-left transition-colors",
                                                         isSelected
                                                             ? "border-primary bg-primary/5"
-                                                            : "border-border hover:border-primary/50",
+                                                            : "border-border hover:border-primary/50"
                                                     )}
+                                                    key={option.value}
+                                                    onClick={() =>
+                                                        setSelectedSource(
+                                                            option.value
+                                                        )
+                                                    }
+                                                    type="button"
                                                 >
                                                     <div className="flex-1">
                                                         <div className="font-medium text-sm">
@@ -254,10 +265,10 @@ export function CreateJournalModal() {
                                                     </div>
                                                     <div
                                                         className={cn(
-                                                            "flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 mt-0.5",
+                                                            "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2",
                                                             isSelected
                                                                 ? "border-primary bg-primary"
-                                                                : "border-muted-foreground/25",
+                                                                : "border-muted-foreground/25"
                                                         )}
                                                     >
                                                         {isSelected && (
@@ -274,11 +285,19 @@ export function CreateJournalModal() {
 
                         <DialogFooter>
                             <DialogClose asChild>
-                                <Button type="button" variant="outline" disabled={isPending}>
+                                <Button
+                                    disabled={isPending}
+                                    type="button"
+                                    variant="outline"
+                                >
                                     Cancel
                                 </Button>
                             </DialogClose>
-                            <Button type="button" onClick={handleContinue} disabled={isPending}>
+                            <Button
+                                disabled={isPending}
+                                onClick={handleContinue}
+                                type="button"
+                            >
                                 {isPending ? "Creating..." : "Continue"}
                             </Button>
                         </DialogFooter>
@@ -286,18 +305,24 @@ export function CreateJournalModal() {
                 )}
 
                 {step === "details" && (
-                    <form id="create-journal-form" onSubmit={handleSubmit(onSubmit)}>
+                    <form
+                        id="create-journal-form"
+                        onSubmit={handleSubmit(onSubmit)}
+                    >
                         <DialogHeader>
                             <DialogTitle>Create a new journal</DialogTitle>
                             <DialogDescription>
-                                Create a new trading journal to organize your trades and track
-                                your performance. Enable percentage calculation for automatic
-                                BE/TP/SL detection.
+                                Create a new trading journal to organize your
+                                trades and track your performance. Enable
+                                percentage calculation for automatic BE/TP/SL
+                                detection.
                             </DialogDescription>
                         </DialogHeader>
                         <FieldGroup>
                             <Field data-invalid={!!errors.name}>
-                                <FieldLabel htmlFor="name">Journal name *</FieldLabel>
+                                <FieldLabel htmlFor="name">
+                                    Journal name *
+                                </FieldLabel>
                                 <FieldContent>
                                     <Input
                                         disabled={isPending}
@@ -306,13 +331,19 @@ export function CreateJournalModal() {
                                         {...register("name")}
                                     />
                                     <FieldError
-                                        errors={errors.name ? [errors.name] : undefined}
+                                        errors={
+                                            errors.name
+                                                ? [errors.name]
+                                                : undefined
+                                        }
                                     />
                                 </FieldContent>
                             </Field>
 
                             <Field data-invalid={!!errors.description}>
-                                <FieldLabel htmlFor="description">Description</FieldLabel>
+                                <FieldLabel htmlFor="description">
+                                    Description
+                                </FieldLabel>
                                 <FieldContent>
                                     <Textarea
                                         disabled={isPending}
@@ -323,7 +354,9 @@ export function CreateJournalModal() {
                                     />
                                     <FieldError
                                         errors={
-                                            errors.description ? [errors.description] : undefined
+                                            errors.description
+                                                ? [errors.description]
+                                                : undefined
                                         }
                                     />
                                 </FieldContent>
@@ -342,7 +375,9 @@ export function CreateJournalModal() {
                                                 checked={field.value}
                                                 disabled={isPending}
                                                 id="usePercentageCalculation"
-                                                onCheckedChange={(checked) => field.onChange(checked)}
+                                                onCheckedChange={(checked) =>
+                                                    field.onChange(checked)
+                                                }
                                             />
                                             <FieldLabel htmlFor="usePercentageCalculation">
                                                 Use percentage calculation
@@ -374,8 +409,9 @@ export function CreateJournalModal() {
                                             {...register("startingCapital")}
                                         />
                                         <FieldDescription>
-                                            The starting capital allows to calculate percentages
-                                            automatically when creating trades
+                                            The starting capital allows to
+                                            calculate percentages automatically
+                                            when creating trades
                                         </FieldDescription>
                                         <FieldError
                                             errors={
@@ -413,7 +449,8 @@ export function CreateJournalModal() {
                         <DialogHeader>
                             <DialogTitle>Connect MetaTrader</DialogTitle>
                             <DialogDescription>
-                                Follow these steps to start syncing your trades automatically
+                                Follow these steps to start syncing your trades
+                                automatically
                             </DialogDescription>
                         </DialogHeader>
 
@@ -421,20 +458,40 @@ export function CreateJournalModal() {
                             {/* Step 1: Download */}
                             <div className="space-y-2">
                                 <div className="flex items-center gap-2">
-                                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-medium">1</span>
-                                    <span className="font-medium">Download the Expert Advisor</span>
+                                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 font-medium text-primary text-xs">
+                                        1
+                                    </span>
+                                    <span className="font-medium">
+                                        Download the Expert Advisor
+                                    </span>
                                 </div>
                                 <div className="ml-8 space-y-2">
                                     <div className="flex gap-2">
-                                        <Button variant="outline" onClick={() => handleDownloadEA("mt5")} className="flex-1">
+                                        <Button
+                                            className="flex-1"
+                                            onClick={() =>
+                                                handleDownloadEA("mt5")
+                                            }
+                                            variant="outline"
+                                        >
                                             MetaTrader 5
                                         </Button>
-                                        <Button variant="outline" onClick={() => handleDownloadEA("mt4")} className="flex-1">
+                                        <Button
+                                            className="flex-1"
+                                            onClick={() =>
+                                                handleDownloadEA("mt4")
+                                            }
+                                            variant="outline"
+                                        >
                                             MetaTrader 4
                                         </Button>
                                     </div>
-                                    <p className="text-xs text-muted-foreground">
-                                        Place the file in your <code className="text-foreground">Experts</code> folder
+                                    <p className="text-muted-foreground text-xs">
+                                        Place the file in your{" "}
+                                        <code className="text-foreground">
+                                            Experts
+                                        </code>{" "}
+                                        folder
                                     </p>
                                 </div>
                             </div>
@@ -442,20 +499,26 @@ export function CreateJournalModal() {
                             {/* Step 2: Token */}
                             <div className="space-y-2">
                                 <div className="flex items-center gap-2">
-                                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-medium">2</span>
-                                    <span className="font-medium">Copy your token</span>
+                                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 font-medium text-primary text-xs">
+                                        2
+                                    </span>
+                                    <span className="font-medium">
+                                        Copy your token
+                                    </span>
                                 </div>
                                 <div className="ml-8">
                                     <div className="flex gap-2">
                                         <Input
+                                            className="font-mono text-sm"
                                             readOnly
                                             value={webhookToken}
-                                            className="font-mono text-sm"
                                         />
                                         <Button
-                                            variant={copied ? "primary" : "outline"}
+                                            className="w-20 shrink-0"
                                             onClick={handleCopyToken}
-                                            className="shrink-0 w-20"
+                                            variant={
+                                                copied ? "primary" : "outline"
+                                            }
                                         >
                                             {copied ? "Copied" : "Copy"}
                                         </Button>
@@ -466,23 +529,38 @@ export function CreateJournalModal() {
                             {/* Step 3: WebRequest */}
                             <div className="space-y-2">
                                 <div className="flex items-center gap-2">
-                                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-medium">3</span>
-                                    <span className="font-medium">Allow web requests</span>
+                                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 font-medium text-primary text-xs">
+                                        3
+                                    </span>
+                                    <span className="font-medium">
+                                        Allow web requests
+                                    </span>
                                 </div>
                                 <div className="ml-8 space-y-2">
-                                    <p className="text-sm text-muted-foreground">
-                                        In MetaTrader: <span className="text-foreground">Tools → Options → Expert Advisors</span>
+                                    <p className="text-muted-foreground text-sm">
+                                        In MetaTrader:{" "}
+                                        <span className="text-foreground">
+                                            Tools → Options → Expert Advisors
+                                        </span>
                                     </p>
-                                    <p className="text-sm text-muted-foreground">
+                                    <p className="text-muted-foreground text-sm">
                                         Enable web requests and add this URL:
                                     </p>
                                     <div className="flex gap-2">
                                         <Input
-                                            readOnly
-                                            value={typeof window !== 'undefined' ? `${window.location.origin}/api/integrations/metatrader/webhook` : 'https://altiora.app/api/integrations/metatrader/webhook'}
                                             className="font-mono text-xs"
+                                            readOnly
+                                            value={
+                                                typeof window !== "undefined"
+                                                    ? `${window.location.origin}/api/integrations/metatrader/webhook`
+                                                    : "https://altiora.app/api/integrations/metatrader/webhook"
+                                            }
                                         />
-                                        <Button variant="outline" onClick={handleCopyUrl} className="shrink-0 w-20">
+                                        <Button
+                                            className="w-20 shrink-0"
+                                            onClick={handleCopyUrl}
+                                            variant="outline"
+                                        >
                                             Copy
                                         </Button>
                                     </div>
@@ -491,7 +569,10 @@ export function CreateJournalModal() {
                         </div>
 
                         <DialogFooter>
-                            <Button type="button" onClick={handleFinishMetaTrader}>
+                            <Button
+                                onClick={handleFinishMetaTrader}
+                                type="button"
+                            >
                                 Go to Journal
                             </Button>
                         </DialogFooter>

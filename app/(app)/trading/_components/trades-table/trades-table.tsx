@@ -136,7 +136,9 @@ export function TradesTable({ journalId }: TradesTableProps) {
                 ? advancedFilters.confirmations
                 : undefined;
         const assetIds =
-            advancedFilters.assets.length > 0 ? advancedFilters.assets : undefined;
+            advancedFilters.assets.length > 0
+                ? advancedFilters.assets
+                : undefined;
 
         return {
             sessionIds,
@@ -232,8 +234,12 @@ export function TradesTable({ journalId }: TradesTableProps) {
                 return bTradeDate - aTradeDate; // trade date desc (newest first)
             }
 
-            const aCreated = new Date((a as { createdAt?: Date }).createdAt ?? a.tradeDate).getTime();
-            const bCreated = new Date((b as { createdAt?: Date }).createdAt ?? b.tradeDate).getTime();
+            const aCreated = new Date(
+                (a as { createdAt?: Date }).createdAt ?? a.tradeDate
+            ).getTime();
+            const bCreated = new Date(
+                (b as { createdAt?: Date }).createdAt ?? b.tradeDate
+            ).getTime();
             return bCreated - aCreated; // fallback createdAt desc
         });
         return sorted as TradeItem[];
@@ -369,10 +375,10 @@ export function TradesTable({ journalId }: TradesTableProps) {
                                                 {header.isPlaceholder
                                                     ? null
                                                     : flexRender(
-                                                        header.column
-                                                            .columnDef.header,
-                                                        header.getContext()
-                                                    )}
+                                                          header.column
+                                                              .columnDef.header,
+                                                          header.getContext()
+                                                      )}
                                             </TableHead>
                                         ))}
                                     </TableRow>

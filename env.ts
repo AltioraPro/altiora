@@ -29,15 +29,15 @@ export const env = createEnv({
 
         GOOGLE_CLIENT_ID: z.string().min(1),
         GOOGLE_CLIENT_SECRET: z.string().min(1),
-        
+
         // Encryption for sensitive data (OAuth tokens, credentials)
         ENCRYPTION_KEY: z.string().length(64), // 32 bytes hex = 64 characters
         ENCRYPTION_IV: z.string().length(32), // 16 bytes hex = 32 characters
-        
+
         // cTrader Integration
         CTRADER_CLIENT_ID: z.string().min(1).optional(),
         CTRADER_CLIENT_SECRET: z.string().min(1).optional(),
-        
+
         // ATA Service (MetaTrader integration)
         ATA_SERVICE_URL: z.string().url().optional(),
 

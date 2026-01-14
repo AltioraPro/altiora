@@ -2,9 +2,9 @@
 
 import {
     RiAddLine,
+    RiDeleteBinLine,
     RiErrorWarningLine,
     RiLoader2Line,
-    RiDeleteBinLine
 } from "@remixicon/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -223,9 +223,7 @@ export function ConfirmationsManager({ journalId }: ConfirmationsManagerProps) {
                 ) : (
                     <div className="py-8 text-center">
                         <RiErrorWarningLine className="mx-auto mb-4 h-12 w-12 text-white/40" />
-                        <p className="text-white/60">
-                            No confirmations found
-                        </p>
+                        <p className="text-white/60">No confirmations found</p>
                         <p className="text-sm text-white/40">
                             Start by creating your first confirmations
                         </p>

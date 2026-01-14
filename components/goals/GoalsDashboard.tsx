@@ -1,6 +1,23 @@
 "use client";
 
 import {
+    closestCenter,
+    DndContext,
+    type DragEndEvent,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+} from "@dnd-kit/core";
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    useSortable,
+    verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import {
     RiArrowDownSLine,
     RiArrowRightSLine,
     RiCheckboxBlankCircleLine,
@@ -11,23 +28,6 @@ import {
     RiSearchLine,
     RiStockLine,
 } from "@remixicon/react";
-import {
-    DndContext,
-    closestCenter,
-    KeyboardSensor,
-    PointerSensor,
-    useSensor,
-    useSensors,
-    type DragEndEvent,
-} from "@dnd-kit/core";
-import {
-    arrayMove,
-    SortableContext,
-    sortableKeyboardCoordinates,
-    useSortable,
-    verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -89,16 +89,16 @@ function GoalRow({
     return (
         <div
             className={cn(
-                "group relative flex flex-wrap sm:flex-nowrap items-center gap-1.5 sm:gap-2 rounded-lg border border-white/5 bg-white/5 px-2 py-2 sm:py-1.5 transition-all hover:border-white/10 hover:bg-white/10",
+                "group relative flex flex-wrap items-center gap-1.5 rounded-lg border border-white/5 bg-white/5 px-2 py-2 transition-all hover:border-white/10 hover:bg-white/10 sm:flex-nowrap sm:gap-2 sm:py-1.5",
                 goal.isCompleted && "opacity-60",
-                isDragging && "ring-2 ring-white/30 bg-white/10 z-50"
+                isDragging && "z-50 bg-white/10 ring-2 ring-white/30"
             )}
         >
             {/* Drag Handle */}
             {dragHandleProps && (
                 <button
                     {...dragHandleProps}
-                    className="shrink-0 cursor-grab active:cursor-grabbing touch-none text-white/20 hover:text-white/50 transition-colors"
+                    className="shrink-0 cursor-grab touch-none text-white/20 transition-colors hover:text-white/50 active:cursor-grabbing"
                     type="button"
                 >
                     <RiDraggable className="size-3.5 sm:size-4" />
@@ -106,7 +106,7 @@ function GoalRow({
             )}
 
             <button
-                className="shrink-0 order-1 sm:order-none"
+                className="order-1 shrink-0 sm:order-none"
                 disabled={isPending}
                 onClick={handleToggle}
                 type="button"
@@ -120,27 +120,34 @@ function GoalRow({
 
             <span
                 className={cn(
-                    "min-w-0 flex-1 order-2 sm:order-none text-xs sm:text-sm line-clamp-2 sm:truncate",
+                    "order-2 line-clamp-2 min-w-0 flex-1 text-xs sm:order-none sm:truncate sm:text-sm",
                     goal.isCompleted && "line-through"
                 )}
             >
                 {goal.title}
             </span>
 
-            <div className="flex items-center gap-1.5 order-3 sm:order-none w-full sm:w-auto mt-1 sm:mt-0 pl-6 sm:pl-0">
-                {goal.categoryId && categories?.find(c => c.id === goal.categoryId) && (
-                    <CategoryBadge
-                        category={categories.find(c => c.id === goal.categoryId)!}
-                        size="sm"
-                        className="truncate block w-fit max-w-full text-[10px] sm:text-xs"
-                    />
-                )}
+            <div className="order-3 mt-1 flex w-full items-center gap-1.5 pl-6 sm:order-none sm:mt-0 sm:w-auto sm:pl-0">
+                {goal.categoryId &&
+                    categories?.find((c) => c.id === goal.categoryId) && (
+                        <CategoryBadge
+                            category={
+                                categories.find(
+                                    (c) => c.id === goal.categoryId
+                                )!
+                            }
+                            className="block w-fit max-w-full truncate text-[10px] sm:text-xs"
+                            size="sm"
+                        />
+                    )}
 
                 {goal.deadline && (
                     <span
                         className={cn(
-                            "shrink-0 text-[10px] sm:text-xs text-nowrap",
-                            isOverdue ? "font-medium text-red-400" : "text-white/40"
+                            "shrink-0 text-nowrap text-[10px] sm:text-xs",
+                            isOverdue
+                                ? "font-medium text-red-400"
+                                : "text-white/40"
                         )}
                     >
                         {new Date(goal.deadline).toLocaleDateString("en-US", {
@@ -151,16 +158,16 @@ function GoalRow({
                 )}
             </div>
 
-            <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-0.5 sm:gap-1 opacity-100 sm:opacity-0 transition-all group-hover:opacity-100 bg-black/40 backdrop-blur-md rounded-md p-0.5 border border-white/5">
+            <div className="-translate-y-1/2 absolute top-1/2 right-1 flex items-center gap-0.5 rounded-md border border-white/5 bg-black/40 p-0.5 opacity-100 backdrop-blur-md transition-all group-hover:opacity-100 sm:gap-1 sm:opacity-0">
                 <button
-                    className="rounded p-1 hover:bg-white/10 text-white/70 hover:text-white"
+                    className="rounded p-1 text-white/70 hover:bg-white/10 hover:text-white"
                     onClick={() => onEdit(goal)}
                     type="button"
                 >
                     <RiEditLine className="size-3 sm:size-3.5" />
                 </button>
                 <button
-                    className="rounded p-1 hover:bg-red-500/20 text-white/70 hover:text-red-400"
+                    className="rounded p-1 text-white/70 hover:bg-red-500/20 hover:text-red-400"
                     onClick={() => deleteGoal({ id: goal.id })}
                     type="button"
                 >
@@ -171,7 +178,13 @@ function GoalRow({
     );
 }
 
-function SortableGoalRow({ goal, onEdit }: { goal: Goal; onEdit: (goal: Goal) => void }) {
+function SortableGoalRow({
+    goal,
+    onEdit,
+}: {
+    goal: Goal;
+    onEdit: (goal: Goal) => void;
+}) {
     const {
         attributes,
         listeners,
@@ -189,10 +202,10 @@ function SortableGoalRow({ goal, onEdit }: { goal: Goal; onEdit: (goal: Goal) =>
     return (
         <div ref={setNodeRef} style={style}>
             <GoalRow
-                goal={goal}
-                onEdit={onEdit}
-                isDragging={isDragging}
                 dragHandleProps={{ ...attributes, ...listeners }}
+                goal={goal}
+                isDragging={isDragging}
+                onEdit={onEdit}
             />
         </div>
     );
@@ -205,7 +218,12 @@ interface SubSectionProps {
     onEdit: (goal: Goal) => void;
 }
 
-function SubSectionInner({ label, goals, defaultOpen = true, onEdit }: SubSectionProps) {
+function SubSectionInner({
+    label,
+    goals,
+    defaultOpen = true,
+    onEdit,
+}: SubSectionProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
 
     // Sort goals initially
@@ -221,7 +239,10 @@ function SubSectionInner({ label, goals, defaultOpen = true, onEdit }: SubSectio
             }
             // Then by deadline
             if (a.deadline && b.deadline) {
-                return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+                return (
+                    new Date(a.deadline).getTime() -
+                    new Date(b.deadline).getTime()
+                );
             }
             return 0;
         });
@@ -286,24 +307,26 @@ function SubSectionInner({ label, goals, defaultOpen = true, onEdit }: SubSectio
                 <span className="text-white/30 text-xs">
                     {completed}/{total}
                 </span>
-                {allDone && (
-                    <span className="text-green-400 text-xs">✓</span>
-                )}
+                {allDone && <span className="text-green-400 text-xs">✓</span>}
             </button>
 
             {isOpen && localGoals.length > 0 && (
-                <div className="ml-1 sm:ml-2 border-white/10 border-l pl-1 sm:pl-2 space-y-1">
+                <div className="ml-1 space-y-1 border-white/10 border-l pl-1 sm:ml-2 sm:pl-2">
                     <DndContext
-                        sensors={sensors}
                         collisionDetection={closestCenter}
                         onDragEnd={handleDragEnd}
+                        sensors={sensors}
                     >
                         <SortableContext
                             items={localGoals.map((g) => g.id)}
                             strategy={verticalListSortingStrategy}
                         >
                             {localGoals.map((goal) => (
-                                <SortableGoalRow goal={goal} key={goal.id} onEdit={onEdit} />
+                                <SortableGoalRow
+                                    goal={goal}
+                                    key={goal.id}
+                                    onEdit={onEdit}
+                                />
                             ))}
                         </SortableContext>
                     </DndContext>
@@ -315,8 +338,11 @@ function SubSectionInner({ label, goals, defaultOpen = true, onEdit }: SubSectio
 
 // Wrapper to force remount when goals change (prevents stale state)
 function SubSection({ goals, ...props }: SubSectionProps) {
-    const goalsKey = goals.map(g => g.id).sort().join(',');
-    return <SubSectionInner key={goalsKey} goals={goals} {...props} />;
+    const goalsKey = goals
+        .map((g) => g.id)
+        .sort()
+        .join(",");
+    return <SubSectionInner goals={goals} key={goalsKey} {...props} />;
 }
 
 interface YearCardProps {
@@ -346,11 +372,15 @@ function YearCard({ year, goals, defaultOpen = true, onEdit }: YearCardProps) {
             if (goal.type === "annual") {
                 annual.push(goal);
             } else if (goal.type === "quarterly") {
-                const date = goal.deadline ? new Date(goal.deadline) : new Date();
+                const date = goal.deadline
+                    ? new Date(goal.deadline)
+                    : new Date();
                 const q = Math.floor(date.getMonth() / 3) + 1;
                 quarters[q].push(goal);
             } else if (goal.type === "monthly") {
-                const date = goal.deadline ? new Date(goal.deadline) : new Date();
+                const date = goal.deadline
+                    ? new Date(goal.deadline)
+                    : new Date();
                 const m = date.getMonth();
                 if (!months[m]) {
                     months[m] = [];
@@ -363,8 +393,18 @@ function YearCard({ year, goals, defaultOpen = true, onEdit }: YearCardProps) {
     }, [goals]);
 
     const monthNames = [
-        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
     ];
 
     const isCurrentOrFuture = year >= currentYear;
@@ -381,20 +421,22 @@ function YearCard({ year, goals, defaultOpen = true, onEdit }: YearCardProps) {
         >
             {/* Year Header */}
             <button
-                className="flex w-full items-center gap-2 sm:gap-4 p-3 sm:p-4"
+                className="flex w-full items-center gap-2 p-3 sm:gap-4 sm:p-4"
                 onClick={() => setIsOpen(!isOpen)}
                 type="button"
             >
                 {isOpen ? (
-                    <RiArrowDownSLine className="size-4 sm:size-5 text-white/40 shrink-0" />
+                    <RiArrowDownSLine className="size-4 shrink-0 text-white/40 sm:size-5" />
                 ) : (
-                    <RiArrowRightSLine className="size-4 sm:size-5 text-white/40 shrink-0" />
+                    <RiArrowRightSLine className="size-4 shrink-0 text-white/40 sm:size-5" />
                 )}
 
-                <span className="font-semibold text-base sm:text-lg shrink-0">{year}</span>
+                <span className="shrink-0 font-semibold text-base sm:text-lg">
+                    {year}
+                </span>
 
-                <div className="flex flex-1 items-center gap-2 sm:gap-3 min-w-0">
-                    <div className="h-1 sm:h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
+                <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
+                    <div className="h-1 flex-1 overflow-hidden rounded-full bg-white/10 sm:h-1.5">
                         <div
                             className={cn(
                                 "h-full rounded-full transition-all",
@@ -403,13 +445,13 @@ function YearCard({ year, goals, defaultOpen = true, onEdit }: YearCardProps) {
                             style={{ width: `${percent}% ` }}
                         />
                     </div>
-                    <span className="text-xs sm:text-sm text-white/50 shrink-0">
+                    <span className="shrink-0 text-white/50 text-xs sm:text-sm">
                         {completed}/{total}
                     </span>
                 </div>
 
                 {allDone && (
-                    <span className="rounded-full bg-green-400/10 px-1.5 sm:px-2 py-0.5 text-green-400 text-[10px] sm:text-xs shrink-0 hidden xs:inline">
+                    <span className="xs:inline hidden shrink-0 rounded-full bg-green-400/10 px-1.5 py-0.5 text-[10px] text-green-400 sm:px-2 sm:text-xs">
                         Complete
                     </span>
                 )}
@@ -417,7 +459,7 @@ function YearCard({ year, goals, defaultOpen = true, onEdit }: YearCardProps) {
 
             {/* Year Content */}
             {isOpen && (
-                <div className="space-y-3 sm:space-y-4 border-white/5 border-t p-3 sm:p-4">
+                <div className="space-y-3 border-white/5 border-t p-3 sm:space-y-4 sm:p-4">
                     {/* Annual Goals */}
                     {annual.length > 0 && (
                         <SubSection
@@ -432,7 +474,7 @@ function YearCard({ year, goals, defaultOpen = true, onEdit }: YearCardProps) {
                     {Object.entries(quarters).some(([, q]) => q.length > 0) && (
                         <div className="space-y-2">
                             <div className="flex items-center gap-2">
-                                <span className="font-medium text-white/40 text-[10px] sm:text-xs uppercase tracking-wider">
+                                <span className="font-medium text-[10px] text-white/40 uppercase tracking-wider sm:text-xs">
                                     Quarters
                                 </span>
                                 <div className="h-px flex-1 bg-white/5" />
@@ -443,8 +485,13 @@ function YearCard({ year, goals, defaultOpen = true, onEdit }: YearCardProps) {
                                     if (qGoals.length === 0) {
                                         return null;
                                     }
-                                    const isCurrent = year === currentYear && q === currentQuarter;
-                                    const isFuture = year > currentYear || (year === currentYear && q > currentQuarter);
+                                    const isCurrent =
+                                        year === currentYear &&
+                                        q === currentQuarter;
+                                    const isFuture =
+                                        year > currentYear ||
+                                        (year === currentYear &&
+                                            q > currentQuarter);
 
                                     return (
                                         <SubSection
@@ -464,22 +511,29 @@ function YearCard({ year, goals, defaultOpen = true, onEdit }: YearCardProps) {
                     {Object.keys(months).length > 0 && (
                         <div className="space-y-2">
                             <div className="flex items-center gap-2">
-                                <span className="font-medium text-white/40 text-[10px] sm:text-xs uppercase tracking-wider">
+                                <span className="font-medium text-[10px] text-white/40 uppercase tracking-wider sm:text-xs">
                                     Months
                                 </span>
                                 <div className="h-px flex-1 bg-white/5" />
                             </div>
-                            <div className="grid grid-cols-1 gap-2 sm:gap-3 overflow-hidden xs:grid-cols-2 lg:grid-cols-3">
+                            <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 overflow-hidden sm:gap-3 lg:grid-cols-3">
                                 {Object.entries(months)
                                     .sort(([a], [b]) => Number(a) - Number(b))
                                     .map(([monthIdx, mGoals]) => {
                                         const m = Number(monthIdx);
-                                        const isCurrent = year === currentYear && m === currentMonth;
-                                        const isFuture = year > currentYear || (year === currentYear && m > currentMonth);
+                                        const isCurrent =
+                                            year === currentYear &&
+                                            m === currentMonth;
+                                        const isFuture =
+                                            year > currentYear ||
+                                            (year === currentYear &&
+                                                m > currentMonth);
 
                                         return (
                                             <SubSection
-                                                defaultOpen={isCurrent || isFuture}
+                                                defaultOpen={
+                                                    isCurrent || isFuture
+                                                }
                                                 goals={mGoals}
                                                 key={m}
                                                 label={monthNames[m]}
@@ -491,9 +545,8 @@ function YearCard({ year, goals, defaultOpen = true, onEdit }: YearCardProps) {
                         </div>
                     )}
                 </div>
-            )
-            }
-        </div >
+            )}
+        </div>
     );
 }
 
@@ -517,7 +570,10 @@ export function GoalsDashboard() {
                 search: search || undefined,
                 status: filters.status !== "all" ? filters.status : undefined,
                 type: filters.type !== "all" ? filters.type : undefined,
-                categoryIds: filters.categoryIds.length > 0 ? filters.categoryIds : undefined,
+                categoryIds:
+                    filters.categoryIds.length > 0
+                        ? filters.categoryIds
+                        : undefined,
             },
         })
     );
@@ -586,12 +642,17 @@ export function GoalsDashboard() {
 
                 <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-12">
                     {/* Empty State */}
-                    <div className="space-y-4 lg:col-span-8 order-2 lg:order-1">
-                        <div className="flex flex-col items-center justify-center rounded-xl border border-white/10 bg-white/2 p-6 sm:p-12 text-center">
-                            <RiSearchLine className="mb-3 sm:mb-4 size-8 sm:size-12 text-white/20" />
-                            <h3 className="mb-2 font-semibold text-lg sm:text-xl">No goals found</h3>
-                            <p className="mb-4 sm:mb-6 text-sm sm:text-base text-white/60">
-                                {search || filters.status !== "all" || filters.type !== "all" || filters.categoryIds.length > 0
+                    <div className="order-2 space-y-4 lg:order-1 lg:col-span-8">
+                        <div className="flex flex-col items-center justify-center rounded-xl border border-white/10 bg-white/2 p-6 text-center sm:p-12">
+                            <RiSearchLine className="mb-3 size-8 text-white/20 sm:mb-4 sm:size-12" />
+                            <h3 className="mb-2 font-semibold text-lg sm:text-xl">
+                                No goals found
+                            </h3>
+                            <p className="mb-4 text-sm text-white/60 sm:mb-6 sm:text-base">
+                                {search ||
+                                filters.status !== "all" ||
+                                filters.type !== "all" ||
+                                filters.categoryIds.length > 0
                                     ? "Try adjusting your filters or search query"
                                     : "Create your first goal to get started"}
                             </p>
@@ -600,7 +661,7 @@ export function GoalsDashboard() {
 
                     {/* Stats Sidebar */}
                     {stats && (
-                        <div className="lg:col-span-4 order-1 lg:order-2">
+                        <div className="order-1 lg:order-2 lg:col-span-4">
                             <GoalStats
                                 stats={
                                     stats as {
@@ -629,7 +690,7 @@ export function GoalsDashboard() {
             />
 
             <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-12">
-                <div className="space-y-3 sm:space-y-4 lg:col-span-8 order-2 lg:order-1">
+                <div className="order-2 space-y-3 sm:space-y-4 lg:order-1 lg:col-span-8">
                     {years.map((year) => (
                         <YearCard
                             defaultOpen={year >= currentYear}
@@ -641,7 +702,7 @@ export function GoalsDashboard() {
                     ))}
                 </div>
 
-                <div className="lg:col-span-4 order-1 lg:order-2 lg:sticky lg:top-4">
+                <div className="order-1 lg:sticky lg:top-4 lg:order-2 lg:col-span-4">
                     {stats && (
                         <GoalStats
                             stats={

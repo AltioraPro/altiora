@@ -1,7 +1,7 @@
+import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { PAGES } from "@/constants/pages";
-import Link from "next/link";
 import { HeroImage } from "./hero-image";
 
 export function HeroSection() {

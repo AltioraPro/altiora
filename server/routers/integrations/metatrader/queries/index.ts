@@ -1,2 +1,2 @@
 export { getSetupInfo } from "./get-setup-info";
-export type { MetaTraderQueryContext, GetSetupInfoContext } from "./types";
+export type { GetSetupInfoContext, MetaTraderQueryContext } from "./types";

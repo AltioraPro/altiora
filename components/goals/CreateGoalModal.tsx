@@ -1,10 +1,8 @@
-import {
-    RiAlertLine,
-    RiVipCrownLine,
-} from "@remixicon/react";
+import { RiAlertLine } from "@remixicon/react";
 import type React from "react";
 import { useState } from "react";
-import { useOptimizedGoalMutation } from "@/hooks/useOptimizedGoalMutation";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
     Dialog,
     DialogContent,
@@ -15,7 +13,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
     Select,
     SelectContent,
@@ -23,8 +20,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { useOptimizedGoalMutation } from "@/hooks/useOptimizedGoalMutation";
 import { CategorySelector } from "./CategorySelector";
 
 interface CreateGoalModalProps {
@@ -106,10 +103,10 @@ export function CreateGoalModal({
 
         if (formData.type === "annual") {
             // For annual goals, use December 31st of the selected year
-            const year = Number.parseInt(formData.year);
+            const year = Number.parseInt(formData.year, 10);
             deadline = new Date(year, 11, 31); // December 31st
         } else if (formData.type === "quarterly") {
-            const year = Number.parseInt(formData.year);
+            const year = Number.parseInt(formData.year, 10);
             deadline = getQuarterDate(formData.quarter, year);
         } else if (formData.deadline) {
             deadline = new Date(formData.deadline);
@@ -129,7 +126,7 @@ export function CreateGoalModal({
     };
 
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
+        <Dialog onOpenChange={onClose} open={isOpen}>
             <DialogContent className="max-w-md">
                 <DialogHeader>
                     <DialogTitle>New Goal</DialogTitle>
@@ -243,14 +240,14 @@ export function CreateGoalModal({
                             {formData.type === "quarterly"
                                 ? "Quarter"
                                 : formData.type === "annual"
-                                    ? "Year"
-                                    : "Deadline"}
+                                  ? "Year"
+                                  : "Deadline"}
                         </Label>
                         {formData.type === "annual" ? (
                             <Input
                                 id="year"
                                 max={new Date().getFullYear() + 10}
-                                min={new Date().getFullYear()} 
+                                min={new Date().getFullYear()}
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
@@ -264,7 +261,10 @@ export function CreateGoalModal({
                         ) : formData.type === "quarterly" ? (
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="space-y-2">
-                                    <Label htmlFor="quarter-year" className="text-xs text-muted-foreground">
+                                    <Label
+                                        className="text-muted-foreground text-xs"
+                                        htmlFor="quarter-year"
+                                    >
                                         Year
                                     </Label>
                                     <Input
@@ -282,7 +282,10 @@ export function CreateGoalModal({
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="quarter" className="text-xs text-muted-foreground">
+                                    <Label
+                                        className="text-muted-foreground text-xs"
+                                        htmlFor="quarter"
+                                    >
                                         Quarter
                                     </Label>
                                     <Select

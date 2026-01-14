@@ -1,10 +1,10 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { RiArrowRightLine } from "@remixicon/react";
-import { motion, type MotionProps } from "motion/react";
+import { type MotionProps, motion } from "motion/react";
 import type { Route } from "next";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 interface CardLargeProps extends React.HTMLAttributes<HTMLDivElement> {
     contentPosition?: "left" | "right";
@@ -104,7 +104,7 @@ export function CardLargeRoot({
 CardLargeRoot.displayName = "CardLargeRoot";
 
 export {
-    CardLargeContent as Content, CardLargeRoot as Root,
-    CardLargeText as Text
+    CardLargeContent as Content,
+    CardLargeRoot as Root,
+    CardLargeText as Text,
 };
-

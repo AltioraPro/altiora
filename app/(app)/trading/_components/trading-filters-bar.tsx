@@ -1,13 +1,13 @@
 "use client";
 
-import { RiAddLine, RiUploadLine, RiRefreshLine } from "@remixicon/react";
+import { RiAddLine, RiRefreshLine, RiUploadLine } from "@remixicon/react";
+import { BrokerConnectMenu } from "@/components/integrations";
 import { AdvancedFilters } from "@/components/trading/AdvancedFilters";
 import {
     DateRangeFilter,
     type DateRangeFilterState,
 } from "@/components/trading/DateRangeFilter";
 import { Button } from "@/components/ui/button";
-import { BrokerConnectMenu } from "@/components/integrations";
 
 interface TradingFiltersBarProps {
     journalId: string | null;
@@ -49,11 +49,13 @@ export function TradingFiltersBar({
                 {/* Manual Sync Button (shown when connected) */}
                 {onSyncClick && (
                     <Button
+                        disabled={isSyncing}
                         onClick={onSyncClick}
                         variant="outline"
-                        disabled={isSyncing}
                     >
-                        <RiRefreshLine className={`size-4 ${isSyncing ? "animate-spin" : ""}`} />
+                        <RiRefreshLine
+                            className={`size-4 ${isSyncing ? "animate-spin" : ""}`}
+                        />
                         {isSyncing ? "Syncing..." : "Sync"}
                     </Button>
                 )}
@@ -70,4 +72,3 @@ export function TradingFiltersBar({
         </div>
     );
 }
-

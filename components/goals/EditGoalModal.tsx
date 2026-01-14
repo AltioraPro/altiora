@@ -1,8 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 import type React from "react";
 import { useEffect, useState } from "react";
-import { orpc } from "@/orpc/client";
-import type { Goal } from "@/server/db/schema";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
     Dialog,
     DialogContent,
@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
     Select,
     SelectContent,
@@ -21,8 +20,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { orpc } from "@/orpc/client";
+import type { Goal } from "@/server/db/schema";
 import { CategorySelector } from "./CategorySelector";
 
 interface EditGoalModalProps {
@@ -46,9 +46,14 @@ export function EditGoalModal({
         year: goal.deadline
             ? new Date(goal.deadline).getFullYear().toString()
             : new Date().getFullYear().toString(),
-        quarter: goal.deadline && goal.type === "quarterly"
-            ? `Q${Math.floor(new Date(goal.deadline).getMonth() / 3) + 1}` as "Q1" | "Q2" | "Q3" | "Q4"
-            : "Q1" as "Q1" | "Q2" | "Q3" | "Q4",
+        quarter:
+            goal.deadline && goal.type === "quarterly"
+                ? (`Q${Math.floor(new Date(goal.deadline).getMonth() / 3) + 1}` as
+                      | "Q1"
+                      | "Q2"
+                      | "Q3"
+                      | "Q4")
+                : ("Q1" as "Q1" | "Q2" | "Q3" | "Q4"),
         categoryId: goal.categoryId || null,
         remindersEnabled: goal.remindersEnabled,
         reminderFrequency: goal.reminderFrequency || "weekly",
@@ -81,9 +86,14 @@ export function EditGoalModal({
             year: goal.deadline
                 ? new Date(goal.deadline).getFullYear().toString()
                 : new Date().getFullYear().toString(),
-            quarter: goal.deadline && goal.type === "quarterly"
-                ? `Q${Math.floor(new Date(goal.deadline).getMonth() / 3) + 1}` as "Q1" | "Q2" | "Q3" | "Q4"
-                : "Q1" as "Q1" | "Q2" | "Q3" | "Q4",
+            quarter:
+                goal.deadline && goal.type === "quarterly"
+                    ? (`Q${Math.floor(new Date(goal.deadline).getMonth() / 3) + 1}` as
+                          | "Q1"
+                          | "Q2"
+                          | "Q3"
+                          | "Q4")
+                    : ("Q1" as "Q1" | "Q2" | "Q3" | "Q4"),
             categoryId: goal.categoryId || null,
             remindersEnabled: goal.remindersEnabled,
             reminderFrequency: goal.reminderFrequency || "weekly",
@@ -113,10 +123,10 @@ export function EditGoalModal({
 
         if (formData.type === "annual") {
             // For annual goals, use December 31st of the selected year
-            const year = Number.parseInt(formData.year);
+            const year = Number.parseInt(formData.year, 10);
             deadline = new Date(year, 11, 31); // December 31st
         } else if (formData.type === "quarterly") {
-            const year = Number.parseInt(formData.year);
+            const year = Number.parseInt(formData.year, 10);
             deadline = getQuarterDate(formData.quarter, year);
         } else if (formData.deadline) {
             deadline = new Date(formData.deadline);
@@ -135,7 +145,7 @@ export function EditGoalModal({
     };
 
     return (
-        <Dialog open onOpenChange={onClose}>
+        <Dialog onOpenChange={onClose} open>
             <DialogContent className="max-w-md">
                 <DialogHeader>
                     <DialogTitle>Edit Goal</DialogTitle>
@@ -222,8 +232,8 @@ export function EditGoalModal({
                             {formData.type === "quarterly"
                                 ? "Quarter"
                                 : formData.type === "annual"
-                                    ? "Year"
-                                    : "Deadline"}
+                                  ? "Year"
+                                  : "Deadline"}
                         </Label>
                         {formData.type === "annual" ? (
                             <Input
@@ -243,7 +253,10 @@ export function EditGoalModal({
                         ) : formData.type === "quarterly" ? (
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="space-y-2">
-                                    <Label htmlFor="edit-quarter-year" className="text-xs text-muted-foreground">
+                                    <Label
+                                        className="text-muted-foreground text-xs"
+                                        htmlFor="edit-quarter-year"
+                                    >
                                         Year
                                     </Label>
                                     <Input
@@ -261,7 +274,10 @@ export function EditGoalModal({
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="edit-quarter" className="text-xs text-muted-foreground">
+                                    <Label
+                                        className="text-muted-foreground text-xs"
+                                        htmlFor="edit-quarter"
+                                    >
                                         Quarter
                                     </Label>
                                     <Select

@@ -31,8 +31,10 @@ export const goals = pgTable(
         isActive: boolean("is_active").default(true).notNull(),
         sortOrder: integer("sort_order").default(0),
 
-        categoryId: varchar("category_id", { length: 255 })
-            .references(() => goalCategories.id, { onDelete: "set null" }),
+        categoryId: varchar("category_id", { length: 255 }).references(
+            () => goalCategories.id,
+            { onDelete: "set null" }
+        ),
 
         remindersEnabled: boolean("reminders_enabled").default(false).notNull(),
         reminderFrequency: varchar("reminder_frequency", { length: 20 }),
