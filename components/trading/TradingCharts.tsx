@@ -146,53 +146,49 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
         return transformSessionStats(sessionStats);
     })();
 
-    const sessionChartWidth = Math.max(
-        sessionPerformanceData.length * 72,
-        640
-    );
+    const sessionChartWidth = Math.max(sessionPerformanceData.length * 72, 640);
 
-    const cumulativeData =
-        (() => {
-            if (!trades) {
-                return [];
+    const cumulativeData = (() => {
+        if (!trades) {
+            return [];
+        }
+
+        const dailyMap = new Map<
+            string,
+            {
+                dateKey: string;
+                pnl: number;
             }
+        >();
 
-            const dailyMap = new Map<
-                string,
-                {
-                    dateKey: string;
-                    pnl: number;
-                }
-            >();
-
-            for (const trade of trades) {
-                const dateKey = new Date(trade.tradeDate)
-                    .toISOString()
-                    .split("T")[0];
-                const pnl = Number(trade.profitLossPercentage);
-                const existing = dailyMap.get(dateKey);
-                if (existing) {
-                    existing.pnl += pnl;
-                } else {
-                    dailyMap.set(dateKey, { dateKey, pnl });
-                }
+        for (const trade of trades) {
+            const dateKey = new Date(trade.tradeDate)
+                .toISOString()
+                .split("T")[0];
+            const pnl = Number(trade.profitLossPercentage);
+            const existing = dailyMap.get(dateKey);
+            if (existing) {
+                existing.pnl += pnl;
+            } else {
+                dailyMap.set(dateKey, { dateKey, pnl });
             }
+        }
 
-            const dailyTotals = Array.from(dailyMap.values()).sort((a, b) =>
-                a.dateKey.localeCompare(b.dateKey)
-            );
+        const dailyTotals = Array.from(dailyMap.values()).sort((a, b) =>
+            a.dateKey.localeCompare(b.dateKey)
+        );
 
-            let cumulative = 0;
-            return dailyTotals.map((day, index) => {
-                cumulative += day.pnl;
-                return {
-                    date: new Date(day.dateKey).toLocaleDateString("en-US"),
-                    pnl: day.pnl,
-                    cumulative,
-                    tradeNumber: index + 1,
-                };
-            });
-        })();
+        let cumulative = 0;
+        return dailyTotals.map((day, index) => {
+            cumulative += day.pnl;
+            return {
+                date: new Date(day.dateKey).toLocaleDateString("en-US"),
+                pnl: day.pnl,
+                cumulative,
+                tradeNumber: index + 1,
+            };
+        });
+    })();
 
     const totalPerformance =
         cumulativeData.length > 0
@@ -216,7 +212,12 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                     </CardHeader>
                     <CardContent>
                         <div className="relative flex items-center justify-center">
-                            <ResponsiveContainer height={220} minHeight={220} minWidth={200} width="100%">
+                            <ResponsiveContainer
+                                height={220}
+                                minHeight={220}
+                                minWidth={200}
+                                width="100%"
+                            >
                                 <PieChart>
                                     <defs>
                                         <linearGradient
@@ -350,9 +351,16 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                             <div className="w-full overflow-x-auto">
                                 <div
                                     className="h-[200px]"
-                                    style={{ minWidth: `${sessionChartWidth}px` }}
+                                    style={{
+                                        minWidth: `${sessionChartWidth}px`,
+                                    }}
                                 >
-                                    <ResponsiveContainer height="100%" minHeight={200} minWidth={300} width="100%">
+                                    <ResponsiveContainer
+                                        height="100%"
+                                        minHeight={200}
+                                        minWidth={300}
+                                        width="100%"
+                                    >
                                         <BarChart
                                             data={sessionPerformanceData}
                                             margin={{ right: 20 }}
@@ -398,7 +406,10 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                                             />
                                             <YAxis
                                                 axisLine={false}
-                                                domain={["dataMin - 5", "dataMax + 5"]}
+                                                domain={[
+                                                    "dataMin - 5",
+                                                    "dataMax + 5",
+                                                ]}
                                                 fontSize={10}
                                                 stroke="#ffffff"
                                                 strokeOpacity={0.4}
@@ -418,7 +429,8 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                                                         payload &&
                                                         payload.length
                                                     ) {
-                                                        const data = payload[0].payload;
+                                                        const data =
+                                                            payload[0].payload;
                                                         return (
                                                             <div className="rounded-lg border border-white/20 bg-black/85 p-3 shadow-lg">
                                                                 <p className="mb-1 font-medium text-white">
@@ -448,7 +460,10 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                                                     return null;
                                                 }}
                                             />
-                                            <Bar dataKey="pnl" radius={[4, 4, 4, 4]}>
+                                            <Bar
+                                                dataKey="pnl"
+                                                radius={[4, 4, 4, 4]}
+                                            >
                                                 {sessionPerformanceData.map(
                                                     (_, index) => (
                                                         <Cell
@@ -481,7 +496,12 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                 <CardContent>
                     <div className="space-y-6">
                         <div className="h-[250px] w-full pr-4">
-                            <ResponsiveContainer height="100%" minHeight={250} minWidth={300} width="100%">
+                            <ResponsiveContainer
+                                height="100%"
+                                minHeight={250}
+                                minWidth={300}
+                                width="100%"
+                            >
                                 <AreaChart
                                     data={cumulativeData}
                                     margin={{ right: 20 }}
@@ -540,7 +560,11 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                                     />
                                     <Tooltip
                                         content={({ active, payload }) => {
-                                            if (active && payload && payload.length) {
+                                            if (
+                                                active &&
+                                                payload &&
+                                                payload.length
+                                            ) {
                                                 const data = payload[0].payload;
                                                 return (
                                                     <div className="rounded-lg border border-white/20 bg-black/90 p-3 shadow-lg">
@@ -550,19 +574,30 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                                                         <p className="text-sm text-white">
                                                             Cumulative:{" "}
                                                             <span className="font-semibold">
-                                                                {data.cumulative.toFixed(1)}%
+                                                                {data.cumulative.toFixed(
+                                                                    1
+                                                                )}
+                                                                %
                                                             </span>
                                                         </p>
                                                         <p className="text-sm text-white">
                                                             Daily PnL:{" "}
                                                             <span className="font-semibold">
-                                                                {data.pnl > 0 ? (
+                                                                {data.pnl >
+                                                                0 ? (
                                                                     <span className="text-green-400">
-                                                                        +{data.pnl.toFixed(1)}%
+                                                                        +
+                                                                        {data.pnl.toFixed(
+                                                                            1
+                                                                        )}
+                                                                        %
                                                                     </span>
                                                                 ) : (
                                                                     <span className="text-red-400">
-                                                                        {data.pnl.toFixed(1)}%
+                                                                        {data.pnl.toFixed(
+                                                                            1
+                                                                        )}
+                                                                        %
                                                                     </span>
                                                                 )}
                                                             </span>

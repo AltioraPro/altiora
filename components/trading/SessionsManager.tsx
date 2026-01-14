@@ -109,7 +109,6 @@ export function SessionsManager({ journalId }: SessionsManagerProps) {
             };
         }) || [];
 
-
     if (isLoading) {
         return (
             <Card className="border border-white/10 bg-black/20">
@@ -149,7 +148,6 @@ export function SessionsManager({ journalId }: SessionsManagerProps) {
                 </div>
             </CardHeader>
             <CardContent className="space-y-4">
-
                 {/* Create new session form */}
                 {isCreating && (
                     <div className="rounded-lg border border-white/10 bg-black/20 p-4">
@@ -255,9 +253,7 @@ export function SessionsManager({ journalId }: SessionsManagerProps) {
                 ) : (
                     <div className="py-8 text-center">
                         <RiErrorWarningLine className="mx-auto mb-4 h-12 w-12 text-white/40" />
-                        <p className="text-white/60">
-                            No sessions found
-                        </p>
+                        <p className="text-white/60">No sessions found</p>
                         <p className="text-sm text-white/40">
                             Start by creating your first session
                         </p>

@@ -3,9 +3,9 @@
 
 import {
     Canvas,
+    type ThreeEvent,
     useFrame,
     useThree,
-    type ThreeEvent,
 } from "@react-three/fiber";
 import { EffectComposer, wrapEffect } from "@react-three/postprocessing";
 import { Effect } from "postprocessing";
@@ -150,13 +150,13 @@ class RetroEffectImpl extends Effect {
         this.uniforms = uniforms;
     }
     get colorNum(): number {
-        return this.uniforms.get("colorNum")!.value;
+        return this.uniforms.get("colorNum")?.value;
     }
     set colorNum(value: number) {
         this.uniforms.get("colorNum")!.value = value;
     }
     get pixelSize(): number {
-        return this.uniforms.get("pixelSize")!.value;
+        return this.uniforms.get("pixelSize")?.value;
     }
     set pixelSize(value: number) {
         this.uniforms.get("pixelSize")!.value = value;

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
@@ -9,8 +9,6 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 
 interface ConnectCTraderDialogProps {
     open: boolean;
@@ -23,7 +21,7 @@ export function ConnectCTraderDialog({
     onOpenChange,
     journalId,
 }: ConnectCTraderDialogProps) {
-    const router = useRouter();
+    const _router = useRouter();
 
     const handleOAuthConnect = () => {
         // Redirect to OAuth authorization
@@ -32,21 +30,23 @@ export function ConnectCTraderDialog({
     };
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog onOpenChange={onOpenChange} open={open}>
             <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                     <DialogTitle>Connect cTrader Account</DialogTitle>
                     <DialogDescription>
-                        Connect your cTrader account to automatically sync your trades.
+                        Connect your cTrader account to automatically sync your
+                        trades.
                     </DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-4 py-4">
-                    <p className="text-sm text-muted-foreground">
-                        Click the button below to authorize Altiora to access your cTrader account.
-                        You'll be redirected to cTrader to complete the authorization.
+                    <p className="text-muted-foreground text-sm">
+                        Click the button below to authorize Altiora to access
+                        your cTrader account. You'll be redirected to cTrader to
+                        complete the authorization.
                     </p>
-                    <Button onClick={handleOAuthConnect} className="w-full">
+                    <Button className="w-full" onClick={handleOAuthConnect}>
                         Authorize with cTrader
                     </Button>
                 </div>

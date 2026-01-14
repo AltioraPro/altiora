@@ -344,9 +344,7 @@ export function EditHabitModal() {
                     addToast({
                         type: "error",
                         title: "Error",
-                        message:
-                            error.message ||
-                            "Unable to update the habit",
+                        message: error.message || "Unable to update the habit",
                     });
                 },
             })

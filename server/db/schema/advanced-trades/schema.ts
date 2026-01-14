@@ -43,26 +43,26 @@ export const advancedTrades = pgTable(
         tradingviewLink: text("tradingview_link"),
         notes: text("notes"),
         isClosed: boolean("is_closed").default(false).notNull(),
-        
+
         // === Multi-Broker Integration Fields ===
         source: varchar("source", { length: 50 }).default("manual").notNull(),
         // "manual" | "ctrader" | "metatrader"
-        
+
         externalId: varchar("external_id", { length: 255 }),
         // External broker ID: ticket (MT) or positionId (cTrader)
-        
+
         externalAccountId: varchar("external_account_id", { length: 255 }),
         // Broker account ID for reference
-        
+
         syncStatus: varchar("sync_status", { length: 20 }).default("synced"),
         // "synced" | "pending" | "error" | "conflict"
-        
+
         lastSyncedAt: timestamp("last_synced_at"),
         // Last successful sync timestamp
-        
+
         syncMetadata: text("sync_metadata"),
         // JSON metadata: commission, swap, broker-specific data
-        
+
         createdAt: timestamp("created_at").defaultNow().notNull(),
         updatedAt: timestamp("updated_at")
             .defaultNow()

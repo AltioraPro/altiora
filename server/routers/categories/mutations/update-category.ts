@@ -1,9 +1,11 @@
+import { and, eq } from "drizzle-orm";
 import { goalCategories } from "@/server/db/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
 import { updateCategoryValidator } from "../validators";
-import { and, eq } from "drizzle-orm";
 
-export const updateCategoryBase = protectedProcedure.input(updateCategoryValidator);
+export const updateCategoryBase = protectedProcedure.input(
+    updateCategoryValidator
+);
 
 export const updateCategoryHandler = updateCategoryBase.handler(
     async ({ context, input }) => {

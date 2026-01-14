@@ -1,10 +1,8 @@
 "use client";
 
-import { RiDeleteBinLine, RiPaletteLine } from "@remixicon/react";
+import { RiDeleteBinLine } from "@remixicon/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { orpc } from "@/orpc/client";
-import { cn } from "@/lib/utils";
 import {
     Dialog,
     DialogContent,
@@ -17,6 +15,8 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { orpc } from "@/orpc/client";
 
 interface CategoryManagerProps {
     isOpen: boolean;
@@ -47,7 +47,7 @@ export function CategoryManager({
     onClose,
 }: CategoryManagerProps): React.JSX.Element {
     const [newName, setNewName] = useState("");
-    const [editingId, setEditingId] = useState<string | null>(null);
+    const [_editingId, _setEditingId] = useState<string | null>(null);
 
     const { data: categories, refetch } = useQuery(
         orpc.categories.getAll.queryOptions({ input: undefined })
@@ -81,7 +81,8 @@ export function CategoryManager({
     const handleCreate = (e: React.KeyboardEvent<HTMLInputElement>): void => {
         if (e.key === "Enter" && newName.trim()) {
             // Pick a random default color or cycle through them
-            const randomColor = PRESET_COLORS[Math.floor(Math.random() * PRESET_COLORS.length)];
+            const randomColor =
+                PRESET_COLORS[Math.floor(Math.random() * PRESET_COLORS.length)];
             createMutation.mutate({
                 name: newName.trim(),
                 color: randomColor,
@@ -101,7 +102,7 @@ export function CategoryManager({
                     <div className="px-2 pb-2">
                         <Input
                             autoFocus
-                            className="bg-secondary/50 border-0 h-12 text-base shadow-none focus-visible:ring-0"
+                            className="h-12 border-0 bg-secondary/50 text-base shadow-none focus-visible:ring-0"
                             onChange={(e) => setNewName(e.target.value)}
                             onKeyDown={handleCreate}
                             placeholder="Type a new category name and press Enter..."
@@ -122,21 +123,38 @@ export function CategoryManager({
                                         <PopoverTrigger asChild>
                                             <button
                                                 className="size-4 shrink-0 rounded-full ring-2 ring-transparent transition-all hover:scale-110 hover:ring-white/20"
-                                                style={{ backgroundColor: cat.color }}
+                                                style={{
+                                                    backgroundColor: cat.color,
+                                                }}
                                                 type="button"
                                             />
                                         </PopoverTrigger>
-                                        <PopoverContent align="start" className="w-[180px] p-2">
+                                        <PopoverContent
+                                            align="start"
+                                            className="w-[180px] p-2"
+                                        >
                                             <div className="grid grid-cols-4 gap-2">
                                                 {PRESET_COLORS.map((color) => (
                                                     <button
                                                         className={cn(
                                                             "size-8 rounded-full border border-white/5 transition-transform hover:scale-110",
-                                                            cat.color === color && "ring-2 ring-white/50"
+                                                            cat.color ===
+                                                                color &&
+                                                                "ring-2 ring-white/50"
                                                         )}
                                                         key={color}
-                                                        onClick={() => updateMutation.mutate({ id: cat.id, color })}
-                                                        style={{ backgroundColor: color }}
+                                                        onClick={() =>
+                                                            updateMutation.mutate(
+                                                                {
+                                                                    id: cat.id,
+                                                                    color,
+                                                                }
+                                                            )
+                                                        }
+                                                        style={{
+                                                            backgroundColor:
+                                                                color,
+                                                        }}
                                                         type="button"
                                                     />
                                                 ))}
@@ -148,9 +166,16 @@ export function CategoryManager({
                                     <div className="flex-1">
                                         <input
                                             className="w-full bg-transparent p-0 text-sm outline-none placeholder:text-muted-foreground focus:placeholder:text-transparent"
+                                            defaultValue={cat.name}
                                             onBlur={(e) => {
-                                                if (e.target.value.trim() !== cat.name) {
-                                                    updateMutation.mutate({ id: cat.id, name: e.target.value });
+                                                if (
+                                                    e.target.value.trim() !==
+                                                    cat.name
+                                                ) {
+                                                    updateMutation.mutate({
+                                                        id: cat.id,
+                                                        name: e.target.value,
+                                                    });
                                                 }
                                             }}
                                             onKeyDown={(e) => {
@@ -158,7 +183,6 @@ export function CategoryManager({
                                                     e.currentTarget.blur();
                                                 }
                                             }}
-                                            defaultValue={cat.name}
                                         />
                                     </div>
 
@@ -166,8 +190,12 @@ export function CategoryManager({
                                     <button
                                         className="text-muted-foreground opacity-0 transition-all hover:text-red-400 group-hover:opacity-100"
                                         onClick={() => {
-                                            if (confirm("Delete this category?")) {
-                                                deleteMutation.mutate({ id: cat.id });
+                                            if (
+                                                confirm("Delete this category?")
+                                            ) {
+                                                deleteMutation.mutate({
+                                                    id: cat.id,
+                                                });
                                             }
                                         }}
                                         type="button"

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { orpc } from "@/orpc/client";
-import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { orpc } from "@/orpc/client";
 
 export function SyncAllButton() {
     const [isSyncing, setIsSyncing] = useState(false);
@@ -27,7 +27,9 @@ export function SyncAllButton() {
     const hasConnections = connections.length > 0;
 
     const handleSyncAll = async () => {
-        if (!hasConnections) return;
+        if (!hasConnections) {
+            return;
+        }
 
         setIsSyncing(true);
         let successCount = 0;
@@ -37,7 +39,10 @@ export function SyncAllButton() {
             // Sync only connected journals
             for (const conn of connections) {
                 try {
-                    await syncCTrader({ journalId: conn.journalId, forceRefresh: true });
+                    await syncCTrader({
+                        journalId: conn.journalId,
+                        forceRefresh: true,
+                    });
                     successCount++;
                 } catch {
                     errorCount++;
@@ -51,7 +56,9 @@ export function SyncAllButton() {
             }
 
             // Invalidate queries
-            queryClient.invalidateQueries({ queryKey: orpc.trading.getJournals.queryKey({ input: {} }) });
+            queryClient.invalidateQueries({
+                queryKey: orpc.trading.getJournals.queryKey({ input: {} }),
+            });
         } catch (error) {
             console.error("[SyncAll] Error:", error);
             toast.error("Sync failed");
@@ -68,11 +75,13 @@ export function SyncAllButton() {
     return (
         <Button
             className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white"
-            variant="outline"
-            onClick={handleSyncAll}
             disabled={isSyncing}
+            onClick={handleSyncAll}
+            variant="outline"
         >
-            <RefreshCw className={`mr-2 h-4 w-4 ${isSyncing ? "animate-spin" : ""}`} />
+            <RefreshCw
+                className={`mr-2 h-4 w-4 ${isSyncing ? "animate-spin" : ""}`}
+            />
             {isSyncing ? "Sync..." : "Sync All"}
         </Button>
     );

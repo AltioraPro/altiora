@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import {
     RiCalendarLine,
     RiCheckboxLine,
@@ -10,6 +9,7 @@ import {
     RiTrophyLine,
 } from "@remixicon/react";
 import { ArrowRight, Check, Layers, Star, Zap } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Section } from "./section";
 
 interface AdvantagesSectionProps {

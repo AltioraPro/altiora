@@ -184,9 +184,7 @@ export function TodayHabitsCard({ data }: TodayHabitsCardProps) {
                 addToast({
                     type: "error",
                     title: "Error",
-                    message:
-                        error.message ||
-                        "Unable to update the habit",
+                    message: error.message || "Unable to update the habit",
                 });
             },
         })

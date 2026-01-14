@@ -1,11 +1,11 @@
 "use client";
 
-import { Logo } from "@/components/logo";
-import { PAGES } from "@/constants/pages";
-import { cn } from "@/lib/utils";
 import { RiDiscordFill, RiLinksLine } from "@remixicon/react";
 import { motion } from "motion/react";
 import Image from "next/image";
+import { Logo } from "@/components/logo";
+import { PAGES } from "@/constants/pages";
+import { cn } from "@/lib/utils";
 import * as CardLarge from "./card-large";
 import { Section } from "./section";
 

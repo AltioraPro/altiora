@@ -1,25 +1,28 @@
-import type { Database } from "@/server/db";
 import type { Session } from "@/lib/auth";
+import type { Database } from "@/server/db";
 import type {
-	GenerateWebhookTokenInput,
-	RegenerateTokenInput,
+    GenerateWebhookTokenInput,
+    RegenerateTokenInput,
 } from "../validators";
 
 /**
  * Base context for MetaTrader mutations
  */
 export interface MetaTraderMutationContext {
-	db: Database;
-	session: Session;
+    db: Database;
+    session: Session;
 }
 
 /**
  * Context with input for mutations that require parameters
  */
-export interface MetaTraderMutationContextWithInput<T> extends MetaTraderMutationContext {
-	input: T;
+export interface MetaTraderMutationContextWithInput<T>
+    extends MetaTraderMutationContext {
+    input: T;
 }
 
 // Specific input types
-export type GenerateWebhookTokenContext = MetaTraderMutationContextWithInput<GenerateWebhookTokenInput>;
-export type RegenerateTokenContext = MetaTraderMutationContextWithInput<RegenerateTokenInput>;
+export type GenerateWebhookTokenContext =
+    MetaTraderMutationContextWithInput<GenerateWebhookTokenInput>;
+export type RegenerateTokenContext =
+    MetaTraderMutationContextWithInput<RegenerateTokenInput>;

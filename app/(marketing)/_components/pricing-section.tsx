@@ -1,9 +1,9 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { PAGES } from "@/constants/pages";
 import { Check } from "lucide-react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { PAGES } from "@/constants/pages";
 import { Section } from "./section";
 
 interface PricingSectionProps {

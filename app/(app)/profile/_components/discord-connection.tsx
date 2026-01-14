@@ -33,16 +33,18 @@ export function DiscordConnection() {
     const { mutateAsync: finalizeLink, isPending: isFinalizingLink } =
         useMutation(orpc.discord.finalizeLink.mutationOptions());
 
-    const { mutateAsync: toggleHabitReminders, isPending: isTogglingReminders } =
-        useMutation(
-            orpc.discord.toggleHabitReminders.mutationOptions({
-                onSuccess: () => {
-                    queryClient.invalidateQueries(
-                        orpc.discord.getConnectionStatus.queryOptions()
-                    );
-                },
-            })
-        );
+    const {
+        mutateAsync: toggleHabitReminders,
+        isPending: isTogglingReminders,
+    } = useMutation(
+        orpc.discord.toggleHabitReminders.mutationOptions({
+            onSuccess: () => {
+                queryClient.invalidateQueries(
+                    orpc.discord.getConnectionStatus.queryOptions()
+                );
+            },
+        })
+    );
 
     useEffect(() => {
         const discordParam = searchParams.get("discord");
@@ -150,19 +152,19 @@ export function DiscordConnection() {
 
             {/* Habit Reminders Subcard - Only shown when connected */}
             {isConnected && (
-                <div className="border-b border-x border-white/10 bg-white/2 p-4">
+                <div className="border-white/10 border-x border-b bg-white/2 p-4">
                     <div className="flex space-x-3">
                         <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-md">
                             <RiNotification3Line className="size-4 text-primary" />
                         </div>
                         <div className="flex flex-1 items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-neutral-50">
+                                <p className="font-medium text-neutral-50 text-sm">
                                     Daily Habit Reminders
                                 </p>
-                                <p className="mt-0.5 text-xs text-neutral-400">
-                                    Get a daily reminder at 7:00 PM ({userTimezone}) for
-                                    incomplete habits
+                                <p className="mt-0.5 text-neutral-400 text-xs">
+                                    Get a daily reminder at 7:00 PM (
+                                    {userTimezone}) for incomplete habits
                                 </p>
                             </div>
                             <Switch

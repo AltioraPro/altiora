@@ -1,9 +1,11 @@
+import { and, eq } from "drizzle-orm";
 import { goalCategories, goals } from "@/server/db/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
 import { deleteCategoryValidator } from "../validators";
-import { and, eq } from "drizzle-orm";
 
-export const deleteCategoryBase = protectedProcedure.input(deleteCategoryValidator);
+export const deleteCategoryBase = protectedProcedure.input(
+    deleteCategoryValidator
+);
 
 export const deleteCategoryHandler = deleteCategoryBase.handler(
     async ({ context, input }) => {

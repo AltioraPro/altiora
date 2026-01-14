@@ -1,8 +1,8 @@
+export { disconnect } from "./disconnect";
 export { generateWebhookToken } from "./generate-webhook-token";
 export { regenerateToken } from "./regenerate-token";
-export { disconnect } from "./disconnect";
 export type {
-	MetaTraderMutationContext,
-	GenerateWebhookTokenContext,
-	RegenerateTokenContext,
+    GenerateWebhookTokenContext,
+    MetaTraderMutationContext,
+    RegenerateTokenContext,
 } from "./types";

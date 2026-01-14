@@ -67,7 +67,8 @@ export default function RowActions({ row }: { row: Row<Item> }) {
         currentSubscriptionStatus === "active" ||
         currentSubscriptionStatus === "trialing";
 
-    const isLoading = isBanning || isUnbanning || isChangingRole || isChangingPlan;
+    const isLoading =
+        isBanning || isUnbanning || isChangingRole || isChangingPlan;
 
     return (
         <>

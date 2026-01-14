@@ -1,14 +1,14 @@
 "use client";
 
 import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useQueryState } from "nuqs";
-import { useSearchParams, useRouter } from "next/navigation";
-import { useCallback, useMemo, useState, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { ConnectMetaTraderDialog } from "@/components/integrations";
 import { CreateTradeModal } from "@/components/trading/create-trade-modal";
 import type { DateRangeFilterState } from "@/components/trading/DateRangeFilter";
 import { ImportTradesModal } from "@/components/trading/ImportTradesModal";
 import { TradingStats } from "@/components/trading/TradingStats";
-import { ConnectMetaTraderDialog } from "@/components/integrations";
 import { orpc, type RouterOutput } from "@/orpc/client";
 import { EmptyTradingState } from "../../_components/empty-trading-state";
 import { TradingContent } from "../../_components/trading-content";
@@ -138,7 +138,7 @@ interface JournalPageClientProps {
 }
 
 export function JournalPageClient({ journalId }: JournalPageClientProps) {
-    const router = useRouter();
+    const _router = useRouter();
     const searchParams = useSearchParams();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isImportModalOpen, setIsImportModalOpen] = useState(false);
@@ -190,13 +190,13 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
 
     // Auto-sync when journal loads
     useEffect(() => {
-        if (brokerConnection?.isActive && brokerConnection?.provider === "ctrader") {
-            console.log("[Auto-sync] Triggering sync for journal:", journalId);
+        if (
+            brokerConnection?.isActive &&
+            brokerConnection?.provider === "ctrader"
+        ) {
             setIsSyncing(true);
             syncCTrader({ journalId })
-                .then(() => {
-                    console.log("[Auto-sync] Sync completed successfully");
-                })
+                .then(() => {})
                 .catch((error) => {
                     console.error("[Auto-sync] Sync failed:", error);
                 })
@@ -204,10 +204,17 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
                     setIsSyncing(false);
                 });
         }
-    }, [journalId, brokerConnection?.isActive, brokerConnection?.provider, syncCTrader]);
+    }, [
+        journalId,
+        brokerConnection?.isActive,
+        brokerConnection?.provider,
+        syncCTrader,
+    ]);
 
     const handleManualSync = async () => {
-        if (!brokerConnection?.isActive) return;
+        if (!brokerConnection?.isActive) {
+            return;
+        }
 
         setIsSyncing(true);
         try {
@@ -313,12 +320,14 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
 
             <TradingFiltersBar
                 dateRange={dateRange}
+                isSyncing={isSyncing}
                 journalId={journalId}
                 onCreateTradeClick={handleOpenCreateModal}
                 onDateRangeChange={setDateRange}
                 onImportClick={handleOpenImportModal}
-                onSyncClick={brokerConnection?.isActive ? handleManualSync : undefined}
-                isSyncing={isSyncing}
+                onSyncClick={
+                    brokerConnection?.isActive ? handleManualSync : undefined
+                }
             />
 
             {stats && <TradingStats className="mb-8" stats={stats} />}
@@ -348,9 +357,9 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
             />
 
             <ConnectMetaTraderDialog
-                open={isMetaTraderDialogOpen}
-                onOpenChange={setIsMetaTraderDialogOpen}
                 journalId={journalId}
+                onOpenChange={setIsMetaTraderDialogOpen}
+                open={isMetaTraderDialogOpen}
             />
         </div>
     );

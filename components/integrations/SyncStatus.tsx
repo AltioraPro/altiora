@@ -1,8 +1,13 @@
 "use client";
 
-import { RiRefreshLine, RiCheckLine, RiCloseLine, RiLoader4Line } from "@remixicon/react";
-import { Button } from "@/components/ui/button";
+import {
+    RiCheckLine,
+    RiCloseLine,
+    RiLoader4Line,
+    RiRefreshLine,
+} from "@remixicon/react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface SyncStatusProps {
@@ -21,7 +26,7 @@ export function SyncStatus({
     const getStatusBadge = () => {
         if (isLoading) {
             return (
-                <Badge variant="secondary" className="gap-1">
+                <Badge className="gap-1" variant="secondary">
                     <RiLoader4Line className="h-3 w-3 animate-spin" />
                     Syncing...
                 </Badge>
@@ -31,28 +36,28 @@ export function SyncStatus({
         switch (syncStatus) {
             case "success":
                 return (
-                    <Badge variant="success" className="gap-1 bg-green-500">
+                    <Badge className="gap-1 bg-green-500" variant="success">
                         <RiCheckLine className="h-3 w-3" />
                         Synced
                     </Badge>
                 );
             case "error":
                 return (
-                    <Badge variant="destructive" className="gap-1">
+                    <Badge className="gap-1" variant="destructive">
                         <RiCloseLine className="h-3 w-3" />
                         Error
                     </Badge>
                 );
             case "pending":
                 return (
-                    <Badge variant="secondary" className="gap-1">
+                    <Badge className="gap-1" variant="secondary">
                         <RiLoader4Line className="h-3 w-3" />
                         Pending
                     </Badge>
                 );
             default:
                 return (
-                    <Badge variant="outline" className="gap-1">
+                    <Badge className="gap-1" variant="outline">
                         Not synced
                     </Badge>
                 );
@@ -60,7 +65,9 @@ export function SyncStatus({
     };
 
     const formatDate = (date: Date | string | null | undefined) => {
-        if (!date) return "Never";
+        if (!date) {
+            return "Never";
+        }
         const d = typeof date === "string" ? new Date(date) : date;
         return new Intl.DateTimeFormat("en-US", {
             dateStyle: "medium",
@@ -72,18 +79,18 @@ export function SyncStatus({
         <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
                 {getStatusBadge()}
-                <span className="text-xs text-muted-foreground">
+                <span className="text-muted-foreground text-xs">
                     {formatDate(lastSyncedAt)}
                 </span>
             </div>
 
             {onSync && (
                 <Button
+                    className="gap-1"
+                    disabled={isLoading}
+                    onClick={onSync}
                     size="sm"
                     variant="outline"
-                    onClick={onSync}
-                    disabled={isLoading}
-                    className="gap-1"
                 >
                     <RiRefreshLine
                         className={cn("h-3 w-3", isLoading && "animate-spin")}

@@ -1,8 +1,8 @@
 "use client";
 
-import { PAGES } from "@/constants/pages";
 import { RiCheckboxLine, RiFocus3Line, RiTargetLine } from "@remixicon/react";
 import { motion } from "motion/react";
+import { PAGES } from "@/constants/pages";
 import * as CardLarge from "./card-large";
 import { Section } from "./section";
 

@@ -37,8 +37,7 @@ export function HabitsManager() {
                 addToast({
                     type: "error",
                     title: "Error",
-                    message:
-                        error.message || "Unable to delete the habit",
+                    message: error.message || "Unable to delete the habit",
                 });
             },
         })
@@ -63,8 +62,7 @@ export function HabitsManager() {
                 addToast({
                     type: "error",
                     title: "Error",
-                    message:
-                        error.message || "Unable to reactivate the habit",
+                    message: error.message || "Unable to reactivate the habit",
                 });
             },
         })

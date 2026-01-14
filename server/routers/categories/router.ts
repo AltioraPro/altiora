@@ -3,15 +3,12 @@ import { base } from "@/server/context";
 import {
     createCategoryBase,
     createCategoryHandler,
-    updateCategoryBase,
-    updateCategoryHandler,
     deleteCategoryBase,
     deleteCategoryHandler,
+    updateCategoryBase,
+    updateCategoryHandler,
 } from "./mutations";
-import {
-    getAllCategoriesBase,
-    getAllCategoriesHandler,
-} from "./queries";
+import { getAllCategoriesBase, getAllCategoriesHandler } from "./queries";
 
 export const categoriesRouter = base.router({
     // Queries

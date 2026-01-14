@@ -86,28 +86,31 @@ export default function GoalsPage() {
     }, [goalStats]);
 
     return (
-        <div className="min-h-screen px-3 py-4 sm:px-4 sm:py-6 md:px-6 md:py-8 text-pure-white">
+        <div className="min-h-screen px-3 py-4 text-pure-white sm:px-4 sm:py-6 md:px-6 md:py-8">
             {/* Main Content */}
             <div className="relative mx-auto w-full">
                 <div className="flex justify-end">
-                    <Button onClick={() => setIsCreateModalOpen(true)} className="w-full sm:w-auto">
+                    <Button
+                        className="w-full sm:w-auto"
+                        onClick={() => setIsCreateModalOpen(true)}
+                    >
                         <RiAddLine className="size-4 transition-transform group-hover:scale-110" />
                         <span className="sm:inline">New Goal</span>
                     </Button>
                 </div>
 
                 {/* Quick Stats Cards */}
-                <div className="mt-4 sm:mt-6 mb-8 sm:mb-12 grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 md:grid-cols-4">
+                <div className="mt-4 mb-8 grid grid-cols-2 gap-3 sm:mt-6 sm:mb-12 sm:gap-4 md:grid-cols-4 md:gap-6">
                     {/* Active Goals */}
                     <div className="relative rounded-lg border border-white/10 bg-black/20 p-3 sm:p-4 md:p-6">
                         <div className="absolute top-2 right-2 sm:top-4 sm:right-4">
-                            <RiTargetLine className="size-3 sm:size-4 text-white" />
+                            <RiTargetLine className="size-3 text-white sm:size-4" />
                         </div>
                         <div>
-                            <p className="mb-1 sm:mb-2 font-medium text-xs sm:text-sm text-white/60">
+                            <p className="mb-1 font-medium text-white/60 text-xs sm:mb-2 sm:text-sm">
                                 Active
                             </p>
-                            <p className="font-bold text-xl sm:text-2xl md:text-3xl text-green-400">
+                            <p className="font-bold text-green-400 text-xl sm:text-2xl md:text-3xl">
                                 {animatedStats.active}
                             </p>
                         </div>
@@ -116,13 +119,13 @@ export default function GoalsPage() {
                     {/* Completed Goals */}
                     <div className="relative rounded-lg border border-white/10 bg-black/20 p-3 sm:p-4 md:p-6">
                         <div className="absolute top-2 right-2 sm:top-4 sm:right-4">
-                            <RiStockLine className="size-3 sm:size-4 text-white" />
+                            <RiStockLine className="size-3 text-white sm:size-4" />
                         </div>
                         <div>
-                            <p className="mb-1 sm:mb-2 font-medium text-xs sm:text-sm text-white/60">
+                            <p className="mb-1 font-medium text-white/60 text-xs sm:mb-2 sm:text-sm">
                                 Done
                             </p>
-                            <p className="font-bold text-xl sm:text-2xl md:text-3xl text-green-400">
+                            <p className="font-bold text-green-400 text-xl sm:text-2xl md:text-3xl">
                                 {animatedStats.completed}
                             </p>
                         </div>
@@ -131,13 +134,13 @@ export default function GoalsPage() {
                     {/* Overdue Goals */}
                     <div className="relative rounded-lg border border-white/10 bg-black/20 p-3 sm:p-4 md:p-6">
                         <div className="absolute top-2 right-2 sm:top-4 sm:right-4">
-                            <RiCalendarLine className="size-3 sm:size-4 text-white" />
+                            <RiCalendarLine className="size-3 text-white sm:size-4" />
                         </div>
                         <div>
-                            <p className="mb-1 sm:mb-2 font-medium text-xs sm:text-sm text-white/60">
+                            <p className="mb-1 font-medium text-white/60 text-xs sm:mb-2 sm:text-sm">
                                 Late
                             </p>
-                            <p className="font-bold text-xl sm:text-2xl md:text-3xl text-red-400">
+                            <p className="font-bold text-red-400 text-xl sm:text-2xl md:text-3xl">
                                 {animatedStats.overdue}
                             </p>
                         </div>
@@ -146,13 +149,13 @@ export default function GoalsPage() {
                     {/* Success Rate */}
                     <div className="relative rounded-lg border border-white/10 bg-black/20 p-3 sm:p-4 md:p-6">
                         <div className="absolute top-2 right-2 sm:top-4 sm:right-4">
-                            <RiSparklingLine className="size-3 sm:size-4 text-white" />
+                            <RiSparklingLine className="size-3 text-white sm:size-4" />
                         </div>
                         <div>
-                            <p className="mb-1 sm:mb-2 font-medium text-xs sm:text-sm text-white/60">
+                            <p className="mb-1 font-medium text-white/60 text-xs sm:mb-2 sm:text-sm">
                                 Success
                             </p>
-                            <p className="font-bold text-xl sm:text-2xl md:text-3xl text-white">
+                            <p className="font-bold text-white text-xl sm:text-2xl md:text-3xl">
                                 {animatedStats.successRate}%
                             </p>
                         </div>

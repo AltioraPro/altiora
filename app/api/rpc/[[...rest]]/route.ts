@@ -1,6 +1,4 @@
-import { db } from "@/server/db";
-import { appRouter } from "@/server/routers/_app";
-import { onError, ORPCError, ValidationError } from "@orpc/server";
+import { ORPCError, onError, ValidationError } from "@orpc/server";
 import { RPCHandler } from "@orpc/server/fetch";
 import {
     BatchHandlerPlugin,
@@ -8,6 +6,8 @@ import {
 } from "@orpc/server/plugins";
 import { Elysia } from "elysia";
 import z from "zod";
+import { db } from "@/server/db";
+import { appRouter } from "@/server/routers/_app";
 
 const orpcHandler = new RPCHandler(appRouter, {
     plugins: [new StrictGetMethodPlugin(), new BatchHandlerPlugin()],

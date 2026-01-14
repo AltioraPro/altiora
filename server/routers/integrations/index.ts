@@ -1,8 +1,8 @@
+import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { base } from "@/server/context";
 import { db } from "@/server/db";
 import { brokerConnections } from "@/server/db/schema";
-import { eq, and } from "drizzle-orm";
 import { ctraderRouter } from "./ctrader";
 import { metatraderRouter } from "./metatrader";
 
@@ -11,60 +11,59 @@ import { metatraderRouter } from "./metatrader";
  * Aggregates all broker integration routers
  */
 export const integrationsRouter = base.router({
-	ctrader: ctraderRouter,
-	metatrader: metatraderRouter,
-	
-	/**
-	 * Get broker connection for a journal
-	 */
-	getBrokerConnection: base
-		.input(z.object({ journalId: z.string() }))
-		.route({ method: "GET" })
-		.handler(async ({ input, context }) => {
-			if (!context.session?.user) {
-				return null;
-			}
+    ctrader: ctraderRouter,
+    metatrader: metatraderRouter,
 
-			const connections = await db
-				.select()
-				.from(brokerConnections)
-				.where(
-					and(
-						eq(brokerConnections.userId, context.session.user.id),
-						eq(brokerConnections.journalId, input.journalId),
-						eq(brokerConnections.isActive, true)
-					)
-				)
-				.limit(1);
+    /**
+     * Get broker connection for a journal
+     */
+    getBrokerConnection: base
+        .input(z.object({ journalId: z.string() }))
+        .route({ method: "GET" })
+        .handler(async ({ input, context }) => {
+            if (!context.session?.user) {
+                return null;
+            }
 
-			return connections[0] || null;
-		}),
+            const connections = await db
+                .select()
+                .from(brokerConnections)
+                .where(
+                    and(
+                        eq(brokerConnections.userId, context.session.user.id),
+                        eq(brokerConnections.journalId, input.journalId),
+                        eq(brokerConnections.isActive, true)
+                    )
+                )
+                .limit(1);
 
-	/**
-	 * Disconnect broker from a journal
-	 */
-	disconnectBroker: base
-		.input(z.object({ journalId: z.string() }))
-		.handler(async ({ input, context }) => {
-			if (!context.session?.user) {
-				throw new Error("Unauthorized");
-			}
+            return connections[0] || null;
+        }),
 
-			await db
-				.update(brokerConnections)
-				.set({ 
-					isActive: false,
-					updatedAt: new Date(),
-				})
-				.where(
-					and(
-						eq(brokerConnections.userId, context.session.user.id),
-						eq(brokerConnections.journalId, input.journalId),
-						eq(brokerConnections.isActive, true)
-					)
-				);
+    /**
+     * Disconnect broker from a journal
+     */
+    disconnectBroker: base
+        .input(z.object({ journalId: z.string() }))
+        .handler(async ({ input, context }) => {
+            if (!context.session?.user) {
+                throw new Error("Unauthorized");
+            }
 
-			return { success: true };
-		}),
+            await db
+                .update(brokerConnections)
+                .set({
+                    isActive: false,
+                    updatedAt: new Date(),
+                })
+                .where(
+                    and(
+                        eq(brokerConnections.userId, context.session.user.id),
+                        eq(brokerConnections.journalId, input.journalId),
+                        eq(brokerConnections.isActive, true)
+                    )
+                );
+
+            return { success: true };
+        }),
 });
-

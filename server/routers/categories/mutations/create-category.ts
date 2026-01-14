@@ -1,10 +1,12 @@
+import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { goalCategories } from "@/server/db/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
 import { createCategoryValidator } from "../validators";
-import { eq } from "drizzle-orm";
 
-export const createCategoryBase = protectedProcedure.input(createCategoryValidator);
+export const createCategoryBase = protectedProcedure.input(
+    createCategoryValidator
+);
 
 export const createCategoryHandler = createCategoryBase.handler(
     async ({ context, input }) => {

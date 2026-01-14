@@ -9,31 +9,34 @@ import { HabitRemindersService } from "@/server/services/habit-reminders";
  * The service will automatically check if it's 7 PM in each user's timezone.
  */
 export async function POST(request: NextRequest) {
-  try {
-    const authHeader = request.headers.get("authorization");
-    const expectedToken = process.env.REMINDERS_WEBHOOK_TOKEN;
+    try {
+        const authHeader = request.headers.get("authorization");
+        const expectedToken = process.env.REMINDERS_WEBHOOK_TOKEN;
 
-    if (expectedToken && authHeader !== `Bearer ${expectedToken}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        if (expectedToken && authHeader !== `Bearer ${expectedToken}`) {
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        console.info("[API] Processing habit reminders...");
+
+        const stats = await HabitRemindersService.processHabitReminders();
+
+        return NextResponse.json({
+            success: true,
+            message: "Habit reminders processed successfully",
+            stats,
+            timestamp: new Date().toISOString(),
+        });
+    } catch (error) {
+        console.error("[API] Error processing habit reminders:", error);
+        return NextResponse.json(
+            { error: "Internal server error" },
+            { status: 500 }
+        );
     }
-
-    console.info("[API] Processing habit reminders...");
-
-    const stats = await HabitRemindersService.processHabitReminders();
-
-    return NextResponse.json({
-      success: true,
-      message: "Habit reminders processed successfully",
-      stats,
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error) {
-    console.error("[API] Error processing habit reminders:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
-  }
 }
 
 /**
@@ -43,23 +46,25 @@ export async function POST(request: NextRequest) {
  * Useful for testing or manual intervention.
  */
 export async function GET() {
-  try {
-    console.info("[API] Manual habit reminder processing triggered...");
+    try {
+        console.info("[API] Manual habit reminder processing triggered...");
 
-    const stats = await HabitRemindersService.processHabitReminders();
+        const stats = await HabitRemindersService.processHabitReminders();
 
-    return NextResponse.json({
-      success: true,
-      message: "Manual habit reminder processing completed",
-      stats,
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error) {
-    console.error("[API] Error in manual habit reminder processing:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
-  }
+        return NextResponse.json({
+            success: true,
+            message: "Manual habit reminder processing completed",
+            stats,
+            timestamp: new Date().toISOString(),
+        });
+    } catch (error) {
+        console.error(
+            "[API] Error in manual habit reminder processing:",
+            error
+        );
+        return NextResponse.json(
+            { error: "Internal server error" },
+            { status: 500 }
+        );
+    }
 }
-
