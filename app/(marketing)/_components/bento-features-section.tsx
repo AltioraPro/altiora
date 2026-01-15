@@ -7,7 +7,6 @@ import {
     Camera,
     Flame,
     PenLine,
-    Sparkles,
     TrendingUp,
 } from "lucide-react";
 import { Section } from "./section";
@@ -177,24 +176,23 @@ function JournalingIllustration() {
                 </div>
             </MiniCard>
 
-            {/* Card devant - AI Journal Entry */}
+            {/* Card devant - Auto Journal Entry */}
             <MiniCard className="relative max-w-[280px] translate-x-4 translate-y-2 p-4 shadow-2xl shadow-black/50 sm:max-w-xs sm:translate-x-8">
                 <div className="flex flex-col gap-3">
                     <div className="flex items-center gap-2">
                         <div className="flex h-6 w-6 items-center justify-center bg-neutral-700/50">
-                            <Sparkles className="h-3 w-3 text-neutral-400" />
+                            <PenLine className="h-3 w-3 text-neutral-400" />
                         </div>
                         <span className="font-medium text-neutral-400 text-xs">
-                            AI Analysis
+                            Auto Journal Entry
                         </span>
                     </div>
                     <p className="text-[11px] text-neutral-400 leading-relaxed">
-                        Entrée prise sur breakout du range asiatique. Bonne
-                        lecture du contexte, TP atteint sur le premier objectif.
+                        Trade opened at 08:30, long position on breakout of
+                        Asian range. TP1 reached at 10:15, profit of +1.2%.
                         <span className="text-neutral-300">
                             {" "}
-                            Point d&apos;amélioration: attendre la confirmation
-                            du volume.
+                            Setup: H4 support, entry on engulfing confirmation.
                         </span>
                     </p>
                     <div className="flex flex-wrap gap-1.5">
@@ -291,6 +289,7 @@ export function BentoFeaturesSection({ id }: BentoFeaturesSectionProps) {
                     Tools designed to elevate your trading.
                 </span>
             </h2>
+            
             <div className="mx-auto w-full max-w-7xl">
                 <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
                     {/* Top block - Full width */}
@@ -321,17 +320,12 @@ export function BentoFeaturesSection({ id }: BentoFeaturesSectionProps) {
                                 <PenLine className="h-6 w-6 text-white" />
                             </div>
 
-                            <div className="flex items-center gap-3">
-                                <h3 className="font-medium text-xl">
-                                    Automated Journaling
-                                </h3>
-                                <span className="bg-neutral-800 px-3 py-1 text-neutral-400 text-xs">
-                                    Coming Soon
-                                </span>
-                            </div>
+                            <h3 className="font-medium text-xl">
+                                Automated Journaling
+                            </h3>
                             <p className="max-w-xl text-neutral-400">
-                                Let AI analyze your trades and generate detailed
-                                journal entries. Understand your patterns,
+                                Automatically generate detailed journal entries
+                                from your trades. Understand your patterns,
                                 emotions, and decision-making process without
                                 manual input.
                             </p>

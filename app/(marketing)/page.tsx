@@ -15,10 +15,10 @@ export default function HomePage() {
 
             <main className="scroll-target-container px-4">
                 <div className="relative mx-auto w-full max-w-7xl overflow-hidden pb-20">
-                    <section id="features">
+                    <section>
                         <HeroSection />
                         <AdvantagesSection />
-                        <BentoFeaturesSection />
+                        <BentoFeaturesSection id="Features" />
                         <ProductivitySection />
                         <LeaderboardSection />
                         {/* <IntegrationSection /> */}
