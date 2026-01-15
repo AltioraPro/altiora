@@ -119,7 +119,6 @@ function Calendar({
                 ...classNames,
             }}
             components={{
-                // biome-ignore lint/correctness/noNestedComponentDefinitions: shadcn-ui
                 Chevron: (props) => {
                     if (props.orientation === "left") {
                         return (

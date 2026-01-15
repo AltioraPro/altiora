@@ -163,7 +163,7 @@ export default function GoalsPage() {
                 </div>
 
                 {/* Goals Dashboard */}
-                <div className="mx-auto max-w-7xl">
+                <div className="mx-auto w-full">
                     <GoalsDashboard />
                 </div>
 

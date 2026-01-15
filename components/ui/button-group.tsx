@@ -26,6 +26,7 @@ function ButtonGroup({
     ...props
 }: React.ComponentProps<"div"> & VariantProps<typeof buttonGroupVariants>) {
     return (
+        // biome-ignore lint/a11y/useSemanticElements: intentional grouping for button group component
         <div
             className={cn(buttonGroupVariants({ orientation }), className)}
             data-orientation={orientation}

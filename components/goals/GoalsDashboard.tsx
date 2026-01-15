@@ -128,18 +128,18 @@ function GoalRow({
             </span>
 
             <div className="order-3 mt-1 flex w-full items-center gap-1.5 pl-6 sm:order-none sm:mt-0 sm:w-auto sm:pl-0">
-                {goal.categoryId &&
-                    categories?.find((c) => c.id === goal.categoryId) && (
+                {(() => {
+                    const category = goal.categoryId
+                        ? categories?.find((c) => c.id === goal.categoryId)
+                        : undefined;
+                    return category ? (
                         <CategoryBadge
-                            category={
-                                categories.find(
-                                    (c) => c.id === goal.categoryId
-                                )!
-                            }
+                            category={category}
                             className="block w-fit max-w-full truncate text-[10px] sm:text-xs"
                             size="sm"
                         />
-                    )}
+                    ) : null;
+                })()}
 
                 {goal.deadline && (
                     <span

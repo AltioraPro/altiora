@@ -216,8 +216,9 @@ export function CreateJournalModal() {
                         <div className="grid gap-4 py-6">
                             {/* Manual Entry */}
                             <button
-                                className="group relative overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-6 text-left transition-all hover:border-white/20 hover:from-white/10 hover:shadow-xl"
+                                className="group relative overflow-hidden rounded-xl border border-white/10 bg-linear-to-br from-white/5 to-transparent p-6 text-left transition-all hover:border-white/20 hover:from-white/10 hover:shadow-xl"
                                 onClick={() => handleSourceSelect("manual")}
+                                type="button"
                             >
                                 <div className="absolute inset-0 bg-grid-white/[0.02]" />
                                 <div className="relative flex items-start gap-4">
@@ -239,9 +240,10 @@ export function CreateJournalModal() {
 
                             {/* cTrader */}
                             <button
-                                className="group relative overflow-hidden rounded-xl border border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-transparent p-6 text-left transition-all hover:border-blue-500/30 hover:from-blue-500/15 hover:shadow-blue-500/10 hover:shadow-xl disabled:opacity-60"
+                                className="group relative overflow-hidden rounded-xl border border-blue-500/20 bg-linear-to-br from-blue-500/10 to-transparent p-6 text-left transition-all hover:border-blue-500/30 hover:from-blue-500/15 hover:shadow-blue-500/10 hover:shadow-xl disabled:opacity-60"
                                 disabled={isPending}
                                 onClick={() => handleSourceSelect("ctrader")}
+                                type="button"
                             >
                                 <div className="absolute inset-0 bg-grid-white/[0.02]" />
                                 <div className="relative flex items-start gap-4">
@@ -271,11 +273,12 @@ export function CreateJournalModal() {
 
                             {/* MetaTrader */}
                             <button
-                                className="group relative overflow-hidden rounded-xl border border-green-500/20 bg-gradient-to-br from-green-500/10 to-transparent p-6 text-left transition-all hover:border-green-500/30 hover:from-green-500/15 hover:shadow-green-500/10 hover:shadow-xl disabled:opacity-60"
+                                className="group relative overflow-hidden rounded-xl border border-green-500/20 bg-linear-to-br from-green-500/10 to-transparent p-6 text-left transition-all hover:border-green-500/30 hover:from-green-500/15 hover:shadow-green-500/10 hover:shadow-xl disabled:opacity-60"
                                 disabled={isPending}
                                 onClick={() => {
                                     handleSourceSelect("metatrader");
                                 }}
+                                type="button"
                             >
                                 <div className="absolute inset-0 bg-grid-white/[0.02]" />
                                 <div className="relative flex items-start gap-4">

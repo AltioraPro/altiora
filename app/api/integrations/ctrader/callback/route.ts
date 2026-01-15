@@ -178,11 +178,15 @@ async function exchangeCodeForToken(code: string): Promise<TokenResponse> {
         process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3000";
     const redirectUri = `${baseUrl}/api/integrations/ctrader/callback`;
 
+    if (!env.CTRADER_CLIENT_ID || !env.CTRADER_CLIENT_SECRET) {
+        throw new Error("cTrader OAuth not configured");
+    }
+
     const body = new URLSearchParams({
         grant_type: "authorization_code",
         code,
-        client_id: env.CTRADER_CLIENT_ID!,
-        client_secret: env.CTRADER_CLIENT_SECRET!,
+        client_id: env.CTRADER_CLIENT_ID,
+        client_secret: env.CTRADER_CLIENT_SECRET,
         redirect_uri: redirectUri,
     });
 

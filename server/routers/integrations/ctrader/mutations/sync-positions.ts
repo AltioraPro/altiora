@@ -67,9 +67,7 @@ export const syncCTraderPositionsHandler = syncCTraderPositionsBase.handler(
             }
 
             // 3. Check cache (skip if forceRefresh)
-            // 3. Check cache (skip if forceRefresh)
-            if (false) {
-                // DISABLED FOR DEBUGGING TO FORCE SYNC
+            if (!forceRefresh) {
                 const cached = await CTraderSyncCache.get(journalId);
                 if (cached) {
                     return {
@@ -142,7 +140,7 @@ export const syncCTraderPositionsHandler = syncCTraderPositionsBase.handler(
                     ? Number(journal.startingCapital)
                     : 0;
             }
-            const positions: any[] = [];
+            const positions: unknown[] = [];
             const now = new Date();
             // Start from 2015 to get ALL TIME history (cTrader launched ~2015)
             let fromDate = new Date("2015-01-01T00:00:00Z");

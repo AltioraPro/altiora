@@ -140,9 +140,9 @@ void mainImage(in vec4 inputColor, in vec2 uv, out vec4 outputColor) {
 `;
 
 class RetroEffectImpl extends Effect {
-    public uniforms: Map<string, any>;
+    public uniforms: Map<string, THREE.Uniform<number>>;
     constructor() {
-        const uniforms = new Map<string, THREE.Uniform<any>>([
+        const uniforms = new Map<string, THREE.Uniform<number>>([
             ["colorNum", new THREE.Uniform(4.0)],
             ["pixelSize", new THREE.Uniform(2.0)],
         ]);
@@ -150,16 +150,18 @@ class RetroEffectImpl extends Effect {
         this.uniforms = uniforms;
     }
     get colorNum(): number {
-        return this.uniforms.get("colorNum")?.value;
+        return this.uniforms.get("colorNum")?.value ?? 4.0;
     }
     set colorNum(value: number) {
-        this.uniforms.get("colorNum")!.value = value;
+        const uniform = this.uniforms.get("colorNum");
+        if (uniform) uniform.value = value;
     }
     get pixelSize(): number {
-        return this.uniforms.get("pixelSize")?.value;
+        return this.uniforms.get("pixelSize")?.value ?? 2.0;
     }
     set pixelSize(value: number) {
-        this.uniforms.get("pixelSize")!.value = value;
+        const uniform = this.uniforms.get("pixelSize");
+        if (uniform) uniform.value = value;
     }
 }
 

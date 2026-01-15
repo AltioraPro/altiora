@@ -11,8 +11,7 @@ export function Sidebar() {
     const [isExpanded, setIsExpanded] = useState(false);
 
     return (
-        // biome-ignore lint/a11y/noNoninteractiveElementInteractions: sidebar is interactive
-        <aside
+        <nav
             className={cn(
                 "fixed top-0 z-50 hidden h-screen shrink-0 flex-col items-center justify-between pb-4 transition-all duration-200 ease-&lsqb;cubic-bezier(0.4,0,0.2,1)&rsqb; md:flex xl:overflow-hidden xl:rounded-tl-[10px] xl:rounded-bl-[10px]",
                 "border-border border-r bg-background",
@@ -38,6 +37,6 @@ export function Sidebar() {
             <div className="flex w-full flex-1 flex-col pt-[70px]">
                 <MainMenu isExpanded={isExpanded} />
             </div>
-        </aside>
+        </nav>
     );
 }

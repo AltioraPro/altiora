@@ -570,9 +570,10 @@
     color: white;
 }
 
-select option {
-    background-color: #171717 !important;
-    color: white !important;
+select option,
+.dark select option {
+    background-color: #171717;
+    color: white;
 }
 
 /* Smooth scroll behavior for anchor links */

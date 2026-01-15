@@ -56,7 +56,7 @@ interface HabitWithCompletion {
     isCompleted: boolean;
 }
 
-interface UserHabitData {
+interface _UserHabitData {
     userId: string;
     discordId: string;
     timezone: string;

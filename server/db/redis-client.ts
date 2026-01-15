@@ -37,7 +37,7 @@ class RedisHTTPClient {
         }
     }
 
-    async set(key: string, value: any, ttl = 300): Promise<void> {
+    async set(key: string, value: unknown, ttl = 300): Promise<void> {
         try {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 2000);

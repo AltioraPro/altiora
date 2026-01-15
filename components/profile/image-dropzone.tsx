@@ -6,6 +6,7 @@ import {
     RiLoader4Line,
     RiUpload2Fill,
 } from "@remixicon/react";
+import Image from "next/image";
 import { useCallback, useId, useRef } from "react";
 import {
     Controller,
@@ -151,7 +152,7 @@ export function ImageDropzone<
                                 </FieldDescription>
                             )}
                             <div className="relative">
-                                {/* Drop area */}
+                                {/* biome-ignore lint/a11y/noStaticElementInteractions: Drop zone handles drag events for the hidden file input */}
                                 <div
                                     className="relative flex min-h-52 flex-col items-center justify-center overflow-hidden border border-input border-dashed p-4 transition-colors has-[input:focus]:border-ring has-[input:focus]:ring-[3px] has-[input:focus]:ring-ring/50 data-[dragging=true]:bg-accent/50"
                                     data-dragging={isDragging || undefined}
@@ -177,8 +178,8 @@ export function ImageDropzone<
                                         </div>
                                     ) : previewUrl ? (
                                         <div className="absolute inset-0 flex items-center justify-center p-4">
-                                            <img
-                                                alt="Uploaded image"
+                                            <Image
+                                                alt="Preview of selected file"
                                                 className="mx-auto max-h-full rounded object-contain"
                                                 height={200}
                                                 src={previewUrl}

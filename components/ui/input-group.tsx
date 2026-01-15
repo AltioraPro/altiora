@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 
 function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
     return (
+        // biome-ignore lint/a11y/useSemanticElements: intentional grouping for input group component
         <div
             className={cn(
                 "group/input-group relative flex w-full items-center border border-input shadow-xs outline-none transition-[color,box-shadow] dark:bg-input/30",
@@ -61,7 +62,12 @@ function InputGroupAddon({
     align = "inline-start",
     ...props
 }: React.ComponentProps<"div"> & VariantProps<typeof inputGroupAddonVariants>) {
+    const focusInput = (element: HTMLElement) => {
+        element.parentElement?.querySelector("input")?.focus();
+    };
+
     return (
+        // biome-ignore lint/a11y/useSemanticElements: intentional grouping for input group addon
         <div
             className={cn(inputGroupAddonVariants({ align }), className)}
             data-align={align}
@@ -70,7 +76,13 @@ function InputGroupAddon({
                 if ((e.target as HTMLElement).closest("button")) {
                     return;
                 }
-                e.currentTarget.parentElement?.querySelector("input")?.focus();
+                focusInput(e.currentTarget);
+            }}
+            onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    focusInput(e.currentTarget);
+                }
             }}
             role="group"
             {...props}
