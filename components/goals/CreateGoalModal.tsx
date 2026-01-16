@@ -122,7 +122,7 @@ export function CreateGoalModal({
             reminderFrequency: formData.remindersEnabled
                 ? formData.reminderFrequency
                 : undefined,
-        } as any);
+        } as Parameters<typeof handleCreateGoal>[0]);
     };
 
     return (

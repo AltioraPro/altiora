@@ -1,7 +1,7 @@
 "use client";
 
 /*
-	Installed from https://reactbits.dev/ts/tailwind/
+    Installed from https://reactbits.dev/ts/tailwind/
 */
 
 import type React from "react";
@@ -56,6 +56,7 @@ const SpotlightCard: React.FC<SpotlightCardProps> = ({
 
     return (
         <div
+            aria-hidden="true"
             className={`relative overflow-hidden rounded-2xl border border-white/10 p-8 ${className}`}
             onBlur={handleBlur}
             onFocus={handleFocus}

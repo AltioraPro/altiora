@@ -229,7 +229,6 @@ function DateRangeFilterComponent({
                                     today: "bg-transparent rounded-none",
                                 }}
                                 components={{
-                                    // biome-ignore lint/correctness/noNestedComponentDefinitions: shadcn-ui
                                     DayButton: (props) => (
                                         <CalendarDayButton
                                             {...props}

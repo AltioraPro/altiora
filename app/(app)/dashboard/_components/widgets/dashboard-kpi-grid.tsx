@@ -30,100 +30,110 @@ function InfoTooltip({ content }: { content: string }) {
     );
 }
 
+interface TradeMetrics {
+    avgWin: number;
+    avgLoss: number;
+    avgWinAmount: number;
+    avgLossAmount: number;
+    dayWinRate: number;
+    todayWins: number;
+    todayLosses: number;
+    todayTotal: number;
+    winDays: number;
+    lossDays: number;
+    totalDays: number;
+}
+
+function calculateTradeMetrics(
+    trades: RouterOutput["trading"]["getTrades"]
+): TradeMetrics {
+    const defaultMetrics: TradeMetrics = {
+        avgWin: 0,
+        avgLoss: 0,
+        avgWinAmount: 0,
+        avgLossAmount: 0,
+        dayWinRate: 0,
+        todayWins: 0,
+        todayLosses: 0,
+        todayTotal: 0,
+        winDays: 0,
+        lossDays: 0,
+        totalDays: 0,
+    };
+
+    if (!trades || trades.length === 0) {
+        return defaultMetrics;
+    }
+
+    let totalWinPct = 0;
+    let countWin = 0;
+    let totalLossPct = 0;
+    let countLoss = 0;
+    let totalWinAmount = 0;
+    let totalLossAmount = 0;
+
+    const today = new Date();
+    let todayWins = 0;
+    let todayLosses = 0;
+    let todayTotal = 0;
+
+    const dailyPnL = new Map<string, number>();
+
+    for (const trade of trades) {
+        const pnl = Number(trade.profitLossPercentage) || 0;
+        const pnlAmount = Number(trade.profitLossAmount) || 0;
+        const tradeDate = new Date(trade.tradeDate);
+        const dateKey = tradeDate.toISOString().split("T")[0] ?? "";
+
+        dailyPnL.set(dateKey, (dailyPnL.get(dateKey) || 0) + pnl);
+
+        if (pnl > 0) {
+            totalWinPct += pnl;
+            totalWinAmount += pnlAmount;
+            countWin++;
+        } else if (pnl < 0) {
+            totalLossPct += Math.abs(pnl);
+            totalLossAmount += Math.abs(pnlAmount);
+            countLoss++;
+        }
+
+        const isToday =
+            tradeDate.getDate() === today.getDate() &&
+            tradeDate.getMonth() === today.getMonth() &&
+            tradeDate.getFullYear() === today.getFullYear();
+
+        if (isToday) {
+            todayTotal++;
+            if (pnl > 0) todayWins++;
+            else if (pnl < 0) todayLosses++;
+        }
+    }
+
+    let winDays = 0;
+    let lossDays = 0;
+    for (const [, pnl] of dailyPnL) {
+        if (pnl > 0) winDays++;
+        else if (pnl < 0) lossDays++;
+    }
+
+    return {
+        avgWin: countWin > 0 ? totalWinPct / countWin : 0,
+        avgLoss: countLoss > 0 ? totalLossPct / countLoss : 0,
+        avgWinAmount: countWin > 0 ? totalWinAmount / countWin : 0,
+        avgLossAmount: countLoss > 0 ? totalLossAmount / countLoss : 0,
+        dayWinRate: dailyPnL.size > 0 ? (winDays / dailyPnL.size) * 100 : 0,
+        todayWins,
+        todayLosses,
+        todayTotal,
+        winDays,
+        lossDays,
+        totalDays: dailyPnL.size,
+    };
+}
+
 export function DashboardKpiGrid({ stats, trades }: DashboardKpiGridProps) {
     // Calculate detailed metrics from trades
-    const tradeMetrics = (() => {
-        if (!trades || trades.length === 0) {
-            return {
-                avgWin: 0,
-                avgLoss: 0,
-                avgWinAmount: 0,
-                avgLossAmount: 0,
-                dayWinRate: 0,
-                todayWins: 0,
-                todayLosses: 0,
-                todayTotal: 0,
-                winDays: 0,
-                lossDays: 0,
-                totalDays: 0,
-            };
-        }
-
-        let totalWinPct = 0;
-        let countWin = 0;
-        let totalLossPct = 0;
-        let countLoss = 0;
-        let totalWinAmount = 0;
-        let totalLossAmount = 0;
-
-        const today = new Date();
-        let todayWins = 0;
-        let todayLosses = 0;
-        let todayTotal = 0;
-
-        // Track daily P&L for day win rate
-        const dailyPnL = new Map<string, number>();
-
-        for (const trade of trades) {
-            const pnl = Number(trade.profitLossPercentage) || 0;
-            const pnlAmount = Number(trade.profitLossAmount) || 0;
-            const tradeDate = new Date(trade.tradeDate);
-            const dateKey = tradeDate.toISOString().split("T")[0];
-
-            // Aggregate daily P&L
-            dailyPnL.set(dateKey, (dailyPnL.get(dateKey) || 0) + pnl);
-
-            // Avg Win/Loss logic
-            if (pnl > 0) {
-                totalWinPct += pnl;
-                totalWinAmount += pnlAmount;
-                countWin++;
-            } else if (pnl < 0) {
-                totalLossPct += Math.abs(pnl);
-                totalLossAmount += Math.abs(pnlAmount);
-                countLoss++;
-            }
-
-            // Today's trades
-            if (
-                tradeDate.getDate() === today.getDate() &&
-                tradeDate.getMonth() === today.getMonth() &&
-                tradeDate.getFullYear() === today.getFullYear()
-            ) {
-                todayTotal++;
-                if (pnl > 0) {
-                    todayWins++;
-                } else if (pnl < 0) {
-                    todayLosses++;
-                }
-            }
-        }
-
-        // Calculate winning/losing days
-        let winDays = 0;
-        let lossDays = 0;
-        for (const [, pnl] of dailyPnL) {
-            if (pnl > 0) {
-                winDays++;
-            } else if (pnl < 0) {
-                lossDays++;
-            }
-        }
-
-        return {
-            avgWin: countWin > 0 ? totalWinPct / countWin : 0,
-            avgLoss: countLoss > 0 ? totalLossPct / countLoss : 0,
-            avgWinAmount: countWin > 0 ? totalWinAmount / countWin : 0,
-            avgLossAmount: countLoss > 0 ? totalLossAmount / countLoss : 0,
-            dayWinRate: dailyPnL.size > 0 ? (winDays / dailyPnL.size) * 100 : 0,
-            todayWins,
-            todayLosses,
-            todayTotal,
-            winDays,
-            lossDays,
-            totalDays: dailyPnL.size,
-        };
-    })();
+    const tradeMetrics = calculateTradeMetrics(trades);
 
     const totalPnL =
         typeof stats.totalPnL === "string"

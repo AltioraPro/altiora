@@ -194,7 +194,7 @@ async function fetchAllCommits(headers: HeadersInit): Promise<GitHubCommit[]> {
 
 function getDateKey(dateString: string): string {
     const date = new Date(dateString);
-    return date.toISOString().split("T")[0]!;
+    return date.toISOString().split("T")[0] ?? dateString;
 }
 
 export async function GET() {

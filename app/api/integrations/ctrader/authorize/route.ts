@@ -65,12 +65,16 @@ export async function GET(request: NextRequest) {
 }
 
 function createAuthorizationURL(state: string, _journalId: string): string {
+    if (!env.CTRADER_CLIENT_ID) {
+        throw new Error("cTrader client ID not configured");
+    }
+
     const baseUrl =
         process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3000";
     const redirectUri = `${baseUrl}/api/integrations/ctrader/callback`;
 
     const params = new URLSearchParams({
-        client_id: env.CTRADER_CLIENT_ID!,
+        client_id: env.CTRADER_CLIENT_ID,
         redirect_uri: redirectUri,
         response_type: "code",
         scope: "trading", // Changed back to trading

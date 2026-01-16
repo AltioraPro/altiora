@@ -14,7 +14,7 @@ export function GoalStats({ stats }: GoalStatsProps) {
     // Affichage direct sans animation
     const animatedStats = stats;
 
-    const getCompletionRateColor = (rate: number) => {
+    const _getCompletionRateColor = (rate: number) => {
         if (rate >= 80) {
             return "text-white";
         }
@@ -76,7 +76,7 @@ export function GoalStats({ stats }: GoalStatsProps) {
 
                 {/* Completed Goals */}
                 <div className="rounded-lg border border-white/10 bg-black/20 p-2 sm:p-4">
-                    <p className="mb-0.5 font-bold text-lg text-white sm:mb-1 sm:text-xl">
+                    <p className="mb-0.5 font-bold text-lg text-green-400 sm:mb-1 sm:text-xl">
                         {animatedStats.completed}
                     </p>
                     <p className="text-[10px] text-white/60 sm:text-xs">Done</p>
@@ -84,7 +84,7 @@ export function GoalStats({ stats }: GoalStatsProps) {
 
                 {/* Overdue Goals */}
                 <div className="rounded-lg border border-white/10 bg-black/20 p-2 sm:p-4">
-                    <p className="mb-0.5 font-bold text-lg text-white sm:mb-1 sm:text-xl">
+                    <p className="mb-0.5 font-bold text-lg text-red-400 sm:mb-1 sm:text-xl">
                         {animatedStats.overdue}
                     </p>
                     <p className="text-[10px] text-white/60 sm:text-xs">Late</p>
@@ -98,7 +98,7 @@ export function GoalStats({ stats }: GoalStatsProps) {
                         Success Rate
                     </p>
                     <p
-                        className={`font-bold text-lg sm:text-xl ${getCompletionRateColor(animatedStats.completionRate)}`}
+                        className={`font-bold text-lg text-green-400 sm:text-xl`}
                     >
                         {animatedStats.completionRate}%
                     </p>
@@ -107,7 +107,7 @@ export function GoalStats({ stats }: GoalStatsProps) {
                 {/* Progress Bar */}
                 <div className="h-1.5 w-full rounded-full bg-white/5 sm:h-2">
                     <div
-                        className="h-1.5 rounded-full bg-white/60 sm:h-2"
+                        className="h-1.5 rounded-full bg-green-400 sm:h-2"
                         style={{ width: `${animatedStats.completionRate}%` }}
                     />
                 </div>

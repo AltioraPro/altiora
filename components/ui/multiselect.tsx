@@ -207,17 +207,20 @@ const MultipleSelector = ({
     const [inputValue, setInputValue] = React.useState("");
     const debouncedSearchTerm = useDebounce(inputValue, delay || 500);
 
-    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
-        if (
-            dropdownRef.current &&
-            !dropdownRef.current.contains(event.target as Node) &&
-            inputRef.current &&
-            !inputRef.current.contains(event.target as Node)
-        ) {
-            setOpen(false);
-            inputRef.current.blur();
-        }
-    };
+    const handleClickOutside = React.useCallback(
+        (event: MouseEvent | TouchEvent) => {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target as Node) &&
+                inputRef.current &&
+                !inputRef.current.contains(event.target as Node)
+            ) {
+                setOpen(false);
+                inputRef.current.blur();
+            }
+        },
+        []
+    );
 
     const handleUnselect = React.useCallback(
         (option: Option) => {
@@ -463,7 +466,11 @@ const MultipleSelector = ({
                     : !onSearch
             }
         >
+            {/* biome-ignore lint/a11y/useKeyWithClickEvents: keyboard handling is done via Command component */}
             <div
+                aria-controls="multiselect-listbox"
+                aria-expanded={open}
+                aria-haspopup="listbox"
                 className={cn(
                     "relative min-h-[38px] border border-input text-sm outline-none transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 has-disabled:pointer-events-none has-disabled:cursor-not-allowed has-aria-invalid:border-destructive has-disabled:opacity-50 has-aria-invalid:ring-destructive/20",
                     {
@@ -479,6 +486,8 @@ const MultipleSelector = ({
                     }
                     inputRef?.current?.focus();
                 }}
+                role="combobox"
+                tabIndex={-1}
             >
                 <div className="flex flex-wrap gap-1">
                     {selected.map((option) => (

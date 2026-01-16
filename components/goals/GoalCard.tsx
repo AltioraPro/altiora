@@ -87,6 +87,12 @@ export function GoalCard({
         return <RiTargetLine className="size-5" />;
     };
 
+    const getStatusLabel = (short = false) => {
+        if (goal.isCompleted) return short ? "Done" : "Completed";
+        if (isOverdue) return short ? "Late" : "Overdue";
+        return "Active";
+    };
+
     const handleMarkCompleted = async () => {
         await markCompleted({
             id: goal.id,
@@ -132,10 +138,7 @@ export function GoalCard({
                                 <Badge
                                     className={`text-xs ${getStatusColor()}`}
                                 >
-                                    {(goal.isCompleted && "Completed") ||
-                                    isOverdue
-                                        ? "Overdue"
-                                        : "Active"}
+                                    {getStatusLabel()}
                                 </Badge>
                             </div>
 
@@ -199,9 +202,7 @@ export function GoalCard({
                         </div>
                         <div className="flex gap-2">
                             <Badge className={`text-xs ${getStatusColor()}`}>
-                                {(goal.isCompleted && "Done") || isOverdue
-                                    ? "Late"
-                                    : "Active"}
+                                {getStatusLabel(true)}
                             </Badge>
                         </div>
                     </div>

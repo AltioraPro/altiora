@@ -301,6 +301,22 @@ export default function TradingCalendarPage() {
         return baseClasses;
     };
 
+    const getCompactDayClassName = (day: {
+        isCurrentMonth: boolean;
+        isToday: boolean;
+        dayPerformance?: DayPerformance;
+    }) => {
+        if (!day.isCurrentMonth) return "text-white/30";
+        if (day.isToday) return "bg-white font-bold text-black";
+        if (day.dayPerformance) {
+            if (day.dayPerformance.isPositive)
+                return "bg-green-600 text-white opacity-75";
+            if (day.dayPerformance.isNeutral) return "bg-gray-600 text-white";
+            return "bg-red-600 text-white opacity-75";
+        }
+        return "text-white hover:bg-white/10";
+    };
+
     const getDayContent = (day: { dayPerformance?: DayPerformance }) => {
         if (!day.dayPerformance) {
             return null;
@@ -538,30 +554,7 @@ export default function TradingCalendarPage() {
                                     <div className="grid grid-cols-7 gap-1">
                                         {calendar.days.map((day, index) => (
                                             <div
-                                                className={`group relative flex h-8 w-8 flex-col items-center justify-center rounded font-semibold text-xs transition-colors ${(() => {
-                                                    if (!day.isCurrentMonth) {
-                                                        return "text-white/30";
-                                                    }
-                                                    if (day.isToday) {
-                                                        return "bg-white font-bold text-black";
-                                                    }
-                                                    if (day.dayPerformance) {
-                                                        if (
-                                                            day.dayPerformance
-                                                                .isPositive
-                                                        ) {
-                                                            return "bg-green-600 text-white opacity-75";
-                                                        }
-                                                        if (
-                                                            day.dayPerformance
-                                                                .isNeutral
-                                                        ) {
-                                                            return "bg-gray-600 text-white";
-                                                        }
-                                                        return "bg-red-600 text-white opacity-75";
-                                                    }
-                                                    return "text-white hover:bg-white/10";
-                                                })()}`}
+                                                className={`group relative flex h-8 w-8 flex-col items-center justify-center rounded font-semibold text-xs transition-colors ${getCompactDayClassName(day)}`}
                                                 key={index}
                                                 title={
                                                     day.dayPerformance

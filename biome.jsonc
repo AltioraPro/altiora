@@ -78,5 +78,33 @@
                 "noReactForwardRef": "off"
             }
         }
-    }
+    },
+    "overrides": [
+        {
+            "includes": ["scripts/**"],
+            "linter": {
+                "rules": {
+                    "suspicious": {
+                        "noConsole": "off"
+                    },
+                    "complexity": {
+                        "noExcessiveCognitiveComplexity": "off"
+                    }
+                }
+            }
+        },
+        {
+            "includes": ["server/routers/integrations/ctrader/**"],
+            "linter": {
+                "rules": {
+                    "suspicious": {
+                        "noExplicitAny": "off"
+                    },
+                    "complexity": {
+                        "noStaticOnlyClass": "off"
+                    }
+                }
+            }
+        }
+    ]
 }
