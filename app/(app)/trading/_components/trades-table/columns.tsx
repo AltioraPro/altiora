@@ -63,271 +63,256 @@ export const createColumns = ({
                 </span>
             );
         },
-        {
-            header: "Date",
-            accessorKey: "tradeDate",
-            cell: ({ row }) => {
-                const tradeDate = row.original.tradeDate;
-                const date =
-                    tradeDate instanceof Date
-                        ? tradeDate
-                        : parseISO(String(tradeDate));
-                return (
-                    <span className="text-sm text-white">
-                        {format(date, "dd/MM/yyyy")}
-                    </span>
-                );
-            },
-            size: 120,
+        size: 120,
+    },
+    {
+        header: "Asset",
+        accessorKey: "assetId",
+        cell: ({ row }) => {
+            const assetId = row.original.assetId;
+            const asset = assets?.find((a) => a.id === assetId);
+            return (
+                <span className="text-sm text-white">{asset?.name || "-"}</span>
+            );
         },
-        {
-            header: "Asset",
-            accessorKey: "assetId",
-            cell: ({ row }) => {
-                const assetId = row.original.assetId;
-                const asset = assets?.find((a) => a.id === assetId);
-                return (
-                    <span className="text-sm text-white">{asset?.name || "-"}</span>
-                );
-            },
-            size: 120,
+        size: 120,
+    },
+    {
+        header: "Session",
+        accessorKey: "sessionId",
+        cell: ({ row }) => {
+            const sessionId = row.original.sessionId;
+            const session = sessions?.find((s) => s.id === sessionId);
+            return (
+                <span className="text-sm text-white">
+                    {session?.name || "-"}
+                </span>
+            );
         },
-        {
-            header: "Session",
-            accessorKey: "sessionId",
-            cell: ({ row }) => {
-                const sessionId = row.original.sessionId;
-                const session = sessions?.find((s) => s.id === sessionId);
-                return (
-                    <span className="text-sm text-white">
-                        {session?.name || "-"}
-                    </span>
-                );
-            },
-            size: 120,
+        size: 120,
+    },
+    {
+        header: "Confirmation",
+        accessorKey: "confirmationId",
+        cell: ({ row }) => {
+            const confirmations = row.original.tradesConfirmations;
+
+            return (
+                <span className="text-sm text-white">
+                    {confirmations
+                        .map((confirmation) => confirmation.confirmations.name)
+                        .join(", ") || "-"}
+                </span>
+            );
         },
-        {
-            header: "Confirmation",
-            accessorKey: "confirmationId",
-            cell: ({ row }) => {
-                const confirmations = row.original.tradesConfirmations;
-
-                return (
-                    <span className="text-sm text-white">
-                        {confirmations
-                            .map((confirmation) => confirmation.confirmations.name)
-                            .join(", ") || "-"}
-                    </span>
-                );
-            },
-            size: 140,
+        size: 140,
+    },
+    {
+        header: "Risk",
+        accessorKey: "riskInput",
+        cell: ({ row }) => {
+            const riskInput = row.original.riskInput;
+            return (
+                <span className="text-sm text-white">{riskInput || "-"}</span>
+            );
         },
-        {
-            header: "Risk",
-            accessorKey: "riskInput",
-            cell: ({ row }) => {
-                const riskInput = row.original.riskInput;
-                return (
-                    <span className="text-sm text-white">{riskInput || "-"}</span>
-                );
-            },
-            size: 100,
-        },
-        {
-            header: "Result",
-            accessorKey: "profitLossPercentage",
-            cell: ({ row }) => {
-                const trade = row.original;
-                const profitLossAmount = Number(trade.profitLossAmount || 0);
-                const usePercentageCalculation =
-                    stats?.journal?.usePercentageCalculation;
-                const startingCapital = Number(
-                    stats?.journal?.startingCapital || 0
-                );
+        size: 100,
+    },
+    {
+        header: "Result",
+        accessorKey: "profitLossPercentage",
+        cell: ({ row }) => {
+            const trade = row.original;
+            const profitLossAmount = Number(trade.profitLossAmount || 0);
+            const usePercentageCalculation =
+                stats?.journal?.usePercentageCalculation;
+            const startingCapital = Number(
+                stats?.journal?.startingCapital || 0
+            );
 
-                // Check broker connection info for demo/live account
-                const brokerConnection = trade.brokerConnection;
-                // Default to demo if no broker connection (safer for privacy)
-                const isDemo =
-                    !brokerConnection || brokerConnection.accountType === "demo";
-                const currency = brokerConnection?.currency || "EUR";
+            // Check broker connection info for demo/live account
+            const brokerConnection = trade.brokerConnection;
+            // Default to demo if no broker connection (safer for privacy)
+            const isDemo =
+                !brokerConnection || brokerConnection.accountType === "demo";
+            const currency = brokerConnection?.currency || "EUR";
 
-                // Calculate percentage if missing but amount exists
-                let profitLossPercentage = Number(trade.profitLossPercentage || 0);
-                const hasPercentage =
-                    trade.profitLossPercentage !== null &&
-                    trade.profitLossPercentage !== undefined &&
-                    trade.profitLossPercentage !== "";
+            // Calculate percentage if missing but amount exists
+            let profitLossPercentage = Number(trade.profitLossPercentage || 0);
+            const hasPercentage =
+                trade.profitLossPercentage !== null &&
+                trade.profitLossPercentage !== undefined &&
+                trade.profitLossPercentage !== "";
 
-                // If no percentage but we have amount and capital, calculate it
-                if (
-                    !hasPercentage &&
-                    profitLossAmount !== 0 &&
-                    startingCapital > 0
-                ) {
-                    profitLossPercentage =
-                        (profitLossAmount / startingCapital) * 100;
-                }
+            // If no percentage but we have amount and capital, calculate it
+            if (
+                !hasPercentage &&
+                profitLossAmount !== 0 &&
+                startingCapital > 0
+            ) {
+                profitLossPercentage =
+                    (profitLossAmount / startingCapital) * 100;
+            }
 
-                // Break-Even threshold: trades between -0.10% and +1% are considered BE
-                const BE_THRESHOLD_LOW = -0.1;
-                const BE_THRESHOLD_HIGH = 1;
-                const isBreakEven =
-                    profitLossPercentage >= BE_THRESHOLD_LOW &&
-                    profitLossPercentage <= BE_THRESHOLD_HIGH;
-                const isWin = profitLossPercentage > BE_THRESHOLD_HIGH;
-                const isLoss = profitLossPercentage < BE_THRESHOLD_LOW;
+            // Break-Even threshold: trades between -0.10% and +1% are considered BE
+            const BE_THRESHOLD_LOW = -0.1;
+            const BE_THRESHOLD_HIGH = 1;
+            const isBreakEven =
+                profitLossPercentage >= BE_THRESHOLD_LOW &&
+                profitLossPercentage <= BE_THRESHOLD_HIGH;
+            const isWin = profitLossPercentage > BE_THRESHOLD_HIGH;
+            const isLoss = profitLossPercentage < BE_THRESHOLD_LOW;
 
-                // Get currency symbol
-                const getCurrencySymbol = (curr: string) => {
-                    const symbols: Record<string, string> = {
-                        USD: "$",
-                        EUR: "€",
-                        GBP: "£",
-                        JPY: "¥",
-                        CHF: "CHF",
-                        AUD: "$",
-                        CAD: "$",
-                    };
-                    return symbols[curr] || curr;
+            // Get currency symbol
+            const getCurrencySymbol = (curr: string) => {
+                const symbols: Record<string, string> = {
+                    USD: "$",
+                    EUR: "€",
+                    GBP: "£",
+                    JPY: "¥",
+                    CHF: "CHF",
+                    AUD: "$",
+                    CAD: "$",
                 };
+                return symbols[curr] || curr;
+            };
 
-                // Format display percentage - always use toFixed(2) for consistent formatting
-                const displayPercentage = Number(profitLossPercentage).toFixed(2);
+            // Format display percentage - always use toFixed(2) for consistent formatting
+            const displayPercentage = Number(profitLossPercentage).toFixed(2);
 
-                return (
-                    <div className="space-y-1">
-                        <span
-                            className={cn(
-                                "text-sm",
-                                isWin && "text-green-400",
-                                isLoss && "text-red-400",
-                                isBreakEven && "text-blue-400"
-                            )}
-                        >
-                            {profitLossPercentage >= 0 ? "+" : ""}
-                            {displayPercentage}%
-                        </span>
-                        {/* Show amount only for LIVE accounts */}
-                        {!isDemo &&
-                            profitLossAmount !== 0 &&
-                            usePercentageCalculation && (
-                                <div
-                                    className={cn(
-                                        "text-xs",
-                                        isWin && "text-green-400",
-                                        isLoss && "text-red-400",
-                                        isBreakEven && "text-blue-400"
-                                    )}
-                                >
-                                    {profitLossAmount >= 0 ? "+" : ""}
-                                    {profitLossAmount.toFixed(2)}
-                                    {getCurrencySymbol(currency)}
-                                </div>
-                            )}
-                    </div>
-                );
-            },
-            size: 120,
-        },
-        {
-            header: "Exit",
-            accessorKey: "exitReason",
-            cell: ({ row }) => {
-                const trade = row.original;
-                const isClosed = trade.isClosed;
-
-                if (isClosed === false) {
-                    return (
-                        <Badge className="animate-pulse border-sky-500/30 bg-sky-500/20 text-sky-400">
-                            OPEN
-                        </Badge>
-                    );
-                }
-
-                // Calculate percentage - use stored value or calculate from amount
-                const profitLossAmount = Number(trade.profitLossAmount || 0);
-                const startingCapital = Number(
-                    stats?.journal?.startingCapital || 0
-                );
-                const hasPercentage =
-                    trade.profitLossPercentage !== null &&
-                    trade.profitLossPercentage !== undefined &&
-                    trade.profitLossPercentage !== "";
-
-                let profitLossPercentage = Number(trade.profitLossPercentage || 0);
-                if (
-                    !hasPercentage &&
-                    profitLossAmount !== 0 &&
-                    startingCapital > 0
-                ) {
-                    profitLossPercentage =
-                        (profitLossAmount / startingCapital) * 100;
-                }
-
-                // Check if trade is within BE threshold (-0.10% to +1%)
-                const BE_THRESHOLD_LOW = -0.1;
-                const BE_THRESHOLD_HIGH = 1;
-                const isBreakEven =
-                    profitLossPercentage >= BE_THRESHOLD_LOW &&
-                    profitLossPercentage <= BE_THRESHOLD_HIGH;
-
-                // Use stored exitReason if available (user-provided takes priority)
-                const exitReason = trade.exitReason;
-                if (exitReason) {
-                    return getExitReasonBadge(exitReason);
-                }
-
-                // If no exitReason stored, auto-detect based on P&L thresholds
-                if (isBreakEven) {
-                    return (
-                        <Badge className="border-blue-500/30 bg-blue-500/20 text-blue-400">
-                            BE
-                        </Badge>
-                    );
-                }
-
-                // Derive from P&L if no exitReason stored
-                return profitLossPercentage > 0
-                    ? getExitReasonBadge("TP")
-                    : getExitReasonBadge("SL");
-            },
-            size: 100,
-        },
-        {
-            header: "Notes",
-            accessorKey: "notes",
-            cell: ({ row }) => {
-                const notes = row.original.notes;
-                if (!notes) {
-                    return <span className="text-sm text-white/70">-</span>;
-                }
-                return (
-                    <div
-                        className="max-w-[150px] truncate text-sm text-white/70"
-                        title={notes}
+            return (
+                <div className="space-y-1">
+                    <span
+                        className={cn(
+                            "text-sm",
+                            isWin && "text-green-400",
+                            isLoss && "text-red-400",
+                            isBreakEven && "text-blue-400"
+                        )}
                     >
-                        {notes.length > 30 ? `${notes.substring(0, 30)}...` : notes}
-                    </div>
+                        {profitLossPercentage >= 0 ? "+" : ""}
+                        {displayPercentage}%
+                    </span>
+                    {/* Show amount only for LIVE accounts */}
+                    {!isDemo &&
+                        profitLossAmount !== 0 &&
+                        usePercentageCalculation && (
+                            <div
+                                className={cn(
+                                    "text-xs",
+                                    isWin && "text-green-400",
+                                    isLoss && "text-red-400",
+                                    isBreakEven && "text-blue-400"
+                                )}
+                            >
+                                {profitLossAmount >= 0 ? "+" : ""}
+                                {profitLossAmount.toFixed(2)}
+                                {getCurrencySymbol(currency)}
+                            </div>
+                        )}
+                </div>
+            );
+        },
+        size: 120,
+    },
+    {
+        header: "Exit",
+        accessorKey: "exitReason",
+        cell: ({ row }) => {
+            const trade = row.original;
+            const isClosed = trade.isClosed;
+
+            if (isClosed === false) {
+                return (
+                    <Badge className="animate-pulse border-sky-500/30 bg-sky-500/20 text-sky-400">
+                        OPEN
+                    </Badge>
                 );
-            },
-            size: 150,
+            }
+
+            // Calculate percentage - use stored value or calculate from amount
+            const profitLossAmount = Number(trade.profitLossAmount || 0);
+            const startingCapital = Number(
+                stats?.journal?.startingCapital || 0
+            );
+            const hasPercentage =
+                trade.profitLossPercentage !== null &&
+                trade.profitLossPercentage !== undefined &&
+                trade.profitLossPercentage !== "";
+
+            let profitLossPercentage = Number(trade.profitLossPercentage || 0);
+            if (
+                !hasPercentage &&
+                profitLossAmount !== 0 &&
+                startingCapital > 0
+            ) {
+                profitLossPercentage =
+                    (profitLossAmount / startingCapital) * 100;
+            }
+
+            // Check if trade is within BE threshold (-0.10% to +1%)
+            const BE_THRESHOLD_LOW = -0.1;
+            const BE_THRESHOLD_HIGH = 1;
+            const isBreakEven =
+                profitLossPercentage >= BE_THRESHOLD_LOW &&
+                profitLossPercentage <= BE_THRESHOLD_HIGH;
+
+            // Use stored exitReason if available (user-provided takes priority)
+            const exitReason = trade.exitReason;
+            if (exitReason) {
+                return getExitReasonBadge(exitReason);
+            }
+
+            // If no exitReason stored, auto-detect based on P&L thresholds
+            if (isBreakEven) {
+                return (
+                    <Badge className="border-blue-500/30 bg-blue-500/20 text-blue-400">
+                        BE
+                    </Badge>
+                );
+            }
+
+            // Derive from P&L if no exitReason stored
+            return profitLossPercentage > 0
+                ? getExitReasonBadge("TP")
+                : getExitReasonBadge("SL");
         },
-        {
-            id: "actions",
-            header: () => <span className="sr-only">Actions</span>,
-            cell: ({ row, table }) => (
-                <RowActions
-                    journalId={journalId}
-                    onEdit={onEdit}
-                    row={row}
-                    table={table}
-                />
-            ),
-            size: 100,
-            enableHiding: false,
+        size: 100,
+    },
+    {
+        header: "Notes",
+        accessorKey: "notes",
+        cell: ({ row }) => {
+            const notes = row.original.notes;
+            if (!notes) {
+                return <span className="text-sm text-white/70">-</span>;
+            }
+            return (
+                <div
+                    className="max-w-[150px] truncate text-sm text-white/70"
+                    title={notes}
+                >
+                    {notes.length > 30 ? `${notes.substring(0, 30)}...` : notes}
+                </div>
+            );
         },
-    ];
+        size: 150,
+    },
+    {
+        id: "actions",
+        header: () => <span className="sr-only">Actions</span>,
+        cell: ({ row, table }) => (
+            <RowActions
+                journalId={journalId}
+                onEdit={onEdit}
+                row={row}
+                table={table}
+            />
+        ),
+        size: 100,
+        enableHiding: false,
+    },
+];
 
 function getExitReasonBadge(exitReason: string | null) {
     switch (exitReason) {
