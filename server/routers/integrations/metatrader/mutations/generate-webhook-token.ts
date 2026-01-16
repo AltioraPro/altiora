@@ -1,6 +1,11 @@
 import { and, eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
-import { brokerConnections, tradingJournals } from "@/server/db/schema";
+import {
+    brokerConnections,
+    tradingJournals,
+    tradingSessions,
+} from "@/server/db/schema";
+import { createDefaultSessions } from "@/server/routers/trading/utils/auto-sessions";
 import type { GenerateWebhookTokenContext } from "./types";
 
 /**
@@ -71,6 +76,19 @@ export async function generateWebhookToken({
             updatedAt: new Date(),
         })
         .returning();
+
+    // 5. Create default trading sessions if none exist
+    const existingSessions = await db.query.tradingSessions.findFirst({
+        where: eq(tradingSessions.journalId, journalId),
+    });
+
+    if (!existingSessions) {
+        const defaultSessions = createDefaultSessions(
+            journalId,
+            session.user.id
+        );
+        await db.insert(tradingSessions).values(defaultSessions);
+    }
 
     return {
         success: true,

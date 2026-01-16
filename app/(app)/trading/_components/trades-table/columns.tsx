@@ -177,10 +177,8 @@ export const createColumns = ({
                 return symbols[curr] || curr;
             };
 
-            // Format display percentage
-            const displayPercentage = hasPercentage
-                ? trade.profitLossPercentage
-                : profitLossPercentage.toFixed(2);
+            // Format display percentage - always use toFixed(2) for consistent formatting
+            const displayPercentage = Number(profitLossPercentage).toFixed(2);
 
             return (
                 <div className="space-y-1">
@@ -259,19 +257,19 @@ export const createColumns = ({
                 profitLossPercentage >= BE_THRESHOLD_LOW &&
                 profitLossPercentage <= BE_THRESHOLD_HIGH;
 
-            // If within BE threshold, always show BE regardless of stored exitReason
+            // Use stored exitReason if available (user-provided takes priority)
+            const exitReason = trade.exitReason;
+            if (exitReason) {
+                return getExitReasonBadge(exitReason);
+            }
+
+            // If no exitReason stored, auto-detect based on P&L thresholds
             if (isBreakEven) {
                 return (
                     <Badge className="border-blue-500/30 bg-blue-500/20 text-blue-400">
                         BE
                     </Badge>
                 );
-            }
-
-            // Otherwise, use stored exitReason or derive from P&L
-            const exitReason = trade.exitReason;
-            if (exitReason) {
-                return getExitReasonBadge(exitReason);
             }
 
             // Derive from P&L if no exitReason stored

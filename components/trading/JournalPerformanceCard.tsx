@@ -723,7 +723,10 @@ export function JournalPerformanceCard({
                                     {Number(bestTrade.profitLossPercentage) >= 0
                                         ? "+"
                                         : ""}
-                                    {bestTrade.profitLossPercentage}%
+                                    {Number(
+                                        bestTrade.profitLossPercentage
+                                    ).toFixed(2)}
+                                    %
                                 </Badge>
                             </div>
                             <div className="mt-1 text-sm text-white/80">

@@ -1,6 +1,5 @@
-import { tradingJournals, tradingSessions } from "@/server/db/schema";
+import { tradingJournals } from "@/server/db/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
-import { createDefaultSessions } from "../utils/auto-sessions";
 import { createTradingJournalSchema } from "../validators";
 
 export const createTradingJournalBase = protectedProcedure.input(
@@ -14,7 +13,7 @@ export const createTradingJournalHandler = createTradingJournalBase.handler(
 
         const journalId = crypto.randomUUID();
 
-        // Create journal
+        // Create journal (no default sessions for manual journals)
         const [journal] = await db
             .insert(tradingJournals)
             .values({
@@ -29,10 +28,6 @@ export const createTradingJournalHandler = createTradingJournalBase.handler(
                 updatedAt: new Date(),
             })
             .returning();
-
-        // Create default trading sessions automatically
-        const defaultSessions = createDefaultSessions(journalId, userId);
-        await db.insert(tradingSessions).values(defaultSessions);
 
         return journal;
     }

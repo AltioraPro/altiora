@@ -1,7 +1,12 @@
 import { and, eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
-import { account, brokerConnections } from "@/server/db/schema";
+import {
+    account,
+    brokerConnections,
+    tradingSessions,
+} from "@/server/db/schema";
 import { protectedProcedure } from "@/server/procedure/protected.procedure";
+import { createDefaultSessions } from "@/server/routers/trading/utils/auto-sessions";
 import { EncryptionService } from "@/server/services/encryption.service";
 import { connectCTraderAccountSchema } from "../schemas";
 import { CTraderClient } from "../utils/ctrader-client";
@@ -99,6 +104,19 @@ export const connectCTraderAccountHandler = connectCTraderAccountBase.handler(
                 updatedAt: new Date(),
             })
             .returning();
+
+        // 7. Create default trading sessions if none exist
+        const existingSessions = await db.query.tradingSessions.findFirst({
+            where: eq(tradingSessions.journalId, journalId),
+        });
+
+        if (!existingSessions) {
+            const defaultSessions = createDefaultSessions(
+                journalId,
+                session.user.id
+            );
+            await db.insert(tradingSessions).values(defaultSessions);
+        }
 
         return {
             success: true,

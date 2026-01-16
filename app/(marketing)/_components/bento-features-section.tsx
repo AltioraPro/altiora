@@ -289,7 +289,7 @@ export function BentoFeaturesSection({ id }: BentoFeaturesSectionProps) {
                     Tools designed to elevate your trading.
                 </span>
             </h2>
-            
+
             <div className="mx-auto w-full max-w-7xl">
                 <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
                     {/* Top block - Full width */}
