@@ -42,7 +42,7 @@ export function HeroSection() {
                             size="lg"
                             variant="outline"
                         >
-                            <Link href="#features">Discover our Features</Link>
+                            <Link href="#Features">Discover our Features</Link>
                         </Button>
                     </div>
                     <p className="mt-2 text-neutral-400 text-xs">
