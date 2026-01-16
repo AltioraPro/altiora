@@ -3,31 +3,32 @@ import { protectedProcedure } from "@/server/procedure/protected.procedure";
 import { createTradingJournalSchema } from "../validators";
 
 export const createTradingJournalBase = protectedProcedure.input(
-  createTradingJournalSchema
+    createTradingJournalSchema
 );
 
 export const createTradingJournalHandler = createTradingJournalBase.handler(
-  async ({ context, input }) => {
-    const { db, session } = context;
-    const userId = session.user.id;
+    async ({ context, input }) => {
+        const { db, session } = context;
+        const userId = session.user.id;
 
-    const journalId = crypto.randomUUID();
+        const journalId = crypto.randomUUID();
 
-    // Create journal (no default sessions for manual journals)
-    const [journal] = await db
-      .insert(tradingJournals)
-      .values({
-        id: journalId,
-        userId,
-        name: input.name,
-        description: input.description,
-        startingCapital: input.startingCapital,
-        usePercentageCalculation: input.usePercentageCalculation ?? false,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      })
-      .returning();
+        // Create journal (no default sessions for manual journals)
+        const [journal] = await db
+            .insert(tradingJournals)
+            .values({
+                id: journalId,
+                userId,
+                name: input.name,
+                description: input.description,
+                startingCapital: input.startingCapital,
+                usePercentageCalculation:
+                    input.usePercentageCalculation ?? false,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            })
+            .returning();
 
-    return journal;
-  }
+        return journal;
+    }
 );
