@@ -347,23 +347,27 @@ export function TradingCharts({ stats, sessions, trades }: TradingChartsProps) {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="h-[200px] w-full pr-4">
+                        <div className="w-full">
                             <div className="w-full overflow-x-auto">
                                 <div
-                                    className="h-[200px]"
                                     style={{
                                         minWidth: `${sessionChartWidth}px`,
                                     }}
                                 >
                                     <ResponsiveContainer
                                         height="100%"
-                                        minHeight={200}
+                                        minHeight={280}
                                         minWidth={300}
                                         width="100%"
                                     >
                                         <BarChart
                                             data={sessionPerformanceData}
-                                            margin={{ right: 20 }}
+                                            margin={{
+                                                top: 10,
+                                                right: 20,
+                                                bottom: 80,
+                                                left: 10,
+                                            }}
                                         >
                                             <defs>
                                                 {COLORS.map((color, index) => (
