@@ -98,14 +98,14 @@ export function JournalDashboard({
         cumulativeData.length > 0
             ? cumulativeData
             : [
-                {
-                    dayNumber: 0,
-                    cumulative: 0,
-                    pnl: 0,
-                    date: "",
-                    tradesCount: 0,
-                },
-            ];
+                  {
+                      dayNumber: 0,
+                      cumulative: 0,
+                      pnl: 0,
+                      date: "",
+                      tradesCount: 0,
+                  },
+              ];
 
     const winRateData = [
         { name: "Winners", value: stats.winningTrades, color: "#ffffff" },
@@ -166,7 +166,7 @@ export function JournalDashboard({
                             <div className="flex items-center gap-2">
                                 <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-500/80">
                                     Max Streak
-                                </span> 
+                                </span>
                                 <div className="flex gap-2">
                                     <div className="flex items-center gap-1">
                                         <span className="text-[8px] font-bold uppercase text-emerald-500/50">

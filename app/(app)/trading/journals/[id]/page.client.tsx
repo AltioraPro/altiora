@@ -147,7 +147,7 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
         ) {
             setIsSyncing(true);
             syncCTrader({ journalId })
-                .then(() => { })
+                .then(() => {})
                 .catch((error) => {
                     console.error("[Auto-sync] Sync failed:", error);
                 })
@@ -183,17 +183,29 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
     const hasSessionFilter = advancedFilters.sessions.length > 0;
     const hasConfirmationFilter = advancedFilters.confirmations.length > 0;
     const hasAssetFilter = advancedFilters.assets.length > 0;
-    const hasDateFilter = dateRangeStrings.startDate !== undefined || dateRangeStrings.endDate !== undefined;
+    const hasDateFilter =
+        dateRangeStrings.startDate !== undefined ||
+        dateRangeStrings.endDate !== undefined;
 
     const { data: allTrades } = useSuspenseQuery(
         orpc.trading.getTrades.queryOptions({
             input: {
                 journalId,
-                ...(hasSessionFilter && { sessionIds: advancedFilters.sessions }),
-                ...(hasConfirmationFilter && { confirmationIds: advancedFilters.confirmations }),
+                ...(hasSessionFilter && {
+                    sessionIds: advancedFilters.sessions,
+                }),
+                ...(hasConfirmationFilter && {
+                    confirmationIds: advancedFilters.confirmations,
+                }),
                 ...(hasAssetFilter && { assetIds: advancedFilters.assets }),
-                ...(hasDateFilter && dateRangeStrings.startDate && { startDate: dateRangeStrings.startDate }),
-                ...(hasDateFilter && dateRangeStrings.endDate && { endDate: dateRangeStrings.endDate }),
+                ...(hasDateFilter &&
+                    dateRangeStrings.startDate && {
+                        startDate: dateRangeStrings.startDate,
+                    }),
+                ...(hasDateFilter &&
+                    dateRangeStrings.endDate && {
+                        endDate: dateRangeStrings.endDate,
+                    }),
             },
         })
     );
@@ -202,11 +214,21 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
         orpc.trading.getStats.queryOptions({
             input: {
                 journalId,
-                ...(hasSessionFilter && { sessionIds: advancedFilters.sessions }),
-                ...(hasConfirmationFilter && { confirmationIds: advancedFilters.confirmations }),
+                ...(hasSessionFilter && {
+                    sessionIds: advancedFilters.sessions,
+                }),
+                ...(hasConfirmationFilter && {
+                    confirmationIds: advancedFilters.confirmations,
+                }),
                 ...(hasAssetFilter && { assetIds: advancedFilters.assets }),
-                ...(hasDateFilter && dateRangeStrings.startDate && { startDate: dateRangeStrings.startDate }),
-                ...(hasDateFilter && dateRangeStrings.endDate && { endDate: dateRangeStrings.endDate }),
+                ...(hasDateFilter &&
+                    dateRangeStrings.startDate && {
+                        startDate: dateRangeStrings.startDate,
+                    }),
+                ...(hasDateFilter &&
+                    dateRangeStrings.endDate && {
+                        endDate: dateRangeStrings.endDate,
+                    }),
             },
         })
     );
