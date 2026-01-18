@@ -9,7 +9,8 @@ import { EmptyJournalsState } from "./_components/empty-journals-state";
 import { JournalsList } from "./_components/journals-list";
 
 export function JournalsPageClient() {
-    const [journalToDelete, setJournalToDelete] = useState<TradingJournal | null>(null);
+    const [journalToDelete, setJournalToDelete] =
+        useState<TradingJournal | null>(null);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
     const { data: journals, isLoading: journalsLoading } = useSuspenseQuery(
