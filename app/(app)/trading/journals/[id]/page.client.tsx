@@ -8,7 +8,7 @@ import { ConnectMetaTraderDialog } from "@/components/integrations";
 import { CreateTradeModal } from "@/components/trading/create-trade-modal";
 import type { DateRangeFilterState } from "@/components/trading/DateRangeFilter";
 import { JournalDashboard } from "@/components/trading/JournalDashboard";
-import { orpc, type RouterOutput } from "@/orpc/client";
+import { orpc } from "@/orpc/client";
 import { EmptyTradingState } from "../../_components/empty-trading-state";
 import { TradingContent } from "../../_components/trading-content";
 import { TradingFiltersBar } from "../../_components/trading-filters-bar";
@@ -89,48 +89,6 @@ function useDateRangeStrings(dateRange: DateRangeFilterState) {
     }, [dateRange]);
 }
 
-function filterTradesByDateRange(
-    trades: RouterOutput["trading"]["getTrades"] | undefined,
-    dateRange: DateRangeFilterState
-) {
-    if (!trades) {
-        return trades;
-    }
-
-    const hasDateFilter =
-        dateRange.from !== undefined || dateRange.to !== undefined;
-    if (!hasDateFilter) {
-        return trades;
-    }
-
-    return trades.filter((trade) => {
-        const tradeDate = new Date(trade.tradeDate);
-        tradeDate.setHours(0, 0, 0, 0);
-
-        if (dateRange.from && dateRange.to) {
-            const from = new Date(dateRange.from);
-            from.setHours(0, 0, 0, 0);
-            const to = new Date(dateRange.to);
-            to.setHours(23, 59, 59, 999);
-            return tradeDate >= from && tradeDate <= to;
-        }
-
-        if (dateRange.from) {
-            const from = new Date(dateRange.from);
-            from.setHours(0, 0, 0, 0);
-            return tradeDate >= from;
-        }
-
-        if (dateRange.to) {
-            const to = new Date(dateRange.to);
-            to.setHours(23, 59, 59, 999);
-            return tradeDate <= to;
-        }
-
-        return true;
-    });
-}
-
 interface JournalPageClientProps {
     journalId: string;
 }
@@ -189,7 +147,7 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
         ) {
             setIsSyncing(true);
             syncCTrader({ journalId })
-                .then(() => {})
+                .then(() => { })
                 .catch((error) => {
                     console.error("[Auto-sync] Sync failed:", error);
                 })
@@ -221,33 +179,34 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
     };
     const dateRangeStrings = useDateRangeStrings(dateRange);
 
+    // Only include filters in query if they have values
+    const hasSessionFilter = advancedFilters.sessions.length > 0;
+    const hasConfirmationFilter = advancedFilters.confirmations.length > 0;
+    const hasAssetFilter = advancedFilters.assets.length > 0;
+    const hasDateFilter = dateRangeStrings.startDate !== undefined || dateRangeStrings.endDate !== undefined;
+
     const { data: allTrades } = useSuspenseQuery(
         orpc.trading.getTrades.queryOptions({
             input: {
                 journalId,
-                sessionIds: advancedFilters.sessions,
-                confirmationIds: advancedFilters.confirmations,
-                assetIds: advancedFilters.assets,
-                startDate: dateRangeStrings.startDate,
-                endDate: dateRangeStrings.endDate,
+                ...(hasSessionFilter && { sessionIds: advancedFilters.sessions }),
+                ...(hasConfirmationFilter && { confirmationIds: advancedFilters.confirmations }),
+                ...(hasAssetFilter && { assetIds: advancedFilters.assets }),
+                ...(hasDateFilter && dateRangeStrings.startDate && { startDate: dateRangeStrings.startDate }),
+                ...(hasDateFilter && dateRangeStrings.endDate && { endDate: dateRangeStrings.endDate }),
             },
         })
-    );
-
-    const filteredTrades = useMemo(
-        () => filterTradesByDateRange(allTrades, dateRange),
-        [allTrades, dateRange]
     );
 
     const { data: stats } = useSuspenseQuery(
         orpc.trading.getStats.queryOptions({
             input: {
                 journalId,
-                sessionIds: advancedFilters.sessions,
-                confirmationIds: advancedFilters.confirmations,
-                assetIds: advancedFilters.assets,
-                startDate: dateRangeStrings.startDate,
-                endDate: dateRangeStrings.endDate,
+                ...(hasSessionFilter && { sessionIds: advancedFilters.sessions }),
+                ...(hasConfirmationFilter && { confirmationIds: advancedFilters.confirmations }),
+                ...(hasAssetFilter && { assetIds: advancedFilters.assets }),
+                ...(hasDateFilter && dateRangeStrings.startDate && { startDate: dateRangeStrings.startDate }),
+                ...(hasDateFilter && dateRangeStrings.endDate && { endDate: dateRangeStrings.endDate }),
             },
         })
     );
@@ -305,10 +264,10 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
                 }
             />
 
-            {stats && filteredTrades && sessions && (
+            {stats && allTrades && sessions && (
                 <JournalDashboard
                     stats={stats}
-                    trades={filteredTrades}
+                    trades={allTrades}
                     sessions={sessions}
                 />
             )}

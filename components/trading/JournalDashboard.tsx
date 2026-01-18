@@ -89,24 +89,23 @@ export function JournalDashboard({
             ? Number.parseFloat(stats.totalPnL) || 0
             : stats.totalPnL;
     const profitFactor = stats.profitFactor ?? 0;
-    const finalCumulative =
-        cumulativeData.length > 0
-            ? (cumulativeData.at(-1)?.cumulative ?? 0)
-            : totalPnL;
-    const isPositive = finalCumulative >= 0;
+
+    // Display the server-calculated totalPnL for consistency
+    const displayPerformance = totalPnL;
+    const isPositive = displayPerformance >= 0;
 
     const chartData =
         cumulativeData.length > 0
             ? cumulativeData
             : [
-                  {
-                      dayNumber: 0,
-                      cumulative: 0,
-                      pnl: 0,
-                      date: "",
-                      tradesCount: 0,
-                  },
-              ];
+                {
+                    dayNumber: 0,
+                    cumulative: 0,
+                    pnl: 0,
+                    date: "",
+                    tradesCount: 0,
+                },
+            ];
 
     const winRateData = [
         { name: "Winners", value: stats.winningTrades, color: "#ffffff" },
@@ -154,7 +153,7 @@ export function JournalDashboard({
     }, [trades, sessions]);
 
     return (
-        <Card className="mb-6 border border-zinc-800/50 bg-background p-0 overflow-hidden ring-1 ring-white/[0.02]">
+        <Card className="mb-6 border border-zinc-800/50 bg-background p-0 overflow-hidden ring-1 ring-white/2">
             <div className="grid grid-cols-1 lg:grid-cols-4">
                 {/* Left: Stats Panel */}
                 <div className="border-b border-zinc-800/50 p-6 lg:border-b-0 lg:border-r">
@@ -166,15 +165,15 @@ export function JournalDashboard({
                             </span>
                             <div className="flex items-center gap-2">
                                 <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-500/80">
-                                    Streak
-                                </span>
+                                    Max Streak
+                                </span> 
                                 <div className="flex gap-2">
                                     <div className="flex items-center gap-1">
                                         <span className="text-[8px] font-bold uppercase text-emerald-500/50">
                                             W
                                         </span>
                                         <span className="font-bold text-sm text-emerald-400">
-                                            {stats.currentWinningStreak}
+                                            {stats.maxWinningStreak}
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-1">
@@ -182,7 +181,7 @@ export function JournalDashboard({
                                             L
                                         </span>
                                         <span className="font-bold text-sm text-red-400">
-                                            {stats.currentLosingStreak}
+                                            {stats.maxLosingStreak}
                                         </span>
                                     </div>
                                 </div>
@@ -192,7 +191,7 @@ export function JournalDashboard({
                             className={`font-bold text-4xl tracking-tight ${isPositive ? "text-emerald-400" : "text-red-400"} drop-shadow-[0_0_15px_rgba(16,185,129,0.1)]`}
                         >
                             {isPositive ? "+" : ""}
-                            {finalCumulative.toFixed(2)}%
+                            {displayPerformance.toFixed(2)}%
                         </div>
                     </div>
 
