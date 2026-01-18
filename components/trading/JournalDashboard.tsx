@@ -99,14 +99,14 @@ export function JournalDashboard({
         cumulativeData.length > 0
             ? cumulativeData
             : [
-                {
-                    dayNumber: 0,
-                    cumulative: 0,
-                    pnl: 0,
-                    date: "",
-                    tradesCount: 0,
-                },
-            ];
+                  {
+                      dayNumber: 0,
+                      cumulative: 0,
+                      pnl: 0,
+                      date: "",
+                      tradesCount: 0,
+                  },
+              ];
 
     const winRateData = [
         { name: "Winners", value: stats.winningTrades, color: "#ffffff" },
@@ -437,7 +437,23 @@ export function JournalDashboard({
                                                         %
                                                     </div>
                                                     <div className="text-[10px] text-zinc-400 mt-1 pt-1 border-t border-zinc-800">
-                                                        {data.tradesCount} trades • <span className={data.pnl >= 0 ? 'text-emerald-400' : 'text-red-400'}>{data.pnl >= 0 ? "+" : ""}{data.pnl.toFixed(2)}%</span>
+                                                        {data.tradesCount}{" "}
+                                                        trades •{" "}
+                                                        <span
+                                                            className={
+                                                                data.pnl >= 0
+                                                                    ? "text-emerald-400"
+                                                                    : "text-red-400"
+                                                            }
+                                                        >
+                                                            {data.pnl >= 0
+                                                                ? "+"
+                                                                : ""}
+                                                            {data.pnl.toFixed(
+                                                                2
+                                                            )}
+                                                            %
+                                                        </span>
                                                     </div>
                                                 </div>
                                             );
