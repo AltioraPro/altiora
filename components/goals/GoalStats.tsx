@@ -94,7 +94,6 @@ export function GoalStats({ stats }: GoalStatsProps) {
             {/* Success Rate Section */}
             <div className="rounded-lg border border-white/10 bg-black/20 p-3 sm:p-4">
                 <div className="mb-3 sm:mb-4">
-                
                     <p className="mb-0.5 text-[10px] text-white/60 sm:mb-1 sm:text-xs">
                         Success Rate
                     </p>

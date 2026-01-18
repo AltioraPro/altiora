@@ -153,7 +153,6 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
 
     const activeTab = "trades";
 
-
     const [dateRange, setDateRange] = useDateRangeState();
 
     // Read advanced filters from URL state
@@ -190,7 +189,7 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
         ) {
             setIsSyncing(true);
             syncCTrader({ journalId })
-                .then(() => { })
+                .then(() => {})
                 .catch((error) => {
                     console.error("[Auto-sync] Sync failed:", error);
                 })
@@ -314,10 +313,7 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
                 />
             )}
 
-            <TradingContent
-                activeTab={activeTab}
-                journalId={journalId}
-            />
+            <TradingContent activeTab={activeTab} journalId={journalId} />
 
             <CreateTradeModal
                 isOpen={isCreateModalOpen}

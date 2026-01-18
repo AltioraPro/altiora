@@ -11,19 +11,16 @@ interface TradingContentProps {
     activeTab: "trades" | "assets" | "sessions" | "confirmations";
 }
 
-export function TradingContent({
-    journalId,
-    activeTab,
-}: TradingContentProps) {
+export function TradingContent({ journalId, activeTab }: TradingContentProps) {
     return (
-        <Suspense fallback={<div className="py-8 text-center text-white/50">Loading...</div>}>
-            {activeTab === "trades" && (
-                <TradesTable journalId={journalId} />
-            )}
+        <Suspense
+            fallback={
+                <div className="py-8 text-center text-white/50">Loading...</div>
+            }
+        >
+            {activeTab === "trades" && <TradesTable journalId={journalId} />}
 
-            {activeTab === "assets" && (
-                <AssetsManager journalId={journalId} />
-            )}
+            {activeTab === "assets" && <AssetsManager journalId={journalId} />}
 
             {activeTab === "sessions" && (
                 <SessionsManager journalId={journalId} />
