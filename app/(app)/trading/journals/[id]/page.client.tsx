@@ -147,7 +147,7 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
         ) {
             setIsSyncing(true);
             syncCTrader({ journalId })
-                .then(() => {})
+                .then(() => { })
                 .catch((error) => {
                     console.error("[Auto-sync] Sync failed:", error);
                 })
@@ -191,6 +191,7 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
         orpc.trading.getTrades.queryOptions({
             input: {
                 journalId,
+                limit: 10000, // Remove default 50 limit for dashboard
                 ...(hasSessionFilter && {
                     sessionIds: advancedFilters.sessions,
                 }),
@@ -200,12 +201,12 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
                 ...(hasAssetFilter && { assetIds: advancedFilters.assets }),
                 ...(hasDateFilter &&
                     dateRangeStrings.startDate && {
-                        startDate: dateRangeStrings.startDate,
-                    }),
+                    startDate: dateRangeStrings.startDate,
+                }),
                 ...(hasDateFilter &&
                     dateRangeStrings.endDate && {
-                        endDate: dateRangeStrings.endDate,
-                    }),
+                    endDate: dateRangeStrings.endDate,
+                }),
             },
         })
     );
@@ -223,12 +224,12 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
                 ...(hasAssetFilter && { assetIds: advancedFilters.assets }),
                 ...(hasDateFilter &&
                     dateRangeStrings.startDate && {
-                        startDate: dateRangeStrings.startDate,
-                    }),
+                    startDate: dateRangeStrings.startDate,
+                }),
                 ...(hasDateFilter &&
                     dateRangeStrings.endDate && {
-                        endDate: dateRangeStrings.endDate,
-                    }),
+                    endDate: dateRangeStrings.endDate,
+                }),
             },
         })
     );
