@@ -147,7 +147,7 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
         ) {
             setIsSyncing(true);
             syncCTrader({ journalId })
-                .then(() => { })
+                .then(() => {})
                 .catch((error) => {
                     console.error("[Auto-sync] Sync failed:", error);
                 })
@@ -201,12 +201,12 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
                 ...(hasAssetFilter && { assetIds: advancedFilters.assets }),
                 ...(hasDateFilter &&
                     dateRangeStrings.startDate && {
-                    startDate: dateRangeStrings.startDate,
-                }),
+                        startDate: dateRangeStrings.startDate,
+                    }),
                 ...(hasDateFilter &&
                     dateRangeStrings.endDate && {
-                    endDate: dateRangeStrings.endDate,
-                }),
+                        endDate: dateRangeStrings.endDate,
+                    }),
             },
         })
     );
@@ -224,12 +224,12 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
                 ...(hasAssetFilter && { assetIds: advancedFilters.assets }),
                 ...(hasDateFilter &&
                     dateRangeStrings.startDate && {
-                    startDate: dateRangeStrings.startDate,
-                }),
+                        startDate: dateRangeStrings.startDate,
+                    }),
                 ...(hasDateFilter &&
                     dateRangeStrings.endDate && {
-                    endDate: dateRangeStrings.endDate,
-                }),
+                        endDate: dateRangeStrings.endDate,
+                    }),
             },
         })
     );

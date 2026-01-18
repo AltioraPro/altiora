@@ -98,14 +98,14 @@ export function JournalDashboard({
         cumulativeData.length > 0
             ? cumulativeData
             : [
-                {
-                    dayNumber: 0,
-                    cumulative: 0,
-                    pnl: 0,
-                    date: "",
-                    tradesCount: 0,
-                },
-            ];
+                  {
+                      dayNumber: 0,
+                      cumulative: 0,
+                      pnl: 0,
+                      date: "",
+                      tradesCount: 0,
+                  },
+              ];
 
     const winRateData = [
         { name: "Winners", value: stats.winningTrades, color: "#ffffff" },
@@ -462,14 +462,18 @@ export function JournalDashboard({
                                 />
                                 <Area
                                     dataKey="cumulative"
-                                    dot={chartData.length <= 30 ? {
-                                        r: 2.5,
-                                        strokeWidth: 1.5,
-                                        stroke: isPositive
-                                            ? "#10b981"
-                                            : "#ef4444",
-                                        fill: "#18181b",
-                                    } : false}
+                                    dot={
+                                        chartData.length <= 30
+                                            ? {
+                                                  r: 2.5,
+                                                  strokeWidth: 1.5,
+                                                  stroke: isPositive
+                                                      ? "#10b981"
+                                                      : "#ef4444",
+                                                  fill: "#18181b",
+                                              }
+                                            : false
+                                    }
                                     activeDot={{
                                         r: 5,
                                         strokeWidth: 2,
