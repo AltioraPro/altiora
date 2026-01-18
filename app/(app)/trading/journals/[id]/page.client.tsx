@@ -1,20 +1,18 @@
 "use client";
 
 import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ConnectMetaTraderDialog } from "@/components/integrations";
 import { CreateTradeModal } from "@/components/trading/create-trade-modal";
 import type { DateRangeFilterState } from "@/components/trading/DateRangeFilter";
-import { ImportTradesModal } from "@/components/trading/ImportTradesModal";
-import { TradingStats } from "@/components/trading/TradingStats";
+import { JournalDashboard } from "@/components/trading/JournalDashboard";
 import { orpc, type RouterOutput } from "@/orpc/client";
 import { EmptyTradingState } from "../../_components/empty-trading-state";
 import { TradingContent } from "../../_components/trading-content";
 import { TradingFiltersBar } from "../../_components/trading-filters-bar";
 import { TradingPageHeader } from "../../_components/trading-page-header";
-import { TradingTabs } from "../../_components/trading-tabs";
 import { tradingJournalSearchParams } from "./search-params";
 
 function useAdvancedFiltersState() {
@@ -138,10 +136,8 @@ interface JournalPageClientProps {
 }
 
 export function JournalPageClient({ journalId }: JournalPageClientProps) {
-    const _router = useRouter();
     const searchParams = useSearchParams();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-    const [isImportModalOpen, setIsImportModalOpen] = useState(false);
     const [isSyncing, setIsSyncing] = useState(false);
     const [isMetaTraderDialogOpen, setIsMetaTraderDialogOpen] = useState(false);
 
@@ -155,10 +151,7 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
         }
     }, [searchParams]);
 
-    const [activeTab, setActiveTab] = useQueryState(
-        "tab",
-        tradingJournalSearchParams.tab
-    );
+    const activeTab = "trades";
 
     const [dateRange, setDateRange] = useDateRangeState();
 
@@ -246,7 +239,7 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
         [allTrades, dateRange]
     );
 
-    const { data: backendStats } = useSuspenseQuery(
+    const { data: stats } = useSuspenseQuery(
         orpc.trading.getStats.queryOptions({
             input: {
                 journalId,
@@ -259,20 +252,11 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
         })
     );
 
-    const { data: sessions } = useQuery(
+    const { data: sessions } = useSuspenseQuery(
         orpc.trading.getSessions.queryOptions({
             input: { journalId },
         })
     );
-
-    const { data: confirmations } = useQuery(
-        orpc.trading.getConfirmations.queryOptions({
-            input: { journalId },
-        })
-    );
-
-    // Use backendStats directly since filters are already applied server-side
-    const stats = backendStats;
 
     const createJournalMutation = useMutation(
         orpc.trading.createJournal.mutationOptions()
@@ -294,14 +278,6 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
         setIsCreateModalOpen(false);
     }, []);
 
-    const handleOpenImportModal = useCallback(() => {
-        setIsImportModalOpen(true);
-    }, []);
-
-    const handleCloseImportModal = useCallback(() => {
-        setIsImportModalOpen(false);
-    }, []);
-
     if (!journal) {
         return (
             <EmptyTradingState
@@ -312,7 +288,7 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
     }
 
     return (
-        <div className="px-6 py-8">
+        <div className="px-6 py-6">
             <TradingPageHeader
                 journalDescription={journal.description || undefined}
                 journalName={journal.name}
@@ -324,36 +300,25 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
                 journalId={journalId}
                 onCreateTradeClick={handleOpenCreateModal}
                 onDateRangeChange={setDateRange}
-                onImportClick={handleOpenImportModal}
                 onSyncClick={
                     brokerConnection?.isActive ? handleManualSync : undefined
                 }
             />
 
-            {stats && <TradingStats className="mb-8" stats={stats} />}
+            {stats && filteredTrades && sessions && (
+                <JournalDashboard
+                    stats={stats}
+                    trades={filteredTrades}
+                    sessions={sessions}
+                />
+            )}
 
-            <TradingTabs activeTab={activeTab} onTabChange={setActiveTab} />
-
-            <TradingContent
-                activeTab={activeTab}
-                confirmations={confirmations}
-                dateRange={dateRange}
-                filteredTrades={filteredTrades}
-                journalId={journalId}
-                sessions={sessions}
-                stats={stats}
-            />
+            <TradingContent activeTab={activeTab} journalId={journalId} />
 
             <CreateTradeModal
                 isOpen={isCreateModalOpen}
                 journalId={journalId}
                 onClose={handleCloseCreateModal}
-            />
-
-            <ImportTradesModal
-                isOpen={isImportModalOpen}
-                journalId={journalId}
-                onClose={handleCloseImportModal}
             />
 
             <ConnectMetaTraderDialog

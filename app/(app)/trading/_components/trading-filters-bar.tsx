@@ -1,6 +1,6 @@
 "use client";
 
-import { RiAddLine, RiRefreshLine, RiUploadLine } from "@remixicon/react";
+import { RiAddLine, RiRefreshLine } from "@remixicon/react";
 import { BrokerConnectMenu } from "@/components/integrations";
 import { AdvancedFilters } from "@/components/trading/AdvancedFilters";
 import {
@@ -13,7 +13,6 @@ interface TradingFiltersBarProps {
     journalId: string | null;
     dateRange: DateRangeFilterState;
     onDateRangeChange: (range: DateRangeFilterState) => void;
-    onImportClick: () => void;
     onCreateTradeClick: () => void;
     onSyncClick?: () => void;
     isSyncing?: boolean;
@@ -23,7 +22,6 @@ export function TradingFiltersBar({
     journalId,
     dateRange,
     onDateRangeChange,
-    onImportClick,
     onCreateTradeClick,
     onSyncClick,
     isSyncing,
@@ -60,10 +58,6 @@ export function TradingFiltersBar({
                     </Button>
                 )}
 
-                <Button onClick={onImportClick} variant="outline">
-                    <RiUploadLine className="size-4" />
-                    Import Excel
-                </Button>
                 <Button onClick={onCreateTradeClick}>
                     <RiAddLine className="size-4" />
                     New Trade
