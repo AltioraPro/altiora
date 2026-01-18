@@ -149,7 +149,7 @@ export function JournalDashboard({
                 winRate: s.total > 0 ? (s.wins / s.total) * 100 : 0,
             }))
             .sort((a, b) => Math.abs(b.pnl) - Math.abs(a.pnl))
-            .slice(0, 4);
+            .slice(0, 10);
     }, [trades, sessions]);
 
     return (
