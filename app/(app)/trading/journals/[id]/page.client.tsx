@@ -191,6 +191,7 @@ export function JournalPageClient({ journalId }: JournalPageClientProps) {
         orpc.trading.getTrades.queryOptions({
             input: {
                 journalId,
+                limit: 10000, // Remove default 50 limit for dashboard
                 ...(hasSessionFilter && {
                     sessionIds: advancedFilters.sessions,
                 }),

@@ -462,14 +462,18 @@ export function JournalDashboard({
                                 />
                                 <Area
                                     dataKey="cumulative"
-                                    dot={{
-                                        r: 2.5,
-                                        strokeWidth: 1.5,
-                                        stroke: isPositive
-                                            ? "#10b981"
-                                            : "#ef4444",
-                                        fill: "#18181b",
-                                    }}
+                                    dot={
+                                        chartData.length <= 30
+                                            ? {
+                                                  r: 2.5,
+                                                  strokeWidth: 1.5,
+                                                  stroke: isPositive
+                                                      ? "#10b981"
+                                                      : "#ef4444",
+                                                  fill: "#18181b",
+                                              }
+                                            : false
+                                    }
                                     activeDot={{
                                         r: 5,
                                         strokeWidth: 2,
