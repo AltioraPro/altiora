@@ -1,3 +1,5 @@
+"use client";
+
 import {
     RiApps2AddLine,
     RiArrowDownSLine,
