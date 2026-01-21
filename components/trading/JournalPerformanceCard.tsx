@@ -12,7 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import html2canvas from "html2canvas";
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import {
     Area,
     AreaChart,
@@ -45,6 +45,383 @@ interface JournalPerformanceCardProps {
     onDelete: () => void;
 }
 
+interface FlexCaptureContentProps {
+    journal: RouterOutput["trading"]["getJournalById"];
+    stats: RouterOutput["trading"]["getStats"] | undefined;
+    chartData: Array<{ tradeNumber: number; cumulative: number }>;
+    isPositive: boolean;
+    finalCumulative: number;
+}
+
+const FlexCaptureContent = React.forwardRef<
+    HTMLDivElement,
+    FlexCaptureContentProps
+>(({ journal, stats, chartData, isPositive, finalCumulative }, ref) => (
+    <div
+        ref={ref}
+        style={{
+            position: "fixed",
+            top: "-9999px",
+            left: "0",
+            width: "400px",
+            height: "500px",
+            borderRadius: "0.5rem",
+            backgroundColor: "#000000",
+            padding: "1rem",
+            boxShadow: "0 0 0 1px rgba(255, 255, 255, 0.1)",
+        }}
+    >
+        <div style={{ marginBottom: "1rem", textAlign: "center" }}>
+            <h2
+                style={{
+                    marginBottom: "0.25rem",
+                    fontSize: "1.25rem",
+                    color: "#ffffff",
+                }}
+            >
+                {journal.name}
+            </h2>
+            <p
+                style={{
+                    fontSize: "0.75rem",
+                    color: "rgba(255, 255, 255, 0.6)",
+                }}
+            >
+                Trading Performance
+            </p>
+        </div>
+
+        {stats && (
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0.75rem",
+                }}
+            >
+                <div
+                    style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(3, 1fr)",
+                        gap: "1rem",
+                    }}
+                >
+                    <div style={{ textAlign: "center" }}>
+                        <div
+                            style={{
+                                fontWeight: "bold",
+                                fontSize: "1.5rem",
+                                color: "#4ade80",
+                            }}
+                        >
+                            {stats.winRate.toFixed(1)}%
+                        </div>
+                        <div
+                            style={{
+                                marginTop: "0.25rem",
+                                fontSize: "0.75rem",
+                                color: "rgba(255, 255, 255, 0.6)",
+                            }}
+                        >
+                            Win Rate
+                        </div>
+                    </div>
+                    <div style={{ textAlign: "center" }}>
+                        <div
+                            style={{
+                                fontWeight: "bold",
+                                fontSize: "1.5rem",
+                                color: "#ffffff",
+                            }}
+                        >
+                            {stats.totalTrades}
+                        </div>
+                        <div
+                            style={{
+                                marginTop: "0.25rem",
+                                fontSize: "0.75rem",
+                                color: "rgba(255, 255, 255, 0.6)",
+                            }}
+                        >
+                            Trades
+                        </div>
+                    </div>
+                    <div style={{ textAlign: "center" }}>
+                        <div
+                            style={{
+                                fontWeight: "bold",
+                                fontSize: "1.5rem",
+                                color: "#ffffff",
+                            }}
+                        >
+                            {stats.profitFactor?.toFixed(2) || "0.00"}
+                        </div>
+                        <div
+                            style={{
+                                marginTop: "0.25rem",
+                                fontSize: "0.75rem",
+                                color: "rgba(255, 255, 255, 0.6)",
+                            }}
+                        >
+                            Profit Factor
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    style={{ borderTop: "1px solid rgba(255, 255, 255, 0.2)" }}
+                />
+
+                <div
+                    style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(5, 1fr)",
+                        gap: "0.5rem",
+                    }}
+                >
+                    <div style={{ textAlign: "center" }}>
+                        <div
+                            style={{
+                                fontWeight: "bold",
+                                fontSize: "1.25rem",
+                                color: "#4ade80",
+                            }}
+                        >
+                            {stats.maxWinningStreak || 0}
+                        </div>
+                        <div
+                            style={{
+                                marginTop: "0.25rem",
+                                fontSize: "0.60rem",
+                                color: "rgba(255, 255, 255, 0.6)",
+                            }}
+                        >
+                            Winning Streak
+                        </div>
+                    </div>
+                    <div style={{ textAlign: "center" }}>
+                        <div
+                            style={{
+                                fontWeight: "bold",
+                                fontSize: "1.25rem",
+                                color: "#4ade80",
+                            }}
+                        >
+                            {stats.tpTrades}
+                        </div>
+                        <div
+                            style={{
+                                marginTop: "0.25rem",
+                                fontSize: "0.70rem",
+                                color: "rgba(255, 255, 255, 0.6)",
+                            }}
+                        >
+                            TP
+                        </div>
+                    </div>
+                    <div style={{ textAlign: "center" }}>
+                        <div
+                            style={{
+                                fontWeight: "bold",
+                                fontSize: "1.5rem",
+                                color: "#ffffff",
+                            }}
+                        >
+                            {stats.beTrades}
+                        </div>
+                        <div
+                            style={{
+                                marginTop: "0.25rem",
+                                fontSize: "0.70rem",
+                                color: "rgba(255, 255, 255, 0.6)",
+                            }}
+                        >
+                            BE
+                        </div>
+                    </div>
+                    <div style={{ textAlign: "center" }}>
+                        <div
+                            style={{
+                                fontWeight: "bold",
+                                fontSize: "1.5rem",
+                                color: "#f87171",
+                            }}
+                        >
+                            {stats.slTrades}
+                        </div>
+                        <div
+                            style={{
+                                marginTop: "0.25rem",
+                                fontSize: "0.70rem",
+                                color: "rgba(255, 255, 255, 0.6)",
+                            }}
+                        >
+                            SL
+                        </div>
+                    </div>
+                    <div style={{ textAlign: "center" }}>
+                        <div
+                            style={{
+                                fontWeight: "bold",
+                                fontSize: "1.5rem",
+                                color: "#f87171",
+                            }}
+                        >
+                            {stats.maxLosingStreak || 0}
+                        </div>
+                        <div
+                            style={{
+                                marginTop: "0.25rem",
+                                fontSize: "0.60rem",
+                                color: "rgba(255, 255, 255, 0.6)",
+                            }}
+                        >
+                            Losing Streak
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )}
+
+        <div
+            style={{
+                marginTop: "1.5rem",
+                display: "flex",
+                flexDirection: "column",
+                gap: "1rem",
+            }}
+        >
+            <div
+                style={{
+                    borderRadius: "0.375rem",
+                    border: "1px solid rgba(255, 255, 255, 0.1)",
+                    backgroundColor: "rgba(0, 0, 0, 0.2)",
+                    padding: "1rem",
+                }}
+            >
+                <div
+                    style={{
+                        marginBottom: "0.5rem",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        fontSize: "0.75rem",
+                        color: "rgba(255, 255, 255, 0.6)",
+                    }}
+                >
+                    <span>Cumulative Performance (%)</span>
+                    <span
+                        style={{
+                            fontWeight: "600",
+                            fontSize: "0.875rem",
+                            color: isPositive ? "#4ade80" : "#f87171",
+                        }}
+                    >
+                        {finalCumulative >= 0 ? "+" : ""}
+                        {finalCumulative.toFixed(2)}%
+                    </span>
+                </div>
+                <div style={{ height: "8rem", minHeight: 0 }}>
+                    <ResponsiveContainer height="100%" width="100%">
+                        <AreaChart
+                            data={chartData}
+                            margin={{ top: 10, right: 16, left: 0, bottom: 0 }}
+                        >
+                            <defs>
+                                <linearGradient
+                                    id={`journal-cumulative-${journal.id}`}
+                                    x1="0"
+                                    x2="0"
+                                    y1="0"
+                                    y2="1"
+                                >
+                                    <stop
+                                        offset="0%"
+                                        stopColor={
+                                            isPositive ? "#10b981" : "#ef4444"
+                                        }
+                                        stopOpacity={0.3}
+                                    />
+                                    <stop
+                                        offset="100%"
+                                        stopColor={
+                                            isPositive ? "#10b981" : "#ef4444"
+                                        }
+                                        stopOpacity={0.05}
+                                    />
+                                </linearGradient>
+                            </defs>
+                            <CartesianGrid
+                                stroke="rgba(255,255,255,0.1)"
+                                vertical={false}
+                            />
+                            <XAxis
+                                axisLine={false}
+                                dataKey="tradeNumber"
+                                stroke="#ffffff"
+                                strokeOpacity={0.4}
+                                tick={{
+                                    fontSize: 10,
+                                    fill: "rgba(255,255,255,0.5)",
+                                }}
+                                tickLine={false}
+                            />
+                            <YAxis
+                                axisLine={false}
+                                stroke="#ffffff"
+                                strokeOpacity={0.4}
+                                tick={{
+                                    fontSize: 10,
+                                    fill: "rgba(255,255,255,0.5)",
+                                }}
+                                tickFormatter={(value) =>
+                                    `${value.toFixed(0)}%`
+                                }
+                                tickLine={false}
+                            />
+                            <Area
+                                dataKey="cumulative"
+                                dot={false}
+                                fill={`url(#journal-cumulative-${journal.id})`}
+                                isAnimationActive={false}
+                                stroke={isPositive ? "#10b981" : "#ef4444"}
+                                strokeWidth={2}
+                                type="monotone"
+                            />
+                        </AreaChart>
+                    </ResponsiveContainer>
+                </div>
+            </div>
+
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                }}
+            >
+                <Image
+                    alt="Altiora"
+                    height={16}
+                    src="/img/logo.png"
+                    style={{ opacity: 0.6 }}
+                    width={16}
+                />
+                <span
+                    style={{
+                        color: "rgba(255, 255, 255, 0.4)",
+                        fontSize: "0.75rem",
+                    }}
+                >
+                    altiora.pro
+                </span>
+            </div>
+        </div>
+    </div>
+));
+FlexCaptureContent.displayName = "FlexCaptureContent";
+
 export function JournalPerformanceCard({
     journal,
     onEdit,
@@ -64,7 +441,6 @@ export function JournalPerformanceCard({
         })
     );
 
-    // Check if this journal is connected to cTrader
     const { data: connectionsData } = useQuery(
         orpc.integrations.ctrader.getConnections.queryOptions({
             input: {},
@@ -76,7 +452,6 @@ export function JournalPerformanceCard({
             (c) => c.journalId === journal.id && c.isActive
         ) ?? false;
 
-    // Check if this journal is connected to MetaTrader
     const { data: brokerConnection } = useQuery(
         orpc.integrations.getBrokerConnection.queryOptions({
             input: { journalId: journal.id },
@@ -101,11 +476,12 @@ export function JournalPerformanceCard({
             .reduce(
                 (acc, trade, index) => {
                     const pnl = Number(trade.profitLossPercentage);
-
                     const previous =
                         acc.length > 0 ? (acc.at(-1)?.cumulative ?? 0) : 0;
-                    const cumulative = previous + pnl;
-                    acc.push({ tradeNumber: index + 1, cumulative });
+                    acc.push({
+                        tradeNumber: index + 1,
+                        cumulative: previous + pnl,
+                    });
                     return acc;
                 },
                 [] as Array<{ tradeNumber: number; cumulative: number }>
@@ -119,9 +495,7 @@ export function JournalPerformanceCard({
 
     const { data: stats } = useQuery(
         orpc.trading.getStats.queryOptions({
-            input: {
-                journalId: journal.id,
-            },
+            input: { journalId: journal.id },
             enabled: !!journal.id,
         })
     );
@@ -142,12 +516,8 @@ export function JournalPerformanceCard({
     const isPositive = finalCumulative >= 0;
 
     const handleFlexCapture = async () => {
-        if (!flexCardRef.current) {
-            return;
-        }
-
+        if (!flexCardRef.current) return;
         setIsCapturing(true);
-
         try {
             const canvas = await html2canvas(flexCardRef.current, {
                 backgroundColor: "#000000",
@@ -158,22 +528,17 @@ export function JournalPerformanceCard({
                 width: flexCardRef.current.scrollWidth,
                 height: flexCardRef.current.scrollHeight,
             });
-
-            const imageDataUrl = canvas.toDataURL("image/png", 0.95);
-            setCapturedImage(imageDataUrl);
+            setCapturedImage(canvas.toDataURL("image/png", 0.95));
             setShowPreview(true);
         } catch (error) {
-            console.error("Erreur lors de la capture:", error);
+            console.error("Erreur capture:", error);
         } finally {
             setIsCapturing(false);
         }
     };
 
     const handleDownload = () => {
-        if (!capturedImage) {
-            return;
-        }
-
+        if (!capturedImage) return;
         const link = document.createElement("a");
         link.href = capturedImage;
         link.download = `altiora-${journal.name.replace(/[^a-zA-Z0-9]/g, "-")}-${new Date().toISOString().split("T")[0]}.png`;
@@ -189,417 +554,14 @@ export function JournalPerformanceCard({
 
     return (
         <>
-            <div
+            <FlexCaptureContent
                 ref={flexCardRef}
-                style={{
-                    position: "fixed",
-                    top: "-9999px",
-                    left: "0",
-                    width: "400px",
-                    height: "500px",
-                    borderRadius: "0.5rem",
-                    backgroundColor: "#000000",
-                    padding: "1rem",
-                    boxShadow: "0 0 0 1px rgba(255, 255, 255, 0.1)",
-                }}
-            >
-                <div style={{ marginBottom: "1rem", textAlign: "center" }}>
-                    <h2
-                        style={{
-                            marginBottom: "0.25rem",
-                            fontSize: "1.25rem",
-                            lineHeight: "1.75rem",
-                            color: "#ffffff",
-                        }}
-                    >
-                        {journal.name}
-                    </h2>
-                    <p
-                        style={{
-                            fontSize: "0.75rem",
-                            lineHeight: "1rem",
-                            color: "rgba(255, 255, 255, 0.6)",
-                        }}
-                    >
-                        Trading Performance
-                    </p>
-                </div>
-
-                {stats && (
-                    <div
-                        style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "0.75rem",
-                        }}
-                    >
-                        <div
-                            style={{
-                                display: "grid",
-                                gridTemplateColumns: "repeat(3, 1fr)",
-                                gap: "1rem",
-                            }}
-                        >
-                            <div style={{ textAlign: "center" }}>
-                                <div
-                                    style={{
-                                        fontWeight: "bold",
-                                        fontSize: "1.5rem",
-                                        lineHeight: "2rem",
-                                        color: "#4ade80",
-                                    }}
-                                >
-                                    {stats.winRate.toFixed(1)}%
-                                </div>
-                                <div
-                                    style={{
-                                        marginTop: "0.25rem",
-                                        fontSize: "0.75rem",
-                                        lineHeight: "1rem",
-                                        color: "rgba(255, 255, 255, 0.6)",
-                                    }}
-                                >
-                                    Win Rate
-                                </div>
-                            </div>
-                            <div style={{ textAlign: "center" }}>
-                                <div
-                                    style={{
-                                        fontWeight: "bold",
-                                        fontSize: "1.5rem",
-                                        lineHeight: "2rem",
-                                        color: "#ffffff",
-                                    }}
-                                >
-                                    {stats.totalTrades}
-                                </div>
-                                <div
-                                    style={{
-                                        marginTop: "0.25rem",
-                                        fontSize: "0.75rem",
-                                        lineHeight: "1rem",
-                                        color: "rgba(255, 255, 255, 0.6)",
-                                    }}
-                                >
-                                    Trades
-                                </div>
-                            </div>
-                            <div style={{ textAlign: "center" }}>
-                                <div
-                                    style={{
-                                        fontWeight: "bold",
-                                        fontSize: "1.5rem",
-                                        lineHeight: "2rem",
-                                        color: "#ffffff",
-                                    }}
-                                >
-                                    {(() => {
-                                        if (!stats) {
-                                            return "0.00";
-                                        }
-
-                                        // Use profitFactor calculated on the server (Gains totaux / Pertes totales)
-                                        const profitFactor =
-                                            stats.profitFactor ?? 0;
-
-                                        if (!Number.isFinite(profitFactor)) {
-                                            return "∞";
-                                        }
-                                        return profitFactor.toFixed(2);
-                                    })()}
-                                </div>
-                                <div
-                                    style={{
-                                        marginTop: "0.25rem",
-                                        fontSize: "0.75rem",
-                                        lineHeight: "1rem",
-                                        color: "rgba(255, 255, 255, 0.6)",
-                                    }}
-                                >
-                                    Profit Factor
-                                </div>
-                            </div>
-                        </div>
-
-                        <div
-                            style={{
-                                borderTop: "1px solid rgba(255, 255, 255, 0.2)",
-                            }}
-                        />
-
-                        <div
-                            style={{
-                                display: "grid",
-                                gridTemplateColumns: "repeat(5, 1fr)",
-                                gap: "0.5rem",
-                            }}
-                        >
-                            <div style={{ textAlign: "center" }}>
-                                <div
-                                    style={{
-                                        fontWeight: "bold",
-                                        fontSize: "1.25rem",
-                                        lineHeight: "2rem",
-                                        color: "#4ade80",
-                                    }}
-                                >
-                                    {(stats as { maxWinningStreak?: number })
-                                        .maxWinningStreak || 0}
-                                </div>
-                                <div
-                                    style={{
-                                        marginTop: "0.25rem",
-                                        fontSize: "0.60rem",
-                                        lineHeight: "1rem",
-                                        color: "rgba(255, 255, 255, 0.6)",
-                                    }}
-                                >
-                                    Winning Streak
-                                </div>
-                            </div>
-                            <div style={{ textAlign: "center" }}>
-                                <div
-                                    style={{
-                                        fontWeight: "bold",
-                                        fontSize: "1.25rem",
-                                        lineHeight: "2rem",
-                                        color: "#4ade80",
-                                    }}
-                                >
-                                    {stats.tpTrades}
-                                </div>
-                                <div
-                                    style={{
-                                        marginTop: "0.25rem",
-                                        fontSize: "0.70rem",
-                                        lineHeight: "1.25rem",
-                                        color: "rgba(255, 255, 255, 0.6)",
-                                    }}
-                                >
-                                    TP
-                                </div>
-                            </div>
-                            <div style={{ textAlign: "center" }}>
-                                <div
-                                    style={{
-                                        fontWeight: "bold",
-                                        fontSize: "1.5rem",
-                                        lineHeight: "2rem",
-                                        color: "#ffffff",
-                                    }}
-                                >
-                                    {stats.beTrades}
-                                </div>
-                                <div
-                                    style={{
-                                        marginTop: "0.25rem",
-                                        fontSize: "0.70rem",
-                                        lineHeight: "1.25rem",
-                                        color: "rgba(255, 255, 255, 0.6)",
-                                    }}
-                                >
-                                    BE
-                                </div>
-                            </div>
-                            <div style={{ textAlign: "center" }}>
-                                <div
-                                    style={{
-                                        fontWeight: "bold",
-                                        fontSize: "1.5rem",
-                                        lineHeight: "2rem",
-                                        color: "#f87171",
-                                    }}
-                                >
-                                    {stats.slTrades}
-                                </div>
-                                <div
-                                    style={{
-                                        marginTop: "0.25rem",
-                                        fontSize: "0.70rem",
-                                        lineHeight: "1.25rem",
-                                        color: "rgba(255, 255, 255, 0.6)",
-                                    }}
-                                >
-                                    SL
-                                </div>
-                            </div>
-                            <div style={{ textAlign: "center" }}>
-                                <div
-                                    style={{
-                                        fontWeight: "bold",
-                                        fontSize: "1.5rem",
-                                        lineHeight: "2rem",
-                                        color: "#f87171",
-                                    }}
-                                >
-                                    {(stats as { maxLosingStreak?: number })
-                                        .maxLosingStreak || 0}
-                                </div>
-                                <div
-                                    style={{
-                                        marginTop: "0.25rem",
-                                        fontSize: "0.60rem",
-                                        lineHeight: "1rem",
-                                        color: "rgba(255, 255, 255, 0.6)",
-                                    }}
-                                >
-                                    Losing Streak
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                <div
-                    style={{
-                        marginTop: "1.5rem",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "1rem",
-                    }}
-                >
-                    <div
-                        style={{
-                            borderRadius: "0.375rem",
-                            border: "1px solid rgba(255, 255, 255, 0.1)",
-                            backgroundColor: "rgba(0, 0, 0, 0.2)",
-                            padding: "1rem",
-                        }}
-                    >
-                        <div
-                            style={{
-                                marginBottom: "0.5rem",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                                fontSize: "0.75rem",
-                                lineHeight: "1rem",
-                                color: "rgba(255, 255, 255, 0.6)",
-                            }}
-                        >
-                            <span>Cumulative Performance (%)</span>
-                            <span
-                                style={{
-                                    fontWeight: "600",
-                                    fontSize: "0.875rem",
-                                    lineHeight: "1.25rem",
-                                    color: isPositive ? "#4ade80" : "#f87171",
-                                }}
-                            >
-                                {finalCumulative >= 0 ? "+" : ""}
-                                {finalCumulative.toFixed(2)}%
-                            </span>
-                        </div>
-                        <div style={{ height: "8rem", minHeight: 0 }}>
-                            <ResponsiveContainer height="100%" width="100%">
-                                <AreaChart
-                                    data={chartData}
-                                    margin={{
-                                        top: 10,
-                                        right: 16,
-                                        left: 0,
-                                        bottom: 0,
-                                    }}
-                                >
-                                    <defs>
-                                        <linearGradient
-                                            id={`journal-cumulative-${journal.id}`}
-                                            x1="0"
-                                            x2="0"
-                                            y1="0"
-                                            y2="1"
-                                        >
-                                            <stop
-                                                offset="0%"
-                                                stopColor={
-                                                    isPositive
-                                                        ? "#10b981"
-                                                        : "#ef4444"
-                                                }
-                                                stopOpacity={0.3}
-                                            />
-                                            <stop
-                                                offset="100%"
-                                                stopColor={
-                                                    isPositive
-                                                        ? "#10b981"
-                                                        : "#ef4444"
-                                                }
-                                                stopOpacity={0.05}
-                                            />
-                                        </linearGradient>
-                                    </defs>
-                                    <CartesianGrid
-                                        stroke="rgba(255,255,255,0.1)"
-                                        vertical={false}
-                                    />
-                                    <XAxis
-                                        axisLine={false}
-                                        dataKey="tradeNumber"
-                                        stroke="#ffffff"
-                                        strokeOpacity={0.4}
-                                        tick={{
-                                            fontSize: 10,
-                                            fill: "rgba(255,255,255,0.5)",
-                                        }}
-                                        tickLine={false}
-                                    />
-                                    <YAxis
-                                        axisLine={false}
-                                        stroke="#ffffff"
-                                        strokeOpacity={0.4}
-                                        tick={{
-                                            fontSize: 10,
-                                            fill: "rgba(255,255,255,0.5)",
-                                        }}
-                                        tickFormatter={(value) =>
-                                            `${value.toFixed(0)}%`
-                                        }
-                                        tickLine={false}
-                                    />
-                                    <Area
-                                        dataKey="cumulative"
-                                        dot={false}
-                                        fill={`url(#journal-cumulative-${journal.id})`}
-                                        isAnimationActive={false}
-                                        stroke={
-                                            isPositive ? "#10b981" : "#ef4444"
-                                        }
-                                        strokeWidth={2}
-                                        type="monotone"
-                                    />
-                                </AreaChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </div>
-
-                    <div
-                        style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            justifyContent: "center",
-                        }}
-                    >
-                        <Image
-                            alt="Altiora"
-                            height={16}
-                            src="/img/logo.png"
-                            style={{ opacity: 0.6 }}
-                            width={16}
-                        />
-                        <span
-                            style={{
-                                color: "rgba(255, 255, 255, 0.4)",
-                                fontSize: "0.75rem",
-                                lineHeight: "1rem",
-                            }}
-                        >
-                            altiora.pro
-                        </span>
-                    </div>
-                </div>
-            </div>
+                journal={journal}
+                stats={stats}
+                chartData={chartData}
+                isPositive={isPositive}
+                finalCumulative={finalCumulative}
+            />
 
             <Card className="border border-white/10 bg-black/20 transition-all duration-200 hover:border-white/20">
                 <CardHeader className="pb-3">
@@ -609,7 +571,8 @@ export function JournalPerformanceCard({
                                 <CardTitle className="line-clamp-1 text-lg text-white">
                                     {journal.name}
                                 </CardTitle>
-                                {isCTraderConnected && (
+                                {(isCTraderConnected ||
+                                    isMetaTraderConnected) && (
                                     <TooltipProvider>
                                         <Tooltip>
                                             <TooltipTrigger asChild>
@@ -619,22 +582,12 @@ export function JournalPerformanceCard({
                                                 </span>
                                             </TooltipTrigger>
                                             <TooltipContent>
-                                                <p>Synced with cTrader</p>
-                                            </TooltipContent>
-                                        </Tooltip>
-                                    </TooltipProvider>
-                                )}
-                                {isMetaTraderConnected && (
-                                    <TooltipProvider>
-                                        <Tooltip>
-                                            <TooltipTrigger asChild>
-                                                <span className="flex h-3 w-3 shrink-0">
-                                                    <span className="absolute inline-flex h-3 w-3 animate-ping rounded-full bg-green-400 opacity-75" />
-                                                    <span className="relative inline-flex h-3 w-3 rounded-full bg-green-500" />
-                                                </span>
-                                            </TooltipTrigger>
-                                            <TooltipContent>
-                                                <p>Synced with MetaTrader</p>
+                                                <p>
+                                                    Synced with{" "}
+                                                    {isCTraderConnected
+                                                        ? "cTrader"
+                                                        : "MetaTrader"}
+                                                </p>
                                             </TooltipContent>
                                         </Tooltip>
                                     </TooltipProvider>
@@ -682,43 +635,21 @@ export function JournalPerformanceCard({
 
                     {bestTrade && (
                         <div
-                            className={`mb-4 rounded-lg border p-3 ${
-                                Number(bestTrade.profitLossPercentage) >= 0
-                                    ? "border-green-500/20 bg-green-500/10"
-                                    : "border-red-500/20 bg-red-500/10"
-                            }`}
+                            className={`mb-4 rounded-lg border p-3 ${Number(bestTrade.profitLossPercentage) >= 0 ? "border-green-500/20 bg-green-500/10" : "border-red-500/20 bg-red-500/10"}`}
                         >
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
                                     <RiStockLine
-                                        className={`h-4 w-4 ${
-                                            Number(
-                                                bestTrade.profitLossPercentage
-                                            ) >= 0
-                                                ? "text-green-400"
-                                                : "text-red-400"
-                                        }`}
+                                        className={`h-4 w-4 ${Number(bestTrade.profitLossPercentage) >= 0 ? "text-green-400" : "text-red-400"}`}
                                     />
                                     <span
-                                        className={`text-sm ${
-                                            Number(
-                                                bestTrade.profitLossPercentage
-                                            ) >= 0
-                                                ? "text-green-400"
-                                                : "text-red-400"
-                                        }`}
+                                        className={`text-sm ${Number(bestTrade.profitLossPercentage) >= 0 ? "text-green-400" : "text-red-400"}`}
                                     >
                                         Best trade
                                     </span>
                                 </div>
                                 <Badge
-                                    className={`${
-                                        Number(
-                                            bestTrade.profitLossPercentage
-                                        ) >= 0
-                                            ? "border-green-500/30 bg-green-500/20 text-green-400"
-                                            : "border-red-500/30 bg-red-500/20 text-red-400"
-                                    }`}
+                                    className={`${Number(bestTrade.profitLossPercentage) >= 0 ? "border-green-500/30 bg-green-500/20 text-green-400" : "border-red-500/30 bg-red-500/20 text-red-400"}`}
                                 >
                                     {Number(bestTrade.profitLossPercentage) >= 0
                                         ? "+"
@@ -753,7 +684,6 @@ export function JournalPerformanceCard({
                                 )}
                             </Button>
                         </div>
-
                         <div className="flex items-center space-x-1">
                             <Button
                                 className="text-white/60 hover:bg-white/10 hover:text-white"
@@ -788,19 +718,9 @@ export function JournalPerformanceCard({
                     role="presentation"
                 >
                     <button
-                        aria-label="Close performance preview"
+                        aria-label="Close"
                         className="absolute inset-0 z-0 h-full w-full"
                         onClick={handleClosePreview}
-                        onKeyDown={(event) => {
-                            if (
-                                event.key === "Escape" ||
-                                event.key === "Enter" ||
-                                event.key === " "
-                            ) {
-                                event.preventDefault();
-                                handleClosePreview();
-                            }
-                        }}
                         type="button"
                     />
                     <div className="relative z-10 w-full max-w-lg rounded-2xl border border-white/20 bg-linear-to-br from-black/90 to-black/80 p-4 shadow-2xl">
@@ -812,17 +732,15 @@ export function JournalPerformanceCard({
                                 Review your trading statistics before sharing
                             </p>
                         </div>
-
                         <div className="mb-4">
                             <Image
-                                alt="Trading performance screenshot"
+                                alt="Preview"
                                 className="w-full rounded-xl border border-white/10 shadow-lg"
                                 height={500}
                                 src={capturedImage}
                                 width={400}
                             />
                         </div>
-
                         <div className="flex items-center justify-between">
                             <div className="text-sm text-white/40">
                                 {journal.name} •{" "}
@@ -830,18 +748,18 @@ export function JournalPerformanceCard({
                             </div>
                             <div className="flex space-x-3">
                                 <button
-                                    className="rounded-xl border border-white/20 px-6 py-3 text-white/70 transition-all duration-200 hover:border-white/40 hover:bg-white/5 hover:text-white"
+                                    className="rounded-xl border border-white/20 px-6 py-3 text-white/70 transition-all hover:bg-white/5"
                                     onClick={handleClosePreview}
                                     type="button"
                                 >
                                     Cancel
                                 </button>
                                 <button
-                                    className="rounded-xl bg-white px-6 py-3 font-medium text-black shadow-lg transition-all duration-200 hover:bg-gray-100 hover:shadow-xl"
+                                    className="rounded-xl bg-white px-6 py-3 font-medium text-black transition-all hover:bg-gray-100"
                                     onClick={handleDownload}
                                     type="button"
                                 >
-                                    Download Image
+                                    Download
                                 </button>
                             </div>
                         </div>

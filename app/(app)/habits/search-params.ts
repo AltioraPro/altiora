@@ -5,7 +5,7 @@ export type ViewMode = (typeof viewModes)[number];
 
 export const habitsSearchParams = {
     viewMode: parseAsStringEnum(["today", "week", "month"]).withDefault(
-        "today"
+        "month"
     ),
 };
 

@@ -13,7 +13,7 @@ export function Sidebar() {
     return (
         <nav
             className={cn(
-                "fixed top-0 z-50 hidden h-screen shrink-0 flex-col items-center justify-between pb-4 transition-all duration-200 ease-&lsqb;cubic-bezier(0.4,0,0.2,1)&rsqb; md:flex xl:overflow-hidden xl:rounded-tl-[10px] xl:rounded-bl-[10px]",
+                "fixed top-0 z-50 hidden h-screen shrink-0 flex-col items-center justify-between pb-4 transition-[width] duration-300 ease-out md:flex xl:overflow-hidden xl:rounded-tl-[10px] xl:rounded-bl-[10px]",
                 "border-border border-r bg-background",
                 isExpanded ? "w-[240px]" : "w-[70px]"
             )}
@@ -22,7 +22,7 @@ export function Sidebar() {
         >
             <div
                 className={cn(
-                    "absolute top-0 left-0 flex h-[70px] items-center justify-center border-border border-b bg-background transition-all duration-200 ease-&lsqb;cubic-bezier(0.4,0,0.2,1)&rsqb;",
+                    "absolute top-0 left-0 flex h-[70px] items-center justify-center border-border border-b bg-background transition-[width] duration-300 ease-out",
                     isExpanded ? "w-full" : "w-[69px]"
                 )}
             >

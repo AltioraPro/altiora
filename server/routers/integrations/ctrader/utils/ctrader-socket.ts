@@ -129,15 +129,18 @@ export class CTraderSocket {
                 message.clientMsgId &&
                 this.resolvers.has(message.clientMsgId)
             ) {
-                const { resolve } = this.resolvers.get(message.clientMsgId)!;
-                this.resolvers.delete(message.clientMsgId);
+                const resolver = this.resolvers.get(message.clientMsgId);
+                if (resolver) {
+                    const { resolve } = resolver;
+                    this.resolvers.delete(message.clientMsgId);
 
-                // Decode specific payload based on payloadType
-                const decodedPayload = this.decodePayload(
-                    message.payloadType,
-                    message.payload
-                );
-                resolve(decodedPayload);
+                    // Decode specific payload based on payloadType
+                    const decodedPayload = this.decodePayload(
+                        message.payloadType,
+                        message.payload
+                    );
+                    resolve(decodedPayload);
+                }
             }
         } catch (error) {
             console.error("[CTraderSocket] Error handling message:", error);

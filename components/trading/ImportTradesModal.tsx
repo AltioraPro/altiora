@@ -46,6 +46,41 @@ interface ExcelRow {
     [key: number]: unknown;
 }
 
+const parseTradeDate = (dateInput: string | undefined): string => {
+    let tradeDate = new Date().toISOString().split("T")[0];
+    if (!dateInput) return tradeDate;
+
+    const dateStr = String(dateInput).trim();
+    if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        return dateStr;
+    }
+
+    let parsedDate: Date;
+    if (/^\d+\.?\d*$/.test(dateStr)) {
+        const excelDate = Number.parseFloat(dateStr);
+        parsedDate = new Date((excelDate - 25_569) * 86_400 * 1000);
+    } else {
+        parsedDate = new Date(dateStr);
+    }
+
+    if (
+        !Number.isNaN(parsedDate.getTime()) &&
+        parsedDate.getFullYear() > 1900
+    ) {
+        tradeDate = parsedDate.toISOString().split("T")[0];
+    }
+    return tradeDate;
+};
+
+const determineExitReason = (
+    profitLossPercentage: string
+): "TP" | "BE" | "SL" => {
+    if (!profitLossPercentage || profitLossPercentage === "") return "BE";
+    const profitValue = Number.parseFloat(profitLossPercentage);
+    if (Number.isNaN(profitValue) || profitValue === 0) return "BE";
+    return profitValue > 0 ? "TP" : "SL";
+};
+
 export function ImportTradesModal({
     isOpen,
     onClose,
@@ -371,36 +406,7 @@ export function ImportTradesModal({
 
         for (const trade of tradesToImport) {
             try {
-                let tradeDate = new Date().toISOString().split("T")[0];
-                if (trade.Date) {
-                    const dateStr = String(trade.Date).trim();
-
-                    if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                        tradeDate = dateStr;
-                    } else {
-                        let parsedDate: Date;
-
-                        if (/^\d+\.?\d*$/.test(dateStr)) {
-                            const excelDate = Number.parseFloat(dateStr);
-                            parsedDate = new Date(
-                                (excelDate - 25_569) * 86_400 * 1000
-                            );
-                        } else {
-                            parsedDate = new Date(dateStr);
-                        }
-
-                        if (
-                            !Number.isNaN(parsedDate.getTime()) &&
-                            parsedDate.getFullYear() > 1900
-                        ) {
-                            tradeDate = parsedDate.toISOString().split("T")[0];
-                        } else {
-                            console.warn(
-                                `Invalid date format: ${dateStr}, using today's date`
-                            );
-                        }
-                    }
-                }
+                const tradeDate = parseTradeDate(trade.Date);
 
                 const assetName = trade.Asset || trade.Symbol || "";
                 const symbol = trade.Symbol || trade.Asset || "";
@@ -421,26 +427,10 @@ export function ImportTradesModal({
 
                 const riskInput = cleanRiskValue || "";
                 const profitLossPercentage = cleanProfitValue || "0";
-
-                let exitReason: "TP" | "BE" | "SL" | undefined;
-                if (!profitLossPercentage || profitLossPercentage === "") {
-                    exitReason = "BE";
-                } else {
-                    const profitValue = Number.parseFloat(profitLossPercentage);
-                    if (Number.isNaN(profitValue)) {
-                        exitReason = "BE";
-                    } else if (profitValue > 0) {
-                        exitReason = "TP";
-                    } else if (profitValue === 0) {
-                        exitReason = "BE";
-                    } else if (profitValue < 0) {
-                        exitReason = "SL";
-                    }
-                }
+                const exitReason = determineExitReason(profitLossPercentage);
 
                 if (!tradeDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                    console.error(`Invalid tradeDate format: ${tradeDate}`);
-                    throw new Error(`Format de date invalide: ${tradeDate}`);
+                    throw new Error(`Invalid date: ${tradeDate}`);
                 }
 
                 await createTrade({
@@ -474,11 +464,9 @@ export function ImportTradesModal({
             if (createdItems.assets.length > 0) {
                 createdSummary.push(`${createdItems.assets.length} assets`);
             }
-            createdSummary.push(`${createdItems.assets.length} assets`);
             if (createdItems.sessions.length > 0) {
                 createdSummary.push(`${createdItems.sessions.length} sessions`);
             }
-            createdSummary.push(`${createdItems.sessions.length} sessions`);
             if (createdItems.confirmations.length > 0) {
                 createdSummary.push(
                     `${createdItems.confirmations.length} confirmations`
