@@ -29,6 +29,7 @@ export const APPLICATION_PAGES = {
     TRADING_JOURNALS: route("/trading/journals"),
     TRADING_JOURNAL: routeFn((id: string) => `/trading/journals/${id}`),
     TRADING_CALENDAR: route("/trading/calendar"),
+    TRADING_DASHBOARD: route("/trading/dashboard"),
     LEADERBOARD: route("/leaderboard"),
     SETTINGS: route("/settings"),
 };

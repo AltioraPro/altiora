@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { UserRole } from "@/constants/roles";
 import { cn } from "@/lib/utils";
-import { MENU_ITEMS } from "./main-menu";
 
 interface ItemProps {
     item: {
@@ -12,6 +11,8 @@ interface ItemProps {
         name: string;
         children?: { path: Route; name: string }[];
         requiredRole?: UserRole;
+        soon?: boolean;
+        icon?: React.ComponentType<{ size?: number | string }>;
     };
     isActive: boolean;
     isExpanded: boolean;
@@ -28,7 +29,6 @@ export const Item = ({
     onToggle,
     onSelect,
 }: ItemProps) => {
-    const Icon = MENU_ITEMS[item.path as keyof typeof MENU_ITEMS];
     const pathname = usePathname();
     const hasChildren = item.children && item.children.length > 0;
 
@@ -41,43 +41,58 @@ export const Item = ({
         onToggle(item.path);
     };
 
+    const isPlaceholder = item.path === "#";
+
     return (
-        <div className="group">
+        <div
+            className={cn(
+                "group",
+                isPlaceholder && "pointer-events-none opacity-60"
+            )}
+        >
             <Link
                 className="group"
                 href={item.path}
-                onClick={() => onSelect?.()}
-                prefetch
+                onClick={(e) => {
+                    if (isPlaceholder) {
+                        e.preventDefault();
+                        return;
+                    }
+                    onSelect?.();
+                }}
+                prefetch={!isPlaceholder}
             >
                 <div className="relative">
                     {/* Background that expands */}
                     <div
                         className={cn(
-                            "mr-[15px] ml-[15px] h-[40px] border border-transparent transition-all duration-200 ease-&lsqb;cubic-bezier(0.4,0,0.2,1)&rsqb;",
+                            "mr-[15px] ml-[15px] h-[40px] border border-transparent transition-all duration-300 ease-out",
                             isActive && "border-neutral-700 bg-neutral-900",
                             isExpanded ? "w-[calc(100%-30px)]" : "w-[40px]"
                         )}
                     />
 
-                    {/* Icon - always in same position from sidebar edge */}
-                    <div className="pointer-events-none absolute top-0 left-[15px] flex h-[40px] w-[40px] items-center justify-center text-neutral-400 group-hover:text-pure-white!">
-                        <div className={cn(isActive && "dark:text-white!")}>
-                            <Icon />
-                        </div>
-                    </div>
+                    {/* No icon background or icon div here */}
 
                     {isExpanded && (
                         <div className="pointer-events-none absolute top-0 right-[4px] left-[55px] flex h-[40px] items-center">
                             <span
                                 className={cn(
-                                    "font-medium text-[#666] text-sm transition-opacity duration-200 ease-in-out group-hover:text-primary",
-                                    "overflow-hidden whitespace-nowrap",
+                                    "font-medium text-[#666] text-sm transition-opacity duration-300 ease-out group-hover:text-primary",
+                                    "overflow-hidden whitespace-nowrap pl-4",
                                     hasChildren ? "pr-2" : "",
                                     isActive && "text-primary"
                                 )}
                             >
                                 {item.name}
                             </span>
+
+                            {item.soon && (
+                                <span className="ml-2 rounded-full bg-primary/10 px-1.5 py-0.5 font-bold text-[9px] text-primary uppercase tracking-tighter">
+                                    Soon
+                                </span>
+                            )}
+
                             {hasChildren && (
                                 <button
                                     className={cn(
