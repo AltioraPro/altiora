@@ -92,7 +92,7 @@ export function UpgradeContent({ userName }: UpgradeContentProps) {
                     <p className="text-muted-foreground text-sm">
                         {userName ? `Hi ${userName}, ` : ""}Your trial has ended
                         or your subscription has expired — choose a plan to
-                        continue using all of {PROJECT.NAME}'s features.
+                        continue using all of {PROJECT.NAME}&apos;s features.
                     </p>
                 </div>
 
@@ -125,7 +125,7 @@ export function UpgradeContent({ userName }: UpgradeContentProps) {
                 </div>
 
                 <p className="mt-8 text-center text-muted-foreground text-sm">
-                    Don't want to continue?{" "}
+                    Don&apos;t want to continue?{" "}
                     <button
                         type="button"
                         onClick={handleOpenDeleteDialog}

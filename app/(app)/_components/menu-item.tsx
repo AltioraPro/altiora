@@ -66,16 +66,16 @@ export const Item = ({
                     {/* Background that expands */}
                     <div
                         className={cn(
-                            "mr-[15px] ml-[15px] h-[40px] border border-transparent transition-all duration-300 ease-out",
+                            "mr-3.75 ml-3.75 h-10 border border-transparent transition-all duration-300 ease-out",
                             isActive && "border-neutral-700 bg-neutral-900",
-                            isExpanded ? "w-[calc(100%-30px)]" : "w-[40px]"
+                            isExpanded ? "w-[calc(100%-30px)]" : "w-10"
                         )}
                     />
 
                     {/* No icon background or icon div here */}
 
                     {isExpanded && (
-                        <div className="pointer-events-none absolute top-0 right-[4px] left-[55px] flex h-[40px] items-center">
+                        <div className="pointer-events-none absolute top-0 right-1 left-13.75 flex h-10 items-center">
                             <span
                                 className={cn(
                                     "font-medium text-[#666] text-sm transition-opacity duration-300 ease-out group-hover:text-primary",
@@ -168,7 +168,7 @@ const ChildItem = ({
                 {/* Child item text */}
                 <div
                     className={cn(
-                        "mr-[15px] ml-[35px] flex h-[32px] items-center",
+                        "mr-3.75 ml-8.75 flex h-8 items-center",
                         "border-[#DCDAD2] border-l pl-3 dark:border-[#2C2C2C]",
                         "transition-all duration-200 ease-out",
                         showChild
