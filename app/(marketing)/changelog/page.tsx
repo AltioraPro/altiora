@@ -1,4 +1,3 @@
-import { RiAddLine, RiBugLine, RiLightbulbFlashLine } from "@remixicon/react";
 import { Header } from "@/components/header";
 import { getWebsiteUrl } from "@/lib/urls";
 import { ChangelogList } from "./_components/changelog-list";
@@ -143,8 +142,8 @@ async function getChangelogData(): Promise<Release[]> {
         const data = await response.json();
         const githubReleases = data.releases || [];
         return githubReleases.length > 0 ? githubReleases : fallbackReleases;
-    } catch (error) {
-        console.error("Error fetching changelog:", error);
+    } catch {
+        // Silently fail and use fallback
         return fallbackReleases;
     }
 }
@@ -153,33 +152,41 @@ export default async function ChangelogPage() {
     const releases = await getChangelogData();
 
     return (
-        <div>
+        <div className="flex min-h-screen flex-col bg-background selection:bg-neutral-800 selection:text-neutral-100">
             <Header />
 
-            <ChangelogList releases={releases} />
+            <main className="flex-1">
+                {/* Hero Section */}
+                <section className="relative overflow-hidden border-zinc-800/50 border-b py-20 lg:py-28">
+                    <div className="absolute inset-0 z-0">
+                        <div className="absolute top-0 left-1/2 h-[500px] w-[1000px] -translate-x-1/2 bg-zinc-900/10 blur-[120px]" />
+                    </div>
 
-            {/* Legend */}
-            <div className="mt-12 rounded-2xl border border-white/10 bg-white/5 p-6">
-                <h3 className="mb-4 font-bold text-lg text-white">Legend</h3>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                    <div className="flex items-center space-x-3">
-                        <RiAddLine className="size-4 text-green-400" />
-                        <span className="text-sm text-white/70">
-                            New Feature
-                        </span>
+                    <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:border-zinc-800/50 lg:border-r lg:border-l lg:px-8">
+                        <div className="max-w-3xl">
+                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 mb-4 block">
+                                Product Updates
+                            </span>
+                            <h1 className="font-bold font-serif text-5xl text-white tracking-tight sm:text-6xl">
+                                Changelog
+                            </h1>
+                            <p className="mt-6 text-balance text-lg text-zinc-400 leading-relaxed sm:text-xl max-w-2xl">
+                                Stay up to date with the latest improvements,
+                                features, and fixes we&apos;ve made to Altiora.
+                            </p>
+                        </div>
                     </div>
-                    <div className="flex items-center space-x-3">
-                        <RiLightbulbFlashLine className="size-4 text-blue-400" />
-                        <span className="text-sm text-white/70">
-                            Improvement
-                        </span>
+                </section>
+
+                {/* Changelog Content */}
+                <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:border-zinc-800/50 lg:border-r lg:border-l lg:px-8">
+                    <div className="py-12 lg:py-20">
+                        <ChangelogList releases={releases} />
                     </div>
-                    <div className="flex items-center space-x-3">
-                        <RiBugLine className="size-4 text-red-400" />
-                        <span className="text-sm text-white/70">Bug Fix</span>
-                    </div>
-                </div>
-            </div>
+                </section>
+            </main>
+
+            <footer className="h-24 border-zinc-800/50 border-t" />
         </div>
     );
 }
