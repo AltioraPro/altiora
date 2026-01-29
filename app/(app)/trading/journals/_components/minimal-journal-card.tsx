@@ -17,12 +17,7 @@ import html2canvas from "html2canvas";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useMemo, useRef, useState } from "react";
-import {
-    Area,
-    AreaChart,
-    ResponsiveContainer,
-    YAxis,
-} from "recharts";
+import { Area, AreaChart, ResponsiveContainer, YAxis } from "recharts";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -104,7 +99,7 @@ const FlexCaptureContent = React.forwardRef<
                             />
                         </linearGradient>
                     </defs>
-                    <YAxis domain={['dataMin', 'dataMax']} hide />
+                    <YAxis domain={["dataMin", "dataMax"]} hide />
                     <Area
                         type="monotone"
                         dataKey="cumulative"
@@ -484,7 +479,8 @@ function JournalCardContent({ journal, onEdit, onDelete }: JournalCardProps) {
             .reduce(
                 (acc, trade, index) => {
                     const pnl = Number(trade.profitLossPercentage);
-                    const previous = acc.length > 0 ? (acc.at(-1)?.cumulative ?? 0) : 0;
+                    const previous =
+                        acc.length > 0 ? (acc.at(-1)?.cumulative ?? 0) : 0;
                     acc.push({
                         tradeNumber: index + 1,
                         cumulative: previous + pnl,
@@ -499,7 +495,10 @@ function JournalCardContent({ journal, onEdit, onDelete }: JournalCardProps) {
     const isPositive = totalPnL >= 0;
     const winRate = stats?.winRate ?? 0;
     const totalTrades = stats?.totalTrades ?? 0;
-    const finalCumulative = chartDataForFlex.length > 0 ? (chartDataForFlex.at(-1)?.cumulative ?? 0) : totalPnL;
+    const finalCumulative =
+        chartDataForFlex.length > 0
+            ? (chartDataForFlex.at(-1)?.cumulative ?? 0)
+            : totalPnL;
 
     const handleFlexCapture = async () => {
         if (!flexCardRef.current) return;
@@ -610,7 +609,10 @@ function JournalCardContent({ journal, onEdit, onDelete }: JournalCardProps) {
                 {/* Chart Section */}
                 <div className="h-14 w-full">
                     <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={cumulativeData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                        <AreaChart
+                            data={cumulativeData}
+                            margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+                        >
                             <defs>
                                 <linearGradient
                                     id={`chart-gradient-pos-${journal.id}`}
@@ -649,13 +651,17 @@ function JournalCardContent({ journal, onEdit, onDelete }: JournalCardProps) {
                                     />
                                 </linearGradient>
                             </defs>
-                            <YAxis domain={['dataMin', 'dataMax']} hide />
+                            <YAxis domain={["dataMin", "dataMax"]} hide />
                             <Area
                                 type="monotone"
                                 dataKey="y"
                                 stroke={isPositive ? "#22c55e" : "#ef4444"}
                                 strokeWidth={1.5}
-                                fill={isPositive ? `url(#chart-gradient-pos-${journal.id})` : `url(#chart-gradient-neg-${journal.id})`}
+                                fill={
+                                    isPositive
+                                        ? `url(#chart-gradient-pos-${journal.id})`
+                                        : `url(#chart-gradient-neg-${journal.id})`
+                                }
                                 isAnimationActive={false}
                             />
                         </AreaChart>
@@ -684,7 +690,9 @@ function JournalCardContent({ journal, onEdit, onDelete }: JournalCardProps) {
                                     </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                    <p className="text-xs">Capture for sharing</p>
+                                    <p className="text-xs">
+                                        Capture for sharing
+                                    </p>
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>

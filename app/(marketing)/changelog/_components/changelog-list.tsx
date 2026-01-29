@@ -181,7 +181,8 @@ export function ChangelogList({ releases }: ChangelogListProps) {
                                                                                     target="_blank"
                                                                                 >
                                                                                     <span className="text-[10px] font-bold uppercase tracking-widest">
-                                                                                        #{
+                                                                                        #
+                                                                                        {
                                                                                             change.prNumber
                                                                                         }
                                                                                     </span>
@@ -213,8 +214,8 @@ export function ChangelogList({ releases }: ChangelogListProps) {
                         type="button"
                     >
                         <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-zinc-500 transition-colors group-hover:text-zinc-200">
-                            Previous updates (
-                            {releases.length - displayedCount})
+                            Previous updates ({releases.length - displayedCount}
+                            )
                         </span>
                         <div className="flex h-12 w-12 items-center justify-center border border-zinc-800 bg-zinc-900/50 transition-all ring-1 ring-white/5 group-hover:bg-zinc-800 group-hover:ring-white/10">
                             <RiArrowDownLine className="size-4 text-zinc-400 transition-colors group-hover:text-white" />

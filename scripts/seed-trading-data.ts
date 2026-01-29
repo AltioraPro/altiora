@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
 import { nanoid } from "nanoid";
+import { Pool } from "pg";
 import * as schema from "../server/db/schema";
 
 // ============================================
@@ -17,7 +17,18 @@ const pool = new Pool({
 const db = drizzle(pool, { schema });
 
 // Symbols for trades
-const SYMBOLS = ["EURUSD", "GBPUSD", "USDJPY", "XAUUSD", "BTCUSD", "NASDAQ", "SP500", "GBPJPY", "AUDUSD", "USDCAD"];
+const SYMBOLS = [
+    "EURUSD",
+    "GBPUSD",
+    "USDJPY",
+    "XAUUSD",
+    "BTCUSD",
+    "NASDAQ",
+    "SP500",
+    "GBPJPY",
+    "AUDUSD",
+    "USDCAD",
+];
 
 // Exit reasons
 const EXIT_REASONS = ["TP", "SL", "BE", "Manual"];
@@ -31,25 +42,33 @@ function random(min: number, max: number): number {
 function randomDate(daysAgo: number): Date {
     const date = new Date();
     date.setDate(date.getDate() - Math.floor(Math.random() * daysAgo));
-    date.setHours(Math.floor(Math.random() * 24), Math.floor(Math.random() * 60));
+    date.setHours(
+        Math.floor(Math.random() * 24),
+        Math.floor(Math.random() * 60)
+    );
     return date;
 }
 
 // Generate a realistic trade
-function generateTrade(userId: string, journalId: string, tradeDate: Date, bias: "positive" | "negative" | "neutral") {
+function generateTrade(
+    userId: string,
+    journalId: string,
+    tradeDate: Date,
+    bias: "positive" | "negative" | "neutral"
+) {
     const symbol = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-    
+
     // Bias affects win probability
     let winProbability = 0.5;
     if (bias === "positive") winProbability = 0.65;
     if (bias === "negative") winProbability = 0.35;
-    
+
     const isWin = Math.random() < winProbability;
     const isBE = !isWin && Math.random() < 0.15; // 15% chance of BE if not a win
-    
+
     let profitLossPercentage: number;
     let exitReason: string;
-    
+
     if (isWin) {
         profitLossPercentage = random(0.5, 3.5); // +0.5% to +3.5%
         exitReason = "TP";
@@ -60,7 +79,7 @@ function generateTrade(userId: string, journalId: string, tradeDate: Date, bias:
         profitLossPercentage = random(-2.5, -0.3); // -0.3% to -2.5%
         exitReason = Math.random() < 0.7 ? "SL" : "Manual";
     }
-    
+
     return {
         id: nanoid(),
         userId,
@@ -70,7 +89,11 @@ function generateTrade(userId: string, journalId: string, tradeDate: Date, bias:
         profitLossAmount: (profitLossPercentage * 100).toFixed(2), // Assuming $10k account
         riskInput: random(0.5, 2).toFixed(1),
         exitReason,
-        notes: isWin ? "Good setup, followed the plan." : (isBE ? "Moved to BE, price reversed." : "Stop hit, market turned."),
+        notes: isWin
+            ? "Good setup, followed the plan."
+            : isBE
+              ? "Moved to BE, price reversed."
+              : "Stop hit, market turned.",
         isClosed: true,
         source: "manual",
         syncStatus: "synced",
@@ -121,15 +144,15 @@ const JOURNALS_CONFIG = [
 async function seed(userId: string) {
     console.log("🌱 Starting seed...");
     console.log(`👤 User ID: ${userId}`);
-    
+
     const createdJournals: string[] = [];
-    
+
     for (let i = 0; i < JOURNALS_CONFIG.length; i++) {
         const config = JOURNALS_CONFIG[i];
         const journalId = nanoid();
-        
+
         console.log(`\n📔 Creating journal: ${config.name}`);
-        
+
         // Create journal
         await db.insert(schema.tradingJournals).values({
             id: journalId,
@@ -143,34 +166,43 @@ async function seed(userId: string) {
             createdAt: new Date(),
             updatedAt: new Date(),
         });
-        
+
         createdJournals.push(journalId);
-        
+
         // Generate trades
         const trades = [];
         for (let t = 0; t < config.tradesCount; t++) {
             const tradeDate = randomDate(config.daysSpan);
-            trades.push(generateTrade(userId, journalId, tradeDate, config.bias));
+            trades.push(
+                generateTrade(userId, journalId, tradeDate, config.bias)
+            );
         }
-        
+
         // Sort trades by date
         trades.sort((a, b) => a.tradeDate.getTime() - b.tradeDate.getTime());
-        
+
         // Insert trades
         if (trades.length > 0) {
             await db.insert(schema.advancedTrades).values(trades);
         }
-        
+
         // Calculate stats for display
-        const totalPnL = trades.reduce((sum, t) => sum + parseFloat(t.profitLossPercentage), 0);
-        const wins = trades.filter(t => parseFloat(t.profitLossPercentage) > 0.1).length;
-        const winRate = (wins / trades.length * 100).toFixed(1);
-        
+        const totalPnL = trades.reduce(
+            (sum, t) => sum + parseFloat(t.profitLossPercentage),
+            0
+        );
+        const wins = trades.filter(
+            (t) => parseFloat(t.profitLossPercentage) > 0.1
+        ).length;
+        const winRate = ((wins / trades.length) * 100).toFixed(1);
+
         console.log(`   ✅ Created ${trades.length} trades`);
-        console.log(`   📊 P&L: ${totalPnL >= 0 ? "+" : ""}${totalPnL.toFixed(2)}%`);
+        console.log(
+            `   📊 P&L: ${totalPnL >= 0 ? "+" : ""}${totalPnL.toFixed(2)}%`
+        );
         console.log(`   🎯 Win Rate: ${winRate}%`);
     }
-    
+
     console.log("\n✨ Seed completed!");
     console.log(`📔 Created ${createdJournals.length} journals`);
     console.log(`📝 Journal IDs: ${createdJournals.join(", ")}`);
@@ -181,8 +213,9 @@ const userId = process.argv[2];
 
 if (!userId) {
     console.log("⚠️  No user ID provided, fetching first user from database...");
-    
-    db.query.user.findFirst()
+
+    db.query.user
+        .findFirst()
         .then((user) => {
             if (!user) {
                 console.error("❌ No users found in database");
