@@ -180,6 +180,7 @@ export function JournalDashboard({
                                         <span className="text-[8px] font-bold uppercase text-red-500/50">
                                             L
                                         </span>
+
                                         <span className="font-bold text-sm text-red-400">
                                             {stats.maxLosingStreak}
                                         </span>

@@ -3,45 +3,50 @@
 import { RiAddLine, RiBarChartLine, RiBookOpenLine } from "@remixicon/react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { useCreateJournalStore } from "@/store/create-journal-store";
 
 export function EmptyJournalsState() {
     const openCreateModal = useCreateJournalStore((state) => state.open);
 
     return (
-        <div className="py-12 text-center">
-            <Card className="mx-auto max-w-md border border-white/10 bg-black/20 p-8">
-                <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-white/10">
-                    <RiBookOpenLine className="size-8 text-white/60" />
+        <div className="flex min-h-[60vh] flex-col items-center justify-center px-4">
+            <div className="max-w-sm text-center">
+                {/* Icon */}
+                <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-white/5 ring-1 ring-white/8">
+                    <RiBookOpenLine className="size-6 text-white/40" />
                 </div>
 
-                <h3 className="mb-4 text-white text-xl">No Journals Created</h3>
-                <p className="mb-8 text-white/60">
+                {/* Text */}
+                <h3 className="mb-2 font-medium text-lg text-white">
+                    No journals yet
+                </h3>
+                <p className="mb-8 text-sm text-white/40 leading-relaxed">
                     Create your first trading journal to start tracking your
-                    performance.
+                    performance and analyzing your trades.
                 </p>
 
-                <div className="flex flex-col justify-center gap-4 sm:flex-row">
+                {/* Actions */}
+                <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
                     <Button
-                        className="bg-white text-black hover:bg-gray-200"
                         onClick={openCreateModal}
+                        className="h-10 bg-white px-5 text-black hover:bg-white/90"
                     >
                         <RiAddLine className="mr-2 size-4" />
-                        Create First Journal
+                        Create Journal
                     </Button>
 
-                    <Link href="/dashboard">
-                        <Button
-                            className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white"
-                            variant="outline"
-                        >
+                    <Button
+                        variant="ghost"
+                        className="h-10 text-white/50 hover:bg-white/5 hover:text-white/70"
+                        asChild
+                    >
+                        <Link href="/dashboard">
                             <RiBarChartLine className="mr-2 size-4" />
                             View Dashboard
-                        </Button>
-                    </Link>
+                        </Link>
+                    </Button>
                 </div>
-            </Card>
+            </div>
         </div>
     );
 }
