@@ -9,6 +9,7 @@ import { leaderboardRouter } from "@/server/routers/leaderboard/router";
 import { profileRouter } from "@/server/routers/profile/router";
 import { remindersRouter } from "@/server/routers/reminders/router";
 import { tradingRouter } from "@/server/routers/trading/router";
+import { waitlistRouter } from "@/server/routers/waitlist/router";
 
 export const appRouter = base.router({
     auth: authRouter,
@@ -21,4 +22,5 @@ export const appRouter = base.router({
     habits: habitsRouter,
     trading: tradingRouter,
     integrations: integrationsRouter,
+    waitlist: waitlistRouter,
 });
