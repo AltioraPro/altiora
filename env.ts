@@ -47,6 +47,9 @@ export const env = createEnv({
         VERCEL_BRANCH_URL: z.string().optional(),
 
         BLOB_READ_WRITE_TOKEN: z.string().min(1).optional(),
+
+        WAITLIST_ENABLED: z.enum(["true", "false"]).optional(),
+        RESEND_WAITLIST_AUDIENCE_ID: z.string().min(1).optional(),
     },
     client: {
         NEXT_PUBLIC_BETTER_AUTH_URL: z.url(),
