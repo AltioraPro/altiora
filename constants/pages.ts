@@ -41,6 +41,7 @@ export const SETTINGS_PAGES = {
 
 export const ADMIN_PAGES = {
     ADMIN: route("/admin"),
+    ADMIN_WAITLIST: route("/admin/waitlist"),
 };
 
 export const ORGANIZATION_ONBOARDING_PAGES = {
