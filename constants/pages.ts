@@ -8,6 +8,7 @@ export const AUTH_PAGES = {
     RESET_PASSWORD: route("/reset-password"),
     CONFIRM_ACCESS: route("/confirm-2fa"),
     ERROR: route("/error"),
+    WAITLIST: route("/waitlist"),
 };
 
 export const MARKETING_PAGES = {
@@ -40,6 +41,7 @@ export const SETTINGS_PAGES = {
 
 export const ADMIN_PAGES = {
     ADMIN: route("/admin"),
+    ADMIN_WAITLIST: route("/admin/waitlist"),
 };
 
 export const ORGANIZATION_ONBOARDING_PAGES = {

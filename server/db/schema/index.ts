@@ -17,3 +17,4 @@ export * from "./subgoals";
 export * from "./trades";
 export * from "./trades-confirmations";
 export * from "./trading-sessions";
+export * from "./waitlist";
